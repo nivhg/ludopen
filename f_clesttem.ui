@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>F_CLESTTEM</class>
+ <widget class="QWidget" name="F_CLESTTEM">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>850</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="Membres">
+      <attribute name="title">
+       <string>Membres</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="GL">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Lb_TitreMembre">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Titre :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="Lb_TypeMembre">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Type :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="3">
+          <widget class="QTableView" name="TbV_TitreMembre"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCommandLinkButton" name="Bt_AjouterTitreMembre">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3" rowspan="3">
+          <widget class="QTableView" name="TbV_TypeMembre"/>
+         </item>
+         <item row="1" column="4">
+          <widget class="QCommandLinkButton" name="Bt_AjouterTypeMembre">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCommandLinkButton" name="Bt_ModifierTitreMembre">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QCommandLinkButton" name="Bt_ModifierTypeMembre">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerTitreMembre">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="4">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerTypeMembre">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" rowspan="4">
+          <spacer name="HS">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="Lb_PaiementMembre">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Paiement :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" rowspan="3">
+          <widget class="QTableView" name="TbV_PaiementMembre"/>
+         </item>
+         <item row="6" column="1">
+          <widget class="QCommandLinkButton" name="Bt_AjouterPaiementMembre">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QCommandLinkButton" name="Bt_ModifierPaiementMembre">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerPaiementMembre">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="5">
+          <spacer name="VS">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="Jeux">
+      <attribute name="title">
+       <string>Jeux</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="GL_2">
+         <item row="0" column="0" colspan="2">
+          <widget class="QLabel" name="Lb_EmplacementJeux">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Emplacement :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="Lb_EtatJeux">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Etat :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="3" colspan="2">
+          <widget class="QTableView" name="TbV_EmplacementJeux"/>
+         </item>
+         <item row="1" column="2">
+          <widget class="QCommandLinkButton" name="Bt_AjouterEmplacementJeux">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="4" rowspan="3">
+          <widget class="QTableView" name="TbV_EtatJeux"/>
+         </item>
+         <item row="1" column="5">
+          <widget class="QCommandLinkButton" name="Bt_AjouterEtatJeux">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QCommandLinkButton" name="Bt_ModifierEmplacementJeux">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="5">
+          <widget class="QCommandLinkButton" name="Bt_ModifierEtatJeux">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerEmplacementJeux">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="5">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerEtatJeux">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="Lb_StatutJeux">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Statut :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="4">
+          <widget class="QLabel" name="Lb_TypeJeux">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Type :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1" rowspan="3">
+          <widget class="QTableView" name="TbV_StatutJeux"/>
+         </item>
+         <item row="6" column="2">
+          <widget class="QCommandLinkButton" name="Bt_AjouterStatutJeux">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="4" rowspan="3">
+          <widget class="QTableView" name="TbV_TypeJeux"/>
+         </item>
+         <item row="6" column="5">
+          <widget class="QCommandLinkButton" name="Bt_AjouterTypeJeux">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="2">
+          <widget class="QCommandLinkButton" name="Bt_ModifierStatutJeux">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="5">
+          <widget class="QCommandLinkButton" name="Bt_ModifierTypeJeux">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="2">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerStatutJeux">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="5">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerTypeJeux">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3" rowspan="9">
+          <spacer name="HS_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="1" colspan="2">
+          <spacer name="VS_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="4" colspan="2">
+          <spacer name="VS_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="EmpruntsInfoLudo">
+      <attribute name="title">
+       <string>Emprunts / Informations Ludo</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="GL_3">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Lb_TypeEmprunt">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Type Emprunt :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLabel" name="Lb_LieuxLudo">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Lieux Ludo :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" rowspan="3">
+          <widget class="QTableView" name="TbV_TypeEmprunt"/>
+         </item>
+         <item row="1" column="1">
+          <widget class="QCommandLinkButton" name="Bt_AjouterTypeEmprunt">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3" rowspan="3">
+          <widget class="QTableView" name="TbV_LieuxLudo"/>
+         </item>
+         <item row="1" column="4">
+          <widget class="QCommandLinkButton" name="Bt_AjouterLieuxLudo">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCommandLinkButton" name="Bt_ModifierTypeEmprunt">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="4">
+          <widget class="QCommandLinkButton" name="Bt_ModifierLieuxLudo">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerTypeEmprunt">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="4">
+          <widget class="QCommandLinkButton" name="Bt_SpupprimerLieuxLudo">
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2" rowspan="4">
+          <spacer name="HS_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="4" column="0" colspan="5">
+          <spacer name="VS_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

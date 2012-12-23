@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>F_POSTIT</class>
+ <widget class="QWidget" name="F_POSTIT">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1092</width>
+    <height>590</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>0</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0" colspan="2">
+      <widget class="QPushButton" name="Bt_AjouterPostIt">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>180</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Ajouter nouveau Post-It</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt1">
+       <property name="text">
+        <string>Post-It 1</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt2">
+       <property name="text">
+        <string>Post-It 2</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="6" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt3">
+       <property name="text">
+        <string>Post-It 3</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="9" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt4">
+       <property name="text">
+        <string>Post-It 4</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt1">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(8, 222, 255);</string>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="3" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt2">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 211, 239);
+font: 8pt &quot;Arial&quot;;</string>
+       </property>
+       <property name="html">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="6" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt3">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(8, 222, 255);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="9" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt4">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 211, 239);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QPushButton" name="Bt_Valider1">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QPushButton" name="Bt_Annuler1">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="3">
+      <widget class="QPushButton" name="Bt_Valider2">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4">
+      <widget class="QPushButton" name="Bt_Annuler2">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="6">
+      <widget class="QPushButton" name="Bt_Valider3">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="7">
+      <widget class="QPushButton" name="Bt_Annuler3">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="9">
+      <widget class="QPushButton" name="Bt_Valider4">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="10">
+      <widget class="QPushButton" name="Bt_Annuler4">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt5">
+       <property name="text">
+        <string>Post-It 5</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt6">
+       <property name="text">
+        <string>Post-It 6</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="6" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt7">
+       <property name="text">
+        <string>Post-It 7</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="9" colspan="2">
+      <widget class="QLabel" name="Lb_PostIt8">
+       <property name="text">
+        <string>Post-It 8</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt5">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 211, 239);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="3" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt6">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(8, 222, 255);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="6" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt7">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(255, 211, 239);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="9" colspan="2">
+      <widget class="QTextEdit" name="TxE_PostIt8">
+       <property name="styleSheet">
+        <string notr="true">background-color: rgb(8, 222, 255);</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QPushButton" name="Bt_Valider5">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QPushButton" name="Bt_Annuler5">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QPushButton" name="Bt_Valider6">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="4">
+      <widget class="QPushButton" name="Bt_Annuler6">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="6">
+      <widget class="QPushButton" name="Bt_Valider7">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="7">
+      <widget class="QPushButton" name="Bt_Annuler7">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="9">
+      <widget class="QPushButton" name="Bt_Valider8">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="10">
+      <widget class="QPushButton" name="Bt_Annuler8">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" rowspan="7">
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>5</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="5" rowspan="7">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>5</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="0" column="8" rowspan="7">
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>5</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
+ <connections/>
+</ui>

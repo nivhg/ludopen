@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>F_MainWindow</class>
+ <widget class="QMainWindow" name="F_MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1024</width>
+    <height>768</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1024</width>
+    <height>768</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Lud'Open</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="ImagesIcones.qrc">
+    <normaloff>:/IconeLO.png</normaloff>:/IconeLO.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="QTabWidget" name="TbW_Main">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="contextMenuPolicy">
+       <enum>Qt::NoContextMenu</enum>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="currentIndex">
+       <number>6</number>
+      </property>
+      <widget class="QWidget" name="Membres">
+       <attribute name="title">
+        <string>Membres</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Membres"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ListeMembres">
+       <attribute name="title">
+        <string>Liste Membres</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_9">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_ListeMembres"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Jeux">
+       <attribute name="title">
+        <string>Jeux</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_8">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Jeux"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ListeJeux">
+       <attribute name="title">
+        <string>Liste jeux</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Layout_ListeJeux"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Emprunt">
+       <attribute name="title">
+        <string>Emprunt</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="Lay_Emprunt"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Retour">
+       <attribute name="title">
+        <string>Retour</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Retour"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Retards">
+       <attribute name="title">
+        <string>Retards</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Layout_Retards"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="admin">
+       <attribute name="title">
+        <string>Administration</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Admin">
+          <item>
+           <widget class="QSplitter" name="SP_Admin">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <widget class="QPushButton" name="Bt_Membre">
+             <property name="text">
+              <string>Membres</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_ListeMembres">
+             <property name="text">
+              <string>Liste Membres</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_Jeux">
+             <property name="maximumSize">
+              <size>
+               <width>110</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Jeux</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_FournisseurEditeur">
+             <property name="text">
+              <string>Fournisseur
+-
+Editeur</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_Abonnements">
+             <property name="text">
+              <string>Abonnements
+-
+Cotisations</string>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_Statistiques">
+             <property name="text">
+              <string>Statistiques</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="PostIt">
+       <attribute name="title">
+        <string>Post-It</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_PostIt"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1024</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFichier">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="title">
+     <string>Fichier</string>
+    </property>
+    <addaction name="Menu_Fichier_Quitter"/>
+   </widget>
+   <widget class="QMenu" name="menuAide">
+    <property name="title">
+     <string>Aide</string>
+    </property>
+    <addaction name="Menu_Aide_Aide"/>
+    <addaction name="separator"/>
+    <addaction name="Menu_Aide_Propos_LudOpen"/>
+   </widget>
+   <widget class="QMenu" name="menuJeux">
+    <property name="title">
+     <string>&amp;Imprimer</string>
+    </property>
+    <addaction name="Menu_Jeux_Imprimer_Etiquette"/>
+    <addaction name="Menu_Jeux_Imprimer_Fiche_Complete"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edition">
+    <property name="title">
+     <string>Édition</string>
+    </property>
+    <addaction name="Menu_Edition_Preferences"/>
+   </widget>
+   <addaction name="menuFichier"/>
+   <addaction name="menu_Edition"/>
+   <addaction name="menuJeux"/>
+   <addaction name="menuAide"/>
+  </widget>
+  <action name="Menu_Fichier_Quitter">
+   <property name="text">
+    <string>Quitter</string>
+   </property>
+  </action>
+  <action name="Menu_Aide_Propos_LudOpen">
+   <property name="text">
+    <string>Á propos de LudOpen ...</string>
+   </property>
+  </action>
+  <action name="Menu_Jeux_Imprimer_Etiquette">
+   <property name="text">
+    <string>Imprimer étiquette </string>
+   </property>
+  </action>
+  <action name="Menu_Jeux_Imprimer_Fiche_Complete">
+   <property name="text">
+    <string>Imprimer fiche complète</string>
+   </property>
+  </action>
+  <action name="Menu_Edition_Preferences">
+   <property name="text">
+    <string>Préférences</string>
+   </property>
+  </action>
+  <action name="Menu_Aide_Aide">
+   <property name="text">
+    <string>Aide</string>
+   </property>
+  </action>
+  <action name="actionAjouter_un_post_it">
+   <property name="text">
+    <string>Ajouter un post-it</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
+ <connections/>
+</ui>

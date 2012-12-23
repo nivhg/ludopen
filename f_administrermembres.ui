@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>F_AdministrerMembres</class>
+ <widget class="QWidget" name="F_AdministrerMembres">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>824</width>
+    <height>561</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_14">
+     <property name="text">
+      <string>Type :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1" colspan="4">
+    <widget class="QComboBox" name="CBx_Type"/>
+   </item>
+   <item row="1" column="5" colspan="2">
+    <widget class="QLabel" name="label_13">
+     <property name="text">
+      <string>Titre :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="7" colspan="2">
+    <widget class="QComboBox" name="CBx_Titre"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Nom :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="4">
+    <widget class="QLineEdit" name="Le_Nom"/>
+   </item>
+   <item row="2" column="5" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Rue :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="7" rowspan="2" colspan="2">
+    <widget class="QTextEdit" name="textEdit"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Prénom :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="4">
+    <widget class="QLineEdit" name="Le_Prenom">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Tél fix :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1" colspan="4">
+    <widget class="QLineEdit" name="Le_TelFix"/>
+   </item>
+   <item row="4" column="5" colspan="2">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Code Postal :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="7" colspan="2">
+    <widget class="QLineEdit" name="Le_CP"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Tél mob :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1" colspan="4">
+    <widget class="QLineEdit" name="lineEdit_7"/>
+   </item>
+   <item row="5" column="5" colspan="2">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Ville :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="7" colspan="2">
+    <widget class="QLineEdit" name="lineEdit_4"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Fax :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1" colspan="4">
+    <widget class="QLineEdit" name="lineEdit_8"/>
+   </item>
+   <item row="6" column="5" colspan="2">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Email :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="7" colspan="2">
+    <widget class="QLineEdit" name="lineEdit_5"/>
+   </item>
+   <item row="7" column="0" colspan="4">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Nombre de jeux autorisés :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="4">
+    <widget class="QSpinBox" name="spinBox"/>
+   </item>
+   <item row="7" column="5" colspan="3">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>Date de naissance :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="8">
+    <widget class="QDateEdit" name="dateEdit"/>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>Remarque</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1" colspan="8">
+    <widget class="QPlainTextEdit" name="plainTextEdit"/>
+   </item>
+   <item row="9" column="3" colspan="3">
+    <widget class="QCommandLinkButton" name="commandLinkButton">
+     <property name="text">
+      <string>Valider</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../valider.png</normaloff>../valider.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="6" colspan="3">
+    <widget class="QCommandLinkButton" name="commandLinkButton_2">
+     <property name="text">
+      <string>Annulée</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../annuler.png</normaloff>../annuler.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="7" colspan="2">
+    <widget class="QCommandLinkButton" name="Bt_Supprimer">
+     <property name="text">
+      <string>Supprimer Membre</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../supprimer.png</normaloff>../supprimer.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2" colspan="3">
+    <widget class="QCommandLinkButton" name="commandLinkButton_23">
+     <property name="text">
+      <string>Modifier Membre</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QCommandLinkButton" name="commandLinkButtonkkljblkjb">
+     <property name="text">
+      <string>Ajouter Membre</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../ajouter.png</normaloff>../ajouter.png</iconset>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
