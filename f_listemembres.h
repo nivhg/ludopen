@@ -8,8 +8,8 @@
 #include <QTableView>
 #include <QPushButton>
 #include <QLabel>
+#include <QStandardItem>
 #include "TitreType.h"
-
 
 namespace Ui {
 class F_ListeMembres;
@@ -124,7 +124,7 @@ private:
     QVector<Titre> VectorTitre ;             //! Vecteur contenant la liste des titres (id, nom)
     QVector<int> VecteurListeMembres ;       //! Vecteur conteant la liste des id des membres
 
-
+    QStandardItemModel ModeleMembres ;
 
     QDialog * pFenetreAbonnements ;                     //! Fenêtre
     QTableView * pListeAbonnements ;        //! l

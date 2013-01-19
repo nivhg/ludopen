@@ -27,6 +27,12 @@
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
      <widget class="QTabWidget" name="TbW_Main">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>729</height>
+       </size>
+      </property>
       <property name="maximumSize">
        <size>
         <width>16777215</width>
@@ -57,7 +63,7 @@
       </widget>
       <widget class="QWidget" name="ListeMembres">
        <attribute name="title">
-        <string>Liste Membres</string>
+        <string>Liste membres</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_9">
         <item row="0" column="0">
@@ -102,6 +108,23 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="Lay_Retour"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="ListeReservations">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <attribute name="title">
+        <string>Liste réservations</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_ListeReservations">
+          <property name="sizeConstraint">
+           <enum>QLayout::SetMaximumSize</enum>
+          </property>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -213,7 +236,7 @@ Cotisations</string>
     <addaction name="separator"/>
     <addaction name="Menu_Aide_Propos_LudOpen"/>
    </widget>
-   <widget class="QMenu" name="menuJeux">
+   <widget class="QMenu" name="menuImprimer">
     <property name="title">
      <string>&amp;Imprimer</string>
     </property>
@@ -228,8 +251,8 @@ Cotisations</string>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menu_Edition"/>
-   <addaction name="menuJeux"/>
    <addaction name="menuAide"/>
+   <addaction name="menuImprimer"/>
   </widget>
   <action name="Menu_Fichier_Quitter">
    <property name="text">

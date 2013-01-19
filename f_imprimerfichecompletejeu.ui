@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Impression de la fiche complête d'un jeu</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -331,14 +331,22 @@
      <item>
       <widget class="QCommandLinkButton" name="Bt_Imprimer">
        <property name="text">
-        <string>Imprimer</string>
+        <string>Imprimer cette fiche</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QCommandLinkButton" name="Bt_Quitter">
        <property name="text">
-        <string>Quitter</string>
+        <string>Retour au jeu</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
        </property>
       </widget>
      </item>
@@ -346,6 +354,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
  <connections/>
 </ui>

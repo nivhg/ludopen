@@ -40,50 +40,45 @@ Q_OBJECT
 
 
 public:
-// METHODEs -----------------------------------------------------------------
-// CONSTRUCTEURs et DESTRUCTEURs
+    //! Permet d'initialiser tous les attributs de la classe et les 'connect' avec le socket.
+    Courriel(const QString sAdresseCourriel, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps) ;
+    //! Détruit les objets créé par le pointeur
+    ~Courriel() ;
 
-//! Permet d'initialiser tous les attributs de la classe et les 'connect' avec le socket.
-Courriel(const QString sAdresseCourriel, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps) ;
-//! Détruit les objets créé par le pointeur
-~Courriel() ;
-
-//! Permet la connexion au serveur. Indique que l'on rentre dans l'étape d'initialisation
-void EnvoyerUnMessage() ;
-
+    //! Permet la connexion au serveur. Indique que l'on rentre dans l'étape d'initialisation
+    void EnvoyerUnMessage() ;
 
 private slots:
-//! Indique qu'il y a une erreur lors de la connection et quelle est cette erreur.
-void on_ErreurRecu(QAbstractSocket::SocketError ErreurSocket) ;
-//! Indique la deconnexion du serveur
-void on_deconnecte() ;
-//! Indique la connexion au serveur
-void on_connecte() ;
-//! Permet l'envoie du mail. Est appelé a chaque fois qu'un étape est validé.
-void on_PretALire() ;
+    //! Indique qu'il y a une erreur lors de la connection et quelle est cette erreur.
+    void slot_ErreurRecu(QAbstractSocket::SocketError ErreurSocket) ;
+    //! Indique la deconnexion du serveur
+    void slot_Deconnecte() ;
+    //! Indique la connexion au serveur
+    void slot_Connecte() ;
+    //! Permet l'envoie du mail. Est appelé a chaque fois qu'un étape est validé.
+    void slot_PretALire() ;
 
 private:
-// METHODEs -----------------------------------------------------------------
-//! Permet de lancer le thread.
-void run() ;
+    // METHODEs -----------------------------------------------------------------
+    //! Permet de lancer le thread.
+    void run() ;
 
-// ATTRIBUTs ----------------------------------------------------------------
-QString sMessage ;///< Contient le message à envoyer au serveur
-QTextStream *oFlux ; ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
-QTcpSocket *oSocket ; ///< Pointeur sur le socket
-QString sFrom ; ///< Email de l'expediteur
-QString sTo ; ///< Email du destinataire
-QString sAdresseSmtp ; ///< Contient l'adresse du serveur smtp
-int nPort ; ///< Contient le numéro du port
-Etape EtapeConnexion ; ///< Contient l'étape ou en rendu la connexion
+    // ATTRIBUTs ----------------------------------------------------------------
+    QString sMessage ;///< Contient le message à envoyer au serveur
+    QTextStream *oFlux ; ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
+    QTcpSocket *oSocket ; ///< Pointeur sur le socket
+    QString sFrom ; ///< Email de l'expediteur
+    QString sTo ; ///< Email du destinataire
+    QString sAdresseSmtp ; ///< Contient l'adresse du serveur smtp
+    int nPort ; ///< Contient le numéro du port
+    Etape EtapeConnexion ; ///< Contient l'étape ou en rendu la connexion
 
 signals:
-//! Signal indiquand qu'il faut détruire le thread
-void SignalFermerThread( Courriel * ) ;
-//! Signal indiquand que le mail a bien été envoyé et qu'il faut détruire le thread
-void SignalMailEnvoyer( Courriel * ) ;
-//! Signal indiquand qu'il y a une erreur lors de la connexion
-void SignalErreur( QString ) ;
-
+    //! Signal indiquand qu'il faut détruire le thread
+    void SignalFermerThread( Courriel * ) ;
+    //! Signal indiquand que le mail a bien été envoyé et qu'il faut détruire le thread
+    void SignalMailEnvoyer( Courriel * ) ;
+    //! Signal indiquand qu'il y a une erreur lors de la connexion
+    void SignalErreur( QString ) ;
 } ;
 #endif

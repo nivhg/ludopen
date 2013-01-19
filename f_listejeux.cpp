@@ -6,7 +6,8 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/2012
  *  @version      0.1
- *  @date         15/12/2012
+ *  @date         19/01/2013
+ *  @author       William SOREL
  *
  *  Permet de consulter la liste de tout les jeux ainsi que de faire un filtre par crit?res
  *
@@ -35,20 +36,38 @@ F_ListeJeux::F_ListeJeux(QWidget *parent) :
 {
     ui->setupUi(this);
     
-    /////////////////////////////////////////////////////////
     //////////////////Création table view //////////////////
-    ///////////////////////////////////////////////////////
-    
-    //Création d'un mod?le pour le TableView des jeux
+
+    //Création d'un modèle pour le TableView des jeux
     this->ModelJeu = new QStandardItemModel() ;
-    //Associe le mod?le au TableView
+    //Associe le modèle au TableView
     ui->TbV_Recherche->setModel(this->ModelJeu);
     // Mise en lecture seule
     ui->TbV_Recherche->setEditTriggers(0);
     // Initialise la table view avec tous les jeux
     //on_LE_Nom_textChanged("") ;
-    //Affiche le numéro des lignes dans le tableau
-    ui->TbV_Recherche->verticalHeader()->setVisible(true);
+    //Affiche les noms des colonnes dans le tableau
+    ui->TbV_Recherche->horizontalHeader()->setVisible(true);
+    // Permettre le tri des colonnes
+    ui->TbV_Recherche->setSortingEnabled(true);
+    //Indique le nom des colones
+    this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+    this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+    this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
+    this->ModelJeu->setHorizontalHeaderItem(3, new QStandardItem("Nbr Joueurs Min"));
+    this->ModelJeu->setHorizontalHeaderItem(4, new QStandardItem("Nbr Joueurs Max"));
+    this->ModelJeu->setHorizontalHeaderItem(5, new QStandardItem("Age Min"));
+    this->ModelJeu->setHorizontalHeaderItem(6, new QStandardItem("Age Max"));
+    this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Date Acquisition"));
+    //impose une taille aux colones
+    ui->TbV_Recherche->setColumnWidth(0,50);
+    ui->TbV_Recherche->setColumnWidth(1,200);
+    ui->TbV_Recherche->setColumnWidth(2,100);
+    ui->TbV_Recherche->setColumnWidth(3,120);
+    ui->TbV_Recherche->setColumnWidth(4,120);
+    ui->TbV_Recherche->setColumnWidth(5,80);
+    ui->TbV_Recherche->setColumnWidth(6,80);
+    ui->TbV_Recherche->setColumnWidth(7,120);
 
     //Rempli tous les crit?res combobox
     this->RAZCriteres();
@@ -71,7 +90,7 @@ F_ListeJeux::~F_ListeJeux()
 
 void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
 {
-    unsigned int NumeroLigne (0);
+    int NumeroLigne (0);
     QString NomJeu=arg1;
 
     if(NomJeu.size()>= 2)
@@ -84,28 +103,8 @@ void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
         RequeteRechercheJeu.bindValue(":NomJeu",NomJeu);
         RequeteRechercheJeu.exec();
 
-        //On vide le mod?le
-        this->ModelJeu->clear();
-        //Indique le nombre de colones puis leurs noms
-        this->ModelJeu->setColumnCount(8);
-        this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
-        this->ModelJeu->setHorizontalHeaderItem(3, new QStandardItem("Nbr Joueurs Min"));
-        this->ModelJeu->setHorizontalHeaderItem(4, new QStandardItem("Nbr Joueurs Max"));
-        this->ModelJeu->setHorizontalHeaderItem(5, new QStandardItem("Age Min"));
-        this->ModelJeu->setHorizontalHeaderItem(6, new QStandardItem("Age Max"));
-        this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Date Achat"));
-        
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,50);
-        ui->TbV_Recherche->setColumnWidth(1,200);
-        ui->TbV_Recherche->setColumnWidth(2,100);
-        ui->TbV_Recherche->setColumnWidth(3,120);
-        ui->TbV_Recherche->setColumnWidth(4,120);
-        ui->TbV_Recherche->setColumnWidth(5,80);
-        ui->TbV_Recherche->setColumnWidth(6,80);
-        ui->TbV_Recherche->setColumnWidth(7,120);
+        //On vide le modèle
+        this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
 
         //Tant qu'il y a des jeux dans la table jeux,
         while(RequeteRechercheJeu.next())
@@ -121,6 +120,7 @@ void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
             this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toString() ));
             NumeroLigne++;
          }
+        ui->Lb_Resultat->setNum( NumeroLigne ) ;
     }
 
     //RecupererContenuIndex() ;
@@ -306,45 +306,26 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     
     
-    unsigned int NumeroLigne (0);
-    NumeroLigne = 0 ;    
-        //On vide le mod?le
-        this->ModelJeu->clear();
-        //Indique le nombre de colones puis leurs noms
-        this->ModelJeu->setColumnCount(8);
-        this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
-        this->ModelJeu->setHorizontalHeaderItem(3, new QStandardItem("Nbr Joueurs Min"));
-        this->ModelJeu->setHorizontalHeaderItem(4, new QStandardItem("Nbr Joueurs Max"));
-        this->ModelJeu->setHorizontalHeaderItem(5, new QStandardItem("Age Min"));
-        this->ModelJeu->setHorizontalHeaderItem(6, new QStandardItem("Age Max"));
-        this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Date Achat"));
-        
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,50);
-        ui->TbV_Recherche->setColumnWidth(1,200);
-        ui->TbV_Recherche->setColumnWidth(2,100);
-        ui->TbV_Recherche->setColumnWidth(3,120);
-        ui->TbV_Recherche->setColumnWidth(4,120);
-        ui->TbV_Recherche->setColumnWidth(5,80);
-        ui->TbV_Recherche->setColumnWidth(6,80);
-        ui->TbV_Recherche->setColumnWidth(7,120);    
-    
-        //Tant qu'il y a des jeux dans la table jeux,
-        while(RequeteFiltreJeux.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteFiltreJeux.value(13).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteFiltreJeux.value(12).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteFiltreJeux.value(11).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(RequeteFiltreJeux.value(5).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteFiltreJeux.value(6).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteFiltreJeux.value(7).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteFiltreJeux.value(8).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteFiltreJeux.value(0).toString() ));
-            NumeroLigne++;
-         }
+    int NumeroLigne (0);
+
+    //On vide le modèle
+    this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
+
+    //Tant qu'il y a des jeux dans la table jeux,
+    while(RequeteFiltreJeux.next())
+    {
+        //on ajoute une nouvelle ligne du table view
+        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteFiltreJeux.value(13).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteFiltreJeux.value(12).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteFiltreJeux.value(11).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(RequeteFiltreJeux.value(5).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteFiltreJeux.value(6).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteFiltreJeux.value(7).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteFiltreJeux.value(8).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteFiltreJeux.value(0).toString() ));
+        NumeroLigne++;
+     }
+     ui->Lb_Resultat->setNum( NumeroLigne ) ;
 }
 
 /**
@@ -714,31 +695,12 @@ void F_ListeJeux::RAZCriteres()
     //     REMPLIR LE TABLEAU AVEC TOUS LES JEUX     //
     ///////////////////////////////////////////////////
     QSqlQuery RequeteRechercheJeu;
-    unsigned int NumeroLigne =0;
+    int NumeroLigne =0;
 
     RequeteRechercheJeu.exec("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, DateAchat FROM jeux ORDER BY NomJeu");
 
-    //On vide le mod?le
-    this->ModelJeu->clear();
-    //Indique le nombre de colones puis leurs noms
-    this->ModelJeu->setColumnCount(7);
-    this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-    this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-    this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
-    this->ModelJeu->setHorizontalHeaderItem(3, new QStandardItem("Nbr Joueurs Min"));
-    this->ModelJeu->setHorizontalHeaderItem(4, new QStandardItem("Nbr Joueurs Max"));
-    this->ModelJeu->setHorizontalHeaderItem(5, new QStandardItem("Age Min"));
-    this->ModelJeu->setHorizontalHeaderItem(6, new QStandardItem("Age Max"));
-    this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Date Acquisition"));
-    //impose une taille aux colones
-    ui->TbV_Recherche->setColumnWidth(0,50);
-    ui->TbV_Recherche->setColumnWidth(1,200);
-    ui->TbV_Recherche->setColumnWidth(2,100);
-    ui->TbV_Recherche->setColumnWidth(3,120);
-    ui->TbV_Recherche->setColumnWidth(4,120);
-    ui->TbV_Recherche->setColumnWidth(5,80);
-    ui->TbV_Recherche->setColumnWidth(6,80);
-    ui->TbV_Recherche->setColumnWidth(7,120);
+    //On vide le modèle
+    this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
 
     //Tant qu'il y a des jeux dans la table jeux,
     while(RequeteRechercheJeu.next())
@@ -754,5 +716,7 @@ void F_ListeJeux::RAZCriteres()
         this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toString() ));
         NumeroLigne++;
     }
+
+    ui->Lb_Resultat->setNum( NumeroLigne ) ;
     qDebug()<<"F_ListeJeux::RAZCriteres() - Fin";
 }

@@ -44,7 +44,8 @@ SOURCES += \
     f_popupclesttem.cpp \
     f_clesttem.cpp \
     f_imprimerfichecompletejeu.cpp \
-    f_imprimeretiquettejeu.cpp
+    f_imprimeretiquettejeu.cpp \
+    f_listereservations.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -78,7 +79,8 @@ HEADERS  += \
     f_popupclesttem.h \
     f_clesttem.h \
     f_imprimerfichecompletejeu.h \
-    f_imprimeretiquettejeu.h
+    f_imprimeretiquettejeu.h \
+    f_listereservations.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -111,6 +113,7 @@ FORMS    += \
     f_clesttem.ui \
     f_imprimerfichecompletejeu.ui \
     f_imprimeretiquettejeu.ui \
+    f_listereservations.ui
 
 RESOURCES += \
     ImagesIcones.qrc

@@ -80,22 +80,22 @@
      <item>
       <widget class="QCommandLinkButton" name="Bt_Imprimer">
        <property name="text">
-        <string>Imprimer</string>
+        <string>Imprimer cette étiquette</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>../imprimer.jpg</normaloff>../imprimer.jpg</iconset>
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QCommandLinkButton" name="Bt_Quitter">
        <property name="text">
-        <string>Quitter</string>
+        <string>Retour au jeu</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normaloff>debug/annuler.png</normaloff>debug/annuler.png</iconset>
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
        </property>
       </widget>
      </item>
@@ -103,6 +103,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -11,7 +11,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //qDebug()<<"Constructeur F_MainWindow = Début";
     ui->centralWidget->setLayout(ui->gridLayout);
 
-    ui->menuJeux->setEnabled(false);
+    ui->menuImprimer->setEnabled(false);
     ui->Menu_Fichier_Quitter->setShortcut(tr("Ctrl+Q"));
     ui->Menu_Edition_Preferences->setShortcut(tr("Ctrl+P"));
     ui->Menu_Aide_Aide->setShortcut(tr("F1"));
@@ -34,6 +34,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pMembres=new F_Membres (this->pRechercheMembres, false, this->ui->Membres);
     this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
     this->pRetards=new F_Retards (this->ui->Retards);
+    this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
 
     //Widget-admin/////////
@@ -50,6 +51,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
     this->pRechercheMembresAdmin->setLayout(ui->Lay_Admin);
     this->pAdministrerMembres->setVisible(true);
+
 
     ////Liste Membres//////
     this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
@@ -93,6 +95,9 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //Emprunt
     this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
 
+    //Liste Réservations
+    ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
+
     //Retour
     this->ui->Lay_Retour->addWidget(this->pRetour);
 
@@ -111,7 +116,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( on_DoubleClic_ListeJeux(QString) )) ;
 
     // Afficher les post-it au démarage de l'application
-    ui->TbW_Main->setCurrentIndex(8);
+    ui->TbW_Main->setCurrentIndex(9);
 
     //qDebug()<<"Constructeur F_MainWindow = OK";
 }
@@ -211,7 +216,6 @@ void F_MainWindow::on_Bt_ListeMembres_clicked()
     this->pAbonnements->setVisible(false);
     this->pRechercheMembresAdmin->setVisible(false);
     this->pStatistiques->setVisible(false) ;
-
     this->pListeMembresAdmin->setVisible( true ) ;
 }
 
@@ -221,7 +225,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     switch(index)
     {
     case 0 : //Membre
-        ui->menuJeux->setEnabled(false);
+        ui->menuImprimer->setEnabled(false);
         this->pRechercheMembres->MaJListeMembres() ;
         this->pRechercheMembres->AfficherListe() ;
         this->pMembres->MaJTitre() ;
@@ -237,21 +241,21 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
         {
-            ui->menuJeux->setEnabled(true);
+            ui->menuImprimer->setEnabled(true);
         }
         //this->pJeux->ActualiserJeux();
         break;
     case 3 : //Liste jeux
-        ui->menuJeux->setEnabled(false);
+        ui->menuImprimer->setEnabled(false);
         break;
     case 4 : //Emprunt
-        ui->menuJeux->setEnabled(false);
+        ui->menuImprimer->setEnabled(false);
         this->pEmprunt->ActualiserJeu();
         this->pEmprunt->ActualiserMembre();
         break;
     case 5 : //Retour
         // Désactive le menu Jeux
-        ui->menuJeux->setEnabled(false);
+        ui->menuImprimer->setEnabled(false);
         // actualise les infos afficher sur le membre sélectionné actuellement
         this->pRetour->ActualiserMembre();
         // actualise les jeux à retourner pour le membre sélectionné actuellement
@@ -259,13 +263,18 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // Remet à jour la liste de membres ayant un retour à faire
         this->pRetour->ActualiserListeEmprunteurs();
         break;
-    case 6 : //retards
-        ui->menuJeux->setEnabled(false);
+    case 6 : //Liste Réservations
+        // Désactive le menu Jeux
+        ui->menuImprimer->setEnabled(false);
+        this->pListeReservations->AffichageListe() ;
+        break;
+    case 7 : //retards
+        ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
         break;
-    case 7 : //Administration
+    case 8 : //Administration
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
-        ui->menuJeux->setEnabled(false);
+        ui->menuImprimer->setEnabled(false);
         this->pRechercheMembresAdmin->MaJListeMembres() ;
         this->pRechercheMembresAdmin->AfficherListe() ;
         this->pListeMembresAdmin->AffichageListe() ;
@@ -273,8 +282,8 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;
         break;
-    case 8 : //PostIt
-        ui->menuJeux->setEnabled(false);
+    case 9 : //PostIt
+        ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
         break;
     }

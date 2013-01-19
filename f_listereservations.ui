@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>F_ListeMembres</class>
- <widget class="QWidget" name="F_ListeMembres">
+ <class>F_ListeReservations</class>
+ <widget class="QWidget" name="F_ListeReservations">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="5">
+   <item row="1" column="0" colspan="3">
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
       <size>
@@ -35,19 +35,19 @@
       <item row="0" column="0">
        <layout class="QGridLayout" name="GLay2">
         <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_Type">
+         <widget class="QCheckBox" name="ChBx_Lieux">
           <property name="text">
-           <string>Type</string>
+           <string>Lieu</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Type"/>
+         <widget class="QComboBox" name="CBx_Lieu"/>
         </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="ChBx_Nom">
           <property name="text">
-           <string>Nom                </string>
+           <string>Nom membre</string>
           </property>
          </widget>
         </item>
@@ -64,77 +64,10 @@
         <item row="2" column="1" colspan="2">
          <widget class="QLineEdit" name="LE_Prenom"/>
         </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="ChBx_Ville">
-          <property name="text">
-           <string>Ville                 </string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QLineEdit" name="LE_Ville"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="ChBx_CodePostal">
-          <property name="text">
-           <string>Code Postal</string>
-          </property>
-         </widget>
-        </item>
-        <item row="4" column="1" colspan="2">
-         <widget class="QLineEdit" name="LE_CodePostal"/>
-        </item>
        </layout>
       </item>
       <item row="0" column="2">
        <layout class="QGridLayout" name="GLay3">
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="ChBx_NbreRetard">
-          <property name="text">
-           <string>Nbre Retard(s) </string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QSpinBox" name="SBx_NbreRetard"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="ChBx_Abonnements">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Aucun abonnement</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="ChBx_AncienMembre">
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>Inclure Ancien Membre</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_Titre">
-          <property name="text">
-           <string>Titre</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="ChBx_Retard">
-          <property name="text">
-           <string>Jeux en retard</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="CBx_Retards">
           <item>
@@ -167,6 +100,30 @@
         <item row="0" column="1" colspan="2">
          <widget class="QComboBox" name="CBx_Titre"/>
         </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="ChBx_NbreRetard">
+          <property name="text">
+           <string>Nbre Retard(s) </string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="ChBx_Retard">
+          <property name="text">
+           <string>Jeux en retard</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="ChBx_Titre">
+          <property name="text">
+           <string>Titre</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QSpinBox" name="SBx_NbreRetard"/>
+        </item>
        </layout>
       </item>
       <item row="0" column="4">
@@ -174,14 +131,14 @@
         <item row="0" column="0" colspan="2">
          <layout class="QHBoxLayout" name="HLay4">
           <item>
-           <widget class="QCheckBox" name="ChBx_DateInscription">
+           <widget class="QCheckBox" name="ChBx_DateReservation">
             <property name="text">
-             <string>Date inscription de</string>
+             <string>Date réservation</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="DtE_DI_Debut">
+           <widget class="QDateEdit" name="DtE_DateResa_Debut">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -198,7 +155,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="DtE_DI_Fin">
+           <widget class="QDateEdit" name="DtE_DateResa_Fin">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -334,8 +291,39 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="5">
-    <widget class="QTableView" name="TbW_ListeMembre">
+   <item row="3" column="2">
+    <widget class="QCommandLinkButton" name="Bt_SupprimerListe">
+     <property name="text">
+      <string>Supprimer les réservations sélectionnées</string>
+     </property>
+     <property name="icon">
+      <iconset resource="ImagesIcones.qrc">
+       <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="Lb_Resultat">
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="Lb_NombreResultat">
+     <property name="maximumSize">
+      <size>
+       <width>130</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Nombre de résultats :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QTableView" name="TbW_ListeReservations">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -351,51 +339,6 @@
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>
-    </widget>
-   </item>
-   <item row="3" column="3">
-    <widget class="QPushButton" name="Bt_DeseletionListe">
-     <property name="text">
-      <string>Tous désélectionner</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="4">
-    <widget class="QCommandLinkButton" name="Bt_SupprimerListe">
-     <property name="text">
-      <string>Supprimer ces membres sélectionnés</string>
-     </property>
-     <property name="icon">
-      <iconset resource="ImagesIcones.qrc">
-       <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="Lb_Resultat">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="QPushButton" name="Bt_SelectionListe">
-     <property name="text">
-      <string>Sélectionner tous ces membres</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="Lb_NombreResultat">
-     <property name="maximumSize">
-      <size>
-       <width>130</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Nombre de résultats :</string>
-     </property>
     </widget>
    </item>
   </layout>

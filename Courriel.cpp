@@ -34,10 +34,10 @@ Courriel::Courriel( const QString sAdresseSmtp, const int nPort, const QString s
     this->oSocket = new QTcpSocket( NULL ) ;
 
     //connect avec le socket-----------------------------------------------------------------------------------------------
-    connect( this->oSocket, SIGNAL( readyRead() ), this, SLOT( on_PretALire() ) ) ;
-    connect( this->oSocket, SIGNAL( connected() ), this, SLOT( on_connecte() ) ) ;
-    connect( this->oSocket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( on_ErreurRecu( QAbstractSocket::SocketError ) ) ) ;
-    connect( this->oSocket, SIGNAL( disconnected() ), this, SLOT( on_deconnecte() ) ) ;
+    connect( this->oSocket, SIGNAL( readyRead() ), this, SLOT( slot_PretALire() ) ) ;
+    connect( this->oSocket, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
+    connect( this->oSocket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecu( QAbstractSocket::SocketError ) ) ) ;
+    connect( this->oSocket, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
 
     //Récupération des données passées en paramètre
     this->sFrom = sFrom ;
@@ -102,11 +102,11 @@ void Courriel::run()
  *  @test   Voir la procédure dans le fichier associé.
  *  @see    afficherAttribut
  */
-void Courriel::on_ErreurRecu(QAbstractSocket::SocketError ErreurSocket)
+void Courriel::slot_ErreurRecu(QAbstractSocket::SocketError ErreurSocket)
 {
     if (ErreurSocket != QAbstractSocket::RemoteHostClosedError)
     {
-        qDebug() << "Courriel::on_ErreurRecu :  " << ErreurSocket ;
+        qDebug() << "Courriel::slot_ErreurRecu :  " << ErreurSocket ;
         emit( this->SignalErreur( "Impossible de se connecter au serveur smtp. Veuillez vérifier les paramètres de connexion." ) ) ;
         emit( this->SignalFermerThread( this ) ) ;
     }
@@ -120,7 +120,7 @@ void Courriel::on_ErreurRecu(QAbstractSocket::SocketError ErreurSocket)
 /** Indique que il y a une deconnexion avec le serveur
  *  @test   Voir la procédure dans le fichier associé.
  */
-void Courriel::on_deconnecte()
+void Courriel::slot_Deconnecte()
 {
     qDebug() << "disconneted" ;
 }
@@ -128,7 +128,7 @@ void Courriel::on_deconnecte()
 /** Indique que il y a une connexion avec le serveur
  *  @test   Voir la procédure dans le fichier associé.
  */
-void Courriel::on_connecte()
+void Courriel::slot_Connecte()
 {
     qDebug() << "Connecté " ;
 }
@@ -136,7 +136,7 @@ void Courriel::on_connecte()
 /** Permet d'exécuter les différentes étapes pour l'envoie d'un mail
  *  @test   Voir la procédure dans le fichier associé.
  */
-void Courriel::on_PretALire()
+void Courriel::slot_PretALire()
 {
     QString sReponseDeLigne ;
     //Attente de la réponse

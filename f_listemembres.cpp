@@ -34,6 +34,27 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
 {
     ui->setupUi(this);
 
+    //Affiche les noms des colonnes dans le tableau
+    ui->TbW_ListeMembre->horizontalHeader()->setVisible(true);
+    ui->TbW_ListeMembre->setModel(&ModeleMembres) ;
+    ui->TbW_ListeMembre->setEditTriggers(QAbstractItemView::SelectedClicked);
+    // Permettre le tri des colonnes
+    ui->TbW_ListeMembre->setSortingEnabled(true);
+    //Mettre un nom pour toutes les colonnes
+    ModeleMembres.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 1, new QStandardItem( "Type" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 2, new QStandardItem( "Titre" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 3, new QStandardItem( "Nom" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 4, new QStandardItem( "Prénom" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 5, new QStandardItem( "Ville" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 6, new QStandardItem( "Code" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 7, new QStandardItem( "Téléphone" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 8, new QStandardItem( "Mobile" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 9, new QStandardItem( "eMail" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "Nbre de Retard" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Fin Cotisation" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 12, new QStandardItem( "Crédits restant" ) ) ;
+
     this->bAdmin = bAdmin ;
     if( this->bAdmin == true )
     {
@@ -87,27 +108,16 @@ F_ListeMembres::~F_ListeMembres()
 void F_ListeMembres::TousSelectionner( bool bSelection )
 {
     ui->ChBx_Type->setChecked( bSelection ) ;
-
     ui->ChBx_Titre->setChecked( bSelection ) ;
-
     ui->ChBx_Nom->setChecked( bSelection ) ;
-
     ui->ChBx_Prenom->setChecked( bSelection ) ;
-
     ui->ChBx_Ville->setChecked( bSelection ) ;
-
     ui->ChBx_CodePostal->setChecked( bSelection ) ;
-
     ui->ChBx_NbreRetard->setChecked( bSelection ) ;
-
     ui->ChBx_AncienMembre->setChecked( bSelection ) ;
-
     ui->ChBx_DateInscription->setChecked( bSelection ) ;
-
     ui->ChBx_DateNaissance->setChecked( bSelection ) ;
-
     ui->ChBx_Cotisation->setChecked( bSelection ) ;
-
     ui->ChBx_Abonnements->setChecked( bSelection ) ;
 }
 
@@ -262,12 +272,6 @@ bool F_ListeMembres::AffichageListe()
     QStandardItem * item ;
 
 
-    QStandardItemModel * modele = new QStandardItemModel() ;
-    ui->TbW_ListeMembre->setModel(modele) ;
-    ui->TbW_ListeMembre->setEditTriggers(0) ;
-    ui->TbW_ListeMembre->setEditTriggers(QAbstractItemView::SelectedClicked);
-
-
     sRequeteSELECTFROM = "SELECT membres.IdMembre, membres.TitreMembre_IdTitreMembre ,membres.TypeMembres_IdTypeMembres ,membres.Nom, membres.Prenom, membres.Ville, membres.CodeMembre, membres.Telephone, membres.Mobile, membres.Email, membres.NbreRetard, membres.DateInscription FROM membres" ;
     sRequeteWHERE = "WHERE" ;
 
@@ -343,7 +347,6 @@ bool F_ListeMembres::AffichageListe()
             sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )  + "' AND IdMembre=Membres_IdMembre AND" ;
             break ;
 
-
         case 2 :
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" ) + "' AND IdMembre=Membres_IdMembre AND" ;
@@ -351,34 +354,18 @@ bool F_ListeMembres::AffichageListe()
         }
     }
 
+    // Vire le dernier mot AND dans la requête WHERE
     sRequeteWHERE.remove(sRequete.size()-3, 5) ;
     sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdMembre ORDER BY IdMembre ASC" ;
 
     // qDebug() << sRequete ;
 
-    //Exectution de la requête
+    //Exécution de la requête
     if( query.exec(sRequete) )
     {
-        /*Creation des caractristiques du tableau : -Nombre de colonnes
-                                                     -Nom des colonnes
-                                                     -Nombre de lignes*/
         this->VecteurListeMembres.clear() ;
-
-        modele->setColumnCount( 7 ) ;
-        modele->setRowCount( query.size() ) ;
-        modele->setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
-        modele->setHorizontalHeaderItem( 1, new QStandardItem( "Type" ) ) ;
-        modele->setHorizontalHeaderItem( 2, new QStandardItem( "Titre" ) ) ;
-        modele->setHorizontalHeaderItem( 3, new QStandardItem( "Nom" ) ) ;
-        modele->setHorizontalHeaderItem( 4, new QStandardItem( "Prénom" ) ) ;
-        modele->setHorizontalHeaderItem( 5, new QStandardItem( "Ville" ) ) ;
-        modele->setHorizontalHeaderItem( 6, new QStandardItem( "Code" ) ) ;
-        modele->setHorizontalHeaderItem( 7, new QStandardItem( "Téléphone" ) ) ;
-        modele->setHorizontalHeaderItem( 8, new QStandardItem( "Mobile" ) ) ;
-        modele->setHorizontalHeaderItem( 9, new QStandardItem( "eMail" ) ) ;
-        modele->setHorizontalHeaderItem( 10, new QStandardItem( "Nbre de Retard" ) ) ;
-        modele->setHorizontalHeaderItem( 11, new QStandardItem( "Fin Cotisation" ) ) ;
-        modele->setHorizontalHeaderItem( 12, new QStandardItem( "Crédits restant" ) ) ;
+        // Vidage de la liste à l'écran
+        this->ModeleMembres.removeRows(0,this->ModeleMembres.rowCount());
 
         //Remplissage du tableau avec les informations de la table membre
         while( query.next() )
@@ -387,7 +374,7 @@ bool F_ListeMembres::AffichageListe()
             {
                 item = new QStandardItem() ;
                 item->setCheckable( true ) ;
-                modele->setItem( i, 0, item ) ;
+                ModeleMembres.setItem( i, 0, item ) ;
             }
 
             this->VecteurListeMembres.append( query.record().value( 0 ).toInt() ) ;
@@ -400,7 +387,7 @@ bool F_ListeMembres::AffichageListe()
             {
                 if( RequeteType.next() )
                 {
-                    modele->setItem( i, 1, new QStandardItem( RequeteType.record().value( 0 ).toString() ) ) ;
+                    ModeleMembres.setItem( i, 1, new QStandardItem( RequeteType.record().value( 0 ).toString() ) ) ;
                 }
             }
             else
@@ -416,7 +403,7 @@ bool F_ListeMembres::AffichageListe()
             {
                 if( RequeteTitre.next() )
                 {
-                    modele->setItem( i, 2, new QStandardItem( RequeteTitre.record().value( 0 ).toString() ) ) ;
+                    ModeleMembres.setItem( i, 2, new QStandardItem( RequeteTitre.record().value( 0 ).toString() ) ) ;
                 }
             }
             else
@@ -424,14 +411,14 @@ bool F_ListeMembres::AffichageListe()
                 qDebug() << "F_ListeMembres:: : RequeteTitre :" << RequeteTitre.lastError().text()  ;
             }
 
-            modele->setItem( i, 3, new QStandardItem( query.record().value( 3 ).toString() ) ) ;
-            modele->setItem( i, 4, new QStandardItem( query.record().value( 4 ).toString() ) ) ;
-            modele->setItem( i, 5, new QStandardItem( query.record().value( 5 ).toString() ) ) ;
-            modele->setItem( i, 6, new QStandardItem( query.record().value( 6 ).toString() ) ) ;
-            modele->setItem( i, 7, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 7 ).toString() ) ) ) ;
-            modele->setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 8 ).toString() ) ) ) ;
-            modele->setItem( i, 9, new QStandardItem( query.record().value( 9 ).toString() ) ) ;
-            modele->setItem( i, 10, new QStandardItem( sNumero.setNum( query.record().value( 10 ).toInt() ) ) ) ;
+            ModeleMembres.setItem( i, 3, new QStandardItem( query.record().value( 3 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 4, new QStandardItem( query.record().value( 4 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 5, new QStandardItem( query.record().value( 5 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 6, new QStandardItem( query.record().value( 6 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 7, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 7 ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 8 ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 9, new QStandardItem( query.record().value( 9 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 10, new QStandardItem( sNumero.setNum( query.record().value( 10 ).toInt() ) ) ) ;
 
             RequeteCotisation.prepare( "SELECT abonnements.DateExpiration FROM abonnements "
                                        "WHERE abonnements.Membres_IdMembre=:IdMembre" ) ;
@@ -442,20 +429,20 @@ bool F_ListeMembres::AffichageListe()
                 if ( RequeteCotisation.next() )
                 {
                     DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                    modele->setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+                    ModeleMembres.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
                     if ( DateCotisation < QDate::currentDate() )
                     {
-                        modele->setData( modele->index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                        ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
                     }
                     else
                     {
                         if( DateCotisation< QDate::currentDate().addDays( 14 ) )
                         {
-                            modele->setData( modele->index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
+                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
                         }
                         else
                         {
-                            modele->setData( modele->index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
+                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                         }
                     }
                 }
@@ -465,20 +452,20 @@ bool F_ListeMembres::AffichageListe()
                     if( DateCotisation > RequeteCotisation.record().value( 0 ).toDate() )
                     {
                         DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                        modele->setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+                        ModeleMembres.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
                         if ( DateCotisation < QDate::currentDate() )
                         {
-                            modele->setData( modele->index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
                         }
                         else
                         {
                             if( DateCotisation< QDate::currentDate().addDays( 14 ) )
                             {
-                                modele->setData( modele->index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
+                                ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
                             }
                             else
                             {
-                                modele->setData( modele->index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
+                                ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                             }
                         }
                     }
@@ -501,7 +488,7 @@ bool F_ListeMembres::AffichageListe()
                 {
                     nCredit += RequeteCartes.record().value( 0 ).toInt() ;
                 }
-                modele->setItem( i, 12, new QStandardItem( sNumero.setNum( nCredit ) ) ) ;
+                ModeleMembres.setItem( i, 12, new QStandardItem( sNumero.setNum( nCredit ) ) ) ;
             }
             else
             {

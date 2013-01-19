@@ -19,6 +19,7 @@
 #include "f_listemembres.h"
 #include "f_popupcode.h"
 #include "f_postit.h"
+#include "f_listereservations.h"
 
 namespace Ui {
 class F_MainWindow;
@@ -53,8 +54,6 @@ private slots:
     void on_Menu_Jeux_Imprimer_Fiche_Complete_triggered();
     void on_Bt_ListeMembres_clicked();
 
-
-
 private:
     Ui::F_MainWindow *ui;
     F_Emprunt * pEmprunt ;
@@ -76,6 +75,7 @@ private:
     F_Retards * pRetards;
     F_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;
+    F_ListeReservations * pListeReservations ;
 };
 
 #endif // F_MAINWINDOW_H
