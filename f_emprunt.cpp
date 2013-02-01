@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/1012
  *  @version      0.1
- *  @date         29/07/1012
+ *  @date         01/02/1012
  *
  *  Cette classe permet de créer un emprunt, qui associe un jeu, un membre entre autre.
  *  Elle permet aussi de supprimer une réservation d'un membre.
@@ -1762,7 +1762,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         ViderJeu();
 
         //Mettre le statut du jeux ? "En emprunt"
-        QSqlQuery RequeteStatut;
+        /*QSqlQuery RequeteStatut;
 
         RequeteStatut.prepare("UPDATE `jeux`SET `StatutJeux_IdStatutJeux`=2 WHERE `IdJeux`=:IdDuJeu");
         RequeteStatut.bindValue(":IdDuJeu",IdDuJeu);
@@ -1770,7 +1770,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         if (!RequeteStatut.exec())
         {
             qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked ||| requette statut  "<<(RequeteStatut.lastError()) ;
-        }
+        }*/
 
     }
     else

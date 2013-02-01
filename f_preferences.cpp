@@ -6,7 +6,7 @@
  *  @author     STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since      05/2012
  *  @version    1.0
- *  @date       27/06/2012
+ *  @date       01/02/2013
  *
  *  Les options disponibles dans cette classe sont:
  *      - Préférences Générales avec :

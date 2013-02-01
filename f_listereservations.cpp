@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lyce Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        09/01/2013
  *  @version      0.1
- *  @date         09/01/2013
+ *  @date         01/02/2013
  *
  *  Description détaillée du fichier f_listmembres.ccp
  *

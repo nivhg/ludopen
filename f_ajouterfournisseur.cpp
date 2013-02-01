@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/2012
  *  @version      0.1
- *  @date         11/05/2012
+ *  @date         01/02/2013
  *
  *  Il permet à partir de l'onglet administration et le widget jeux d'ajouter un fournisseur lors de l'ajout d'un jeu, si
  *  celui-ci n'existe pas, directement à partir du ComboBox.

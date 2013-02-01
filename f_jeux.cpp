@@ -6,7 +6,7 @@
   * @author STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
   * @since 01/01/2012
   * @version 0.1
-  * @date 02/07/2012
+  * @date 01/02/2013
   *
   * Cette classe permet de gérer les jeux : consulation, déclaration intervention ...
   *

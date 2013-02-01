@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        25/05/1012
  *  @version      0.1
- *  @date         12/06/12
+ *  @date         01/02/2013
  *
  *  Permet à l'utilisateur de payer un emprun ou prolongement d'emprunt par
  *  une ou plusieurs de ses cartes prépayées ou par un ou plusieurs autre

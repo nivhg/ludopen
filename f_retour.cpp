@@ -5,7 +5,7 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        21/01/2012
  *  @version      0.1
- *  @date         02/09/2012 William
+ *  @date         01/02/2013 William
  *
  *  Cette classe permet de rendre les jeux qu'un membre à emprunté,
  *  on peut aussi supprimer une reservation de jeu entre autre
