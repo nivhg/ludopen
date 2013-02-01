@@ -19,10 +19,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->Menu_Jeux_Imprimer_Etiquette->setShortcut(tr("Ctrl+E"));
     ui->Menu_Jeux_Imprimer_Fiche_Complete->setShortcut(tr("Ctrl+F"));
 
-    this->pPreferences = new F_Preferences;
-    this->pPreferences->setWindowTitle("Préférences");
-    this->pPreferences->setWindowModality(Qt::ApplicationModal);
-
     //Layout///////////////
 
     //Widgets-onglets//////
@@ -112,7 +108,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this->pAdministrerMembres, SLOT( on_AfficherMembre( uint ) ) ) ;
     connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_ChangerOnglet() ) ) ;
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
-    connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( on_Preference() ) ) ;
     connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( on_DoubleClic_ListeJeux(QString) )) ;
 
     // Afficher les post-it au démarage de l'application
@@ -139,6 +134,11 @@ void F_MainWindow::on_Preference()
     this->pMembres->MaJTitre() ;
     this->pMembres->MaJType() ;
     this->pMembres->AfficherMembre() ;
+
+    if( this->pPreferences != NULL )
+    {
+        delete this->pPreferences ;
+    }
 }
 
 void F_MainWindow::on_Bt_Membre_clicked()
@@ -296,6 +296,11 @@ void F_MainWindow::on_Menu_Fichier_Quitter_triggered()
 
 void F_MainWindow::on_Menu_Edition_Preferences_triggered()
 {
+    this->pPreferences = new F_Preferences;
+    this->pPreferences->setWindowTitle("Préférences");
+    this->pPreferences->setWindowModality(Qt::ApplicationModal);
+    connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( on_Preference() ) ) ;
+
     this->pPreferences->show();
 }
 

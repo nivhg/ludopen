@@ -6,7 +6,7 @@
  *  @author     STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since      05/2012
  *  @version    1.0
- *  @date       01/02/2013
+ *  @date       01/02/2012
  *
  *  Les options disponibles dans cette classe sont:
  *      - Préférences Générales avec :
@@ -191,6 +191,12 @@ F_Preferences::~F_Preferences()
 void F_Preferences::on_Valider()
 {
     this->MettreAJourBDD();
+}
+
+void F_Preferences::closeEvent( QCloseEvent * event )
+{
+    emit( this->SignalFermerFenetre() ) ;
+    event->accept() ;
 }
 
 //---------------------------------------------------------------------------
@@ -511,7 +517,7 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
  */
 void F_Preferences::on_Bt_Annuler_clicked()
 {
-     emit( this->SignalFermerFenetre() ) ;
+    emit( this->SignalFermerFenetre() ) ;
     this->close();
 }
 

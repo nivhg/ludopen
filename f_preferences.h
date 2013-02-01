@@ -1,4 +1,4 @@
-// f_statistiques.h	1.0	<06/2012>	<NORMAND Julien>
+// f_statistiques.h	1.0	<02/2013>	<NORMAND Julien><Padiou Nicolas>
 #ifndef F_PREFERENCES_H
 #define F_PREFERENCES_H
 
@@ -58,6 +58,8 @@ public:
      *
      */
     ~F_Preferences();
+
+    void closeEvent( QCloseEvent * event ) ;
 
 signals:
     void SignalFermerFenetre() ;
