@@ -150,262 +150,46 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_8">
-      <item row="6" column="0">
-       <layout class="QGridLayout" name="gridLayout_5">
+      <item row="9" column="0">
+       <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Editeur">
-          <property name="maximumSize">
-           <size>
-            <width>50</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Editeur :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_Editeur">
+         <widget class="QLabel" name="Lb_Emplacement">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>0</height>
            </size>
           </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="11" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_14">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_12">
-          <item>
-           <widget class="QLabel" name="Lb_Prix">
-            <property name="text">
-             <string>Prix achat :</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QDoubleSpinBox" name="SBx_PrixAchat">
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_13">
-          <item>
-           <widget class="QLabel" name="Lb_Location">
-            <property name="text">
-             <string>Prix location :</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="SBx_PrixLocation"/>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item row="7" column="0">
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Fournisseur">
           <property name="maximumSize">
            <size>
-            <width>80</width>
-            <height>16777215</height>
+            <width>120</width>
+            <height>20</height>
            </size>
           </property>
           <property name="text">
-           <string>Fournisseur :</string>
+           <string>Emplacement ludo :</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_Fournisseur">
+         <widget class="QComboBox" name="CBx_Emplacement">
           <property name="minimumSize">
            <size>
             <width>0</width>
             <height>0</height>
            </size>
           </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="4" column="0">
-       <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Etat">
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
-          <property name="text">
-           <string>Etat :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_Etat">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
          </widget>
         </item>
        </layout>
       </item>
-      <item row="14" column="0" rowspan="2">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="QLabel" name="Lb_Remarques">
-          <property name="text">
-           <string>Remarques :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QTextEdit" name="TxE_Remarques"/>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="Bt_Supprimer">
-          <property name="text">
-           <string>Supprimer ce jeu</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="3" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_18">
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
-          <item>
-           <widget class="QLabel" name="Lb_AgeMin">
-            <property name="text">
-             <string>Age min :</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="SBx_AgeMin"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6">
-          <item>
-           <widget class="QLabel" name="Lb_AgeMax">
-            <property name="text">
-             <string>Age max :</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QSpinBox" name="SBx_AgeMax"/>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item row="6" column="1">
-       <layout class="QGridLayout" name="gridLayout_10">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_MotsCles">
-          <property name="maximumSize">
-           <size>
-            <width>70</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Mots clés :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_MotCle1"/>
-        </item>
-        <item row="0" column="2">
-         <widget class="QComboBox" name="CBx_MotCle2"/>
-        </item>
-        <item row="0" column="3">
-         <widget class="QComboBox" name="CBx_MotCle3"/>
-        </item>
-       </layout>
-      </item>
-      <item row="10" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_11">
-        <item>
-         <widget class="QLabel" name="Lb_Achat">
-          <property name="text">
-           <string>Date achat :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDateEdit" name="DtE_Achat">
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="13" column="1" rowspan="2">
-       <layout class="QGridLayout" name="gridLayout_12">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Contenu">
-          <property name="text">
-           <string>Contenu de la boite :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="TxE_Contenu"/>
-        </item>
-       </layout>
-      </item>
-      <item row="7" column="1" rowspan="6">
-       <layout class="QGridLayout" name="gridLayout_11">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Description">
-          <property name="text">
-           <string>Description :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QTextEdit" name="TxE_Description"/>
-        </item>
-       </layout>
-      </item>
-      <item row="12" column="0">
+      <item row="13" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_15">
         <item>
          <widget class="QLabel" name="Lb_Etat_2">
@@ -459,15 +243,8 @@
         </item>
        </layout>
       </item>
-      <item row="15" column="1">
+      <item row="16" column="1">
        <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <widget class="QPushButton" name="Bt_ChargerImage">
-          <property name="text">
-           <string>Charger image du jeu</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QCommandLinkButton" name="Bt_Valider">
           <property name="enabled">
@@ -540,62 +317,218 @@
         </item>
        </layout>
       </item>
+      <item row="3" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="Lb_AgeMin">
+            <property name="text">
+             <string>Age min :</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="SBx_AgeMin"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6">
+          <item>
+           <widget class="QLabel" name="Lb_AgeMax">
+            <property name="text">
+             <string>Age max :</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="SBx_AgeMax"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item row="11" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_11">
+        <item>
+         <widget class="QLabel" name="Lb_Achat">
+          <property name="text">
+           <string>Date achat :</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="DtE_Achat">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="7" column="1">
+       <layout class="QGridLayout" name="gridLayout_10">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_MotsCles">
+          <property name="maximumSize">
+           <size>
+            <width>70</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Mots clés :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="CBx_MotCle1"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="CBx_MotCle2"/>
+        </item>
+        <item row="0" column="3">
+         <widget class="QComboBox" name="CBx_MotCle3"/>
+        </item>
+       </layout>
+      </item>
+      <item row="14" column="1" rowspan="2">
+       <layout class="QGridLayout" name="gridLayout_12">
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="TxE_Contenu"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Contenu">
+          <property name="text">
+           <string>Contenu de la boite :</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="0" column="1" rowspan="6">
+       <widget class="QFrame" name="frame_3">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Lb_Photo">
+           <property name="maximumSize">
+            <size>
+             <width>250</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>12</pointsize>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Photo</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="Bt_ChargerImage">
+           <property name="text">
+            <string>Charger image du jeu</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Editeur">
+          <property name="maximumSize">
+           <size>
+            <width>50</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Editeur :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="CBx_Editeur">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="12" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout_14">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <item>
+           <widget class="QLabel" name="Lb_Prix">
+            <property name="text">
+             <string>Prix achat :</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="SBx_PrixAchat">
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.010000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_13">
+          <item>
+           <widget class="QLabel" name="Lb_Location">
+            <property name="text">
+             <string>Prix location :</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="SBx_PrixLocation"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
       <item row="8" column="0">
-       <layout class="QGridLayout" name="gridLayout">
+       <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Emplacement">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
+         <widget class="QLabel" name="Lb_Fournisseur">
           <property name="maximumSize">
            <size>
-            <width>120</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Emplacement ludo :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_Emplacement">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="5" column="0">
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Statut">
-          <property name="maximumSize">
-           <size>
-            <width>45</width>
+            <width>80</width>
             <height>16777215</height>
            </size>
           </property>
           <property name="text">
-           <string>Statut :</string>
+           <string>Fournisseur :</string>
           </property>
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QComboBox" name="CBx_Statut">
+         <widget class="QComboBox" name="CBx_Fournisseur">
           <property name="minimumSize">
            <size>
             <width>0</width>
@@ -606,7 +539,65 @@
         </item>
        </layout>
       </item>
-      <item row="9" column="0">
+      <item row="4" column="0">
+       <layout class="QGridLayout" name="gridLayout_7">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Etat">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Etat :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="CBx_Etat">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="15" column="0" rowspan="2">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="Lb_Remarques">
+          <property name="text">
+           <string>Remarques :</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="TxE_Remarques"/>
+        </item>
+        <item>
+         <widget class="QCommandLinkButton" name="Bt_Supprimer">
+          <property name="text">
+           <string>Supprimer ce jeu</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="10" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
          <widget class="QLabel" name="Lb_Createur">
@@ -620,7 +611,7 @@
         </item>
        </layout>
       </item>
-      <item row="13" column="0">
+      <item row="14" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <property name="spacing">
          <number>7</number>
@@ -726,37 +717,46 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="1" rowspan="6">
-       <widget class="QFrame" name="frame_3">
-        <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Plain</enum>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_9">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Lb_Photo">
-           <property name="maximumSize">
-            <size>
-             <width>250</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>12</pointsize>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Photo</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
+      <item row="5" column="0">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Statut">
+          <property name="maximumSize">
+           <size>
+            <width>45</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Statut :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="CBx_Statut">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="8" column="1" rowspan="6">
+       <layout class="QGridLayout" name="gridLayout_11">
+        <item row="1" column="0">
+         <widget class="QTextEdit" name="TxE_Description"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Description">
+          <property name="text">
+           <string>Description :</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

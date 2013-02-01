@@ -1638,7 +1638,7 @@ void F_AjoutSuppModifJeux::on_Bt_Renseigner_clicked()
 //###################################################################
 void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
 {
-    QSqlQuery RecupCheminDossierImage ;
+    /*QSqlQuery RecupCheminDossierImage ;
 
     RecupCheminDossierImage.prepare("SELECT CheminImage, IdPreferences FROM preferences WHERE IdPreferences = 1") ;
     RecupCheminDossierImage.exec() ;
@@ -1666,7 +1666,64 @@ void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
     //Met l'image à l'échelle du cadre
     ui->Lb_Photo->setScaledContents(true);
 
-    this->CacherBoutons();
+    this->CacherBoutons();*/
+
+    QString sCheminImage ;
+    QDir DirDossierImages ;
+    sCheminImage = QFileDialog::getOpenFileName(this,tr("Ouvrir une image."), "/home", tr("Image Files (*.png *.jpg *.bmp)"));
+
+    if( sCheminImage != "" )
+    {
+        DirDossierImages.setPath( QApplication::applicationDirPath() + "/Images" ) ;
+        if( !DirDossierImages.exists() )
+        {
+            DirDossierImages.cd("..") ;
+            if( DirDossierImages.mkdir( "Images" ) )
+            {
+                if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) )
+                {
+                    QFile::remove( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) ;
+                }
+
+                if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) )
+                {
+                    qDebug() << "Impossible de copier l'image."  ;
+                }
+                else
+                {
+                    QString sCheminImage ( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) ;
+
+                    QPixmap Image( sCheminImage ) ;
+                    ui->Lb_Photo->setPixmap( Image ) ;
+                }
+            }
+            else
+            {
+                qDebug() << "Impossible de créer le dossier Image."  ;
+            }
+        }
+        else
+        {
+            if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) )
+            {
+                QFile::remove( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) ;
+            }
+
+            if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) )
+            {
+                qDebug() << "Impossible de copier l'image."  ;
+            }
+            else
+            {
+                QString sCheminImage ( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) ;
+
+                QPixmap Image( sCheminImage ) ;
+                ui->Lb_Photo->setPixmap( Image ) ;
+            }
+        }
+    }
+
+
 }
 //###################################################################
 /**
@@ -2148,13 +2205,13 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
             }
         }
     //----------Affichage photo----------------------------------------------------------------------------
-        QString CheminPhoto = RequeteRechercheJeu.value(15).toString() ;
+        QString sCheminImage ( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() ) ;
 
-        QImage Image(CheminPhoto) ;
-        ui->Lb_Photo->setPixmap(QPixmap::fromImage(Image));
+        QPixmap Image( sCheminImage ) ;
+        ui->Lb_Photo->setPixmap( Image ) ;
 
         //Met l'image à l'échelle du cadre
-        ui->Lb_Photo->setScaledContents(true);
+        ui->Lb_Photo->setScaledContents( true ) ;
 
         //Grisee les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant

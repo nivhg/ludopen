@@ -297,20 +297,13 @@ void F_Jeux::on_Bt_ok_clicked()
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////
     //////////////////////////////////////////////////////    
-    QSqlQuery RequeteAffichageImage ;
-    QString CheminImage ;
-    
-    RequeteAffichageImage.prepare("SELECT CodeJeu, CheminPhotoJeu FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
-    RequeteAffichageImage.bindValue(":CodeDuJeu", ui->Le_recherchecode->text());
-    RequeteAffichageImage.exec() ;
-    RequeteAffichageImage.next() ;
-    
-    CheminImage = RequeteAffichageImage.value(1).toString() ;
-    QImage Image(CheminImage) ;
-    ui->Lb_Image->setPixmap(QPixmap::fromImage(Image));
+    QString sCheminImage ( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() ) ;
+
+    QPixmap Image( sCheminImage ) ;
+    ui->Lb_Image->setPixmap( Image ) ;
 
     //Met l'image à l'échelle du cadre
-    ui->Lb_Image->setScaledContents(true);
+    ui->Lb_Image->setScaledContents( true ) ;
 
     /////////////////////////////////////////////
     // Msg d'information en cas de champ vide //
