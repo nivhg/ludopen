@@ -209,7 +209,17 @@
        </widget>
       </item>
       <item row="11" column="0" colspan="6">
-       <widget class="QTableWidget" name="TbW_Stat"/>
+       <widget class="QTableWidget" name="TbW_Stat">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
       </item>
       <item row="0" column="2" colspan="2">
        <widget class="QComboBox" name="CBx_Stat">

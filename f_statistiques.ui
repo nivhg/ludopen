@@ -82,7 +82,17 @@
       </widget>
      </item>
      <item row="7" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_Stat"/>
+      <widget class="QTableView" name="TbV_Stat">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
       <widget class="QLabel" name="label_2">
@@ -125,7 +135,17 @@
       </widget>
      </item>
      <item row="7" column="4" colspan="3">
-      <widget class="QTableView" name="TbV_StatPlus"/>
+      <widget class="QTableView" name="TbV_StatPlus">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
      </item>
      <item row="2" column="2">
       <widget class="QRadioButton" name="RBt_Mois">

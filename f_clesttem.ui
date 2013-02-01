@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="Membres">
       <attribute name="title">
@@ -53,7 +53,17 @@
           </widget>
          </item>
          <item row="1" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_TitreMembre"/>
+          <widget class="QTableView" name="TbV_TitreMembre">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
           <widget class="QCommandLinkButton" name="Bt_AjouterTitreMembre">
@@ -63,7 +73,17 @@
           </widget>
          </item>
          <item row="1" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_TypeMembre"/>
+          <widget class="QTableView" name="TbV_TypeMembre">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="4">
           <widget class="QCommandLinkButton" name="Bt_AjouterTypeMembre">
@@ -130,7 +150,17 @@
           </widget>
          </item>
          <item row="6" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_PaiementMembre"/>
+          <widget class="QTableView" name="TbV_PaiementMembre">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="6" column="1">
           <widget class="QCommandLinkButton" name="Bt_AjouterPaiementMembre">
@@ -204,7 +234,17 @@
           </widget>
          </item>
          <item row="1" column="0" rowspan="3" colspan="2">
-          <widget class="QTableView" name="TbV_EmplacementJeux"/>
+          <widget class="QTableView" name="TbV_EmplacementJeux">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="2">
           <widget class="QCommandLinkButton" name="Bt_AjouterEmplacementJeux">
@@ -214,7 +254,17 @@
           </widget>
          </item>
          <item row="1" column="4" rowspan="3">
-          <widget class="QTableView" name="TbV_EtatJeux"/>
+          <widget class="QTableView" name="TbV_EtatJeux">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="5">
           <widget class="QCommandLinkButton" name="Bt_AjouterEtatJeux">
@@ -278,7 +328,17 @@
           </widget>
          </item>
          <item row="6" column="1" rowspan="3">
-          <widget class="QTableView" name="TbV_StatutJeux"/>
+          <widget class="QTableView" name="TbV_StatutJeux">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="6" column="2">
           <widget class="QCommandLinkButton" name="Bt_AjouterStatutJeux">
@@ -288,7 +348,17 @@
           </widget>
          </item>
          <item row="6" column="4" rowspan="3">
-          <widget class="QTableView" name="TbV_TypeJeux"/>
+          <widget class="QTableView" name="TbV_TypeJeux">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="6" column="5">
           <widget class="QCommandLinkButton" name="Bt_AjouterTypeJeux">
@@ -411,7 +481,17 @@
           </widget>
          </item>
          <item row="1" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_TypeEmprunt"/>
+          <widget class="QTableView" name="TbV_TypeEmprunt">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
           <widget class="QCommandLinkButton" name="Bt_AjouterTypeEmprunt">
@@ -421,7 +501,17 @@
           </widget>
          </item>
          <item row="1" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_LieuxLudo"/>
+          <widget class="QTableView" name="TbV_LieuxLudo">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="4">
           <widget class="QCommandLinkButton" name="Bt_AjouterLieuxLudo">

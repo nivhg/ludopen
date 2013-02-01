@@ -360,13 +360,11 @@ void F_Paiement::on_Bt_SupprimerAutres_clicked()
 void F_Paiement::on_TW_Paiement_clicked(const QModelIndex &index)
 {
     ui->Bt_Supprimer->setEnabled(true);
-    ui->TW_Paiement->selectRow(index.row());
 }
 
 void F_Paiement::on_TW_PaiementAutre_clicked(const QModelIndex &index)
 {
     ui->Bt_SupprimerAutres->setEnabled(true);
-    ui->TW_PaiementAutre->selectRow(index.row());
 }
 
 

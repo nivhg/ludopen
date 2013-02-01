@@ -222,7 +222,6 @@ int F_RechercheMembres::RecupererProchainCodeNonUtilise ()
   */
 void F_RechercheMembres::on_TbW_Recherche_clicked(const QModelIndex &index)
 {
-    ui->TbW_Recherche->selectRow( index.row() ) ;
     emit(this->SignalRenvoieIdMembre(this->VecteurRechercheMembres[index.row()].id));
 }
 

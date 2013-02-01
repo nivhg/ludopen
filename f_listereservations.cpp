@@ -736,7 +736,6 @@ void F_ListeReservations::on_CBx_Cotisation_currentIndexChanged(int index)
 
 void F_ListeReservations::on_TbW_ListeReservations_clicked(const QModelIndex &index)
 {
-    ui->TbW_ListeReservations->selectRow( index.row() ) ;
 }
 
 void F_ListeReservations::on_TbW_ListeReservations_doubleClicked(const QModelIndex &index)

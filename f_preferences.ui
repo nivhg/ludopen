@@ -33,7 +33,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="PrefGeneral">
       <attribute name="title">
@@ -451,7 +451,17 @@
        <item row="1" column="0">
         <layout class="QGridLayout" name="gridLayout_2">
          <item row="1" column="0" rowspan="3" colspan="2">
-          <widget class="QTableView" name="TbV_JeuxType"/>
+          <widget class="QTableView" name="TbV_JeuxType">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="Lb_JeuxType">
@@ -467,7 +477,17 @@
           </widget>
          </item>
          <item row="6" column="0" rowspan="3" colspan="2">
-          <widget class="QTableView" name="TbV_JeuxEtat"/>
+          <widget class="QTableView" name="TbV_JeuxEtat">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="5" column="0">
           <widget class="QLabel" name="Lb_Etat">
@@ -607,7 +627,17 @@
           </widget>
          </item>
          <item row="1" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_JeuxStatut"/>
+          <widget class="QTableView" name="TbV_JeuxStatut">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="1" column="4">
           <widget class="QCommandLinkButton" name="Bt_AjouterStatut">
@@ -674,7 +704,17 @@
           </widget>
          </item>
          <item row="6" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_JeuxEmplacement"/>
+          <widget class="QTableView" name="TbV_JeuxEmplacement">
+           <property name="alternatingRowColors">
+            <bool>false</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="9" column="0" colspan="5">
           <spacer name="VS_2">
@@ -818,7 +858,17 @@
           </widget>
          </item>
          <item row="2" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresTitre"/>
+          <widget class="QTableView" name="TbV_MembresTitre">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="2" column="1">
           <widget class="QCommandLinkButton" name="Bt_AjouterMembreTitre">
@@ -885,7 +935,17 @@
           </widget>
          </item>
          <item row="2" column="2" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresType"/>
+          <widget class="QTableView" name="TbV_MembresType">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="2" column="3">
           <widget class="QCommandLinkButton" name="Bt_AjouterMembreType">
@@ -1019,7 +1079,17 @@
           </widget>
          </item>
          <item row="7" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_EmpruntType"/>
+          <widget class="QTableView" name="TbV_EmpruntType">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="6" column="2">
           <widget class="QLabel" name="Lb_MembresPaiement">
@@ -1086,7 +1156,17 @@
           </widget>
          </item>
          <item row="7" column="2" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresPaiement"/>
+          <widget class="QTableView" name="TbV_MembresPaiement">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -1113,7 +1193,17 @@
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_5">
          <item row="2" column="0" rowspan="3" colspan="2">
-          <widget class="QTableView" name="TbV_InfoLieux"/>
+          <widget class="QTableView" name="TbV_InfoLieux">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="Lb_Nom">

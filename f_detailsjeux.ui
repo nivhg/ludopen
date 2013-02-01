@@ -103,6 +103,15 @@
      </item>
      <item row="4" column="0" colspan="4">
       <widget class="QTableView" name="TbV_Historique">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
        <attribute name="horizontalHeaderStretchLastSection">
         <bool>true</bool>
        </attribute>
@@ -116,7 +125,17 @@
       </widget>
      </item>
      <item row="6" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_HistoriqueEmprunts"/>
+      <widget class="QTableView" name="TbV_HistoriqueEmprunts">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
      </item>
      <item row="7" column="3">
       <widget class="QPushButton" name="Bt_Quitter">

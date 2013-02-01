@@ -858,7 +858,6 @@ void F_ListeMembres::on_CBx_Cotisation_currentIndexChanged(int index)
 
 void F_ListeMembres::on_TbW_ListeMembre_clicked(const QModelIndex &index)
 {
-    ui->TbW_ListeMembre->selectRow( index.row() ) ;
 }
 
 void F_ListeMembres::on_TbW_ListeMembre_doubleClicked(const QModelIndex &index)

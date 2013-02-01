@@ -603,7 +603,6 @@ void F_Preferences::on_Bt_Connection_clicked()
  */
 void F_Preferences::on_TbV_MembresTitre_clicked(const QModelIndex &index)
 {
-    ui->TbV_MembresTitre->selectRow(index.row());
     this->sTitreMembre = this->TbMembresTitre->index(index.row(), 0).data().toString();
 }
 
@@ -614,19 +613,16 @@ void F_Preferences::on_TbV_MembresTitre_clicked(const QModelIndex &index)
  */
 void F_Preferences::on_TbV_MembresType_clicked(const QModelIndex &index)
 {
-    ui->TbV_MembresType->selectRow(index.row());
     this->sTypeMembre = this->TbMembresType->index(index.row(), 0).data().toString();
 }
 
 void F_Preferences::on_TbV_MembresPaiement_clicked(const QModelIndex &index)
 {
-    ui->TbV_MembresPaiement->selectRow(index.row());
     this->sPaiementMembre = this->TbMembresPaiement->index(index.row(), 0).data().toString();
 }
 
 void F_Preferences::on_TbV_EmpruntType_clicked(const QModelIndex &index)
 {
-    ui->TbV_EmpruntType->selectRow(index.row());
     this->sTypeEmprunt = this->TbEmpruntType->index(index.row(), 0).data().toString();
 }
 
@@ -794,7 +790,6 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
  */
 void F_Preferences::on_TbV_JeuxType_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxType->selectRow(index.row());
     this->sTypeJeux = this->TbJeuxType->index(index.row(), 0).data().toString();
 }
 
@@ -805,7 +800,6 @@ void F_Preferences::on_TbV_JeuxType_clicked(const QModelIndex &index)
  */
 void F_Preferences::on_TbV_JeuxEtat_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxEtat->selectRow(index.row());
     this->sEtatJeux = this->TbJeuxEtat->index(index.row(), 0).data().toString();
 }
 
@@ -816,7 +810,6 @@ void F_Preferences::on_TbV_JeuxEtat_clicked(const QModelIndex &index)
  */
 void F_Preferences::on_TbV_JeuxStatut_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxStatut->selectRow(index.row());
     this->sStatutJeux = this->TbJeuxStatut->index(index.row(), 0).data().toString();
     if(index.row() < 4)
     {
@@ -837,7 +830,6 @@ void F_Preferences::on_TbV_JeuxStatut_clicked(const QModelIndex &index)
  */
 void F_Preferences::on_TbV_JeuxEmplacement_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxEmplacement->selectRow(index.row());
     this->sEmplacementJeux = this->TbJeuxEmplacement->index(index.row(), 0).data().toString();
 }
 
@@ -1052,7 +1044,6 @@ void F_Preferences::on_Bt_ParcourirImage_clicked()
  */
 void F_Preferences::on_TbV_InfoLieux_clicked(const QModelIndex &index)
 {
-    ui->TbV_InfoLieux->selectRow(index.row());
     this->sLieuxInfoLudo = this->TbInfoLudoLieux->index(index.row(), 0).data().toString();
 }
 

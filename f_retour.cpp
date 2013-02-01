@@ -240,7 +240,6 @@ void F_Retour::on_TbV_Recherche_clicked(const QModelIndex &index)
     ui->LE_CodeMembre->setText(this->ModelMembre->index(index.row(),0).data().toString());
     //clic sur la recherche du membre
     on_Bt_RechercheOK_clicked();
-    ui->TbV_Recherche->selectRow(index.row());
 
     this->ViderJeu();
 }
@@ -1096,10 +1095,6 @@ void F_Retour::on_TbV_JeuxEmprunte_clicked(const QModelIndex &index)
     LigneTableau=index.row();
     ui->LE_CodeJeu->setText(this->ModelJeuEmpruntes->index(LigneTableau,0).data().toString());
     on_Bt_CodeJeuOK_clicked();
-    ui->TbV_JeuxEmprunte->selectRow(LigneTableau);
-
-
-
 }
 
 
@@ -1108,7 +1103,6 @@ void F_Retour::on_TbV_JeuxEmprunte_clicked(const QModelIndex &index)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_TbV_JeuxReserve_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxReserve->selectRow(index.row());
     ui->bt_SuppReservation->setEnabled(true);
 }
 

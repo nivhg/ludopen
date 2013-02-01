@@ -1461,7 +1461,6 @@ void F_Membres::on_Bt_Ajouter_clicked()
  */
 void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
 {
-    ui->LW_Abonnements->selectRow( index.row() ) ;
     ui->Bt_Modifier->setEnabled( true ) ;
     ui->Bt_Supprimer->setEnabled( true ) ;
 }
@@ -1471,7 +1470,6 @@ void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
  */
 void F_Membres::on_LW_JeuxEmpruntes_clicked( const QModelIndex &index )
 {
-    ui->LW_JeuxEmpruntes->selectRow( index.row() ) ;
 }
 
 /** Permet la modifiaction d'un abonnement

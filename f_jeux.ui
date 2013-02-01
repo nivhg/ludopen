@@ -75,7 +75,17 @@
          </layout>
         </item>
         <item>
-         <widget class="QTableView" name="TbV_NomJeux"/>
+         <widget class="QTableView" name="TbV_NomJeux">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

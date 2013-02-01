@@ -197,7 +197,6 @@ void F_Reservation::on_LE_RechercheMembre_textChanged(const QString &arg1)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Reservation::on_TbV_Recherche_clicked(const QModelIndex &index)
 {
-    ui->TbV_Recherche->selectRow(index.row());
     ui->LE_CodeMembre->setText(this->ModelMembre->index(index.row(),0).data().toString());
     on_Bt_RechercheOK_clicked();
 }
@@ -669,7 +668,6 @@ void F_Reservation::AfficherJeuxReserve()
 void F_Reservation::on_TbV_JeuxMembres_clicked(const QModelIndex &index)
 {
     qDebug()<<"F_Reservation::on_TbV_JeuxMembres_clicked";
-    ui->TbV_JeuxMembres->selectRow(index.row());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -677,7 +675,6 @@ void F_Reservation::on_TbV_JeuxMembres_clicked(const QModelIndex &index)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Reservation::on_TbV_JeuxReserves_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxReserves->selectRow(index.row());
     ui->bt_SuppReservation->setEnabled(true);
 }
 
