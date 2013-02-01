@@ -1826,6 +1826,7 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
  */
 void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
 {
+    QSqlQuery RequeteJeuEmprunte ;
     //Si aucun jeu n'a été sélectionné alors un message d'erreur s'affiche
     if(ui->LE_Nom->text() == "" && ui->LE_Code->text() == "")
     {
@@ -1833,100 +1834,114 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
     }
     else
     {
-        //Test permettant de savoir quel bouton a été appuyé, entre dans cette méthode si le bouton oui a été cliqué
-        if((QMessageBox::information(this, "Confirmation suppression","Voulez-vous vraiment supprimer le jeu "+ui->LE_Nom->text()+"?","Oui", "Non")) == 0)
+        if( RequeteJeuEmprunte.exec( "SELECT IdJeux FROM jeux WHERE StatutJeux_IdStatutJeux=3 AND CodeJeu=" + ui->LE_Code->text() ) )
         {
-            // Séléction de l'Id correspondant au code //
-            QSqlQuery RequeteSelectionJeux ;
-            RequeteSelectionJeux.prepare("SELECT IdJeux, CodeJeu FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
-            RequeteSelectionJeux.bindValue(":CodeDuJeu", ui->LE_Code->text());
-            RequeteSelectionJeux.exec() ;
-            RequeteSelectionJeux.next() ;
-
-            ///// Suppr Hist Interventions //////
-            QSqlQuery RequeteSuppHistInter ;
-            RequeteSuppHistInter.prepare("DELETE FROM intervientionsjeu WHERE Jeux_IdJeux = :LeJeux_IdJeux") ;
-            RequeteSuppHistInter.bindValue(":LeJeux_IdJeux", RequeteSelectionJeux.value(0).toString() );
-            if(!RequeteSuppHistInter.exec())
+            if( RequeteJeuEmprunte.next() )
             {
-                qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked() : RequeteSuppHistInter" << RequeteSuppHistInter.lastError() ;
+                QMessageBox::information(this, "Erreur suppression", "Impossible de supprimer un jeu emprunté.", "Sortir") ;
             }
-            RequeteSuppHistInter.next() ;
-
-            ///// Suppr Hist Emprunt ////////////
-            QSqlQuery RequeteSuppHistEmprunt ;
-            RequeteSuppHistEmprunt.prepare("DELETE FROM emprunts WHERE Jeux_IdJeux = :Jeux_IdDuJeux") ;
-            RequeteSuppHistEmprunt.bindValue(":Jeux_IdDuJeux", RequeteSelectionJeux.value(0).toString());
-            if(!RequeteSuppHistEmprunt.exec())
+            else
             {
-                qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()-RequeteSuppHistEmprunt" << RequeteSuppHistEmprunt.lastError() ;
+                //Test permettant de savoir quel bouton a été appuyé, entre dans cette méthode si le bouton oui a été cliqué
+                if((QMessageBox::information(this, "Confirmation suppression","Voulez-vous vraiment supprimer le jeu "+ui->LE_Nom->text()+"?","Oui", "Non")) == 0)
+                {
+                    // Séléction de l'Id correspondant au code //
+                    QSqlQuery RequeteSelectionJeux ;
+                    RequeteSelectionJeux.prepare("SELECT IdJeux, CodeJeu FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
+                    RequeteSelectionJeux.bindValue(":CodeDuJeu", ui->LE_Code->text());
+                    RequeteSelectionJeux.exec() ;
+                    RequeteSelectionJeux.next() ;
 
+                    ///// Suppr Hist Interventions //////
+                    QSqlQuery RequeteSuppHistInter ;
+                    RequeteSuppHistInter.prepare("DELETE FROM intervientionsjeu WHERE Jeux_IdJeux = :LeJeux_IdJeux") ;
+                    RequeteSuppHistInter.bindValue(":LeJeux_IdJeux", RequeteSelectionJeux.value(0).toString() );
+                    if(!RequeteSuppHistInter.exec())
+                    {
+                        qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked() : RequeteSuppHistInter" << RequeteSuppHistInter.lastError() ;
+                    }
+                    RequeteSuppHistInter.next() ;
+
+                    ///// Suppr Hist Emprunt ////////////
+                    QSqlQuery RequeteSuppHistEmprunt ;
+                    RequeteSuppHistEmprunt.prepare("DELETE FROM emprunts WHERE Jeux_IdJeux = :Jeux_IdDuJeux") ;
+                    RequeteSuppHistEmprunt.bindValue(":Jeux_IdDuJeux", RequeteSelectionJeux.value(0).toString());
+                    if(!RequeteSuppHistEmprunt.exec())
+                    {
+                        qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()-RequeteSuppHistEmprunt" << RequeteSuppHistEmprunt.lastError() ;
+
+                    }
+                    RequeteSuppHistEmprunt.next() ;
+
+                    ///// Suppr Hist Résa ///////////////
+                    QSqlQuery RequeteSuppHistReservation ;
+                    RequeteSuppHistReservation.prepare("DELETE FROM reservation WHERE Jeux_IdJeux = :Jeux_IdLeJeux");
+                    RequeteSuppHistReservation.bindValue(":Jeux_IdLeJeux", RequeteSelectionJeux.value(0).toString());
+                    if(!RequeteSuppHistReservation.exec())
+                    {
+                        qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked() : RequeteSuppHistReservation" << RequeteSuppHistReservation.lastError() ;
+
+                    }
+                    RequeteSuppHistReservation.next() ;
+
+                    //Création de la requête SQL
+                    QSqlQuery RequeteSuppressionJeux ;
+                    //Préparation de la requête SQL
+                    RequeteSuppressionJeux.prepare("DELETE FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
+                    //Copie la valeur récuper sur l'interface dans la variable SQL
+                    RequeteSuppressionJeux.bindValue(":CodeDuJeu", ui->LE_Code->text() );
+                    //Éxécutre la requête, mais affiche une erreur si il y en a une
+                    if (!RequeteSuppressionJeux.exec())
+                    {
+                        //Affiche la dernière erreur
+                        qDebug()<<"F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()-Suppr jeu"<< RequeteSuppressionJeux.lastError();
+                    }
+                    RequeteSuppressionJeux.next() ;
+
+                    //Vider tous les champs après la suppression du jeu
+                    ui->LE_Code->clear();
+                    ui->LE_Createur->clear();
+                    ui->LE_Nom->clear();
+                    ui->LE_CodeClassification->clear();
+                    ui->TxE_Contenu->clear();
+                    ui->TxE_Description->clear();
+                    ui->TxE_Remarques->clear();
+                    ui->SBx_AgeMax->setValue(0);
+                    ui->SBx_AgeMin->setValue(0);
+                    ui->SBx_Caution->setValue(0);
+                    ui->SBx_JoueursMax->setValue(0);
+                    ui->SBx_JoueursMin->setValue(0);
+                    ui->SBx_PrixAchat->setValue(0);
+                    ui->SBx_PrixLocation->setValue(0);
+                    ui->CBx_Classification->setCurrentIndex(0);
+                    ui->CBx_Editeur->setCurrentIndex(0);
+                    ui->CBx_Emplacement->setCurrentIndex(0);
+                    ui->CBx_Etat->setCurrentIndex(0);
+                    ui->CBx_Fournisseur->setCurrentIndex(0);
+                    ui->CBx_Statut->setCurrentIndex(0);
+                    ui->CBx_MotCle1->setCurrentIndex(0);
+                    ui->CBx_MotCle2->setCurrentIndex(0) ;
+                    ui->CBx_MotCle3->setCurrentIndex(0);
+
+                    //QDate DateDefaut ;
+                    //DateDefaut = DateDefaut.currentDate() ;
+                    ui->DtE_Achat->setDate(QDate::currentDate());
+                    // Bloquer les boutons Valider/Annuler et Supprimer
+                    ui->Bt_Valider->setEnabled(false);
+                    ui->Bt_Annuler->setEnabled(false);
+                    ui->Bt_Supprimer->setEnabled(false);
+                    // Autoriser la création d'un nouveau jeu
+                    ui->Bt_Ajouter->setEnabled(true);
+                    // Remettre à jour la liste des jeux puisqu'un jeu a été enlevé de la liste
+                    ui->LE_RechercheNom->clear();
+                    ui->LE_RechercheCode->clear();
+                    this->on_Bt_OK_clicked();
+                }
             }
-            RequeteSuppHistEmprunt.next() ;
-
-            ///// Suppr Hist Résa ///////////////
-            QSqlQuery RequeteSuppHistReservation ;
-            RequeteSuppHistReservation.prepare("DELETE FROM reservation WHERE Jeux_IdJeux = :Jeux_IdLeJeux");
-            RequeteSuppHistReservation.bindValue(":Jeux_IdLeJeux", RequeteSelectionJeux.value(0).toString());
-            if(!RequeteSuppHistReservation.exec())
-            {
-                qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked() : RequeteSuppHistReservation" << RequeteSuppHistReservation.lastError() ;
-
-            }
-            RequeteSuppHistReservation.next() ;
-
-            //Création de la requête SQL
-            QSqlQuery RequeteSuppressionJeux ;
-            //Préparation de la requête SQL
-            RequeteSuppressionJeux.prepare("DELETE FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
-            //Copie la valeur récuper sur l'interface dans la variable SQL
-            RequeteSuppressionJeux.bindValue(":CodeDuJeu", ui->LE_Code->text() );
-            //Éxécutre la requête, mais affiche une erreur si il y en a une
-            if (!RequeteSuppressionJeux.exec())
-            {
-                //Affiche la dernière erreur
-                qDebug()<<"F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()-Suppr jeu"<< RequeteSuppressionJeux.lastError();
-            }
-            RequeteSuppressionJeux.next() ;
-
-            //Vider tous les champs après la suppression du jeu
-            ui->LE_Code->clear();
-            ui->LE_Createur->clear();
-            ui->LE_Nom->clear();
-            ui->LE_CodeClassification->clear();
-            ui->TxE_Contenu->clear();
-            ui->TxE_Description->clear();
-            ui->TxE_Remarques->clear();
-            ui->SBx_AgeMax->setValue(0);
-            ui->SBx_AgeMin->setValue(0);
-            ui->SBx_Caution->setValue(0);
-            ui->SBx_JoueursMax->setValue(0);
-            ui->SBx_JoueursMin->setValue(0);
-            ui->SBx_PrixAchat->setValue(0);
-            ui->SBx_PrixLocation->setValue(0);
-            ui->CBx_Classification->setCurrentIndex(0);
-            ui->CBx_Editeur->setCurrentIndex(0);
-            ui->CBx_Emplacement->setCurrentIndex(0);
-            ui->CBx_Etat->setCurrentIndex(0);
-            ui->CBx_Fournisseur->setCurrentIndex(0);
-            ui->CBx_Statut->setCurrentIndex(0);
-            ui->CBx_MotCle1->setCurrentIndex(0);
-            ui->CBx_MotCle2->setCurrentIndex(0) ;
-            ui->CBx_MotCle3->setCurrentIndex(0);            
-
-            //QDate DateDefaut ;
-            //DateDefaut = DateDefaut.currentDate() ;
-            ui->DtE_Achat->setDate(QDate::currentDate());
-            // Bloquer les boutons Valider/Annuler et Supprimer
-            ui->Bt_Valider->setEnabled(false);
-            ui->Bt_Annuler->setEnabled(false);
-            ui->Bt_Supprimer->setEnabled(false);
-            // Autoriser la création d'un nouveau jeu
-            ui->Bt_Ajouter->setEnabled(true);
-            // Remettre à jour la liste des jeux puisqu'un jeu a été enlevé de la liste
-            ui->LE_RechercheNom->clear();
-            ui->LE_RechercheCode->clear();
-            this->on_Bt_OK_clicked();
+        }
+        else
+        {
+            qDebug() << "F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked() : RequetejeuxEmprunte : " << RequeteJeuEmprunte.lastError().text() ;
         }
     }
 }
