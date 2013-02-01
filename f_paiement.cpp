@@ -166,7 +166,7 @@ void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre)
         ui->CBx_Cartes->addItem(RequeteCartes.value(0).toString()+" ("+RequeteCartes.value(1).toString()+" crédits restants)");
     }
 
-    on_CalculePrix();
+    slot_CalculerPrix();
 }
 
 
@@ -181,7 +181,7 @@ void F_Paiement::on_Bt_Ajouter_clicked()
     QSpinBox* SpinBox;
     SpinBox= new QSpinBox;
 
-    connect(SpinBox,SIGNAL(valueChanged(int)),this,SLOT(on_CalculePrix()));
+    connect(SpinBox,SIGNAL(valueChanged(int)),this,SLOT(slot_CalculerPrix()));
 
     SpinBox->setMaximum(this->Prix);
     SpinBox->setValue(this->Reste);
@@ -232,7 +232,7 @@ void F_Paiement::on_Bt_Ajouter_clicked()
         }
 
     }
-    on_CalculePrix();
+    slot_CalculerPrix();
 }
 
 
@@ -248,7 +248,7 @@ void F_Paiement::on_Bt_AjouterAutres_clicked()
     DoubleSpinBox= new QDoubleSpinBox;
     DoubleSpinBox->setSingleStep(0.01);
 
-    connect(DoubleSpinBox,SIGNAL(valueChanged(double)),this,SLOT(on_CalculePrix()));
+    connect(DoubleSpinBox,SIGNAL(valueChanged(double)),this,SLOT(slot_CalculerPrix()));
 
     DoubleSpinBox->setMaximum(this->Prix*this->PrixCredit);
     DoubleSpinBox->setValue(ui->LE_RestAPayer->text().toFloat());
@@ -257,10 +257,10 @@ void F_Paiement::on_Bt_AjouterAutres_clicked()
     ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,1,DoubleSpinBox);
     this->NombreLignePaiementAutre++;
 
-    on_CalculePrix();
+    slot_CalculerPrix();
 }
 
-void F_Paiement::on_CalculePrix ()
+void F_Paiement::slot_CalculerPrix ()
 {
     int nReste (0);         //reste de crédit à payer
     nReste= this->Prix;     //Prix est le nombre de crédits à payer
@@ -337,7 +337,7 @@ void F_Paiement::on_Bt_Supprimer_clicked()
     ui->Bt_Supprimer->setEnabled(false);
 
     //Calcule le reste à payer
-    on_CalculePrix();
+    slot_CalculerPrix();
 
 }
 
@@ -352,7 +352,7 @@ void F_Paiement::on_Bt_SupprimerAutres_clicked()
     ui->Bt_SupprimerAutres->setEnabled(false);
 
     //Calcule le reste à payer
-    on_CalculePrix();
+    slot_CalculerPrix();
 
 }
 

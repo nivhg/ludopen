@@ -56,11 +56,11 @@ public:
     void ActualiserCBx_MotCle() ;
     
 public slots:
-    void on_ValiderClassification();
-    void on_ValiderEtat();
-    void on_ValiderEmplacement();
-    void on_ValiderMotCle();
-    void on_ValiderStatut();
+    void slot_ValiderClassification();
+    void slot_ValiderEtat();
+    void slot_ValiderEmplacement();
+    void slot_ValiderMotCle();
+    void slot_ValiderStatut();
 
 private slots:
     // METHODEs -----------------------------------------------------------------

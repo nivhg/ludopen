@@ -195,7 +195,7 @@ int F_Retards::RetrouverIdMembre(Courriel * pCourriel)
  *
  * @param pCourriel
  */
-void F_Retards::on_FermerThreadCourriel( Courriel * pCourriel )
+void F_Retards::slot_FermerThreadCourriel( Courriel * pCourriel )
 {
     //On vérifie que le pointeur n'est pas null puis on supprime l'objet.
     if( pCourriel != NULL)
@@ -204,7 +204,7 @@ void F_Retards::on_FermerThreadCourriel( Courriel * pCourriel )
     }
     else
     {
-        qDebug() << "Erreur : F_Retards::on_FermerThreadCourriel : Pointeur retourné est NULL" ;
+        qDebug() << "Erreur : F_Retards::slot_FermerThreadCourriel : Pointeur retourné est NULL" ;
     }
 
     //On deverrouille la liste et ses boutons si tous les objets on été détruit
@@ -225,7 +225,7 @@ void F_Retards::on_FermerThreadCourriel( Courriel * pCourriel )
  *
  * @param pCourriel
  */
-void F_Retards::on_ConfirmerMailEnvoyer( Courriel * pCourriel )
+void F_Retards::slot_ConfirmerMailEnvoyer( Courriel * pCourriel )
 {
     //On vérifie que le pointeur n'est pas null puis on supprime l'objet et on met à  jour la base de donnée pour dire que le mail a bien été envoyé
     if( pCourriel != NULL)
@@ -246,7 +246,7 @@ void F_Retards::on_ConfirmerMailEnvoyer( Courriel * pCourriel )
     }
     else
     {
-        qDebug() << "Erreur : F_Retards::on_ConfirmerMailEnvoyer : Pointeur retourné est NULL" ;
+        qDebug() << "Erreur : F_Retards::slot_ConfirmerMailEnvoyer : Pointeur retourné est NULL" ;
     }
 
 
@@ -269,7 +269,7 @@ void F_Retards::on_ConfirmerMailEnvoyer( Courriel * pCourriel )
  *
  * @param sErreur
  */
-void F_Retards::on_AfficherErreur( QString sErreur )
+void F_Retards::slot_AfficherErreurMail( QString sErreur )
 {
     //Affiche l'erreur en paramètre dans le label prévu à  cette effet
     ui->Lb_Erreur->setText( sErreur ) ;
@@ -356,9 +356,9 @@ void F_Retards::on_PB_Envoyer_clicked()
             pCourriel = new Courriel( RequeteConnexion.record().value(1).toString(), RequeteConnexion.record().value(2).toInt() , RequeteConnexion.record().value(0).toString() ,ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,4)).toString() , sSujetEmail, sCorpsEmail ) ;
 
             //Connect
-            connect( pCourriel, SIGNAL( SignalFermerThread( Courriel * ) ), this, SLOT( on_FermerThreadCourriel( Courriel * ) ) ) ;
-            connect( pCourriel, SIGNAL( SignalMailEnvoyer( Courriel * ) ), this, SLOT( on_ConfirmerMailEnvoyer( Courriel * ) ) ) ;
-            connect( pCourriel, SIGNAL( SignalErreur( QString ) ), this, SLOT( on_AfficherErreur( QString ) ) ) ;
+            connect( pCourriel, SIGNAL( SignalFermerThread( Courriel * ) ), this, SLOT( slot_FermerThreadCourriel( Courriel * ) ) ) ;
+            connect( pCourriel, SIGNAL( SignalMailEnvoyer( Courriel * ) ), this, SLOT( slot_ConfirmerMailEnvoyer( Courriel * ) ) ) ;
+            connect( pCourriel, SIGNAL( SignalErreur( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
 
             //On remplie les vecteur avec l'id du membre et l'adresse de l'objet
             oIdMembreCourriel.IdMembre = this->VecteurIdMembre.at( i ) ;

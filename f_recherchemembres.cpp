@@ -245,7 +245,7 @@ void F_RechercheMembres::on_LE_Nom_textChanged(const QString &arg1)
 
 }
 
-/** Recherche les membres correspondant au champs   chaque fois que le champs est modifiée
+/** Recherche les membres correspondant au champs à chaque fois que le champs est modifié
  *  @param  const QString &arg1
  *  @test   Voir la procédure dans le fichier associé.
  */
@@ -254,14 +254,6 @@ void F_RechercheMembres::on_LE_Code_textEdited(const QString &arg1)
     ui->LE_Nom->clear() ;
 }
 
-/** Met   jour la liste des membres
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_RechercheMembres::on_MaJListeMembres()
-{
-    this->MaJListeMembres() ;
-    this->RechercherParNomEtNumero() ;
-}
 
 /** Envoie un signal avec l'id du membre sélectionner avec le code membre quand ok appuyé
  *  @test   Voir la procédure dans le fichier associé.

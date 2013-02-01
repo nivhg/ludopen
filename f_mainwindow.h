@@ -34,9 +34,9 @@ public:
     ~F_MainWindow();
 
 public slots:
-    void on_ChangerOnglet();
-    void on_Preference() ;
-    void on_DoubleClic_ListeJeux(QString CodeJeu);
+    void slot_ChangerOnglet();
+    void slot_Preferences() ;
+    void slot_DoubleClic_ListeJeux(QString CodeJeu);
 
 private slots:
     void on_Bt_Membre_clicked();
@@ -44,7 +44,7 @@ private slots:
     void on_Bt_FournisseurEditeur_clicked();
     void on_Bt_Abonnements_clicked();
     void on_Bt_Statistiques_clicked();
-    void on_Bt_PostIt_clicked();
+    //void on_Bt_PostIt_clicked();
     void on_TbW_Main_currentChanged(int index);
     void on_Menu_Fichier_Quitter_triggered();
     void on_Menu_Aide_Propos_LudOpen_triggered();

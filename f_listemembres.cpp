@@ -272,7 +272,7 @@ bool F_ListeMembres::AffichageListe()
     QStandardItem * item ;
 
 
-    sRequeteSELECTFROM = "SELECT membres.IdMembre, membres.TitreMembre_IdTitreMembre ,membres.TypeMembres_IdTypeMembres ,membres.Nom, membres.Prenom, membres.Ville, membres.CodeMembre, membres.Telephone, membres.Mobile, membres.Email, membres.NbreRetard, membres.DateInscription FROM membres" ;
+    sRequeteSELECTFROM = "SELECT IdMembre,TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription FROM membres" ;
     sRequeteWHERE = "WHERE" ;
 
     if ( ui->ChBx_Type->isChecked() )
@@ -354,7 +354,7 @@ bool F_ListeMembres::AffichageListe()
         }
     }
 
-    // Vire le dernier mot AND dans la requête WHERE
+    // Vire le dernier mot AND ou WHERE si rien dans la champ WHERE dans la requête WHERE
     sRequeteWHERE.remove(sRequete.size()-3, 5) ;
     sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdMembre ORDER BY IdMembre ASC" ;
 
@@ -420,8 +420,8 @@ bool F_ListeMembres::AffichageListe()
             ModeleMembres.setItem( i, 9, new QStandardItem( query.record().value( 9 ).toString() ) ) ;
             ModeleMembres.setItem( i, 10, new QStandardItem( sNumero.setNum( query.record().value( 10 ).toInt() ) ) ) ;
 
-            RequeteCotisation.prepare( "SELECT abonnements.DateExpiration FROM abonnements "
-                                       "WHERE abonnements.Membres_IdMembre=:IdMembre" ) ;
+            RequeteCotisation.prepare( "SELECT DateExpiration FROM abonnements "
+                                       "WHERE Membres_IdMembre=:IdMembre" ) ;
             RequeteCotisation.bindValue( ":IdMembre", query.record().value( 0 ).toInt() ) ;
 
             if( RequeteCotisation.exec() )
@@ -477,8 +477,8 @@ bool F_ListeMembres::AffichageListe()
             }
 
 
-            RequeteCartes.prepare( "SELECT abonnements.CreditRestant FROM abonnements "
-                                   "WHERE abonnements.Membres_IdMembre=:IdMembre" ) ;
+            RequeteCartes.prepare( "SELECT CreditRestant FROM abonnements "
+                                   "WHERE Membres_IdMembre=:IdMembre" ) ;
             RequeteCartes.bindValue( ":IdMembre", query.record().value( 0 ).toInt() ) ;
 
             if( RequeteCartes.exec() )
@@ -706,7 +706,7 @@ void F_ListeMembres::on_Bt_Exporter_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
-    ecrire << "Nom, Prenom, Ville, Code Membre, Telephone, Email, Nombre de retard \r\n\r\n" ;
+    ecrire << "Nom, Prenom, Ville, Code Membre, Telephone, Email, Nombre de retard\r\n" ;
     for(nNombreLigne = 0; nNombreLigne<ui->TbW_ListeMembre->model()->rowCount(); nNombreLigne++)
     {
         for(nNombreColonne = 1; nNombreColonne<ui->TbW_ListeMembre->model()->columnCount(); nNombreColonne++)

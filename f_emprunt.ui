@@ -240,7 +240,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Nombre de crédit restant :</string>
+           <string>Nombre de crédits restant :</string>
           </property>
          </widget>
         </item>
@@ -269,7 +269,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Nombre de jeux empruntable :</string>
+           <string>Nombre de jeux empruntables :</string>
           </property>
          </widget>
         </item>
@@ -315,7 +315,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Jeux encore chez le membre :</string>
+         <string>Jeux encore chez ce membre :</string>
         </property>
        </widget>
       </item>
@@ -342,7 +342,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Jeux réservés :</string>
+           <string>Jeux réservés par ce membre :</string>
           </property>
          </widget>
         </item>
@@ -360,7 +360,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QCommandLinkButton" name="bt_JeuxReserves">
+         <widget class="QCommandLinkButton" name="Bt_SupprimerReservation">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -413,7 +413,7 @@
            <enum>Qt::LeftToRight</enum>
           </property>
           <property name="text">
-           <string>Remarques sur le membre :</string>
+           <string>Remarques sur ce membre :</string>
           </property>
          </widget>
         </item>
@@ -758,7 +758,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Contenu de la boîte : </string>
+         <string>Contenu de la boîte de ce jeu : </string>
         </property>
        </widget>
       </item>
@@ -785,7 +785,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Remarques sur le jeu :</string>
+           <string>Remarques sur ce jeu :</string>
           </property>
          </widget>
         </item>
@@ -894,7 +894,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QCommandLinkButton" name="bt_NewEmprunt">
+         <widget class="QCommandLinkButton" name="Bt_SupprimerEmpruntAValider">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -922,7 +922,7 @@
        </layout>
       </item>
       <item row="12" column="0">
-       <widget class="QTableView" name="TbV_NewEmprunt">
+       <widget class="QTableView" name="TbV_EmpruntAValider">
         <property name="alternatingRowColors">
          <bool>true</bool>
         </property>

@@ -986,7 +986,6 @@ void F_Reservation::on_Cal_DateRetour_clicked(const QDate &date)
 ////////////////////////////////////////////////////Réserver un jeu//////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Reservation::on_Bt_ValiderReservation_clicked()
-
 {
 
 //S'il un membre est sellectionné
@@ -1044,15 +1043,6 @@ if((MembreActif)!=(""))
         qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked "<< RequeteReservation.lastError();
     }
 
-    //Si le jeu est "Disponible",
-    if(ui->LE_StatutJeu->text()=="Disponible")
-    {
-        //Si oui, mettre son statut à "Réservé"
-        QSqlQuery RequeteStatut;
-        RequeteStatut.prepare("UPDATE `jeux`SET `StatutJeux_IdStatutJeux`=4 WHERE `CodeJeu`=:CodeDuJeu");
-        RequeteStatut.bindValue(":CodeDuJeu",JeuActif);
-        RequeteStatut.exec();
-    }
     this->hide();
     ViderMembre();
 
@@ -1060,11 +1050,9 @@ if((MembreActif)!=(""))
 //sinon
 else
 {
-    qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked ||| Aucun membre sellectionné !!!";
+    qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked ||| Aucun membre sélectionné !!!";
 }
 }
-
-
 
 
 

@@ -109,35 +109,35 @@ private slots:
 
     void on_TbV_JeuxReserves_clicked(const QModelIndex &index);
 
-    void on_TbV_NewEmprunt_clicked(const QModelIndex &index);
+    void on_TbV_EmpruntAValider_clicked(const QModelIndex &index);
 
-    void on_bt_JeuxReserves_clicked();
+    void on_Bt_SupprimerReservation_clicked();
 
-    void on_bt_NewEmprunt_clicked();
+    void on_Bt_SupprimerEmpruntAValider_clicked();
 
 private:
     Ui::F_Emprunt *ui;
 
 ////! Attribut du table view des emprunts
     //MonTableView* TbV_JeuxReserves;
-//! Code du membre actif sur la fênentre
+//! Code du membre actif sur la fenêtre
     QString MembreActif;
-//! Code du jeu actif sur la fênentre
+//! Code du jeu actif sur la fenêtre
     QString JeuActif;
 //! modèle du TableView des membres
-    QStandardItemModel * ModelMembre;
+    QStandardItemModel * ModeleListeDesMembres;
 //! Vecteur des nouveau emprunts
     QVector <Emprunts> NouveauEmprunts;
 //! modèle du TableView des nouveaux emprunts
-    QStandardItemModel * ModelNewEmprunts;
+    QStandardItemModel * ModeleEmpruntsAValider;
 //! modèle du TableView des jeux réservés
-    QStandardItemModel * ModelJeuReserves;
+    QStandardItemModel * ModeleJeuxReserves;
 //! modèle du TableView des jeux empruntés
-    QStandardItemModel * ModelJeuEmpruntes;
+    QStandardItemModel * ModeleJeuxEmpruntes;
 //! Attibut contenant l'état de la cotisation d'un membre (vrai : à jours/ faut : Expirée)
     bool EtatCotisationMembre ;
 //! Nombre de ligne dans le tableau des nouveau emprunts
-    int NmbLigneNewEmprunts ;
+    int NbLignesEmpruntsAValider ;
 //! Pointeur qui pointe sur la fenêtre du paiement
     F_Paiement * pPaiement;
 

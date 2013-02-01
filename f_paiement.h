@@ -28,7 +28,7 @@ private slots:
     void on_Bt_Ajouter_clicked();
     void on_Bt_Supprimer_clicked();
     void on_TW_Paiement_clicked(const QModelIndex &index);
-    void on_CalculePrix ();
+    void slot_CalculerPrix ();
     void on_Bt_AjouterAutres_clicked();
     void on_TW_PaiementAutre_clicked(const QModelIndex &index);
     void on_Bt_SupprimerAutres_clicked();

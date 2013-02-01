@@ -155,15 +155,15 @@ F_Preferences::F_Preferences(QWidget *parent) :
     this->MettreAJourBDD();
     this->AfficherInfoDemarrage();
 
-    connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pPaiementMembreAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeEmpruntAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pEtatJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
+    connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pPaiementMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeEmpruntAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pEtatJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
 
     ui->label->hide();
     ui->label_2->hide();
@@ -188,7 +188,7 @@ F_Preferences::~F_Preferences()
  *
  *  @see    MettreAJourBDD()
  */
-void F_Preferences::on_Valider()
+void F_Preferences::slot_Valider()
 {
     this->MettreAJourBDD();
 }

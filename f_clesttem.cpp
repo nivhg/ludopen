@@ -120,14 +120,14 @@ F_CLESTTEM::F_CLESTTEM(QWidget *parent) :
     ui->TbV_LieuxLudo->verticalHeader()->setVisible(false);
 
     /*----------------------------------Connect-----------------------------------*/
-    connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pEtatJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeJeuAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pTypeEmpruntAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
-    connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(on_Valider()));
+    connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pEtatJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pTypeEmpruntAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
 
     this->MettreAJourBDD();
 }
@@ -145,7 +145,7 @@ F_CLESTTEM::~F_CLESTTEM()
  *  @brief  Slot qui récupère un signal pour la classe F_Preferences.
  *
  */
-void F_CLESTTEM::on_Valider()
+void F_CLESTTEM::slot_Valider()
 {
     this->MettreAJourBDD();
 }

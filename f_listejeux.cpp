@@ -500,7 +500,7 @@ void F_ListeJeux::on_TbV_Recherche_doubleClicked(const QModelIndex &index)
  */
 void F_ListeJeux::RAZCriteres()
 {
-    qDebug()<<"F_ListeJeux::RAZCriteres() - Début";
+    //qDebug()<<"F_ListeJeux::RAZCriteres() - Début";
     ///////////////////////////////////////////////
     ////////// VIDER LES COMBO BOX /////////////
     /////////////////////////////////////////////
@@ -718,5 +718,5 @@ void F_ListeJeux::RAZCriteres()
     }
 
     ui->Lb_Resultat->setNum( NumeroLigne ) ;
-    qDebug()<<"F_ListeJeux::RAZCriteres() - Fin";
+    //qDebug()<<"F_ListeJeux::RAZCriteres() - Fin";
 }

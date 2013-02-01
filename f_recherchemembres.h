@@ -78,11 +78,6 @@ public:
 signals:
    void SignalRenvoieIdMembre (unsigned int) ;
 
-public slots:
-    //! Met à  jour la liste des membres
-    void on_MaJListeMembres () ;
-
-    
 private slots:
 
     //! Selectionne un membre avec un double click

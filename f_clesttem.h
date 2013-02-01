@@ -57,7 +57,7 @@ public slots:
      *  @brief Slot qui récupère un signal pour la classe F_Preferences.
      *
      */
-    void on_Valider();
+    void slot_Valider();
 
 private slots:
     // METHODEs ----------------------------------------------------------------

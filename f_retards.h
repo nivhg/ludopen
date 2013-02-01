@@ -65,21 +65,21 @@ public slots :
      *
      * @param pCourriel
      */
-    void on_FermerThreadCourriel( Courriel * pCourriel ) ;
+    void slot_FermerThreadCourriel( Courriel * pCourriel ) ;
 
     /**
      * @brief Permet de supprimer un objet dynamique de type Courriel une fois que le mail est envoyé
      *
      * @param pCourriel
      */
-    void on_ConfirmerMailEnvoyer( Courriel * pCourriel ) ;
+    void slot_ConfirmerMailEnvoyer( Courriel * pCourriel ) ;
 
     /**
      * @brief Afficher les erreurs qu'il peut y avoir lors de l'envoie d'un mail
      *
      * @param sErreur
      */
-    void on_AfficherErreur( QString sErreur ) ;
+    void slot_AfficherErreurMail( QString sErreur ) ;
 
 private slots:
     /**

@@ -98,22 +98,22 @@ public:
 public slots:
 
     //! Permet l'ajout d'un type
-    void on_ChoisirNouveauType () ;
+    void slot_ChoisirNouveauType () ;
 
     //! Permet l'ajout d'un titre
-    void on_ChoisirNouveauTitre () ;
+    void slot_ChoisirNouveauTitre () ;
 
     //! Recupere l'id d'un membre pour l'afficher
-    void on_AfficherMembre (unsigned int nIdMembre) ;
+    void slot_AfficherMembre (unsigned int nIdMembre) ;
 
     //! Acualise les abonnements du membre sélectionné
-    void on_ActualiserAbonnements() ;
+    void slot_ActualiserAbonnements() ;
 
     //! Permet l'ajout d'une ville
-    void on_ValiderAjoutVille() ;
+    void slot_ValiderAjoutVille() ;
 
     //! Permet l'annulation de l'ajour d'une ville
-    void on_AnnulerAjoutVille() ;
+    void slot_AnnulerAjoutVille() ;
     
 private slots:
     //! Permet l'ajout d'un membre

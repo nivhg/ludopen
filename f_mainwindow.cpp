@@ -8,7 +8,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui(new Ui::F_MainWindow)
 {
     ui->setupUi(this);
-    //qDebug()<<"Constructeur F_MainWindow = Début";
+    qDebug()<<"Constructeur F_MainWindow = Début";
     ui->centralWidget->setLayout(ui->gridLayout);
 
     ui->menuImprimer->setEnabled(false);
@@ -103,17 +103,22 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //PostIt
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
 
-    connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(on_ChangerOnglet()));
-    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this->pMembres, SLOT( on_AfficherMembre( uint ) ) ) ;
-    connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this->pAdministrerMembres, SLOT( on_AfficherMembre( uint ) ) ) ;
-    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_ChangerOnglet() ) ) ;
+    connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
+
+    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+    connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this->pAdministrerMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+
+    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( slot_ChangerOnglet() ) ) ;
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
-    connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( on_DoubleClic_ListeJeux(QString) )) ;
+
+    //connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
+    qDebug()<<"Constructeur F_MainWindow = avant connect";
+    connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
 
     // Afficher les post-it au démarage de l'application
     ui->TbW_Main->setCurrentIndex(9);
 
-    //qDebug()<<"Constructeur F_MainWindow = OK";
+    qDebug()<<"Constructeur F_MainWindow = OK";
 }
 
 F_MainWindow::~F_MainWindow()
@@ -121,12 +126,13 @@ F_MainWindow::~F_MainWindow()
     delete ui;
 }
 
-void F_MainWindow::on_ChangerOnglet()
+void F_MainWindow::slot_ChangerOnglet()
 {
     ui->TbW_Main->setCurrentIndex( 0 ) ;
 }
 
-void F_MainWindow::on_Preference()
+// Si les préférencslot_Preferences, mettre à jour certains affichages sur certaines fenêtres
+void F_MainWindow::slot_Preferences()
 {
     this->pAdministrerMembres->MaJTitre() ;
     this->pAdministrerMembres->MaJType() ;
@@ -196,6 +202,7 @@ void F_MainWindow::on_Bt_Statistiques_clicked()
     this->pStatistiques->setVisible(true);
 }
 
+/*
 void F_MainWindow::on_Bt_PostIt_clicked()
 {
     this->pAdministrerMembres->setVisible(false);
@@ -207,6 +214,7 @@ void F_MainWindow::on_Bt_PostIt_clicked()
     this->pStatistiques->setVisible(false);
     this->pPostIt->setVisible(true);
 }
+*/
 
 void F_MainWindow::on_Bt_ListeMembres_clicked()
 {
@@ -299,7 +307,7 @@ void F_MainWindow::on_Menu_Edition_Preferences_triggered()
     this->pPreferences = new F_Preferences;
     this->pPreferences->setWindowTitle("Préférences");
     this->pPreferences->setWindowModality(Qt::ApplicationModal);
-    connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( on_Preference() ) ) ;
+    connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preference() ) ) ;
 
     this->pPreferences->show();
 }
@@ -318,7 +326,7 @@ void F_MainWindow::on_Menu_Aide_Aide_triggered()
  * grâce à un signal envoyé par f_listejeux.
  * @param index Ligne choisie dans le modèle associé au tableau TbV_Recherche
  */
-void F_MainWindow::on_DoubleClic_ListeJeux(QString CodeJeu)
+void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
 {
     // Indiquer à l'onglet jeu quel code jeu afficher
     this->pJeux->set_JeuEnConsultation(CodeJeu);

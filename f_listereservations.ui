@@ -34,6 +34,16 @@
      <layout class="QGridLayout" name="gridLayout_6">
       <item row="0" column="0">
        <layout class="QGridLayout" name="GLay2">
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_Lieux"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="ChBx_NomAdherent">
+          <property name="text">
+           <string>Nom adhérent</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QCheckBox" name="ChBx_Lieux">
           <property name="text">
@@ -41,35 +51,32 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Lieu"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="ChBx_Nom">
-          <property name="text">
-           <string>Nom membre</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1" colspan="2">
-         <widget class="QLineEdit" name="LE_Nom"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="ChBx_Prenom">
-          <property name="text">
-           <string>Prénom         </string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QLineEdit" name="LE_Prenom"/>
+         <widget class="QLineEdit" name="LE_NomAdherent"/>
         </item>
        </layout>
       </item>
       <item row="0" column="2">
        <layout class="QGridLayout" name="GLay3">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="ChBx_StatutJeu">
+          <property name="text">
+           <string>Statut du jeu</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QSpinBox" name="SBx_NbreRetard">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="CBx_Retards">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <item>
            <property name="text">
             <string>&lt;</string>
@@ -97,32 +104,18 @@
           </item>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Titre"/>
-        </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="ChBx_NbreRetard">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Nbre Retard(s) </string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="ChBx_Retard">
-          <property name="text">
-           <string>Jeux en retard</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_Titre">
-          <property name="text">
-           <string>Titre</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QSpinBox" name="SBx_NbreRetard"/>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_StatutJeu"/>
         </item>
        </layout>
       </item>
@@ -133,7 +126,7 @@
           <item>
            <widget class="QCheckBox" name="ChBx_DateReservation">
             <property name="text">
-             <string>Date réservation</string>
+             <string>Date de la réservation </string>
             </property>
            </widget>
           </item>
@@ -169,14 +162,14 @@
         <item row="1" column="0" colspan="2">
          <layout class="QHBoxLayout" name="HLay2">
           <item>
-           <widget class="QCheckBox" name="ChBx_DateNaissance">
+           <widget class="QCheckBox" name="ChBx_DateEmpruntPrevue">
             <property name="text">
-             <string>Date naissance de</string>
+             <string>Date prévue d'emprunt</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="DtE_DN_Debut">
+           <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Debut">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -193,7 +186,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QDateEdit" name="DtE_DN_Fin">
+           <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Fin">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -208,6 +201,9 @@
          <layout class="QHBoxLayout" name="HLay3">
           <item>
            <widget class="QCheckBox" name="ChBx_Cotisation">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Etat de la cotisation      </string>
             </property>
@@ -215,6 +211,9 @@
           </item>
           <item>
            <widget class="QComboBox" name="CBx_Cotisation">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <item>
              <property name="text">
               <string>Expirée</string>
@@ -254,6 +253,9 @@
         </item>
         <item row="4" column="1">
          <widget class="QPushButton" name="Bt_Exporter">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="maximumSize">
            <size>
             <width>150</width>

@@ -81,7 +81,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ////////////////////////////////////
     //////// Remplir EtatJeu ///////////
     ////////////////////////////////////
-    connect(this->pEtatAjMod, SIGNAL(SignalValider()), this, SLOT(on_ValiderEtat()));
+    connect(this->pEtatAjMod, SIGNAL(SignalValider()), this, SLOT(slot_ValiderEtat()));
     this->ActualiserCBX_Etat();
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
     this->pEtatAjMod->hide();
@@ -89,7 +89,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
    /////////////////////////////////////////
    /////////Remplir StatutJeu//////////////
    ///////////////////////////////////////
-    connect(this->pStatutAjMod, SIGNAL(SignalValider()), this, SLOT(on_ValiderStatut()));
+    connect(this->pStatutAjMod, SIGNAL(SignalValider()), this, SLOT(slot_ValiderStatut()));
     this->ActualiserCBx_Statut();
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
     this->pStatutAjMod->hide();
@@ -111,7 +111,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
   ////////////////////////////////////////////
   ///////// Classification //////////////////
   //////////////////////////////////////////
-    connect(this->pClassificationAjMod, SIGNAL(SignalValider()), this, SLOT(on_ValiderClassification()));
+    connect(this->pClassificationAjMod, SIGNAL(SignalValider()), this, SLOT(slot_ValiderClassification()));
     this->ActualiserCBx_Classification();
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
     this->pClassificationAjMod->hide();
@@ -119,7 +119,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
   ////////////////////////////////////////////
   ///////// Emplacement /////////////////////
   //////////////////////////////////////////
-    connect(this->pEmplacementAjMod, SIGNAL(SignalValider()), this, SLOT(on_ValiderEmplacement()));
+    connect(this->pEmplacementAjMod, SIGNAL(SignalValider()), this, SLOT(slot_ValiderEmplacement()));
     this->ActualiserCBx_Emplacement();
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
     this->pEmplacementAjMod->hide();
@@ -127,7 +127,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
   ////////////////////////////////////////////
   /////////// Mot Clés //////////////////////
     ////////////////////////////////////////
-    connect(this->pMotCleAjMod, SIGNAL(SignalValider()), this, SLOT(on_ValiderMotCle()));
+    connect(this->pMotCleAjMod, SIGNAL(SignalValider()), this, SLOT(slot_ValiderMotCle()));
     this->ActualiserCBx_MotCle();
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
     this->pMotCleAjMod->hide();
@@ -178,30 +178,30 @@ F_AjoutSuppModifJeux::~F_AjoutSuppModifJeux()
     delete ui;
 }
 //###################################################################
-void F_AjoutSuppModifJeux::on_ValiderClassification()
+void F_AjoutSuppModifJeux::slot_ValiderClassification()
 {
     this->ActualiserCBx_Classification();
 }
 //###################################################################
-void F_AjoutSuppModifJeux::on_ValiderEmplacement()
+void F_AjoutSuppModifJeux::slot_ValiderEmplacement()
 {
     this->ActualiserCBx_Emplacement();
     ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->count() - 2);
 }
 //###################################################################
-void F_AjoutSuppModifJeux::on_ValiderEtat()
+void F_AjoutSuppModifJeux::slot_ValiderEtat()
 {
     this->ActualiserCBX_Etat();
     ui->CBx_Etat->setCurrentIndex(ui->CBx_Etat->count() - 2);
 }
 //###################################################################
-void F_AjoutSuppModifJeux::on_ValiderMotCle()
+void F_AjoutSuppModifJeux::slot_ValiderMotCle()
 {
     this->ActualiserCBx_MotCle();
     ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->count() - 2);
 }
 //###################################################################
-void F_AjoutSuppModifJeux::on_ValiderStatut()
+void F_AjoutSuppModifJeux::slot_ValiderStatut()
 {
     this->ActualiserCBx_Statut();
     ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->count() - 2);

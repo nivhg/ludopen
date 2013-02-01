@@ -97,12 +97,12 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     this->Lb_NomVille->setGeometry( 10, 0, 200, this->Lb_NomVille->height() ) ;
 
     //Connect--------------------------------------------------------------------------------------------------
-    connect( this->pRechercheMembres, SIGNAL( SignalRenvoieIdMembre( uint ) ), this, SLOT( on_AfficherMembre( uint ) ) ) ;
-    connect( this->pTitreAjMod, SIGNAL(SignalValider()), this, SLOT( on_ChoisirNouveauTitre() ) ) ;
-    connect( this->pTypeAjMod, SIGNAL(SignalValider()), this, SLOT( on_ChoisirNouveauType() ) ) ;
-    connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( on_ActualiserAbonnements() ) ) ;
-    connect( this->Bt_ValiderVille, SIGNAL( clicked() ), this, SLOT( on_ValiderAjoutVille() ) ) ;
-    connect( this->Bt_AnnuerVille, SIGNAL( clicked() ), this, SLOT(on_AnnulerAjoutVille()) ) ;
+    connect( this->pRechercheMembres, SIGNAL( SignalRenvoieIdMembre( uint ) ), this, SLOT( slot_AfficherMembre( uint ) ) ) ;
+    connect( this->pTitreAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauTitre() ) ) ;
+    connect( this->pTypeAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauType() ) ) ;
+    connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( slot_ActualiserAbonnements() ) ) ;
+    connect( this->Bt_ValiderVille, SIGNAL( clicked() ), this, SLOT( slot_ValiderAjoutVille() ) ) ;
+    connect( this->Bt_AnnuerVille, SIGNAL( clicked() ), this, SLOT(slot_AnnulerAjoutVille()) ) ;
 
     //Initialisation de la liste de titres et de types
     this->MaJTitre() ;
@@ -1083,7 +1083,7 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
 /** Permet l'ajout d'un type
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_ChoisirNouveauType ()
+void F_Membres::slot_ChoisirNouveauType ()
 {
     this->MaJType() ;
     ui->CBx_Type->setCurrentIndex( this->VectorType.size()- 2 ) ;
@@ -1092,7 +1092,7 @@ void F_Membres::on_ChoisirNouveauType ()
 /** Permet l'ajout d'un titre
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_ChoisirNouveauTitre ()
+void F_Membres::slot_ChoisirNouveauTitre ()
 {
     this->MaJTitre() ;
     ui->CBx_Titre->setCurrentIndex( this->VectorTitre.size()- 2 ) ;
@@ -1103,7 +1103,7 @@ void F_Membres::on_ChoisirNouveauTitre ()
  *  @param  unsigned int nIdMembre
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_AfficherMembre( unsigned int nIdMembre )
+void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
 {
     this->VerrouillerAbonnements( false ) ;
     this->VerrouillerJeux( false ) ;
@@ -1115,7 +1115,7 @@ void F_Membres::on_AfficherMembre( unsigned int nIdMembre )
  *  @param  unsigned int nIdMembre
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_ActualiserAbonnements()
+void F_Membres::slot_ActualiserAbonnements()
 {
     this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
 }
@@ -1123,7 +1123,7 @@ void F_Membres::on_ActualiserAbonnements()
 /** Permet l'ajout d'une ville
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_ValiderAjoutVille()
+void F_Membres::slot_ValiderAjoutVille()
 {
     ui->CBx_Ville->insertItem( ui->CBx_Ville->count(), this->LE_AjoutVille->text() ) ;
     ui->CBx_Ville->setCurrentIndex( ui->CBx_Ville->count() - 1 );
@@ -1134,7 +1134,7 @@ void F_Membres::on_ValiderAjoutVille()
 /** Permet l'annulation de l'ajour d'une ville
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_Membres::on_AnnulerAjoutVille()
+void F_Membres::slot_AnnulerAjoutVille()
 {
     this->LE_AjoutVille->clear() ;
     this->oFenetreAjoutVille->hide() ;

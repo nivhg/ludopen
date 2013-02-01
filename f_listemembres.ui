@@ -131,7 +131,7 @@
         <item row="2" column="0">
          <widget class="QCheckBox" name="ChBx_Retard">
           <property name="text">
-           <string>Jeux en retard</string>
+           <string>Adhérents ayant 1 emprunt</string>
           </property>
          </widget>
         </item>

@@ -32,7 +32,7 @@ public:
     int EmplacementTitreVector( unsigned int nIdTitre ) ;
 
     //! Met à jour la liste des Titres depuis la base de données
-    void MaJTitre () ;
+    void MiseAJourStatutJeu () ;
 
     //! Met à jour la liste des Lieuxs depuis la base de données
     void MaJLieux () ;
@@ -51,17 +51,13 @@ private slots:
 
     void on_CBx_Lieux_activated(int index);
 
-    void on_ChBx_Nom_clicked();
+    void on_ChBx_NomAdherent_clicked();
 
-    void on_LE_Nom_textEdited(const QString &arg1);
+    void on_LE_NomAdherent_textEdited(const QString &arg1);
 
-    void on_ChBx_Prenom_clicked();
+    void on_ChBx_StatutJeu_clicked();
 
-    void on_LE_Prenom_textEdited(const QString &arg1);
-
-    void on_ChBx_Titre_clicked();
-
-    void on_CBx_Titre_currentIndexChanged(int index);
+    void on_CBx_StatutJeu_currentIndexChanged(int index);
 
     void on_ChBx_NbreRetard_clicked();
 
@@ -77,11 +73,11 @@ private slots:
 
     void on_DtE_DateResa_Fin_dateChanged(const QDate &date);
 
-    void on_ChBx_DateNaissance_clicked();
+    void on_ChBx_DateEmpruntPrevue_clicked();
 
-    void on_DtE_DN_Debut_dateChanged(const QDate &date);
+    void on_DtE_DateEmpruntPrevue_Debut_dateChanged(const QDate &date);
 
-    void on_DtE_DN_Fin_dateChanged(const QDate &date);
+    void on_DtE_DateEmpruntPrevue_Fin_dateChanged(const QDate &date);
 
     void on_ChBx_Cotisation_clicked();
 
