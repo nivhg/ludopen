@@ -39,6 +39,9 @@
         </item>
         <item row="1" column="0">
          <widget class="QCheckBox" name="ChBx_NomAdherent">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Nom adhérent</string>
           </property>
@@ -47,7 +50,7 @@
         <item row="0" column="0">
          <widget class="QCheckBox" name="ChBx_Lieux">
           <property name="text">
-           <string>Lieu</string>
+           <string>Lieu de la réservation</string>
           </property>
          </widget>
         </item>
@@ -60,6 +63,9 @@
        <layout class="QGridLayout" name="GLay3">
         <item row="0" column="0">
          <widget class="QCheckBox" name="ChBx_StatutJeu">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Statut du jeu</string>
           </property>
@@ -115,7 +121,11 @@
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_StatutJeu"/>
+         <widget class="QComboBox" name="CBx_StatutJeu">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -163,6 +173,9 @@
          <layout class="QHBoxLayout" name="HLay2">
           <item>
            <widget class="QCheckBox" name="ChBx_DateEmpruntPrevue">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Date prévue d'emprunt</string>
             </property>
@@ -170,6 +183,9 @@
           </item>
           <item>
            <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Debut">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -187,6 +203,9 @@
           </item>
           <item>
            <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Fin">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
             </property>
@@ -237,6 +256,9 @@
          <layout class="QHBoxLayout" name="HLay">
           <item>
            <widget class="QPushButton" name="Bt_Deselection">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="text">
              <string>Tous désélectionner</string>
             </property>
@@ -246,6 +268,9 @@
         </item>
         <item row="3" column="0">
          <widget class="QPushButton" name="Bt_RAZ">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Remise à zéro de critères</string>
           </property>
@@ -342,7 +367,7 @@
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <attribute name="horizontalHeaderVisible">
-      <bool>false</bool>
+      <bool>true</bool>
      </attribute>
      <attribute name="horizontalHeaderHighlightSections">
       <bool>true</bool>

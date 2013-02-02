@@ -29,9 +29,9 @@ public:
     int EmplacementLieuxVector( unsigned int nIdLieux ) ;
 
     //! Recupere l'emplacement d'un type dans un vecteur en fonction de son id
-    int EmplacementTitreVector( unsigned int nIdTitre ) ;
+    int EmplacementStatutDuJeuVector( unsigned int nIdStatutDuJeu ) ;
 
-    //! Met à jour la liste des Titres depuis la base de données
+    //! Met à jour la liste des StatutDuJeus depuis la base de données
     void MiseAJourStatutJeu () ;
 
     //! Met à jour la liste des Lieuxs depuis la base de données
@@ -95,9 +95,9 @@ private:
     Ui::F_ListeReservations *ui;
     // Modèle pour l'affichage et le tri du tableau des réservations
     QStandardItemModel ModeleReservations ;
-    QVector<Type> VectorLieux ;                  //! Vecteur contenant la liste des Lieux (id, nom)
-    QVector<Titre> VectorTitre ;                //! Vecteur contenant la liste des titres (id, nom)
-    QVector<int> VecteurListeReservations ;     //! Vecteur conteant la liste des id des membres  
+    QVector<Type> VectorLieux ;                 //! Vecteur contenant la liste des Lieux (id, nom)
+    QVector<StatutDuJeu> VectorStatutDuJeu ;    //! Vecteur contenant la liste des titres (id, nom)
+    QVector<int> VecteurListeReservations ;     //! Vecteur conteant la liste des id des réservation
 };
 
 #endif // F_LISTERESERVATIONS_H

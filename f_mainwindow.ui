@@ -251,8 +251,8 @@ Cotisations</string>
    </widget>
    <addaction name="menuFichier"/>
    <addaction name="menu_Edition"/>
-   <addaction name="menuAide"/>
    <addaction name="menuImprimer"/>
+   <addaction name="menuAide"/>
   </widget>
   <action name="Menu_Fichier_Quitter">
    <property name="text">

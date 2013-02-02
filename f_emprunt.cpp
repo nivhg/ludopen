@@ -80,6 +80,9 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     ui->TbV_Recherche->setModel(this->ModeleListeDesMembres);
     //Met le TableView en lecture seule*/
     ui->TbV_Recherche->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_Recherche->setSortingEnabled(true);
+
     //Initialise le tableau avec tous les membres
     on_LE_RechercheMembre_textChanged("");
 
@@ -88,9 +91,11 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     //Associe le modèle au TableView
     ui->TbV_EmpruntAValider->setModel(this->ModeleEmpruntsAValider);
     //Met le TableView en lecture seule
-    ui->TbV_Recherche->setEditTriggers(0);
-    //Initialise les colones du TableView des nouveaux emprunts
+    ui->TbV_EmpruntAValider->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_EmpruntAValider->setSortingEnabled(true);
 
+    //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleEmpruntsAValider->setColumnCount(4);
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(0, new QStandardItem("Code"));
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
@@ -104,10 +109,12 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
 
     //Création d'un modèle pour le TableView des jeux empruntés
     this->ModeleJeuxEmpruntes = new QStandardItemModel() ;
-    //Associe le mod?l au TableView
+    //Associe le mod7l au TableView
     ui->TbV_JeuxMembres->setModel(this->ModeleJeuxEmpruntes);
     //Met le TableView en lecture seule
     ui->TbV_JeuxMembres->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_JeuxMembres->setSortingEnabled(true);
     //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleJeuxEmpruntes->setColumnCount(4);
     this->ModeleJeuxEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
@@ -123,6 +130,8 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     ui->TbV_JeuxReserves->setModel(this->ModeleJeuxReserves);
     //Met le TableView en lecture seule
     ui->TbV_JeuxReserves->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_JeuxReserves->setSortingEnabled(true);
 
     //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleJeuxReserves->setColumnCount(5);
@@ -332,16 +341,14 @@ void F_Emprunt::AfficherJeuxReserve()
 
         if(Requetejeu.size()==0)
         {
-
             this->ModeleJeuxReserves->setData(ModeleJeuxReserves->index( NbrTotalDeJeuxDejaSurCeCompteAdherent,3),QColor(Qt::green), Qt::BackgroundColorRole);
-
         }
         else
         {
             this->ModeleJeuxReserves->setData(ModeleJeuxReserves->index( NbrTotalDeJeuxDejaSurCeCompteAdherent,3),QColor(Qt::red), Qt::BackgroundColorRole);
         }
 
-         NbrTotalDeJeuxDejaSurCeCompteAdherent++;
+        NbrTotalDeJeuxDejaSurCeCompteAdherent++;
     }
 }
 
@@ -1376,30 +1383,6 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
             }
             else
             {
-                /*
-                Emprunts Emprunt;
-                //Récupération de la date du jour
-                QDate DateActuelle;
-                DateActuelle=DateActuelle.currentDate();
-
-                //Remplissage de l'emprunt dans le Vecteur Emprunt
-                Emprunt.idJeu= IdDuJeu;
-                Emprunt.idMembre= IdDuMembre;
-                Emprunt.DateRetourPrevu= ui->DtE_Retour->date();
-                Emprunt.DateEmprunt= DateActuelle;
-                Emprunt.idTypeEmprunt= ui->CBx_TypeEmprunt->currentIndex()+1;
-                Emprunt.PrixCaution= ui->Le_PrixCautionARemplir->text().toInt();
-                Emprunt.PrixEmprunt= ui->Le_PrixEmpruntARemplir->text().toInt();
-                this->NouveauEmprunts.push_back(Emprunt);
-
-                ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(ui->LE_CodeJeu->text()));
-                ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,1, new QStandardItem(ui->Le_NomJeuARemplir->text()));
-                ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem(this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("ddd d MMMM yyyy") ));
-                ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,3, new QStandardItem(ui->Le_PrixEmpruntARemplir->text()));
-
-                this->NbLignesEmpruntsAValider++;
-                ViderJeu();
-*/
                 //Modifier la réservation de ce jeu pour qu'il soit marqué "Emprunté"
                 //et n'apparaisse plus dans les jeux réservés pour cet adhérent
                 QSqlQuery RequeteJeuEmprunte;
@@ -1449,12 +1432,13 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
     //Calcule du nombre de crédits à demander
     int NbCredits (0);
-    for(register int i=0;i<this->NbLignesEmpruntsAValider;i++)
+    for(register int i=0 ; i <= this->NbLignesEmpruntsAValider ; i++)
     {
         // certains jeux coutent plus de crédit que d'autres pour être empruntés
         NbCredits=NbCredits+ this->ModeleEmpruntsAValider->index(i,3).data().toInt();
     }
 
+    //qDebug()<<" F_Emprunt::on_Bt_Ajouter_clicked => NbLignesEmpruntsAValider=" << NbLignesEmpruntsAValider << "NbCredits=" << NbCredits ;
     //Si le le prix des nouveaux emprunts est plus cher que les crédits restants, alors
     if (NbCredits>ui->Le_CreditRestantARemplir->text().toInt())
     {
@@ -1487,9 +1471,9 @@ void F_Emprunt::on_Bt_ValiderEmprunt_clicked()
 {
     //Calcule du nombre de crédits à demander
     int NbCredits (0);
-    for(register int i=0 ; i<this->NbLignesEmpruntsAValider ; i++)
+    for(register int i=0 ; i < this->NbLignesEmpruntsAValider ; i++)
     {
-        NbCredits=NbCredits+ this->ModeleEmpruntsAValider->index(i,3).data().toInt();
+        NbCredits = NbCredits + this->ModeleEmpruntsAValider->index(i,3).data().toInt();
     }
 
     pPaiement->setWindowModality(Qt::ApplicationModal);

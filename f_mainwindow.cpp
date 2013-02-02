@@ -8,7 +8,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui(new Ui::F_MainWindow)
 {
     ui->setupUi(this);
-    qDebug()<<"Constructeur F_MainWindow = Début";
+    //qDebug()<<"Constructeur F_MainWindow = Début";
     ui->centralWidget->setLayout(ui->gridLayout);
 
     ui->menuImprimer->setEnabled(false);
@@ -104,21 +104,16 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
 
     connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
-
     connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this->pAdministrerMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
-
     connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( slot_ChangerOnglet() ) ) ;
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
-
-    //connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
-    qDebug()<<"Constructeur F_MainWindow = avant connect";
     connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
 
     // Afficher les post-it au démarage de l'application
     ui->TbW_Main->setCurrentIndex(9);
 
-    qDebug()<<"Constructeur F_MainWindow = OK";
+    //qDebug()<<"Constructeur F_MainWindow = OK";
 }
 
 F_MainWindow::~F_MainWindow()
@@ -355,7 +350,7 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
     QMessageBox APropos;
 
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\"Ludopen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2012.12.22<br>"
+                  "LudOpen version 2013.02.02<br>"
                   "Programme créé avec Qt Creator 2.4.1 - Qt 4.8.1<br><br>"
                   "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));

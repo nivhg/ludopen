@@ -48,15 +48,17 @@ F_Jeux::F_Jeux(QWidget *parent) :
    ///////////////////////////////////////////////////////
    
    //Création d'un model pour le TableView des jeux
-       this->ModelJeu = new QStandardItemModel() ;
+   this->ModelJeu = new QStandardItemModel() ;
    //Associe le modèl au TableView
-       ui->TbV_NomJeux->setModel(this->ModelJeu);
-    // Mise en lecture seule
-       ui->TbV_NomJeux->setEditTriggers(0);
+   ui->TbV_NomJeux->setModel(this->ModelJeu);
+   // Mise en lecture seule
+   ui->TbV_NomJeux->setEditTriggers(0);
+   // Autorise le tri pour ce tableau
+   ui->TbV_NomJeux->setSortingEnabled(true);
    // Initialise la table view avec tout les jeux
-       on_Le_recherchenom_textChanged("") ;
+   on_Le_recherchenom_textChanged("") ;
    //Supprime le numéro des lignes
-       ui->TbV_NomJeux->verticalHeader()->setVisible(false);
+   ui->TbV_NomJeux->verticalHeader()->setVisible(false);
 
 }
 ////////////////////////////////////////////////////////////

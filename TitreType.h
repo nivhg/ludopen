@@ -18,4 +18,13 @@ typedef struct {
     int nJeuxAutorises ; ///< Nombre de jeux autorisés
 }Titre ;
 
+/** @struct StatutDuJeu
+ *  @brief Indique l'id du StatutDuJeu et le nom correspondant
+ */
+typedef struct {
+    unsigned int id ;       ///< Id du StatutDuJeu
+    QString sStatutDuJeu ;  ///< Nom du StatutDuJeucorrespondant à l'id
+}StatutDuJeu ;
+
+
 #endif // TITRETYPE_H

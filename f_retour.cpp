@@ -90,31 +90,33 @@ F_Retour::F_Retour(QWidget *parent) :
        ui->CBx_TypeProlongation->addItem(TypeEmprunt);
    }
 
-
    //Création d'un modèle pour le TableView des membres
-    this->ModelMembre = new QStandardItemModel() ;
+   this->ModelMembre = new QStandardItemModel() ;
    //Associe le modèl au TableView
-    ui->TbV_Recherche->setModel(this->ModelMembre);
-    //Met le TableView en lecture seule
-     ui->TbV_Recherche->setEditTriggers(0);
-     //Initialise le tableau avec tous les membres
-     this->on_LE_RechercheMembre_textChanged("");
+   ui->TbV_Recherche->setModel(this->ModelMembre);
+   //Met le TableView en lecture seule
+   ui->TbV_Recherche->setEditTriggers(0);
+   // Autorise le tri pour ce tableau
+   ui->TbV_Recherche->setSortingEnabled(true);
+   //Initialise le tableau avec tous les membres
+   this->on_LE_RechercheMembre_textChanged("");
 
-
-     //Création d'un modèle pour le TableView des jeux empruntés
-    this->ModelJeuEmpruntes = new QStandardItemModel() ;
-     //Associe le modèl au TableView
-    ui->TbV_JeuxEmprunte->setModel(this->ModelJeuEmpruntes);
-    //Met le TableView en lecture seule
-    ui->TbV_JeuxEmprunte->setEditTriggers(0);
-    //Initialise les colones du TableView des nouveaux emprunts
-    this->ModelJeuEmpruntes->setColumnCount(4);
-    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
-    this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
-    this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
-    ui->TbV_JeuxEmprunte->setColumnWidth(0,40);
-    ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
+   //Création d'un modèle pour le TableView des jeux empruntés
+   this->ModelJeuEmpruntes = new QStandardItemModel() ;
+   //Associe le modèl au TableView
+   ui->TbV_JeuxEmprunte->setModel(this->ModelJeuEmpruntes);
+   //Met le TableView en lecture seule
+   ui->TbV_JeuxEmprunte->setEditTriggers(0);
+   // Autorise le tri pour ce tableau
+   ui->TbV_JeuxEmprunte->setSortingEnabled(true);
+   //Initialise les colones du TableView des nouveaux emprunts
+   this->ModelJeuEmpruntes->setColumnCount(4);
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
+   ui->TbV_JeuxEmprunte->setColumnWidth(0,40);
+   ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
 
     //Création d'un modèle pour le TableView des jeux réservés
    this->ModelJeuReserves = new QStandardItemModel() ;
@@ -122,17 +124,20 @@ F_Retour::F_Retour(QWidget *parent) :
    ui->TbV_JeuxReserve->setModel(this->ModelJeuReserves);
    //Met le TableView en lecture seule
    ui->TbV_JeuxReserve->setEditTriggers(0);
+   // Autorise le tri pour ce tableau
+   ui->TbV_JeuxReserve->setSortingEnabled(true);
 
    //Initialise les colones du TableView des nouveaux emprunts
-    this->ModelJeuReserves->setColumnCount(5);
-    this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-    this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
-    this->ModelJeuReserves->setHorizontalHeaderItem(2, new QStandardItem("Date réservation"));
-    this->ModelJeuReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
-    this->ModelJeuReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
-    this->ModelJeuReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
-    ui->TbV_JeuxReserve->setColumnWidth(0,40);
-    ui->TbV_JeuxReserve->setColumnWidth(1,125);
+   this->ModelJeuReserves->setColumnCount(5);
+   this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+   this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
+   this->ModelJeuReserves->setHorizontalHeaderItem(2, new QStandardItem("Date réservation"));
+   this->ModelJeuReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
+   this->ModelJeuReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
+   this->ModelJeuReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
+
+   ui->TbV_JeuxReserve->setColumnWidth(0,40);
+   ui->TbV_JeuxReserve->setColumnWidth(1,125);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1157,9 +1162,13 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         QSqlQuery RequeteEtat;
         RequeteEtat.prepare("SELECT  `IdEtatsJeu` FROM `etatsjeu` WHERE `Etat`=:EtatDuJeu");
         RequeteEtat.bindValue(":EtatDuJeu",ui->CBx_Etat->currentText());
-        RequeteEtat.exec();
+        if(!RequeteEtat.exec())
+        {
+            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteEtat "<< RequeteEtat.lastError().text();
+        }
         RequeteEtat.next();
 
+        // Mise à jour de la table emprunt
         RequeteRetour.prepare("UPDATE `emprunts`,`jeux`"
                                       "SET`DateRetour`=:DateRetour,`StatutJeux_IdStatutJeux`=:StatutDuJeu, `EtatsJeu_IdEtatsJeu`=:EtatDuJeu "
                                       "WHERE `DateRetour`IS NULL AND `Jeux_IdJeux`=`IdJeux` AND `CodeJeu`=:CodeDuJeu");
@@ -1170,20 +1179,25 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         RequeteRetour.bindValue(":EtatDuJeu",RequeteEtat.value(0).toString());
         if(!RequeteRetour.exec())
         {
-            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastError();
+            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastError().text();
         }
 
-        if(RequeteStatut.value(0) == 1 ) // "statut 1 = Disponnible"
+        //if(RequeteStatut.value(0) == 1 ) // "statut 1 = Disponnible"
         {
             //Savoir si le jeu est réservé
             //
             // TO DO rendre le jeu dispo à la réservation
             //
             QSqlQuery RequeteJeu;
-            RequeteJeu.prepare("SELECT idReservation FROM reservation,jeux"
-                               "WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux AND JeuEmprunte=0");
+            RequeteJeu.prepare("SELECT idReservation FROM reservation,jeux "
+                               "WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
             RequeteJeu.bindValue(":CodeDuJeu",this->JeuActif);
-            RequeteJeu.exec();
+            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteJeu "<< RequeteJeu.lastQuery();
+            if(!RequeteJeu.exec())
+            {
+                qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteJeu "<< RequeteJeu.lastError().text();
+            }
+
             RequeteJeu.next();
 
             if(RequeteJeu.size()>0)
@@ -1200,7 +1214,7 @@ void F_Retour::on_Bt_RendreJeu_clicked()
                 //
                 // TODO message avec le nom de la personne qui a réservé
                 //
-                QMessageBox::information(this,"Ce jeu est réservé !","Vous devriez mettre ce jeu de coté","Mis de coté","Pas mis de coté");
+                QMessageBox::information(this,"Ce jeu est réservé !","Vous devriez mettre ce jeu de coté.","Mis de coté","Pas mis de coté");
 
             }
         }

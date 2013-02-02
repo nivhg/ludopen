@@ -160,7 +160,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(ui->CBx_JoueursMin->currentIndex() != 0)
     {
-        qDebug("joueur nim !=0");
+        qDebug()<<"ui->CBx_JoueursMin->currentIndex()"<< ui->CBx_JoueursMin->currentIndex();
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;
@@ -171,6 +171,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(ui->CBx_JoueursMax->currentIndex() != 0)
     {
+        qDebug()<<"ui->CBx_JoueursMax->currentIndex()"<< ui->CBx_JoueursMax->currentIndex() ;
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;
@@ -181,6 +182,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(ui->CBx_AgeMin->currentIndex() != 0)
     {
+        qDebug()<<"ui->CBx_AgeMin->currentIndex()"<< ui->CBx_AgeMin->currentIndex() ;
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;
@@ -191,6 +193,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(ui->CBx_AgeMax->currentIndex() != 0)
     {
+        qDebug()<<"ui->CBx_AgeMax->currentIndex()"<< ui->CBx_AgeMax->currentIndex() ;
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;

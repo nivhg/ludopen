@@ -67,19 +67,25 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="CBx_JoueursMin">
+           <widget class="QComboBox" name="CBx_JoueursMax">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <item>
              <property name="text">
-              <string>Nbr Joueurs Min</string>
+              <string>Nbr Joueurs Max</string>
              </property>
             </item>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="CBx_JoueursMax">
+           <widget class="QComboBox" name="CBx_JoueursMin">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <item>
              <property name="text">
-              <string>Nbr Joueurs Max</string>
+              <string>Nbr Joueurs Min</string>
              </property>
             </item>
            </widget>

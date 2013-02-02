@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lyce Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        09/01/2013
  *  @version      0.1
- *  @date         01/02/2013
+ *  @date         01/02/2013 William
  *
  *  Description détaillée du fichier f_listereservations.ccp
  *
@@ -38,7 +38,7 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->TbW_ListeReservations->setModel(&ModeleReservations) ;
     ui->TbW_ListeReservations->setEditTriggers(QAbstractItemView::SelectedClicked);
     // Création des caractétiques du tableau : Nom des colonnes
-    ModeleReservations.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;  // case à cocher pour la suppression
     ModeleReservations.setHorizontalHeaderItem( 1, new QStandardItem( "Code jeu" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 2, new QStandardItem( "Nom du jeu" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 3, new QStandardItem( "Statut" ) ) ;
@@ -50,7 +50,7 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
 
     // Règle la largeur des colonnes
-    ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;
+    ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
     ui->TbW_ListeReservations->setColumnWidth( 1, 60 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 2, 200 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 3, 100 ) ;
@@ -91,33 +91,33 @@ void F_ListeReservations::TousSelectionner( bool bSelection )
 
 /** Description détaillée de la méthode
  *  @pre    Combobox remplie avec le vecteur
- *  @param  unsigned int nIdTitre
+ *  @param  unsigned int nIdStatutDuJeu
  *  @retval int
- *  @return L'emplacement du titre dans le vecteur par rapport à  l'id (0 par défaut)
+ *  @return L'emplacement du StatutDuJeu dans le vecteur par rapport à  l'id (0 par défaut)
  *  @test   Voir la procédure dans le fichier associé.
  */
-int F_ListeReservations::EmplacementTitreVector( unsigned int nIdTitre )
+int F_ListeReservations::EmplacementStatutDuJeuVector( unsigned int nIdStatutDuJeu )
 {
-    int nEmplacementTitre (0) ;
+    int nEmplacementStatutDuJeu (0) ;
     int nBoucle           (0) ;
 
-    //Recherche de l'id dans le vecteur tant que l'on a pas fini de parcour le vecteur
-    while( nBoucle < this->VectorTitre.size() && nEmplacementTitre == 0 && nIdTitre != 0 )
+    //Recherche de l'id dans le vecteur tant que l'on a pas fini de parcourir le vecteur
+    while( nBoucle < this->VectorStatutDuJeu.size() && nEmplacementStatutDuJeu == 0 && nIdStatutDuJeu != 0 )
     {
-        if( this->VectorTitre[ nBoucle ].id == nIdTitre )
+        if( this->VectorStatutDuJeu[ nBoucle ].id == nIdStatutDuJeu )
         {
-            nEmplacementTitre = nBoucle ;
+            nEmplacementStatutDuJeu = nBoucle ;
         }
         nBoucle ++ ;
     }
-    return nEmplacementTitre ;
+    return nEmplacementStatutDuJeu ;
 }
 
 /** Description détaillée de la méthode
  *  @pre    Combobox remplie avec le vecteur
  *  @param  unsigned int nIdTytre
  *  @retval int
- *  @return L'emplacement du titre dans le vecteur par rapport à  l'id (0 par défaut)
+ *  @return L'emplacement du StatutDuJeu dans le vecteur par rapport à  l'id (0 par défaut)
  *  @test   Voir la procédure dans le fichier associé.
  */
 int F_ListeReservations::EmplacementLieuxVector(unsigned int nIdLieux )
@@ -184,41 +184,40 @@ void F_ListeReservations::MaJLieux ()
  *  @pre    Accés à  la base de données
  *  @test   Voir la procédure dans le fichier associé.
  */
-void F_ListeReservations::MiseAJourStatutJeu ()
+void F_ListeReservations::MiseAJourStatutJeu()
 {
     int i           (0)      ;
     QSqlQuery RequeteDesReservations          ;
-    Titre oTitre             ;
+    StatutDuJeu oStatutDuJeu             ;
 
     //Suppression du contenu du vecteur de la combobox CBx_StatutJeu
-    this->VectorTitre.clear() ;
+    this->VectorStatutDuJeu.clear() ;
     ui->CBx_StatutJeu->clear() ;
 
-    //Exécution de la requête qui sélectionne le contenu de la table titremembre
-    if( RequeteDesReservations.exec( "SELECT * FROM titremembre" ) )
+    //Exécution de la requête qui sélectionne le contenu de la table statutjeux
+    if( RequeteDesReservations.exec( "SELECT * FROM statutjeux" ) )
     {
-        oTitre.id = 0 ;
-        oTitre.sTitre = "" ;
-        this->VectorTitre.push_back( oTitre ) ;
+        oStatutDuJeu.id = 0 ;
+        oStatutDuJeu.sStatutDuJeu = "" ;
+        this->VectorStatutDuJeu.push_back( oStatutDuJeu ) ;
 
         //Remplissage du vecteur avec ce que retourne la requête
         while( RequeteDesReservations.next() )
         {
-            oTitre.id = RequeteDesReservations.value(0).toInt() ;
-            oTitre.sTitre = RequeteDesReservations.value(1).toString() ;
-
-            this->VectorTitre.push_back( oTitre ) ;
+            oStatutDuJeu.id = RequeteDesReservations.value(0).toInt() ;
+            oStatutDuJeu.sStatutDuJeu = RequeteDesReservations.value(1).toString() ;
+            this->VectorStatutDuJeu.push_back( oStatutDuJeu ) ;
         }
 
         //Remplissage de la combobox grace au vecteur
-        for( i = 0 ; i < VectorTitre.size() ; i ++ )
+        for( i = 0 ; i < VectorStatutDuJeu.size() ; i ++ )
         {
-            ui->CBx_StatutJeu->insertItem( i, VectorTitre[i].sTitre ) ;
+            ui->CBx_StatutJeu->insertItem( i, VectorStatutDuJeu[i].sStatutDuJeu ) ;
         }
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_Membres::MiseAJourStatutJeu () : Erreur de connexion avec la base de données !"  ;
+        qDebug() << "F_ListeReservations::MiseAJourStatutJeu => " << RequeteDesReservations.lastError().text() ;
     }
 }
 
@@ -229,11 +228,8 @@ bool F_ListeReservations::AffichageListe()
     QString sRequete           ;
     QString sNumero            ;
     int i       ( 0 ) ;
-    int nCredit ( 0 ) ;
     QSqlQuery RequeteDesReservations ;
-    QSqlQuery RequeteCotisation ;
-    QSqlQuery RequeteCartes ;
-    QSqlQuery RequeteTitre ;
+    QSqlQuery RequeteStatutDuJeu ;
     QSqlQuery RequeteJeu ;
     QDate Date ;
     QDate DateCotisation ;
@@ -256,7 +252,7 @@ bool F_ListeReservations::AffichageListe()
 /*
     if ( ui->ChBx_StatutJeu->isChecked() )
     {
-        sRequeteWHERE = sRequeteWHERE + " TitreMembre_IdTitreMembre=" + sNumero.setNum(this->VectorTitre[ui->CBx_StatutJeu->currentIndex()].id) + " AND" ;
+        sRequeteWHERE = sRequeteWHERE + " StatutDuJeuMembre_IdStatutDuJeuMembre=" + sNumero.setNum(this->VectorStatutDuJeu[ui->CBx_StatutJeu->currentIndex()].id) + " AND " ;
     }
 
     if( ui->ChBx_NomAdherent->isChecked() )
@@ -318,6 +314,7 @@ bool F_ListeReservations::AffichageListe()
     //Exécution de la requête
     if( RequeteDesReservations.exec(sRequete) )
     {        
+        // Vider le vecteur qui contient les ID de toutes les réservations (sert pour la suppression des réservations)
         this->VecteurListeReservations.clear() ;
         // Vidage de la liste à l'écran
         this->ModeleReservations.removeRows(0,this->ModeleReservations.rowCount());
@@ -325,6 +322,7 @@ bool F_ListeReservations::AffichageListe()
         //Remplissage du tableau avec les informations issues des tables jeux et membres
         while( RequeteDesReservations.next() )
         {
+            // Ajouter au vecteur l'ID de cette réservation (sert pour la suppression des réservations)
             this->VecteurListeReservations.append( RequeteDesReservations.record().value( 0 ).toInt() ) ;
 
             // On place des case à cocher dans la première colonne.
@@ -396,81 +394,6 @@ bool F_ListeReservations::AffichageListe()
             // Lieu de réservation
             ModeleReservations.setItem( i, 9, new QStandardItem( RequeteDesReservations.record().value( 1 ).toString() ) ) ;
 
-            RequeteCotisation.prepare( "SELECT abonnements.DateExpiration FROM abonnements "
-                                       "WHERE abonnements.Membres_IdMembre=:IdMembre" ) ;
-            RequeteCotisation.bindValue( ":IdMembre", RequeteDesReservations.record().value( 0 ).toInt() ) ;
-
-            if( RequeteCotisation.exec() )
-            {
-                if ( RequeteCotisation.next() )
-                {
-                    DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                    ModeleReservations.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
-                    if ( DateCotisation < QDate::currentDate() )
-                    {
-                        ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
-                    }
-                    else
-                    {
-                        if( DateCotisation< QDate::currentDate().addDays( 14 ) )
-                        {
-                            ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
-                        }
-                        else
-                        {
-                            ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                        }
-                    }
-                }
-
-                while( RequeteCotisation.next() )
-                {
-                    if( DateCotisation > RequeteCotisation.record().value( 0 ).toDate() )
-                    {
-                        DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                        ModeleReservations.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
-                        if ( DateCotisation < QDate::currentDate() )
-                        {
-                            ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
-                        }
-                        else
-                        {
-                            if( DateCotisation< QDate::currentDate().addDays( 14 ) )
-                            {
-                                ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
-                            }
-                            else
-                            {
-                                ModeleReservations.setData( ModeleReservations.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                qDebug() << "F_ListeReservations:: : RequeteCotisation :" << RequeteCotisation.lastError().text()  ;
-            }
-
-
-            RequeteCartes.prepare( "SELECT abonnements.CreditRestant FROM abonnements "
-                                   "WHERE abonnements.Membres_IdMembre=:IdMembre" ) ;
-            RequeteCartes.bindValue( ":IdMembre", RequeteDesReservations.record().value( 0 ).toInt() ) ;
-
-            if( RequeteCartes.exec() )
-            {
-                nCredit = 0 ;
-                while( RequeteCartes.next() )
-                {
-                    nCredit += RequeteCartes.record().value( 0 ).toInt() ;
-                }
-                ModeleReservations.setItem( i, 12, new QStandardItem( sNumero.setNum( nCredit ) ) ) ;
-            }
-            else
-            {
-                qDebug() << "F_ListeReservations:: : RequeteCartes :" << RequeteCartes.lastError().text()  ;
-            }
-
             i++ ;
         }        
     }
@@ -511,105 +434,25 @@ void F_ListeReservations::on_Bt_Deselection_clicked()
 
 void F_ListeReservations::on_Bt_SupprimerListe_clicked()
 {
-    bool bRetourne ( true ) ;
     QSqlQuery RequeteSupprimer ;
-    QSqlQuery RequeteEmprunts ;
-    QSqlQuery RequeteMembre ;
 
-
-    if ( QMessageBox::information( this, "Suppression Membre","Voulez vous vraiment supprimer tous les membres", "Supprimer", "Annuler" ) == 0 )
+    //Vérification que la personne veut bien supprimer les réservations choisies
+    if ( QMessageBox::information( this, "Suppression de réservations","Voulez vous vraiment supprimer toutes les réservations sélectionnées ?", "Supprimer", "Garder" ) == 0 )
     {
         for (register int i (0) ; i < ui->TbW_ListeReservations->model()->columnCount() ; i++ )
         {
-            //Si le checkbox est "check" on prépare le mail et on l'envoie
+            //Si le checkbox est "check" dans la liste des résa, on vire cette résa
             if(ui->TbW_ListeReservations->model()->data( ui->TbW_ListeReservations->model()->index(i ,0), Qt::CheckStateRole).toBool() )
             {
-                //Préparation de la requête la recherche des emprunts
-                RequeteEmprunts.prepare( "SELECT IdEmprunts FROM emprunts WHERE Membres_IdMembre=:IdMembre AND DateRetour IS NULL  " ) ;
-                RequeteEmprunts.bindValue( ":IdMembre", this->VecteurListeReservations.at( i ) ) ;
-
-                if( !RequeteEmprunts.exec() )
+                //Préparation de la requête permettant la suppression dans la table reservation
+                RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
+                RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                if( ! RequeteSupprimer.exec() )
                 {
-                    cerr << "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de données !" << RequeteEmprunts.lastError().text().toStdString()<< endl ;
-                    bRetourne = false ;
-                }
-
-                //S'il n'y a pas d'emprunt en cour
-                if( RequeteEmprunts.size()== 0 )
-                {
-                    //Vérification que la personne veux bien supprimer le membre
-                    //Préparation de la requête permettant la suppression dans la table de membre --------------------------
-                    RequeteSupprimer.prepare( "DELETE FROM membres WHERE IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeReservations.at( i ) ) ;
-
-                    //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
-                    {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de données !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
-                    }
-
-                    //Préparation de la requête permettant la suppression dans la table reservation -------------------------------
-                    RequeteSupprimer.prepare( "DELETE FROM reservation WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeReservations.at( i ) ) ;
-
-                    //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
-                    {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de données !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
-                    }
-
-                    //Préparation de la requête permettant la suppression dans la table emprunts ------------------------
-                    RequeteSupprimer.prepare( "DELETE FROM emprunts WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeReservations.at( i ) ) ;
-
-                    //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
-                    {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de données !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
-                    }
-
-
-                    //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
-                    RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeReservations.at( i ) ) ;
-
-                    //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
-                    {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de données !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
-                    }
-                }
-                else
-                {
-                    bRetourne = false ;
-                    QMessageBox::information( this, "Suppression Membre","Impossible de supprimer " + ui->TbW_ListeReservations->model()->data( ui->TbW_ListeReservations->model()->index(i ,1) ).toString()  + " " + ui->TbW_ListeReservations->model()->data( ui->TbW_ListeReservations->model()->index(i ,2) ).toString() + " membre.\nIl a encore des jeux en cours d'emprunts.",  "Ok" ) ;
+                    qDebug() << "F_ListeReservations::on_Bt_SupprimerListe_clicked => RequeteSupprimer" << RequeteSupprimer.lastError().text()<< endl ;
                 }
             }
         }
-    }
-    else
-    {
-        bRetourne = false ;
     }
 
     this->AffichageListe() ;
