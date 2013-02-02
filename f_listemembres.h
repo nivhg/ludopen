@@ -122,7 +122,6 @@ private:
 
     QVector<Type> VectorType ;               //! Vecteur contenant la liste des types (id, nom)
     QVector<Titre> VectorTitre ;             //! Vecteur contenant la liste des titres (id, nom)
-    QVector<int> VecteurListeMembres ;       //! Vecteur conteant la liste des id des membres
 
     QStandardItemModel ModeleMembres ;
 

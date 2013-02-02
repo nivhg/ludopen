@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lyce Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/2012
  *  @version      0.1
- *  @date         01/02/2013
+ *  @date         02/02/2013 Nicolas
  *
  *  Description dtaille du fichier f_listmembres.ccp
  *
@@ -42,18 +42,20 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ui->TbW_ListeMembre->setSortingEnabled(true);
     //Mettre un nom pour toutes les colonnes
     ModeleMembres.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 1, new QStandardItem( "Type" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 2, new QStandardItem( "Titre" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 3, new QStandardItem( "Nom" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 4, new QStandardItem( "Prénom" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 5, new QStandardItem( "Ville" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 6, new QStandardItem( "Code" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 7, new QStandardItem( "Téléphone" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 8, new QStandardItem( "Mobile" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 9, new QStandardItem( "eMail" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "Nbre de Retard" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Fin Cotisation" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 12, new QStandardItem( "Crédits restant" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 1, new QStandardItem( "" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 2, new QStandardItem( "Type" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 3, new QStandardItem( "Titre" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 4, new QStandardItem( "Nom" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 5, new QStandardItem( "Prénom" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 6, new QStandardItem( "Ville" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 7, new QStandardItem( "Code" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 8, new QStandardItem( "Téléphone" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 9, new QStandardItem( "Mobile" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "eMail" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Nbre de Retard" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 12, new QStandardItem( "Fin Cotisation" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 13, new QStandardItem( "Crédits restant" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 14, new QStandardItem( "DateInscription" ) ) ;
 
     this->bAdmin = bAdmin ;
     if( this->bAdmin == true )
@@ -261,18 +263,13 @@ bool F_ListeMembres::AffichageListe()
     QString sRequete           ;
     QString sNumero            ;
     int     i            ( 0 ) ;
-    int nCredit ( 0 ) ;
-    QSqlQuery query ;
-    QSqlQuery RequeteCotisation ;
-    QSqlQuery RequeteCartes ;
-    QSqlQuery RequeteTitre ;
-    QSqlQuery RequeteType ;
+    QSqlQuery RequeteListemembres ;
     QDate Date ;
     QDate DateCotisation ;
     QStandardItem * item ;
 
 
-    sRequeteSELECTFROM = "SELECT IdMembre,TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription FROM membres" ;
+    sRequeteSELECTFROM = "SELECT IdMembre, NomTitre, TypeMembre , Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription, DateExpiration, SUM(CreditRestant) FROM membres, typemembres, titremembre, abonnements " ;
     sRequeteWHERE = "WHERE" ;
 
     if ( ui->ChBx_Type->isChecked() )
@@ -335,7 +332,6 @@ bool F_ListeMembres::AffichageListe()
 
     if( ui->ChBx_Cotisation->isChecked() )
     {
-        sRequeteSELECTFROM += " ,abonnements" ;
         switch( ui->CBx_Cotisation->currentIndex() )
         {
         case 0 :
@@ -354,163 +350,101 @@ bool F_ListeMembres::AffichageListe()
         }
     }
 
-    // Vire le dernier mot AND ou WHERE si rien dans la champ WHERE dans la requête WHERE
-    sRequeteWHERE.remove(sRequete.size()-3, 5) ;
-    sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdMembre ORDER BY IdMembre ASC" ;
+    sRequeteWHERE += " IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=Membres_IdMembre " ;
+    sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre " ;
 
-    // qDebug() << sRequete ;
+     //qDebug() << sRequete ;
 
     //Exécution de la requête
-    if( query.exec(sRequete) )
+    if( RequeteListemembres.exec(sRequete) )
     {
-        this->VecteurListeMembres.clear() ;
         // Vidage de la liste à l'écran
         this->ModeleMembres.removeRows(0,this->ModeleMembres.rowCount());
 
         //Remplissage du tableau avec les informations de la table membre
-        while( query.next() )
+        while( RequeteListemembres.next() )
         {
+            ModeleMembres.setItem( i, 0, new QStandardItem( RequeteListemembres.record().value( 0 ).toString() ) ) ;
+
             if ( this->bAdmin == true )
             {
                 item = new QStandardItem() ;
                 item->setCheckable( true ) ;
-                ModeleMembres.setItem( i, 0, item ) ;
+                ModeleMembres.setItem( i, 1, item ) ;
             }
 
-            this->VecteurListeMembres.append( query.record().value( 0 ).toInt() ) ;
 
-            //Type//
-            RequeteType.prepare( "SELECT TypeMembre FROM typemembres "
-                                 "WHERE IdTypeMembres=:IdType" ) ;
-            RequeteType.bindValue( ":IdType", query.record().value( 2 ).toInt() ) ;
-            if( RequeteType.exec() )
-            {
-                if( RequeteType.next() )
-                {
-                    ModeleMembres.setItem( i, 1, new QStandardItem( RequeteType.record().value( 0 ).toString() ) ) ;
-                }
-            }
-            else
-            {
-                qDebug() << "F_ListeMembres:: : RequeteType :" << RequeteType.lastError().text()  ;
-            }
+            ModeleMembres.setItem( i, 2, new QStandardItem( RequeteListemembres.record().value( 1 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 3, new QStandardItem( RequeteListemembres.record().value( 2 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 4, new QStandardItem( RequeteListemembres.record().value( 3 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 5, new QStandardItem( RequeteListemembres.record().value( 4 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 6, new QStandardItem( RequeteListemembres.record().value( 5 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 7, new QStandardItem( RequeteListemembres.record().value( 6 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( 7 ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 9, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( 8 ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 10, new QStandardItem( RequeteListemembres.record().value( 9 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 11, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 10 ).toInt() ) ) ) ;
 
-            //Titre//
-            RequeteTitre.prepare( "SELECT NomTitre FROM titremembre "
-                                 "WHERE IdTitreMembre=:IdTitre" ) ;
-            RequeteTitre.bindValue( ":IdTitre", query.record().value( 1 ).toInt() ) ;
-            if( RequeteTitre.exec() )
+            DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
+            ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+            if ( DateCotisation < QDate::currentDate() )
             {
-                if( RequeteTitre.next() )
-                {
-                    ModeleMembres.setItem( i, 2, new QStandardItem( RequeteTitre.record().value( 0 ).toString() ) ) ;
-                }
+                ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
             }
             else
             {
-                qDebug() << "F_ListeMembres:: : RequeteTitre :" << RequeteTitre.lastError().text()  ;
+                if( DateCotisation < QDate::currentDate().addDays( 14 ) )
+                {
+                    ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
+                }
+                else
+                {
+                    ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
+                }
             }
 
-            ModeleMembres.setItem( i, 3, new QStandardItem( query.record().value( 3 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 4, new QStandardItem( query.record().value( 4 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 5, new QStandardItem( query.record().value( 5 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 6, new QStandardItem( query.record().value( 6 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 7, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 7 ).toString() ) ) ) ;
-            ModeleMembres.setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( query.record().value( 8 ).toString() ) ) ) ;
-            ModeleMembres.setItem( i, 9, new QStandardItem( query.record().value( 9 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 10, new QStandardItem( sNumero.setNum( query.record().value( 10 ).toInt() ) ) ) ;
-
-            RequeteCotisation.prepare( "SELECT DateExpiration FROM abonnements "
-                                       "WHERE Membres_IdMembre=:IdMembre" ) ;
-            RequeteCotisation.bindValue( ":IdMembre", query.record().value( 0 ).toInt() ) ;
-
-            if( RequeteCotisation.exec() )
+            if( DateCotisation > RequeteListemembres.record().value( 12 ).toDate() )
             {
-                if ( RequeteCotisation.next() )
+                DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
+                ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+                if ( DateCotisation < QDate::currentDate() )
                 {
-                    DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                    ModeleMembres.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
-                    if ( DateCotisation < QDate::currentDate() )
+                    ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                }
+                else
+                {
+                    if( DateCotisation< QDate::currentDate().addDays( 14 ) )
                     {
-                        ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                        ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
                     }
                     else
                     {
-                        if( DateCotisation< QDate::currentDate().addDays( 14 ) )
-                        {
-                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
-                        }
-                        else
-                        {
-                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                        }
-                    }
-                }
-
-                while( RequeteCotisation.next() )
-                {
-                    if( DateCotisation > RequeteCotisation.record().value( 0 ).toDate() )
-                    {
-                        DateCotisation = RequeteCotisation.record().value( 0 ).toDate() ;
-                        ModeleMembres.setItem( i, 11, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
-                        if ( DateCotisation < QDate::currentDate() )
-                        {
-                            ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
-                        }
-                        else
-                        {
-                            if( DateCotisation< QDate::currentDate().addDays( 14 ) )
-                            {
-                                ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::yellow ), Qt::BackgroundColorRole ) ;
-                            }
-                            else
-                            {
-                                ModeleMembres.setData( ModeleMembres.index( i, 11 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                            }
-                        }
+                        ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                     }
                 }
             }
-            else
-            {
-                qDebug() << "F_ListeMembres:: : RequeteCotisation :" << RequeteCotisation.lastError().text()  ;
-            }
-
-
-            RequeteCartes.prepare( "SELECT CreditRestant FROM abonnements "
-                                   "WHERE Membres_IdMembre=:IdMembre" ) ;
-            RequeteCartes.bindValue( ":IdMembre", query.record().value( 0 ).toInt() ) ;
-
-            if( RequeteCartes.exec() )
-            {
-                nCredit = 0 ;
-                while( RequeteCartes.next() )
-                {
-                    nCredit += RequeteCartes.record().value( 0 ).toInt() ;
-                }
-                ModeleMembres.setItem( i, 12, new QStandardItem( sNumero.setNum( nCredit ) ) ) ;
-            }
-            else
-            {
-                qDebug() << "F_ListeMembres:: : RequeteCartes :" << RequeteCartes.lastError().text()  ;
-            }
+            ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 13 ).toInt() ) ) ) ;
+            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( 11 ).toDate().toString( "dd.MM.yy" ) ) ) ;
 
             i++ ;
         }
+
+
+
         if( this->bAdmin == true )
         {
-            ui->TbW_ListeMembre->setColumnWidth( 0 ,30 ) ;
+            ui->TbW_ListeMembre->setColumnWidth( 1, 30 ) ;
         }
         else
         {
-            ui->TbW_ListeMembre->setColumnWidth( 0, 0 ) ;
+            ui->TbW_ListeMembre->setColumnWidth( 1, 0 ) ;
         }
         ui->TbW_ListeMembre->setColumnWidth( 6, 70 ) ;
         ui->TbW_ListeMembre->setColumnWidth( 9, 200 ) ;
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_ListeMembres:: : query :" << query.lastError().text()  ;
+        qDebug() << "F_ListeMembres:: : RequeteListeMembres :" << RequeteListemembres.lastError().text()  ;
     }
 
     ui->Lb_Resultat->setNum( i ) ;
@@ -606,7 +540,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
             {
                 //Préparation de la requête la recherche des emprunts
                 RequeteEmprunts.prepare( "SELECT IdEmprunts FROM emprunts WHERE Membres_IdMembre=:IdMembre AND DateRetour IS NULL  " ) ;
-                RequeteEmprunts.bindValue( ":IdMembre", this->VecteurListeMembres.at( i ) ) ;
+                RequeteEmprunts.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                 if( !RequeteEmprunts.exec() )
                 {
@@ -620,7 +554,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     //Vérification que la personne veux bien supprimer le membre
                     //Préparation de la requête permettant la suppression dans la table de membre --------------------------
                     RequeteSupprimer.prepare( "DELETE FROM membres WHERE IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeMembres.at( i ) ) ;
+                    RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( RequeteSupprimer.exec() )
@@ -635,7 +569,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
                     //Préparation de la requête permettant la suppression dans la table reservation -------------------------------
                     RequeteSupprimer.prepare( "DELETE FROM reservation WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeMembres.at( i ) ) ;
+                    RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( RequeteSupprimer.exec() )
@@ -650,7 +584,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
                     //Préparation de la requête permettant la suppression dans la table emprunts ------------------------
                     RequeteSupprimer.prepare( "DELETE FROM emprunts WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeMembres.at( i ) ) ;
+                    RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( RequeteSupprimer.exec() )
@@ -666,7 +600,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
                     //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
                     RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre " ) ;
-                    RequeteSupprimer.bindValue( ":IdMembre", this->VecteurListeMembres.at( i ) ) ;
+                    RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( RequeteSupprimer.exec() )
@@ -862,5 +796,5 @@ void F_ListeMembres::on_TbW_ListeMembre_clicked(const QModelIndex &index)
 
 void F_ListeMembres::on_TbW_ListeMembre_doubleClicked(const QModelIndex &index)
 {
-    emit( this->SignalSelectionMembre( this->VecteurListeMembres.at( index.row() ) ) ) ;
+    emit( this->SignalSelectionMembre( this->ModeleMembres.data( this->ModeleMembres.index( index.row(), 0 )).toInt() ) ) ;
 }
