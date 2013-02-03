@@ -6,7 +6,7 @@
   * @author STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
   * @since 01/01/2012
   * @version 0.1
-  * @date 01/02/2013
+  * @date 03/02/2013 Nicolas
   *
   * Cette classe permet de gérer les jeux : consulation, déclaration intervention ...
   *
@@ -38,27 +38,27 @@ F_Jeux::F_Jeux(QWidget *parent) :
 {
     ui->setupUi(this);
 
-   pReservation= new F_Reservation;
-   pDetailsJeux=new F_DetailsJeux;
-   pDeclarerIntervention=new F_DeclarerIntervention;
-   JeuEnConsultation = "" ;
-   
-   /////////////////////////////////////////////////////////
-   //////////////////Création table view //////////////////
-   ///////////////////////////////////////////////////////
-   
-   //Création d'un model pour le TableView des jeux
-   this->ModelJeu = new QStandardItemModel() ;
-   //Associe le modèl au TableView
-   ui->TbV_NomJeux->setModel(this->ModelJeu);
-   // Mise en lecture seule
-   ui->TbV_NomJeux->setEditTriggers(0);
-   // Autorise le tri pour ce tableau
-   ui->TbV_NomJeux->setSortingEnabled(true);
-   // Initialise la table view avec tout les jeux
-   on_Le_recherchenom_textChanged("") ;
-   //Supprime le numéro des lignes
-   ui->TbV_NomJeux->verticalHeader()->setVisible(false);
+    pReservation= new F_Reservation;
+    pDetailsJeux=new F_DetailsJeux;
+    pDeclarerIntervention=new F_DeclarerIntervention;
+    JeuEnConsultation = "" ;
+
+    /////////////////////////////////////////////////////////
+    //////////////////Création table view //////////////////
+    ///////////////////////////////////////////////////////
+
+    //Création d'un model pour le TableView des jeux
+    this->ModelJeu = new QStandardItemModel() ;
+    //Associe le modèl au TableView
+    ui->TbV_NomJeux->setModel(this->ModelJeu);
+    // Mise en lecture seule
+    ui->TbV_NomJeux->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_NomJeux->setSortingEnabled(true);
+    // Initialise la table view avec tout les jeux
+    on_Le_recherchenom_textChanged("") ;
+    //Supprime le numéro des lignes
+    ui->TbV_NomJeux->verticalHeader()->setVisible(false);
 
 }
 ////////////////////////////////////////////////////////////
@@ -208,7 +208,7 @@ void F_Jeux::on_Bt_ok_clicked()
 
     //////////////////////////////////////////////////////////
     /////////// Remplissage label statut /////////////////////
-   ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
     int IdStatut =(RequeteRechercheCode.value(5).toInt());
     QSqlQuery RequeteStatut;
     QString Le_Statut ;
@@ -224,7 +224,7 @@ void F_Jeux::on_Bt_ok_clicked()
     
     //////////////////////////////////////////////////////////
     /////////// Remplissage label Editeur ////////////////////
-   ///////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////
     int IdEditeur =(RequeteRechercheCode.value(14).toInt());
     QSqlQuery RequeteEditeur;
     QString Le_Editeur ;
@@ -240,7 +240,7 @@ void F_Jeux::on_Bt_ok_clicked()
 
     /////////////////////////////////////////////////////////
     //////////// Remplissage label Etat Jeu /////////////////
-    /////////////////////////////////////////////////////////    
+    /////////////////////////////////////////////////////////
     int IdEtat =(RequeteRechercheCode.value(6).toInt());
 
     QSqlQuery RequeteEtat;
@@ -298,8 +298,28 @@ void F_Jeux::on_Bt_ok_clicked()
     
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////
-    //////////////////////////////////////////////////////    
-    QString sCheminImage ( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() ) ;
+    //////////////////////////////////////////////////////
+    QString sCheminImage ;
+
+    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpg"  ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpg" ;
+    }
+
+    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpeg" ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpeg" ;
+    }
+
+    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".png" ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".png" ;
+    }
+
+    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".bmp" ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".bmp" ;
+    }
 
     QPixmap Image( sCheminImage ) ;
     ui->Lb_Image->setPixmap( Image ) ;
@@ -493,20 +513,20 @@ void F_Jeux::on_Bt_ValiderRemarques_clicked()
 {
     QSqlQuery RequeteValiderRemarque;
 
-//prépare le requête de mise à jour
+    //prépare le requête de mise à jour
     RequeteValiderRemarque.prepare("UPDATE `jeux` SET `Remarque` =:NouvelRemarque WHERE `CodeJeu`=:CodeDuJeu");
 
-//Entre les valeurs de la reqête
+    //Entre les valeurs de la reqête
     RequeteValiderRemarque.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderRemarque.bindValue(":NouvelRemarque",ui->TxE_remarques->toPlainText());
 
- //Execut la requête
+    //Execut la requête
     if (!RequeteValiderRemarque.exec())
     {
 
     }
 
-//Grise les boutons de modification de le remarque
+    //Grise les boutons de modification de le remarque
     ui->Bt_ValiderRemarques->setEnabled(false);
     ui->Bt_AnnulerRemarques->setEnabled(false);
     ui->TxE_remarques->setReadOnly(true);
@@ -527,7 +547,7 @@ void F_Jeux::on_Bt_AnnulerRemarques_clicked()
     RequeteAnnulerRemarques.bindValue(":CodeDuJeu",JeuEnConsultation);
 
 
-//Execut la requête
+    //Execut la requête
     if (!RequeteAnnulerRemarques.exec())
     {
 
@@ -535,11 +555,11 @@ void F_Jeux::on_Bt_AnnulerRemarques_clicked()
 
     RequeteAnnulerRemarques.next();
 
-//Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiches
     QString TexteRemarque = (RequeteAnnulerRemarques.value(0).toString());
     ui->TxE_remarques->setText(TexteRemarque);
 
-//Grise les boutons de modification des remarques du membre
+    //Grise les boutons de modification des remarques du membre
     ui->Bt_ValiderRemarques->setEnabled(false);
     ui->Bt_AnnulerRemarques->setEnabled(false);
 }
@@ -555,20 +575,20 @@ void F_Jeux::on_Bt_ValiderDescription_clicked()
 {
     QSqlQuery RequeteValiderDescription;
 
-//prépare le requête de mise à jour
+    //prépare le requête de mise à jour
     RequeteValiderDescription.prepare("UPDATE `jeux` SET `DescriptionJeu` =:NouvelleDescription WHERE `CodeJeu`=:CodeDuJeu");
 
-//Entre les valeurs de la reqête
+    //Entre les valeurs de la reqête
     RequeteValiderDescription.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderDescription.bindValue(":NouvelleDescription",ui->TxE_description->toPlainText());
 
- //Execut la requête
+    //Execut la requête
     if (!RequeteValiderDescription.exec())
     {
 
     }
 
-//Grise les boutons de modification de la description
+    //Grise les boutons de modification de la description
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
     ui->TxE_description->setReadOnly(true);
@@ -586,7 +606,7 @@ void F_Jeux::on_Bt_AnnulerDescription_clicked()
 
     RequeteAnnulerDescription.prepare("SELECT DescriptionJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteAnnulerDescription.bindValue(":CodeDuJeu",JeuEnConsultation);
-//Execut la requête
+    //Execut la requête
     if (!RequeteAnnulerDescription.exec())
     {
 
@@ -594,11 +614,11 @@ void F_Jeux::on_Bt_AnnulerDescription_clicked()
 
     RequeteAnnulerDescription.next();
 
-//Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiches
     QString TexteDescription = (RequeteAnnulerDescription.value(0).toString());
     ui->TxE_remarques->setText(TexteDescription);
 
-//Grise les boutons de modification des remarques du membre
+    //Grise les boutons de modification des remarques du membre
     ui->Bt_ValiderRemarques->setEnabled(false);
     ui->Bt_AnnulerRemarques->setEnabled(false);
 }
@@ -614,20 +634,20 @@ void F_Jeux::on_Bt_ValiderContenu_clicked()
 {
     QSqlQuery RequeteValiderContenu;
 
-//prépare le requête de mise à jour
+    //prépare le requête de mise à jour
     RequeteValiderContenu.prepare("UPDATE `jeux` SET `ContenuJeu` =:NouveauContenu WHERE `CodeJeu`=:CodeDuJeu");
 
-//Entre les valeurs de la reqête
+    //Entre les valeurs de la reqête
     RequeteValiderContenu.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderContenu.bindValue(":NouveauContenu",ui->TxE_contenu->toPlainText());
 
- //Execut la requête
+    //Execut la requête
     if (!RequeteValiderContenu.exec())
     {
 
     }
 
-//Grise les boutons de modification du contenu
+    //Grise les boutons de modification du contenu
     ui->Bt_ValiderContenu->setEnabled(false);
     ui->Bt_AnnulerContenu->setEnabled(false);
     ui->TxE_contenu->setReadOnly(true);
@@ -645,7 +665,7 @@ void F_Jeux::on_Bt_AnnulerContenu_clicked()
 
     RequeteAnnulerContenu.prepare("SELECT ContenuJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteAnnulerContenu.bindValue(":CodeDuJeu",JeuEnConsultation);
-//Execut la requête
+    //Execut la requête
     if (!RequeteAnnulerContenu.exec())
     {
 
@@ -653,11 +673,11 @@ void F_Jeux::on_Bt_AnnulerContenu_clicked()
 
     RequeteAnnulerContenu.next();
 
-//Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiches
     QString TexteContenu = (RequeteAnnulerContenu.value(0).toString());
     ui->TxE_contenu->setText(TexteContenu);
 
-//Grise les boutons de modification du contenu
+    //Grise les boutons de modification du contenu
     ui->Bt_ValiderContenu->setEnabled(false);
     ui->Bt_AnnulerContenu->setEnabled(false);
 }
@@ -740,7 +760,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
             this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
             this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
             NumeroLigne++;
-         }
+        }
     }
     else
     {
@@ -765,7 +785,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
             this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
             this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
             NumeroLigne++;
-         }
+        }
     }
 }
 ////////////////////////////////////////////////////////////

@@ -54,6 +54,10 @@ public:
     /** @brief Permet d'actualiser le Cbx_MotCle lorsquuon ajout a été fait
      */
     void ActualiserCBx_MotCle() ;
+
+    /** @brief Permet d'ajouter un image pour un jeu
+     */
+    void AjouterImage(QString sCheminImage , QString sCodeJeux ) ;
     
 public slots:
     void slot_ValiderClassification();
