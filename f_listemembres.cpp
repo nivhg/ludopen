@@ -52,10 +52,27 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ModeleMembres.setHorizontalHeaderItem( 8, new QStandardItem( "Téléphone" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 9, new QStandardItem( "Mobile" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "eMail" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Nbre de Retard" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Retards" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 12, new QStandardItem( "Fin Cotisation" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 13, new QStandardItem( "Crédits restant" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 14, new QStandardItem( "DateInscription" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 13, new QStandardItem( "Crédits" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 14, new QStandardItem( "Inscription" ) ) ;
+
+    // Régler la taille des colonnes
+    ui->TbW_ListeMembre->setColumnWidth(  0,   0 ) ; // pour l'ID du membre
+    ui->TbW_ListeMembre->setColumnWidth(  1,   0 ) ; // coche pour la suppression
+    ui->TbW_ListeMembre->setColumnWidth(  2, 100 ) ; // Type
+    ui->TbW_ListeMembre->setColumnWidth(  3,  70 ) ; // Titre
+    ui->TbW_ListeMembre->setColumnWidth(  4, 160 ) ; // Nom
+    ui->TbW_ListeMembre->setColumnWidth(  5, 100 ) ; // Prénom
+    ui->TbW_ListeMembre->setColumnWidth(  6, 150 ) ; // Ville
+    ui->TbW_ListeMembre->setColumnWidth(  7,  50 ) ; // Code
+    ui->TbW_ListeMembre->setColumnWidth(  8,  90 ) ; // Téléphone
+    ui->TbW_ListeMembre->setColumnWidth(  9,  90 ) ; // Mobile
+    ui->TbW_ListeMembre->setColumnWidth( 10, 200 ) ; // eMail
+    ui->TbW_ListeMembre->setColumnWidth( 11,  50 ) ; // Nbre de Retard
+    ui->TbW_ListeMembre->setColumnWidth( 12, 200 ) ; // Fin Cotisation
+    ui->TbW_ListeMembre->setColumnWidth( 13,  50 ) ; // Crédits restant
+    ui->TbW_ListeMembre->setColumnWidth( 14, 200 ) ; // Inscription
 
     this->bAdmin = bAdmin ;
     if( this->bAdmin == true )
@@ -364,6 +381,7 @@ bool F_ListeMembres::AffichageListe()
         //Remplissage du tableau avec les informations de la table membre
         while( RequeteListemembres.next() )
         {
+            // mettre l'ID du membre dans le tableau pour le retrouver + facilement
             ModeleMembres.setItem( i, 0, new QStandardItem( RequeteListemembres.record().value( 0 ).toString() ) ) ;
 
             if ( this->bAdmin == true )
@@ -372,7 +390,6 @@ bool F_ListeMembres::AffichageListe()
                 item->setCheckable( true ) ;
                 ModeleMembres.setItem( i, 1, item ) ;
             }
-
 
             ModeleMembres.setItem( i, 2, new QStandardItem( RequeteListemembres.record().value( 1 ).toString() ) ) ;
             ModeleMembres.setItem( i, 3, new QStandardItem( RequeteListemembres.record().value( 2 ).toString() ) ) ;
@@ -439,8 +456,6 @@ bool F_ListeMembres::AffichageListe()
         {
             ui->TbW_ListeMembre->setColumnWidth( 1, 0 ) ;
         }
-        ui->TbW_ListeMembre->setColumnWidth( 6, 70 ) ;
-        ui->TbW_ListeMembre->setColumnWidth( 9, 200 ) ;
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
