@@ -63,7 +63,7 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ui->TbW_ListeMembre->setColumnWidth(  2, 100 ) ; // Type
     ui->TbW_ListeMembre->setColumnWidth(  3,  70 ) ; // Titre
     ui->TbW_ListeMembre->setColumnWidth(  4, 160 ) ; // Nom
-    ui->TbW_ListeMembre->setColumnWidth(  5, 100 ) ; // Prénom
+    ui->TbW_ListeMembre->setColumnWidth(  5, 150 ) ; // Prénom
     ui->TbW_ListeMembre->setColumnWidth(  6, 150 ) ; // Ville
     ui->TbW_ListeMembre->setColumnWidth(  7,  50 ) ; // Code
     ui->TbW_ListeMembre->setColumnWidth(  8,  90 ) ; // Téléphone

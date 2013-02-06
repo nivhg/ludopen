@@ -1,8 +1,6 @@
 #ifndef F_MEMBRES_H
 #define F_MEMBRES_H
 
-// En-ttes propres  l'application necessaires dans ce fichier en-tete --------
-
 #include "f_recherchemembres.h"
 #include "f_historiquejeux.h"
 #include "f_ajoutercoticarte.h"
@@ -10,7 +8,6 @@
 #include "TitreType.h"
 #include <QtSql/QtSql>
 #include <QtGui>
-
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
 

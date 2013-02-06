@@ -37,6 +37,7 @@ private slots:
 
 private:
     Ui::F_HistoriqueJeux *ui;
+    QStandardItemModel ModeleHistoriqueJeuxEmprunter ;
 };
 
 #endif // F_HISTORIQUEJEUX_H

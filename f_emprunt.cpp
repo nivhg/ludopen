@@ -688,11 +688,11 @@ void F_Emprunt::CalculerCreditsRestants()
     //rechercher les crédits restants dans toutes les cartes prépayées du membre
     QSqlQuery RequeteCartes;
     RequeteCartes.prepare("SELECT CreditRestant FROM abonnements,cartesprepayees,membres "
-                          "WHERE 'abonnements.Membres_IdMembre'=IdMembre "
+                          "WHERE abonnements.Membres_IdMembre=IdMembre "
                           "AND CodeMembre=:CodeDuMembre "
-                          "AND 'abonnements.CartesPrepayees_IdCarte' IS NOT NULL "
-                          "AND 'abonnements.CreditRestant' >0 "
-                          "AND IdCarte=CartesPrepayees_IdCarte");
+                          "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
+                          "AND abonnements.CreditRestant >0 "
+                          "AND IdCarte=CartesPrepayees_IdCarte ");
     RequeteCartes.bindValue("CodeDuMembre",this->MembreActif);
     if ( ! RequeteCartes.exec())
     {

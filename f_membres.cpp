@@ -68,11 +68,6 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
 
     this->EffacerTousLesChamps() ;
 
-
-    ui->Lb_AjoutMembre->setVisible( false ) ;
-    ui->Lb_ModificationMembre->setVisible( false ) ;
-
-
     /////////////Fenêtre d'ajout d'une ville///////////////
 
     this->oFenetreAjoutVille = new QDialog(this) ;
@@ -1163,8 +1158,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     this->pRechercheMembres->setDisabled( true ) ;
 
-    ui->Lb_AjoutMembre->setVisible( true ) ;
-
     this->AfficherAjouterModifierMembre( false ) ;
 
     this->EffacerTousLesChamps() ;
@@ -1236,11 +1229,7 @@ void F_Membres::on_Bt_Annuler_clicked()
 
     this->VerrouillerJeux( true ) ;
 
-    ui->Lb_AjoutMembre->setVisible( false ) ;
-    ui->Lb_ModificationMembre->setVisible( false ) ;
-
     ui->Bt_ModifierMembre->setDisabled( true ) ;
-
 
     this->AfficherMembre( this->nIdMembreSelectionne ) ;
 
@@ -1248,7 +1237,6 @@ void F_Membres::on_Bt_Annuler_clicked()
 
     ui->LW_Abonnements->setModel( NULL ) ;
     ui->LW_JeuxEmpruntes->setModel( NULL ) ;
-
 }
 
 /** Valide la modification ou l'ajout d'un membre
@@ -1281,15 +1269,11 @@ void F_Membres::on_Bt_Valider_clicked()
                     this->AfficherAjouterModifierMembre( true ) ;
                     ui->Bt_ModifierMembre->setEnabled( true ) ;
                     this->AfficherMembre( this->nIdMembreSelectionne ) ;
-
-                    ui->Lb_AjoutMembre->hide() ;
-                    ui->Lb_ModificationMembre->hide() ;
-
                 }
             }
             else
             {
-                QMessageBox::information( this, "Code Membre","Le code membre que vous avez choisis existe déjà", "Ok" ) ;
+                QMessageBox::information( this, "Code Membre","Le code membre que vous avez choisi existe déjà !", "Ok" ) ;
             }
         }
         else
@@ -1304,10 +1288,7 @@ void F_Membres::on_Bt_Valider_clicked()
                 this->VerrouillerInfosPerso( true ) ;
                 this->AfficherValiderAnnuler( false ) ;
                 this->AfficherAjouterModifierMembre( true ) ;
-                this->AfficherMembre( this->nIdMembreSelectionne ) ;
-
-                ui->Lb_AjoutMembre->hide() ;
-                ui->Lb_ModificationMembre->hide() ;
+                this->AfficherMembre( this->nIdMembreSelectionne ) ;                
             }
             else
             {
@@ -1321,13 +1302,10 @@ void F_Membres::on_Bt_Valider_clicked()
                     this->AfficherValiderAnnuler( false ) ;
                     this->AfficherAjouterModifierMembre( true ) ;
                     this->AfficherMembre( this->nIdMembreSelectionne ) ;
-
-                    ui->Lb_AjoutMembre->hide() ;
-                    ui->Lb_ModificationMembre->hide() ;
                 }
                 else
                 {
-                    QMessageBox::information( this, "Code Membre","Le code membre que vous avez choisis existe déjà", "Ok" ) ;
+                    QMessageBox::information( this, "Code Membre","Le code membre que vous avez choisi existe déjà !", "Ok" ) ;
                 }
             }
         }
@@ -1401,7 +1379,6 @@ void F_Membres::on_Lb_MembreEcarte_linkActivated( const QString &link )
  */
 void F_Membres::on_Bt_ModifierMembre_clicked()
 {
-    ui->Lb_ModificationMembre->setVisible( true ) ;
     this->VerrouillerInfosPerso( false ) ;
     this->AfficherValiderAnnuler( true ) ;
     this->AfficherAjouterModifierMembre( false ) ;
