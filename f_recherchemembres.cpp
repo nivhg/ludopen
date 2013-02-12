@@ -15,10 +15,9 @@
  *
  */
 //------------------------------------------------------------------------------
-// En-tte propre  l'objet ----------------------------------------------------
+// En-tête propre  l'objet ----------------------------------------------------
 #include "f_recherchemembres.h"
 #include "ui_f_recherchemembres.h"
-
 
 using namespace std ;
 
@@ -34,6 +33,10 @@ F_RechercheMembres::F_RechercheMembres(QWidget *parent) :
     this->MaJListeMembres() ;
     this->VecteurRechercheMembres = this->VecteurMembres ;
     this->AfficherListe(this->VecteurRechercheMembres) ;
+    // Autorise le tri des colonnes pour ce tableau
+    //ui->TbW_Recherche->setSortingEnabled(true);
+    // TO DO pour trier le tableau, il faudrait que l'on retrouve le membre dans le vecteur
+    // ou viver le vecteur en stockant toutes les infos dans le tableau sans afficher les colonnes qu'on ne veut pas
 }
 
 /** Détruit l'objet graphique

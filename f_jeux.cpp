@@ -181,7 +181,7 @@ void F_Jeux::on_Bt_ok_clicked()
     QString Le_NbrJoueurMin = RequeteRechercheCode.value(10).toString() ;
     QString Le_NbrJoueurMax = RequeteRechercheCode.value(11).toString() ;
 
-    // Remplir les champs en fonctin du jeu choisi.
+    // Remplir les champs en fonction du jeu choisi.
     ui->Le_nom->setText(Le_Nom) ;
     // aligne le curseur à gauche
     ui->Le_nom->setCursorPosition(0) ;
@@ -205,7 +205,6 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
     
-
     //////////////////////////////////////////////////////////
     /////////// Remplissage label statut /////////////////////
     ///////////////////////////////////////////////////////////
@@ -246,7 +245,7 @@ void F_Jeux::on_Bt_ok_clicked()
     QSqlQuery RequeteEtat;
     QString Le_Etat ;
 
-    RequeteEtat.prepare("SELECT `Etat` FROM `etatsjeu` WHERE `IdEtatsJeu`=:IdEtatDuJeu");
+    RequeteEtat.prepare("SELECT Etat FROM etatsjeu WHERE IdEtatsJeu=:IdEtatDuJeu");
     RequeteEtat.bindValue(":IdEtatDuJeu",IdEtat);
     RequeteEtat.exec() ;
     RequeteEtat.next();
@@ -265,7 +264,7 @@ void F_Jeux::on_Bt_ok_clicked()
     QSqlQuery RequeteEmplacement;
     QString TxE_Emplacement ;
 
-    RequeteEmplacement.prepare("SELECT `Nom` FROM `emplacement` WHERE `IdEmplacement`=:IdEmplacementDuJeu");
+    RequeteEmplacement.prepare("SELECT Nom FROM emplacement WHERE IdEmplacement=:IdEmplacementDuJeu");
     RequeteEmplacement.bindValue(":IdEmplacementDuJeu",IdEmplacement);
     RequeteEmplacement.exec() ;
     RequeteEmplacement.next();
@@ -282,7 +281,7 @@ void F_Jeux::on_Bt_ok_clicked()
     QString Le_Classification ;
     QString LE_NumClassification ;
 
-    RequeteClassification.prepare("SELECT `TypeJeux`, Classification FROM `typejeux` WHERE `Classification`=:NumDeLaClassifciation");
+    RequeteClassification.prepare("SELECT TypeJeux, Classification FROM typejeux WHERE Classification=:NumDeLaClassifciation");
     RequeteClassification.bindValue(":NumDeLaClassifciation",Classification);
     RequeteClassification.exec() ;
     RequeteClassification.next();
@@ -301,26 +300,30 @@ void F_Jeux::on_Bt_ok_clicked()
     //////////////////////////////////////////////////////
     QString sCheminImage ;
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpg"  ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpg"  ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpg" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpg" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpeg" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpeg" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".jpeg" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpeg" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".png" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".png" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".png" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".png" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".bmp" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".bmp" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->Le_code->text() + ".bmp" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".bmp" ;
     }
 
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".gif" ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".gif" ;
+    }
     QPixmap Image( sCheminImage ) ;
     ui->Lb_Image->setPixmap( Image ) ;
 
@@ -429,6 +432,7 @@ void F_Jeux::on_Bt_ok_clicked()
         ui->Le_statut->setStyleSheet("color: black");
     }
     //-------------------------------------------
+    /*
     if(ui->TxE_contenu->toPlainText() == "")
     {
         ui->TxE_contenu->setText("Non renseigné");
@@ -438,7 +442,9 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->TxE_contenu->setStyleSheet("color: black");
     }
+    */
     //-------------------------------------------
+    /*
     if(ui->TxE_description->toPlainText() == "")
     {
         ui->TxE_description->setText("Non renseigné");
@@ -448,6 +454,7 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->TxE_description->setStyleSheet("color: black");
     }
+    */
     //-------------------------------------------
     if(ui->TxE_emplacement->toPlainText() == "")
     {
@@ -459,6 +466,7 @@ void F_Jeux::on_Bt_ok_clicked()
         ui->TxE_emplacement->setStyleSheet("color: black");
     }
     //-------------------------------------------
+    /*
     if(ui->TxE_remarques->toPlainText() == "")
     {
         ui->TxE_remarques->setText("Non renseigné");
@@ -468,6 +476,7 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->TxE_remarques->setStyleSheet("color: black");
     }
+    */
 }
 
 ////////////////////////////////////////////////////////////
@@ -635,7 +644,7 @@ void F_Jeux::on_Bt_ValiderContenu_clicked()
     QSqlQuery RequeteValiderContenu;
 
     //prépare le requête de mise à jour
-    RequeteValiderContenu.prepare("UPDATE `jeux` SET `ContenuJeu` =:NouveauContenu WHERE `CodeJeu`=:CodeDuJeu");
+    RequeteValiderContenu.prepare("UPDATE jeux SET ContenuJeu=:NouveauContenu WHERE CodeJeu=:CodeDuJeu");
 
     //Entre les valeurs de la reqête
     RequeteValiderContenu.bindValue(":CodeDuJeu",JeuEnConsultation);
@@ -692,6 +701,7 @@ void F_Jeux::on_TxE_remarques_textChanged()
 {
     ui->Bt_AnnulerRemarques->setEnabled(true);
     ui->Bt_ValiderRemarques->setEnabled(true);
+    qDebug()<<"F_Jeux::on_TxE_remarques_textChanged()";
 }
 ////////////////////////////////////////////////////////////
 ///////////////// texte description qui change/////////////

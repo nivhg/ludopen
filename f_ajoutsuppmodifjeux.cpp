@@ -1675,24 +1675,29 @@ void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
 
     sCheminImage.clear() ;
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpg"  ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg"  ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpg" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpeg" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpeg" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".png" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".png" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".bmp" ) )
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".bmp" ;
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ;
+    }
+
+    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".gif" ) )
+    {
+        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".gif" ;
     }
 
     QPixmap Image( sCheminImage ) ;
@@ -2195,24 +2200,24 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         //----------Affichage photo----------------------------------------------------------------------------
         QString sCheminImage ;
 
-        if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpg"  ) )
+        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg"  ) )
         {
-            sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpg" ;
+            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg" ;
         }
 
-        if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpeg" ) )
+        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ) )
         {
-            sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".jpeg" ;
+            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ;
         }
 
-        if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".png" ) )
+        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ) )
         {
-            sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".png" ;
+            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ;
         }
 
-        if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".bmp" ) )
+        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ) )
         {
-            sCheminImage = QApplication::applicationDirPath() + "/Images/" + ui->LE_Code->text() + ".bmp" ;
+            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ;
         }
 
         QPixmap Image( sCheminImage ) ;
@@ -2431,33 +2436,33 @@ void F_AjoutSuppModifJeux::AjouterImage(QString sCheminImage, QString sCodeJeux 
 
     if( sCheminImage != "" )
     {
-        DirDossierImages.setPath( QApplication::applicationDirPath() + "/Images" ) ;
+        DirDossierImages.setPath( QApplication::applicationDirPath() + "/photos" ) ;
         if( !DirDossierImages.exists() )
         {
             DirDossierImages.cd("..") ;
-            if( DirDossierImages.mkdir( "Images" ) )
+            if( DirDossierImages.mkdir( "photos" ) )
             {
-                if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpg"  ) )
+                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg"  ) )
                 {
-                    QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpg" ) ;
+                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg" ) ;
                 }
 
-                if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpeg" ) )
+                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) )
                 {
-                    QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpeg" ) ;
+                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) ;
                 }
 
-                if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".png" ) )
+                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) )
                 {
-                    QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".png" ) ;
+                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) ;
                 }
 
-                if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".bmp" ) )
+                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) )
                 {
-                    QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".bmp" ) ;
+                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) ;
                 }
 
-                if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/Images/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
+                if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
                 {
                     qDebug() << "Impossible de copier l'image.0"  ;
                 }
@@ -2469,29 +2474,29 @@ void F_AjoutSuppModifJeux::AjouterImage(QString sCheminImage, QString sCodeJeux 
         }
         else
         {
-            if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpg"  ) )
+            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg"  ) )
             {
-                QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpg" ) ;
+                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg" ) ;
             }
 
-            if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpeg" ) )
+            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) )
             {
-                QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".jpeg" ) ;
+                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) ;
             }
 
-            if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".png" ) )
+            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) )
             {
-                QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".png" ) ;
+                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) ;
             }
 
-            if( QFile::exists( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".bmp" ) )
+            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) )
             {
-                QFile::remove( QApplication::applicationDirPath() + "/Images/" + sCodeJeux + ".bmp" ) ;
+                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) ;
             }
 
-            if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/Images/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
+            if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
             {
-                qDebug() << "Impossible de copier l'image.2  " << QApplication::applicationDirPath() + "/Images/" + sCodeJeux + sCheminImage.left( sCheminImage.size() -sCheminImage.lastIndexOf( '.' ) ) << "    " << sCheminImage.size() -sCheminImage.lastIndexOf( '.') ;
+                qDebug() << "Impossible de copier l'image.2  " << QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.left( sCheminImage.size() -sCheminImage.lastIndexOf( '.' ) ) << "    " << sCheminImage.size() -sCheminImage.lastIndexOf( '.') ;
             }
         }
     }

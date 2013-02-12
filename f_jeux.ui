@@ -197,49 +197,45 @@
       <number>1</number>
      </property>
      <layout class="QGridLayout" name="gridLayout_15">
-      <item row="3" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_4">
+      <item row="1" column="0" colspan="5">
+       <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
-         <string/>
+         <string>Âge</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_7">
+        <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
-          <widget class="QLabel" name="label_createur">
+          <widget class="QLabel" name="label_joueurs">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Créateur :</string>
+            <string>Minimum :</string>
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Le_editeur">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="Le_agemin">
            <property name="readOnly">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLabel" name="label_editeur">
+          <widget class="QLabel" name="label_age">
            <property name="font">
             <font>
              <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
             </font>
            </property>
            <property name="text">
-            <string>Éditeur :</string>
+            <string>Maximum :</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_createur">
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="Le_agemax">
            <property name="readOnly">
             <bool>true</bool>
            </property>
@@ -248,7 +244,7 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item row="2" column="0" colspan="5">
        <widget class="QGroupBox" name="groupBox">
         <property name="title">
          <string>Nombre de joueurs</string>
@@ -295,7 +291,58 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="0" colspan="2">
+      <item row="4" column="0" colspan="5">
+       <widget class="QGroupBox" name="groupBox_5">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_etat">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>État du jeu :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="Le_etat">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="Le_statut">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_statut">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Statut du jeu :</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="5">
        <widget class="QGroupBox" name="groupBox_3">
         <property name="title">
          <string/>
@@ -395,71 +442,141 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_7">
-        <property name="title">
-         <string>Remarques :</string>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Remarques sur ce jeu :</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_10">
-         <item row="2" column="0" colspan="3">
-          <widget class="QTextEdit" name="TxE_remarques"/>
-         </item>
-         <item row="1" column="2">
-          <widget class="QCommandLinkButton" name="Bt_ValiderRemarques">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
+       </widget>
+      </item>
+      <item row="7" column="3">
+       <widget class="QCommandLinkButton" name="Bt_ValiderRemarques">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="5">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_createur">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
            </property>
            <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
+            <string>Créateur :</string>
            </property>
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QCommandLinkButton" name="Bt_AnnulerRemarques">
-           <property name="enabled">
-            <bool>false</bool>
+          <widget class="QLineEdit" name="Le_editeur">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_editeur">
+           <property name="font">
+            <font>
+             <pointsize>10</pointsize>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
            </property>
            <property name="text">
-            <string/>
+            <string>Éditeur :</string>
            </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="Le_createur">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="5" column="0" colspan="2">
+      <item row="12" column="4">
+       <widget class="QPushButton" name="Bt_regle">
+        <property name="text">
+         <string>Règle du jeu</string>
+        </property>
+       </widget>
+      </item>
+      <item row="12" column="0">
+       <widget class="QPushButton" name="Bt_details">
+        <property name="text">
+         <string>Détails</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0" colspan="5">
+       <widget class="QTextEdit" name="TxE_remarques">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="4">
+       <widget class="QCommandLinkButton" name="Bt_AnnulerRemarques">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0" colspan="5">
        <widget class="QGroupBox" name="groupBox_6">
         <property name="title">
          <string>Emplacement dans la ludothèque :</string>
@@ -467,124 +584,30 @@
         <layout class="QGridLayout" name="gridLayout_9">
          <item row="0" column="0">
           <widget class="QTextEdit" name="TxE_emplacement">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>70</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="readOnly">
             <bool>false</bool>
            </property>
           </widget>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_2">
-        <property name="title">
-         <string>Âge</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_joueurs">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Minimum :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_agemin">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_age">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
-           <property name="text">
-            <string>Maximum :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Le_agemax">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="2">
-       <widget class="QGroupBox" name="groupBox_5">
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_8">
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_etat">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>État du jeu :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Le_etat">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_statut">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_statut">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Statut du jeu :</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="7" column="1">
-       <widget class="QPushButton" name="Bt_regle">
-        <property name="text">
-         <string>Règle du jeu</string>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QPushButton" name="Bt_details">
-        <property name="text">
-         <string>Détails</string>
-        </property>
        </widget>
       </item>
      </layout>
@@ -613,147 +636,8 @@
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_14">
-      <item row="2" column="0">
-       <widget class="QGroupBox" name="groupBox_11">
-        <property name="title">
-         <string>Description du jeu :</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_12">
-         <item row="0" column="1">
-          <widget class="QCommandLinkButton" name="Bt_ValiderDescription">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCommandLinkButton" name="Bt_AnnulerDescription">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QTextEdit" name="TxE_description">
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QGroupBox" name="groupBox_12">
-        <property name="title">
-         <string>Contenu de la boite : </string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_13">
-         <item row="0" column="2">
-          <widget class="QCommandLinkButton" name="Bt_AnnulerContenu">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QTextEdit" name="TxE_contenu">
-           <property name="readOnly">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QCommandLinkButton" name="Bt_ValiderContenu">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>15</width>
-             <height>15</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-        </layout>
-        <zorder>TxE_contenu</zorder>
-        <zorder>Bt_AnnulerContenu</zorder>
-        <zorder>Bt_ValiderContenu</zorder>
-       </widget>
-      </item>
-      <item row="0" column="0">
+     <layout class="QGridLayout" name="gridLayout_10">
+      <item row="0" column="0" rowspan="3" colspan="7">
        <widget class="QGroupBox" name="groupBox_10">
         <property name="minimumSize">
          <size>
@@ -762,47 +646,186 @@
          </size>
         </property>
         <property name="title">
-         <string>Image :</string>
+         <string>Image pour ce jeu :</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
          <item row="0" column="0">
-          <widget class="QFrame" name="frame_photo">
+          <widget class="QLabel" name="Lb_Image">
            <property name="minimumSize">
             <size>
-             <width>0</width>
-             <height>150</height>
+             <width>200</width>
+             <height>200</height>
             </size>
            </property>
-           <property name="frameShape">
-            <enum>QFrame::StyledPanel</enum>
+           <property name="maximumSize">
+            <size>
+             <width>200</width>
+             <height>200</height>
+            </size>
            </property>
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
+           <property name="text">
+            <string/>
            </property>
-           <layout class="QGridLayout" name="gridLayout_17">
-            <item row="0" column="0">
-             <widget class="QLabel" name="Lb_Image">
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>200</width>
-                <height>200</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-           </layout>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QCommandLinkButton" name="Bt_ValiderContenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QCommandLinkButton" name="Bt_AnnulerContenu">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0" colspan="7">
+       <widget class="QTextEdit" name="TxE_description">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="3">
+       <widget class="QCommandLinkButton" name="Bt_AnnulerDescription">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Contenu de ce jeu :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="0" rowspan="2" colspan="7">
+       <widget class="QTextEdit" name="TxE_contenu">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="readOnly">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QCommandLinkButton" name="Bt_ValiderDescription">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>15</width>
+          <height>15</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Description de ce jeu :</string>
+        </property>
        </widget>
       </item>
      </layout>

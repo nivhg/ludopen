@@ -69,7 +69,6 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     this->EffacerTousLesChamps() ;
 
     /////////////Fenêtre d'ajout d'une ville///////////////
-
     this->oFenetreAjoutVille = new QDialog(this) ;
     this->oFenetreAjoutVille->setModal( true ) ;
     this->oFenetreAjoutVille->setMaximumSize( 230, 100) ;
@@ -102,6 +101,13 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     //Initialisation de la liste de titres et de types
     this->MaJTitre() ;
     this->MaJType() ;
+
+    // Autorise le tri des colonnes pour le tableau Abonnement souscrit par le membre
+    //ui->LW_Abonnements->setSortingEnabled(true);
+    // Autorise le tri des colonnes pour le tableau JeuxEmpruntes par le membre
+    //ui->LW_JeuxEmpruntes->setSortingEnabled(true);
+    // TODO tri pas possible car choix gérer par le vecteur !!!
+    // donc clic pas possible si on modifie l'ordre dans les colonnes car on ne tombe pas sur le bon item
 }
 
 /** Detruit les objets cree
