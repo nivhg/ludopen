@@ -33,6 +33,13 @@ F_RechercheMembres::F_RechercheMembres(QWidget *parent) :
     this->MaJListeMembres() ;
     this->VecteurRechercheMembres = this->VecteurMembres ;
     this->AfficherListe(this->VecteurRechercheMembres) ;
+
+    ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
+    ui->TbW_Recherche->setEditTriggers(0);
+
+    // Faire défiler le tableau des membres avec les flêches du clavier
+    connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
+
     // Autorise le tri des colonnes pour ce tableau
     //ui->TbW_Recherche->setSortingEnabled(true);
     // TO DO pour trier le tableau, il faudrait que l'on retrouve le membre dans le vecteur
@@ -108,9 +115,6 @@ void F_RechercheMembres::AfficherListe()
 void F_RechercheMembres::AfficherListe(QVector<Membre> VecteurMembres)
 {
     int i (0) ;
-    QStandardItemModel * modele = new QStandardItemModel();
-    ui->TbW_Recherche->setModel(modele) ;
-    ui->TbW_Recherche->setEditTriggers(0);
 
     //Remise à  zero de la table recherche
     ui->TbW_Recherche->clearSpans() ;
@@ -123,20 +127,20 @@ void F_RechercheMembres::AfficherListe(QVector<Membre> VecteurMembres)
         //Création des caractéristiques du tableau : -Nombre de colonnes
         //                                           -Nom des colonnes
         //                                           -Nombre de lignes
-        modele->setColumnCount(4);
-        modele->setRowCount(VecteurMembres.size());
-        modele->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
-        modele->setHorizontalHeaderItem(1, new QStandardItem("Prenom"));
-        modele->setHorizontalHeaderItem(2, new QStandardItem("Ville"));
-        modele->setHorizontalHeaderItem(3, new QStandardItem("Code Membre"));
+        ModeleRechercheMembre.setColumnCount(4);
+        ModeleRechercheMembre.setRowCount(VecteurMembres.size());
+        ModeleRechercheMembre.setHorizontalHeaderItem(0, new QStandardItem("Nom"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(1, new QStandardItem("Prénom"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(2, new QStandardItem("Ville"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(3, new QStandardItem("Code Membre"));
 
         //Remplissage du tableau avec les informations contenu dans VecteurMembres
         for(i = 0 ; i < VecteurMembres.size() ; i++)
         {
-             modele->setItem(i, 0, new QStandardItem( VecteurMembres[i].sNom ));
-             modele->setItem(i, 1, new QStandardItem( VecteurMembres[i].sPrenom ));
-             modele->setItem(i, 2, new QStandardItem( VecteurMembres[i].sVille ));
-             modele->setItem(i, 3, new QStandardItem( VecteurMembres[i].sCodeMembre));
+             ModeleRechercheMembre.setItem(i, 0, new QStandardItem( VecteurMembres[i].sNom ));
+             ModeleRechercheMembre.setItem(i, 1, new QStandardItem( VecteurMembres[i].sPrenom ));
+             ModeleRechercheMembre.setItem(i, 2, new QStandardItem( VecteurMembres[i].sVille ));
+             ModeleRechercheMembre.setItem(i, 3, new QStandardItem( VecteurMembres[i].sCodeMembre));
         }
     }
 }
@@ -173,16 +177,6 @@ void F_RechercheMembres::RechercherParNomEtNumero()
     this->AfficherListe(this->VecteurRechercheMembres);
 }
 
-/** Selectionne un membre avec un double click
- *  @pre    Double clique sur un membre
- *  @param  const QModelIndex &index
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_RechercheMembres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
-{
-    emit(this->SignalRenvoieIdMembre(this->VecteurRechercheMembres[index.row()].id));
-}
-
 /** Renvoie le premier code non utilisé
  *  @test   Voir la procédure dans le fichier associé.
  */
@@ -208,7 +202,7 @@ int F_RechercheMembres::RecupererProchainCodeNonUtilise ()
  *  @return Retourne la ligne de la selction
  *  @test   Voir la procédure dans le fichier associé.
  */
- int F_RechercheMembres::RecupererMembreSelectionne ()
+ int F_RechercheMembres::RecupererMembreSelectionne()
  {
      return ui->TbW_Recherche->currentIndex().row() ;
  }
@@ -217,18 +211,27 @@ int F_RechercheMembres::RecupererProchainCodeNonUtilise ()
  //---------------------------------------------------------------------------
  // SLOTS PRIVEES
  //---------------------------------------------------------------------------
+ /** Sélectionne un membre avec un double click
+  *  @pre    Double clique sur un membre
+  *  @param  const QModelIndex &index
+  *  @test   Voir la procédure dans le fichier associé.
+  */
+ void F_RechercheMembres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
+ {
+     emit(this->SignalRenvoieIdMembre(this->VecteurRechercheMembres[index.row()].id));
+ }
 
-
- /** Selectionne un membre avec un click
+ /** Sélectionne un membre avec un click
   *  @param  const QModelIndex &index
   *  @test   Voir la procédure dans le fichier associé.
   */
 void F_RechercheMembres::on_TbW_Recherche_clicked(const QModelIndex &index)
 {
+    qDebug()<<"F_RechercheMembres::on_TbW_Recherche_clicked()" ;
     emit(this->SignalRenvoieIdMembre(this->VecteurRechercheMembres[index.row()].id));
 }
 
-/** Recherche les membres correspondant au champs   chaque fois que le champs est modifiée
+/** Recherche les membres correspondant au champs chaque fois que le champs est modifié
  *  @param  const QString &arg1
  *  @test   Voir la procédure dans le fichier associé.
  */
@@ -237,15 +240,6 @@ void F_RechercheMembres::on_LE_Nom_textEdited(const QString &arg1)
     ui->LE_Code->clear() ;
     this->RechercherParNomEtNumero() ;
     ui->TbW_Recherche->selectRow( 0 ) ;
-}
-
-/** Non utilisé
- *  @param  const QString &arg1
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_RechercheMembres::on_LE_Nom_textChanged(const QString &arg1)
-{
-
 }
 
 /** Recherche les membres correspondant au champs à chaque fois que le champs est modifié
@@ -277,7 +271,7 @@ void F_RechercheMembres::on_PB_Ok_clicked()
    ui->LE_Code->text() ;
 }
 
-/** Envoie un signal avec l'id du membre sélectionner avec le code membre quand la toucher entrée appuyée
+/** Envoie un signal avec l'id du membre sélectionné avec le code membre quand la touche entrée appuyée
  *  @test   Voir la procédure dans le fichier associé.
  */
 void F_RechercheMembres::on_LE_Code_returnPressed()
@@ -296,15 +290,4 @@ void F_RechercheMembres::on_LE_Code_returnPressed()
    ui->LE_Code->text() ;
 }
 
-void F_RechercheMembres::on_TbW_Recherche_pressed(const QModelIndex &index)
-{
-}
-
-void F_RechercheMembres::on_TbW_Recherche_activated(const QModelIndex &index)
-{
-}
-
-void F_RechercheMembres::on_TbW_Recherche_entered(const QModelIndex &index)
-{
-}
 

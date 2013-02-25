@@ -36,11 +36,6 @@ class F_RechercheMembres;
 /** @brief  Permet la sélection et la recherche de membre via une liste.
  * Permet la sélection d'un membre avec la saisie de son code membre.
  *
- *  Description dtaille de MaClasse. Description dtaille de MaClasse.
- *  Description dtaille de MaClasse. Description dtaille de MaClasse.
- *  <p>
- *  Autre bloc de description dtaille de MaClasse. Autre bloc de description dtaille de MaClasse.
- *  Autre bloc de description dtaille de MaClasse. Autre bloc de description dtaille de MaClasse.
  */
 class F_RechercheMembres : public QWidget
 {
@@ -56,10 +51,9 @@ public:
     //! Suppression du contenu des variables dynamiques
     ~F_RechercheMembres();
 
-
     //METHODES-------------------------------------------------------------------
 
-    //! Mise ŕ jour de la liste des membres
+    //! Mise à jour de la liste des membres
     bool MaJListeMembres ();
 
     //! Affichage de la liste des membres
@@ -89,32 +83,21 @@ private slots:
     //! Recherche les membres correspondant au champs à  chaque fois que le champs est modifiée
     void on_LE_Nom_textEdited(const QString &arg1);
 
-    //! Non utilisé
-    void on_LE_Nom_textChanged(const QString &arg1);
-
     //! Recherche les membres correspondant au champs à  chaque fois que le champs est modifiée
     void on_LE_Code_textEdited(const QString &arg1);
 
-    //! Envoie un signal avec l'id du membre sélectionner avec le code membre quand ok appuyé
+    //! Envoie un signal avec l'id du membre sélectionné avec le code membre quand ok appuyé
     void on_PB_Ok_clicked();
 
-    //! Envoie un signal avec l'id du membre sélectionner avec le code membre quand la toucher entrée appuyée
+    //! Envoie un signal avec l'id du membre sélectionné avec le code membre quand la touche entrée appuyée
     void on_LE_Code_returnPressed();
-
-    //! Non utilisé
-    void on_TbW_Recherche_pressed(const QModelIndex &index);
-
-    //! Non utilisé
-    void on_TbW_Recherche_activated(const QModelIndex &index);
-
-    //! Non utilisé
-    void on_TbW_Recherche_entered(const QModelIndex &index);
 
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     Ui::F_RechercheMembres *ui;
     QVector<Membre> VecteurMembres ;///< Vecteur contenant la liste des membres
     QVector<Membre> VecteurRechercheMembres ; ///< Vecteur contenant la liste des membres correspondant à  la recherche
+    QStandardItemModel ModeleRechercheMembre;
 };
 
 #endif // F_RECHERCHEMEMBRE_H

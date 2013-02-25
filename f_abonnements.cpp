@@ -95,8 +95,8 @@ void F_Abonnements::MettreAJourBDD()
     this->TbRechercheModele->setHorizontalHeaderItem(0, new QStandardItem("Type"));
     this->TbRechercheModele->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
     this->TbRechercheModele->setHorizontalHeaderItem(2, new QStandardItem("Prix"));
-    this->TbRechercheModele->setHorizontalHeaderItem(3, new QStandardItem("Duree de Validite"));
-    this->TbRechercheModele->setHorizontalHeaderItem(4, new QStandardItem("Credit Disponible"));
+    this->TbRechercheModele->setHorizontalHeaderItem(3, new QStandardItem("Durée de Validité"));
+    this->TbRechercheModele->setHorizontalHeaderItem(4, new QStandardItem("Crédit Disponible"));
 
     ui->TbV_Recherche->setColumnWidth(1, 300);
     ui->TbV_Recherche->setColumnWidth(2, 90);

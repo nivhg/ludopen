@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     // Test d'accès à la base de données
     if(db.isOpen() == false)
     {
-        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données" ,"Impossible d'accéder aux données !\n"+ db.lastError().text(),QMessageBox::Close);
+        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données" ,"Impossible d'accéder à la base de données !\nPeut être que l'ordinateur gérant la base de données n'est pas allumé !\n\n"+ db.lastError().text(),QMessageBox::Close);
         Err.exec();
         cerr << "Vous etes sur l'adresse IP " << sAdresseIP.toStdString() << " sur le port " << nPort << " en tant que " << sNomUtilisateur.toStdString() << "." << endl << endl;
         cerr << endl << "La connexion à la BDD " << sNomBDD.toStdString() << " a échouée." << endl;

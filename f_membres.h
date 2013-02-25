@@ -119,9 +119,6 @@ private slots:
     //! Permet d'ajout un nouveau type si "Créer type..." a été sélectionné
     void on_CBx_Type_activated(int index);
 
-    //! Pas utilisé
-    void on_CBx_Type_highlighted(int index) ;
-
     //! Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
     void on_CBx_Titre_activated(int index);
 

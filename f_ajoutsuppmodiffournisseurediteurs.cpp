@@ -6,7 +6,7 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/2012
  *  @version      0.1
- *  @date         01/09/2012 William
+ *  @date         23/02/2013 William
  *
  *  Il permet à partir de l'onglet administration et le widget fournisseurs-éditeurs,
  *  d'ajouter, de supprimer, ou de modifier une fiche de fournisseur ou éditeur.
@@ -48,6 +48,10 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
     ui->TbV_Recherche->setModel(this->ModelFournisseur);
     // Mise en lecture seule
     ui->TbV_Recherche->setEditTriggers(0);
+
+    // Faire défiler le tableau des jeux avec les flêches du clavier
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+
     // Initialise la table view avec tous les fournisseurs
     on_LE_Recherche_textChanged("") ;
     //Supprime le numéro des lignes

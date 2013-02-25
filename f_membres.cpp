@@ -1141,6 +1141,154 @@ void F_Membres::slot_AnnulerAjoutVille()
     this->oFenetreAjoutVille->hide() ;
 }
 
+
+/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_Le_TelFix_textEdited( const QString &arg1 )
+{
+    ui->Le_TelFix->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
+}
+
+/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_Le_TelMobile_textEdited( const QString &arg1 )
+{
+    ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
+}
+
+/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_LE_Fax_textEdited( const QString &arg1 )
+{
+    ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
+}
+
+/** Non utilisé
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_Lb_MembreEcarte_linkActivated( const QString &link )
+{
+
+}
+
+/** Active ou désactive le bouton valider en fonction de lineedit nom
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
+{
+    if( arg1 == "" )
+    {
+        ui->Bt_Valider->setDisabled( true ) ;
+    }
+    else
+    {
+        ui->Bt_Valider->setEnabled( true ) ;
+    }
+}
+
+/** Selectionne une ligne entière dans le tableau LW_Abonnememnt
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
+{
+    ui->Bt_Modifier->setEnabled( true ) ;
+    ui->Bt_Supprimer->setEnabled( true ) ;
+}
+
+/** Selectionne une ligne entière dans le tableau LW_Empruntes
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_LW_JeuxEmpruntes_clicked( const QModelIndex &index )
+{
+}
+
+/** Affiche ou cache membre écarté
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_ChBx_MembreEcarte_toggled( bool checked )
+{
+    if( checked == true )
+    {
+        ui->ChBx_MembreEcarte->setPalette( QPalette( Qt::red ) ) ;
+    }
+    else
+    {
+        ui->ChBx_MembreEcarte->setPalette( QPalette( Qt::black ) ) ;
+    }
+}
+
+/**  Change de la couleur et met en gras membre écarter quand le checkbox et check
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_ChBx_MembreEcarte_stateChanged( int arg1 )
+{
+    QFont font ;
+    QPalette palette ;
+
+    if( arg1 == 0 )
+    {
+        font.setBold( false ) ;
+        ui->Lb_MembreEcarte->setFont( font ) ;
+        palette.setColor( QPalette::WindowText, Qt::black ) ;
+        ui->Lb_MembreEcarte->setPalette( palette ) ;
+    }
+    else
+    {
+        font.setBold( true ) ;
+        ui->Lb_MembreEcarte->setFont( font ) ;
+        palette.setColor( QPalette::WindowText, Qt::red ) ;
+        ui->Lb_MembreEcarte->setPalette( palette ) ;
+    }
+}
+
+/**  Permet l'ajout de Ajouter une ville dans le combox Ville
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_CBx_Ville_currentIndexChanged(const QString &arg1)
+{
+    if( arg1 == "Ajouter une ville ..." )
+    {
+        this->oFenetreAjoutVille->show() ;
+    }
+}
+
+/** Permet d'ajout un nouveau type si "Créer type..." a été sélectionné
+ *  @pre    l'utilisateur a choisi Créer type...
+ *  @post   Ouverture d'un popup pour l'ajout d'un type
+ *  @param  int index
+ *  @test
+ */
+void F_Membres::on_CBx_Type_activated(int index)
+{
+    if( ( this->VectorType.size() - 1 )== index )
+    {
+        this->pTypeAjMod->Ajouter() ;
+        ui->CBx_Type->setCurrentIndex( 0 ) ;
+    }
+}
+
+/** Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
+ *  @pre    l'utilisateur a choisi Créer titre...
+ *  @post   Ouverture d'un popup pour l'ajout d'un titre
+ *  @param  int index
+ *  @test
+ */
+void F_Membres::on_CBx_Titre_activated(int index)
+{
+    if( ( this->VectorTitre.size() - 1 ) == index )
+    {
+        this->pTitreAjMod->Ajouter() ;
+        ui->CBx_Titre->setCurrentIndex( 0 ) ;
+    }
+    else
+    {
+        ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
+    }
+}
+
 //---------------------------------------------------------------------------
 // SLOTS PRIVEES
 //---------------------------------------------------------------------------
@@ -1204,14 +1352,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     ui->Bt_Ajouter->setDisabled( true ) ;
     ui->Bt_Modifier->setDisabled( true ) ;
     ui->Bt_Supprimer->setDisabled( true ) ;
-}
-
-
-/** Pas utilise
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_CBx_Type_highlighted( int index )
-{
 }
 
 /** Annule l'ajout ou la modification d'un membre
@@ -1294,7 +1434,7 @@ void F_Membres::on_Bt_Valider_clicked()
                 this->VerrouillerInfosPerso( true ) ;
                 this->AfficherValiderAnnuler( false ) ;
                 this->AfficherAjouterModifierMembre( true ) ;
-                this->AfficherMembre( this->nIdMembreSelectionne ) ;                
+                this->AfficherMembre( this->nIdMembreSelectionne ) ;
             }
             else
             {
@@ -1322,31 +1462,6 @@ void F_Membres::on_Bt_Valider_clicked()
     }
 }
 
-
-/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_Le_TelFix_textEdited( const QString &arg1 )
-{
-    ui->Le_TelFix->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
-}
-
-/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_Le_TelMobile_textEdited( const QString &arg1 )
-{
-    ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
-}
-
-/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_LE_Fax_textEdited( const QString &arg1 )
-{
-    ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
-}
-
 /** Affiche l'historique des jeux empruntés
  *  @test   Voir la procédure dans le fichier associé.
  */
@@ -1354,30 +1469,6 @@ void F_Membres::on_Bt_Historique_clicked()
 {
     this->pHistoriqueJeux->AfficherHistorique( this->nIdMembreSelectionne ) ;
     this->pHistoriqueJeux->show() ;
-
-}
-
-/** Affiche ou cache membre écarté
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_ChBx_MembreEcarte_toggled( bool checked )
-{
-    if( checked == true )
-    {
-        ui->ChBx_MembreEcarte->setPalette( QPalette( Qt::red ) ) ;
-    }
-    else
-    {
-        ui->ChBx_MembreEcarte->setPalette( QPalette( Qt::black ) ) ;
-    }
-}
-
-/** Non utilisé
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_Lb_MembreEcarte_linkActivated( const QString &link )
-{
-
 }
 
 /** Permet de modifier un membre
@@ -1390,21 +1481,6 @@ void F_Membres::on_Bt_ModifierMembre_clicked()
     this->AfficherAjouterModifierMembre( false ) ;
     ui->Bt_Valider->setText( "Valider les Modifications" ) ;
     this->pRechercheMembres->setDisabled( true ) ;
-}
-
-/** Active ou désactive le bouton valider en fonction de lineedit nom
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
-{
-    if( arg1 == "" )
-    {
-        ui->Bt_Valider->setDisabled( true ) ;
-    }
-    else
-    {
-        ui->Bt_Valider->setEnabled( true ) ;
-    }
 }
 
 /** Validation suppression d'un membre
@@ -1425,7 +1501,6 @@ void F_Membres::on_Bt_SupprimerMembre_clicked()
 
         modeleVide = new QStandardItemModel() ;
         ui->LW_JeuxEmpruntes->setModel( modeleVide ) ;
-
         ui->LW_Abonnements->setModel( modeleVide ) ;
     }
 }
@@ -1438,23 +1513,6 @@ void F_Membres::on_Bt_Ajouter_clicked()
     this->pAjouterCotiCarte->MaJListeAbonnements() ;
     this->pAjouterCotiCarte->AjouterMembre( this->nIdMembreSelectionne ) ;
 }
-
-/** Selectionne une ligne entière dans le tableau LW_Abonnememnt
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
-{
-    ui->Bt_Modifier->setEnabled( true ) ;
-    ui->Bt_Supprimer->setEnabled( true ) ;
-}
-
-/** Selectionne une ligne entière dans le tableau LW_Empruntes
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_LW_JeuxEmpruntes_clicked( const QModelIndex &index )
-{
-}
-
 /** Permet la modifiaction d'un abonnement
  *  @test   Voir la procédure dans le fichier associé.
  */
@@ -1486,74 +1544,5 @@ void F_Membres::on_Bt_Supprimer_clicked()
 
         ui->Bt_Modifier->setDisabled( true ) ;
         ui->Bt_Supprimer->setDisabled( true ) ;
-    }
-}
-
-/**  Change de la couleur et met en gras membre écarter quand le checkbox et check
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_ChBx_MembreEcarte_stateChanged( int arg1 )
-{
-    QFont font ;
-    QPalette palette ;
-
-    if( arg1 == 0 )
-    {
-        font.setBold( false ) ;
-        ui->Lb_MembreEcarte->setFont( font ) ;
-        palette.setColor( QPalette::WindowText, Qt::black ) ;
-        ui->Lb_MembreEcarte->setPalette( palette ) ;
-    }
-    else
-    {
-        font.setBold( true ) ;
-        ui->Lb_MembreEcarte->setFont( font ) ;
-        palette.setColor( QPalette::WindowText, Qt::red ) ;
-        ui->Lb_MembreEcarte->setPalette( palette ) ;
-    }
-}
-
-/**  Permet l'ajout de Ajouter une ville dans le combox Ville
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_CBx_Ville_currentIndexChanged(const QString &arg1)
-{
-    if( arg1 == "Ajouter une ville ..." )
-    {
-        this->oFenetreAjoutVille->show() ;
-    }
-}
-
-/** Permet d'ajout un nouveau type si "Créer type..." a été sélectionné
- *  @pre    l'utilisateur a choisi Créer type...
- *  @post   Ouverture d'un popup pour l'ajout d'un type
- *  @param  int index
- *  @test
- */
-void F_Membres::on_CBx_Type_activated(int index)
-{
-    if( ( this->VectorType.size() - 1 )== index )
-    {
-        this->pTypeAjMod->Ajouter() ;
-        ui->CBx_Type->setCurrentIndex( 0 ) ;
-    }
-}
-
-/** Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
- *  @pre    l'utilisateur a choisi Créer titre...
- *  @post   Ouverture d'un popup pour l'ajout d'un titre
- *  @param  int index
- *  @test
- */
-void F_Membres::on_CBx_Titre_activated(int index)
-{
-    if( ( this->VectorTitre.size() - 1 ) == index )
-    {
-        this->pTitreAjMod->Ajouter() ;
-        ui->CBx_Titre->setCurrentIndex( 0 ) ;
-    }
-    else
-    {
-        ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
     }
 }

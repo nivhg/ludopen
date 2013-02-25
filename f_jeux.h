@@ -130,11 +130,12 @@ private slots:
      */
     void on_TbV_NomJeux_clicked(const QModelIndex &index);
     
-    /** @brief Appeler lorsque l'on modifier le contenu de la case de recherche par code
+    /** @brief Appeler lorsque l'on modifie le contenu de la case de recherche par code
      *
      */
     void on_Le_recherchecode_textChanged(const QString &arg1);
     
+
 private:
     //ATTRIBUTS--------------------------------------------------
     Ui::F_Jeux *ui;
@@ -153,10 +154,6 @@ private:
     
     //! Model du TableView des jeux
     QStandardItemModel * ModelJeu;
-    
-    //! Chaine de caractères contenant le nom de l'image
-    QString sNomImage ;
-
 };
 
 //-----------------------------------------------------------------

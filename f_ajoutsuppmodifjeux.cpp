@@ -65,6 +65,9 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     //Supprime le numéro des lignes
     ui->TbV_Recherche->verticalHeader()->setVisible(false);
 
+    // Faire défiler le tableau des jeux avec les flêches du clavier
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+
     ui->LE_CodeClassification->setReadOnly(true);
     //Affiche la date du jour
     QDate DateDefaut ;

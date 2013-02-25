@@ -25,6 +25,7 @@
 #include <QStandardItemModel>
 #include <QProcess>
 #include <QPixmap>
+#include <QDir>
 #include<QMessageBox>
 
 /**
@@ -41,25 +42,27 @@ F_Jeux::F_Jeux(QWidget *parent) :
     pReservation= new F_Reservation;
     pDetailsJeux=new F_DetailsJeux;
     pDeclarerIntervention=new F_DeclarerIntervention;
+    // pas de jeu actuellement choisi
     JeuEnConsultation = "" ;
 
     /////////////////////////////////////////////////////////
     //////////////////Création table view //////////////////
     ///////////////////////////////////////////////////////
 
-    //Création d'un model pour le TableView des jeux
+    //Création d'un modèle pour le TableView des jeux
     this->ModelJeu = new QStandardItemModel() ;
-    //Associe le modèl au TableView
+    //Associe le modèle au TableView
     ui->TbV_NomJeux->setModel(this->ModelJeu);
     // Mise en lecture seule
     ui->TbV_NomJeux->setEditTriggers(0);
     // Autorise le tri pour ce tableau
     ui->TbV_NomJeux->setSortingEnabled(true);
-    // Initialise la table view avec tout les jeux
+    // Initialise la table view avec tous les jeux
     on_Le_recherchenom_textChanged("") ;
     //Supprime le numéro des lignes
     ui->TbV_NomJeux->verticalHeader()->setVisible(false);
-
+    // Faire défiler le tableau des jeux avec les flêches du clavier
+    connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Destructeur /////////////////////////////
@@ -83,9 +86,13 @@ void F_Jeux::on_Bt_reserver_clicked()
 {
     //Savoir si le jeux existe
     QSqlQuery RequeteJeu;
-    RequeteJeu.prepare("SELECT `IdJeux` FROM `jeux` WHERE `CodeJeu`=:CodeDuJeu");
+    RequeteJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteJeu.bindValue(":CodeDuJeu",this->JeuEnConsultation);
     RequeteJeu.exec();
+    if (!RequeteJeu.exec())
+    {
+        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteJeu :" << RequeteJeu.lastError().text()  ;
+    }
     RequeteJeu.next();
 
     if(RequeteJeu.size()==0)
@@ -96,12 +103,16 @@ void F_Jeux::on_Bt_reserver_clicked()
 
     //Savoir si le jeux est déja réservé :
     QSqlQuery RequeteResa;
-    RequeteResa.prepare("SELECT `idReservation` FROM `reservation` WHERE `Jeux_IdJeux`=:IdDuJeu AND `JeuEmprunte`=1");
+    RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
     RequeteResa.bindValue(":IdDuJeu",RequeteJeu.value(0));
-    RequeteResa.exec();
+
+    if (!RequeteResa.exec())
+    {
+        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteResa :" << RequeteResa.lastError().text()  ;
+    }
     if (RequeteResa.size()!=0)
     {
-        QMessageBox::information(this,"Réservation impossible","Ce jeu est déjà réservé","Ok");
+        QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
         return;
     }
 
@@ -167,7 +178,10 @@ void F_Jeux::on_Bt_ok_clicked()
 
     RequeteRechercheCode.prepare("SELECT NomJeu, CodeJeu, NomCreateurJeu, ContenuJeu, Remarque, StatutJeux_IdStatutJeux, EtatsJeu_IdEtatsJeu, Emplacement_IdEmplacement, AgeMin, AgeMax, NbrJoueurMin, NbrJoueurMax, TypeJeux_Classification, DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", Code);
-    RequeteRechercheCode.exec();
+    if (!RequeteRechercheCode.exec())
+    {
+        qDebug() << "F_Jeux::on_Bt_ok_clicked() : RequeteRechercheCode :" << RequeteRechercheCode.lastError().text()  ;
+    }
     RequeteRechercheCode.next();
 
     QString Le_Nom =  RequeteRechercheCode.value(0).toString() ;
@@ -298,37 +312,39 @@ void F_Jeux::on_Bt_ok_clicked()
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////
     //////////////////////////////////////////////////////
-    QString sCheminImage ;
+    QString sCheminImage=QApplication::applicationDirPath() + "/photos des jeux/" + ui->Le_code->text() ;
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpg"  ) )
+    if( QFile::exists( sCheminImage + ".jpg" ) )
     {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpg" ;
+        sCheminImage = sCheminImage + ".jpg" ;
+    }
+    else
+    if( QFile::exists( sCheminImage + ".jpeg" ) )
+    {
+        sCheminImage = sCheminImage + ".jpeg" ;
+    }
+    else
+    if( QFile::exists( sCheminImage + ".png" ) )
+    {
+        sCheminImage = sCheminImage + ".png" ;
+    }
+    else
+    if( QFile::exists( sCheminImage + ".bmp" ) )
+    {
+        sCheminImage = sCheminImage + ".bmp" ;
+    }
+    else
+    if( QFile::exists( sCheminImage + ".gif" ) )
+    {
+        sCheminImage = sCheminImage + ".gif" ;
     }
 
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpeg" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".jpeg" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".png" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".png" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".bmp" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".bmp" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".gif" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() + ".gif" ;
-    }
-    QPixmap Image( sCheminImage ) ;
+    QDir CheminFichierImage( sCheminImage );
+    QPixmap Image( CheminFichierImage.absolutePath() ) ;
     ui->Lb_Image->setPixmap( Image ) ;
-
     //Met l'image à l'échelle du cadre
     ui->Lb_Image->setScaledContents( true ) ;
+    //qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() ;
 
     /////////////////////////////////////////////
     // Msg d'information en cas de champ vide //
@@ -523,13 +539,13 @@ void F_Jeux::on_Bt_ValiderRemarques_clicked()
     QSqlQuery RequeteValiderRemarque;
 
     //prépare le requête de mise à jour
-    RequeteValiderRemarque.prepare("UPDATE `jeux` SET `Remarque` =:NouvelRemarque WHERE `CodeJeu`=:CodeDuJeu");
+    RequeteValiderRemarque.prepare("UPDATE jeux SET Remarque=:NouvelRemarque WHERE CodeJeu=:CodeDuJeu");
 
-    //Entre les valeurs de la reqête
+    //Entre les valeurs de la requête
     RequeteValiderRemarque.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderRemarque.bindValue(":NouvelRemarque",ui->TxE_remarques->toPlainText());
 
-    //Execut la requête
+    //Exécute la requête
     if (!RequeteValiderRemarque.exec())
     {
 
@@ -551,20 +567,18 @@ void F_Jeux::on_Bt_AnnulerRemarques_clicked()
 {
     QSqlQuery RequeteAnnulerRemarques;
 
-
     RequeteAnnulerRemarques.prepare("SELECT Remarque FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteAnnulerRemarques.bindValue(":CodeDuJeu",JeuEnConsultation);
 
-
-    //Execut la requête
+    //Exécute la requête
     if (!RequeteAnnulerRemarques.exec())
     {
-
+        qDebug() << "F_Jeux::on_Bt_AnnulerRemarques_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerRemarques.lastError().text()  ;
     }
 
     RequeteAnnulerRemarques.next();
 
-    //Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiche
     QString TexteRemarque = (RequeteAnnulerRemarques.value(0).toString());
     ui->TxE_remarques->setText(TexteRemarque);
 
@@ -585,18 +599,17 @@ void F_Jeux::on_Bt_ValiderDescription_clicked()
     QSqlQuery RequeteValiderDescription;
 
     //prépare le requête de mise à jour
-    RequeteValiderDescription.prepare("UPDATE `jeux` SET `DescriptionJeu` =:NouvelleDescription WHERE `CodeJeu`=:CodeDuJeu");
+    RequeteValiderDescription.prepare("UPDATE jeux SET DescriptionJeu=:NouvelleDescription WHERE CodeJeu=:CodeDuJeu");
 
-    //Entre les valeurs de la reqête
+    //Entre les valeurs de la requête
     RequeteValiderDescription.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderDescription.bindValue(":NouvelleDescription",ui->TxE_description->toPlainText());
 
-    //Execut la requête
+    //Exécute la requête
     if (!RequeteValiderDescription.exec())
     {
-
+        qDebug() << "F_Jeux::on_Bt_ValiderDescription_clicked() : RequeteValiderDescription :" << RequeteValiderDescription.lastError().text()  ;
     }
-
     //Grise les boutons de modification de la description
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
@@ -618,18 +631,18 @@ void F_Jeux::on_Bt_AnnulerDescription_clicked()
     //Execut la requête
     if (!RequeteAnnulerDescription.exec())
     {
-
+        qDebug() << "F_Jeux::on_Bt_AnnulerDescription_clicked() : RequeteAnnulerDescription :" << RequeteAnnulerDescription.lastError().text()  ;
     }
 
     RequeteAnnulerDescription.next();
 
-    //Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiche
     QString TexteDescription = (RequeteAnnulerDescription.value(0).toString());
-    ui->TxE_remarques->setText(TexteDescription);
+    ui->TxE_description->setText(TexteDescription);
 
     //Grise les boutons de modification des remarques du membre
-    ui->Bt_ValiderRemarques->setEnabled(false);
-    ui->Bt_AnnulerRemarques->setEnabled(false);
+    ui->Bt_ValiderDescription->setEnabled(false);
+    ui->Bt_AnnulerDescription->setEnabled(false);
 }
 
 ////////////////////////////////////////////////////////////
@@ -646,14 +659,14 @@ void F_Jeux::on_Bt_ValiderContenu_clicked()
     //prépare le requête de mise à jour
     RequeteValiderContenu.prepare("UPDATE jeux SET ContenuJeu=:NouveauContenu WHERE CodeJeu=:CodeDuJeu");
 
-    //Entre les valeurs de la reqête
+    //Entre les valeurs de la requête
     RequeteValiderContenu.bindValue(":CodeDuJeu",JeuEnConsultation);
     RequeteValiderContenu.bindValue(":NouveauContenu",ui->TxE_contenu->toPlainText());
 
-    //Execut la requête
+    //Exécute la requête
     if (!RequeteValiderContenu.exec())
     {
-
+        qDebug() << "F_Jeux::on_Bt_ValiderContenu_clicked() : RequeteValiderContenu :" << RequeteValiderContenu.lastError().text()  ;
     }
 
     //Grise les boutons de modification du contenu
@@ -674,15 +687,15 @@ void F_Jeux::on_Bt_AnnulerContenu_clicked()
 
     RequeteAnnulerContenu.prepare("SELECT ContenuJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteAnnulerContenu.bindValue(":CodeDuJeu",JeuEnConsultation);
-    //Execut la requête
+    //Exécute la requête
     if (!RequeteAnnulerContenu.exec())
     {
-
+        qDebug() << "F_Jeux::on_Bt_AnnulerContenu_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerContenu.lastError().text()  ;
     }
 
     RequeteAnnulerContenu.next();
 
-    //Récupère les remarques dans la base de données et les affiches
+    //Récupère les remarques dans la base de données et les affiche
     QString TexteContenu = (RequeteAnnulerContenu.value(0).toString());
     ui->TxE_contenu->setText(TexteContenu);
 
@@ -701,7 +714,7 @@ void F_Jeux::on_TxE_remarques_textChanged()
 {
     ui->Bt_AnnulerRemarques->setEnabled(true);
     ui->Bt_ValiderRemarques->setEnabled(true);
-    qDebug()<<"F_Jeux::on_TxE_remarques_textChanged()";
+    //qDebug()<<"F_Jeux::on_TxE_remarques_textChanged()";
 }
 ////////////////////////////////////////////////////////////
 ///////////////// texte description qui change/////////////
@@ -749,13 +762,16 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
         QSqlQuery RequeteRechercheJeu;
         NumeroLigne=0;
 
-        RequeteRechercheJeu.prepare("SELECT  `CodeJeu`,`NomJeu` FROM`jeux` WHERE `NomJeu` LIKE (:NomJeu)");
+        RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu FROM jeux WHERE NomJeu LIKE (:NomJeu)");
         RequeteRechercheJeu.bindValue(":NomJeu",NomJeu);
-        RequeteRechercheJeu.exec();
 
-        //On vide le model
+        if (!RequeteRechercheJeu.exec())
+        {
+            qDebug() << "F_Jeux::on_Le_recherchenom_textChanged() : RequeteRechercheJeu :" << RequeteRechercheJeu.lastError().text()  ;
+        }
+        //On vide le modèle
         this->ModelJeu->clear();
-        //Indique le nombes de colones puis leurs noms
+        //Indique le nombres de colones puis leurs noms
         this->ModelJeu->setColumnCount(2);
         this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
@@ -776,7 +792,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     {
         QSqlQuery RequeteRechercheJeu;
         NumeroLigne =0;
-        RequeteRechercheJeu.exec("SELECT  `CodeJeu`,`NomJeu` FROM`jeux`ORDER BY NomJeu ASC");
+        RequeteRechercheJeu.exec("SELECT  CodeJeu,NomJeu FROM jeux ORDER BY NomJeu ASC");
 
         //On vide le model
         this->ModelJeu->clear();
@@ -869,3 +885,4 @@ void F_Jeux::set_JeuEnConsultation(QString CodeJeuChoisi)
 {
     this->JeuEnConsultation = CodeJeuChoisi ;
 }
+

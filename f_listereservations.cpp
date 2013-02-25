@@ -309,7 +309,7 @@ bool F_ListeReservations::AffichageListe()
     // Assemblage des différents morceaux de la requête
     sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdReservation" ;
 
-    qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
+    //qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
 
     //Exécution de la requête
     if( RequeteDesReservations.exec(sRequete) )
@@ -350,8 +350,8 @@ bool F_ListeReservations::AffichageListe()
 
                         if( RequeteStatut.next() )
                         {
-                            qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastQuery() ;
-                            qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.record().value( 0 ).toString() ;
+                            //qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastQuery() ;
+                            //qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.record().value( 0 ).toString() ;
                             ModeleReservations.setItem( i, 3, new QStandardItem( RequeteStatut.record().value( 0 ).toString() ) ) ;
                         }
                     }

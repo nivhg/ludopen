@@ -103,7 +103,7 @@
         <item>
          <widget class="QCommandLinkButton" name="Bt_Ajouter">
           <property name="text">
-           <string>Ajouter nouveau</string>
+           <string>Ajouter un nouveau fournisseur</string>
           </property>
           <property name="icon">
            <iconset resource="ImagesIcones.qrc">
