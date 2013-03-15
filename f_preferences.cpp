@@ -95,55 +95,46 @@ F_Preferences::F_Preferences(QWidget *parent) :
     this->TbMembresTitre = new QStandardItemModel();
     ui->TbV_MembresTitre->setModel(this->TbMembresTitre);
     ui->TbV_MembresTitre->setEditTriggers(0);
-    ui->TbV_MembresTitre->resizeColumnsToContents();
     ui->TbV_MembresTitre->verticalHeader()->setVisible(false);
 
     this->TbMembresType = new QStandardItemModel();
     ui->TbV_MembresType->setModel(this->TbMembresType);
     ui->TbV_MembresType->setEditTriggers(0);
-    ui->TbV_MembresType->resizeColumnsToContents();
     ui->TbV_MembresType->verticalHeader()->setVisible(false);
 
     this->TbMembresPaiement = new QStandardItemModel();
     ui->TbV_MembresPaiement->setModel(this->TbMembresPaiement);
     ui->TbV_MembresPaiement->setEditTriggers(0);
-    ui->TbV_MembresPaiement->resizeColumnsToContents();
     ui->TbV_MembresPaiement->verticalHeader()->setVisible(false);
 
     this->TbEmpruntType= new QStandardItemModel();
     ui->TbV_EmpruntType->setModel(this->TbEmpruntType);
     ui->TbV_EmpruntType->setEditTriggers(0);
-    ui->TbV_EmpruntType->resizeColumnsToContents();
     ui->TbV_EmpruntType->verticalHeader()->setVisible(false);
 
     this->TbJeuxType = new QStandardItemModel();
     ui->TbV_JeuxType->setModel(this->TbJeuxType);
     ui->TbV_JeuxType->setEditTriggers(0);
-    ui->TbV_JeuxType->resizeColumnsToContents();
     ui->TbV_JeuxType->verticalHeader()->setVisible(false);
 
     this->TbJeuxEtat = new QStandardItemModel();
     ui->TbV_JeuxEtat->setModel(this->TbJeuxEtat);
     ui->TbV_JeuxEtat->setEditTriggers(0);
-    ui->TbV_JeuxEtat->resizeColumnsToContents();
     ui->TbV_JeuxEtat->verticalHeader()->setVisible(false);
 
     this->TbJeuxStatut = new QStandardItemModel();
     ui->TbV_JeuxStatut->setModel(this->TbJeuxStatut);
     ui->TbV_JeuxStatut->setEditTriggers(0);
-    ui->TbV_JeuxStatut->resizeColumnsToContents();
     ui->TbV_JeuxStatut->verticalHeader()->setVisible(false);
 
     this->TbJeuxEmplacement = new QStandardItemModel();
     ui->TbV_JeuxEmplacement->setModel(this->TbJeuxEmplacement);
     ui->TbV_JeuxEmplacement->setEditTriggers(0);
-    ui->TbV_JeuxEmplacement->resizeColumnsToContents();
     ui->TbV_JeuxEmplacement->verticalHeader()->setVisible(false);
 
     this->TbInfoLudoLieux = new QStandardItemModel();
     ui->TbV_InfoLieux->setModel(this->TbInfoLudoLieux);
     ui->TbV_InfoLieux->setEditTriggers(0);
-    ui->TbV_InfoLieux->resizeColumnsToContents();
     ui->TbV_InfoLieux->verticalHeader()->setVisible(false);
 
     ui->Lb_VerifCode->hide();
@@ -233,14 +224,15 @@ QString F_Preferences::BlocNumeroTelFax(QString sNumero)
 void F_Preferences::AfficherInfoDemarrage()
 {
     QSqlQuery RequeteDemarrage;
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
 
-    ui->LE_NomBDD->setText(settings.value("BaseDeDonnees/NomDeLaBDD", "config").toString());
-    ui->LE_AdresseIP->setText(settings.value("BaseDeDonnees/AdresseIP", "config").toString());
-    ui->LE_NomUtilisateur->setText(settings.value("BaseDeDonnees/NomUtilisateur", "config").toString());
-    ui->LE_MotdePasse->setText(settings.value("BaseDeDonnees/MotDePasse", "config").toString());
-    ui->LE_Port->setText(settings.value("BaseDeDonnees/Port", "config").toString());
-    ui->CBx_LieuOrdi->setCurrentIndex(settings.value("Autres/IdLieux", "config").toInt() - 1);
+    ui->LE_NomBDD->setText(FichierDeConfig.value("BaseDeDonnees/NomDeLaBDD", "config").toString());
+    ui->LE_AdresseIP->setText(FichierDeConfig.value("BaseDeDonnees/AdresseIP", "config").toString());
+    ui->LE_NomUtilisateur->setText(FichierDeConfig.value("BaseDeDonnees/NomUtilisateur", "config").toString());
+    ui->LE_MotdePasse->setText(FichierDeConfig.value("BaseDeDonnees/MotDePasse", "config").toString());
+    ui->LE_Port->setText(FichierDeConfig.value("BaseDeDonnees/Port", "config").toString());
+    ui->CBx_LieuOrdi->setCurrentIndex(FichierDeConfig.value("Autres/IdLieux", "config").toInt() - 1);
+
 
     RequeteDemarrage.exec("SELECT Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, "
                           "JourAvantMail, JourRetard, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP FROM preferences WHERE IdPreferences = 1");
@@ -327,13 +319,14 @@ void F_Preferences::MettreAJourBDD()
     ui->TbV_EmpruntType->setColumnWidth(0, 180);
     ui->TbV_EmpruntType->setColumnWidth(1, 90);
 
-    RechercheTableau.exec("SELECT TypeEmprunt FROM typeemprunt");
+    RechercheTableau.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt");
     while (RechercheTableau.next())
     {
         this->TbEmpruntType->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         this->TbEmpruntType->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
         nNombreLigne = nNombreLigne+ 1;
     }
+
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau type qui est dans l'onglet Jeux de F_Preferences.
@@ -417,6 +410,17 @@ void F_Preferences::MettreAJourBDD()
     {
         ui->CBx_LieuOrdi->addItem(RechercheTableau.value(0).toString());
     }
+
+    // Redimensionner les colonnes des tableaux en fonction du contenu des colonnes
+    ui->TbV_MembresTitre->resizeColumnsToContents();
+    ui->TbV_MembresType->resizeColumnsToContents();
+    //ui->TbV_JeuxType->resizeColumnsToContents();
+    ui->TbV_JeuxEtat->resizeColumnsToContents();
+    ui->TbV_JeuxStatut->resizeColumnsToContents();
+    ui->TbV_MembresPaiement->resizeColumnsToContents();
+    ui->TbV_EmpruntType->resizeColumnsToContents();
+    ui->TbV_InfoLieux->resizeColumnsToContents();
+    ui->TbV_JeuxEmplacement->resizeColumnsToContents();
 }
 
 /**
@@ -426,7 +430,7 @@ void F_Preferences::MettreAJourBDD()
  */
 void F_Preferences::on_Bt_Enregistrer_clicked()
 {
-    QSettings settings("config.ini", QSettings::IniFormat);
+    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
     QSqlQuery RequeteEnregistrer;
     QSqlQuery RequeteCombo;
 
@@ -458,18 +462,7 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":CheminRegle", ui->LE_CheminRegle->text());
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
-        RequeteEnregistrer.exec();
-
-        RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
-        RequeteCombo.bindValue(":NomLieux", ui->CBx_LieuOrdi->currentText());
-        RequeteCombo.exec();
-        while(RequeteCombo.next())
-        {
-            settings.beginGroup("Autres");
-            settings.setValue("IdLieux", RequeteCombo.value(0).toInt());
-            settings.setValue("NomLieux", RequeteCombo.value(1).toString());
-            settings.endGroup();
-        }
+        RequeteEnregistrer.exec();        
     }
     else
     {
@@ -492,17 +485,19 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
         RequeteEnregistrer.exec();
-
-        RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
-        RequeteCombo.bindValue(":NomLieux", ui->CBx_LieuOrdi->currentText());
-        RequeteCombo.exec();
-        while(RequeteCombo.next())
-        {
-            settings.beginGroup("Autres");
-            settings.setValue("IdLieux", RequeteCombo.value(0).toInt());
-            settings.setValue("NomLieux", RequeteCombo.value(1).toString());
-            settings.endGroup();
-        }
+    }
+    // écriture de certaines données dans le fichier de configuration config.ini
+    RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
+    RequeteCombo.bindValue(":NomLieux", ui->CBx_LieuOrdi->currentText());
+    RequeteCombo.exec();
+    while(RequeteCombo.next())
+    {
+        FichierDeConfig.beginGroup("Autres");
+        FichierDeConfig.setValue("IdLieux", RequeteCombo.value(0).toInt());
+        FichierDeConfig.setValue("NomLieux", RequeteCombo.value(1).toString());
+        FichierDeConfig.endGroup();
+        // TO DO Ecrire ici tout ce qui doit aller dans le fichier ini
+        // string Qt::md5 ( data )
     }
 
     emit( this->SignalFermerFenetre() ) ;
@@ -584,15 +579,15 @@ void F_Preferences::on_Bt_Connection_clicked()
     {
         ui->Lb_InfoConnexion->setText("<font color=green> La connexion est réussi. </font>");
 
-        QSettings settings("config.ini", QSettings::IniFormat);
+        QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
 
-        settings.beginGroup("BaseDeDonnees");
-        settings.setValue("NomDeLaBDD", ui->LE_NomBDD->text());
-        settings.setValue("AdresseIP", ui->LE_AdresseIP->text());
-        settings.setValue("NomUtilisateur", ui->LE_NomUtilisateur->text());
-        settings.setValue("MotDePasse", ui->LE_MotdePasse->text());
-        settings.setValue("Port", ui->LE_Port->text());
-        settings.endGroup();
+        FichierDeConfig.beginGroup("BaseDeDonnees");
+        FichierDeConfig.setValue("NomDeLaBDD", ui->LE_NomBDD->text());
+        FichierDeConfig.setValue("AdresseIP", ui->LE_AdresseIP->text());
+        FichierDeConfig.setValue("NomUtilisateur", ui->LE_NomUtilisateur->text());
+        FichierDeConfig.setValue("MotDePasse", ui->LE_MotdePasse->text());
+        FichierDeConfig.setValue("Port", ui->LE_Port->text());
+        FichierDeConfig.endGroup();
     }
     else
     {

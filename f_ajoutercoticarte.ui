@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
-    <height>323</height>
+    <width>392</width>
+    <height>327</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,31 +16,83 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="1">
     <layout class="QGridLayout" name="GLay">
-     <item row="5" column="2" colspan="2">
-      <widget class="QLineEdit" name="LE_Duree"/>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="label_2">
+     <item row="9" column="1">
+      <widget class="QLabel" name="Lb_CreditsDisponibles">
        <property name="text">
-        <string>Nom :</string>
+        <string>Crédits disponibles :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="label">
+     <item row="8" column="1">
+      <widget class="QLabel" name="Lb_Prix">
        <property name="text">
-        <string>Duree de validité :</string>
+        <string>Prix :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
-      <widget class="QLabel" name="label_3">
+     <item row="6" column="1">
+      <widget class="QLabel" name="Lb_DateSoucription">
        <property name="text">
-        <string>Prix</string>
+        <string>Date de souscription :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
+     <item row="10" column="2">
+      <widget class="QLineEdit" name="LE_CreditsRestants"/>
+     </item>
+     <item row="2" column="1" colspan="4">
+      <widget class="QComboBox" name="CBx_ChoixAbonnement">
+       <item>
+        <property name="text">
+         <string>- - - - -</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="3" column="2" colspan="3">
+      <widget class="QLineEdit" name="LE_Nom">
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QDateEdit" name="DtE_DateSouscription">
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QLineEdit" name="LE_DureeValidite"/>
+     </item>
+     <item row="8" column="2">
+      <widget class="QLineEdit" name="LE_Prix"/>
+     </item>
+     <item row="5" column="3">
+      <widget class="QPushButton" name="Bt_Prolonger">
+       <property name="text">
+        <string>Prolonger d'un an</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="3">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>€</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
       <widget class="QDateEdit" name="DtE_Expiration">
        <property name="displayFormat">
         <string>dd/MM/yyyy</string>
@@ -50,80 +102,64 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1" colspan="3">
-      <widget class="QLabel" name="Lb_Selection">
-       <property name="maximumSize">
-        <size>
-         <width>16777215</width>
-         <height>20</height>
-        </size>
-       </property>
+     <item row="10" column="1">
+      <widget class="QLabel" name="Lb_CreditsRestants">
        <property name="text">
-        <string>Sélectionner l'abonnement :</string>
+        <string>Crédits Restants :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="3" column="1" colspan="3">
-      <widget class="QComboBox" name="CBx_Abo">
-       <item>
-        <property name="text">
-         <string>- - - - -</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="label_modif1">
+     <item row="13" column="3">
+      <widget class="QPushButton" name="Bt_Annuler">
        <property name="text">
-        <string>Date d'expiration:</string>
+        <string>Annuler</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
-      <widget class="QLabel" name="label_4">
+     <item row="5" column="1">
+      <widget class="QLabel" name="Lb_DateExpiration">
        <property name="text">
-        <string>Credit disponible :</string>
+        <string>Date d'expiration :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="4" column="2" colspan="2">
-      <widget class="QLineEdit" name="LE_Nom">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-      </widget>
+     <item row="9" column="2">
+      <widget class="QLineEdit" name="LE_CreditsDisponibles"/>
      </item>
-     <item row="7" column="2" colspan="2">
-      <widget class="QLineEdit" name="LE_Prix"/>
-     </item>
-     <item row="8" column="2" colspan="2">
-      <widget class="QLineEdit" name="LE_Credit"/>
-     </item>
-     <item row="6" column="1">
-      <widget class="QLabel" name="Lb_Date">
+     <item row="7" column="1">
+      <widget class="QLabel" name="Lb_DureeValidite">
        <property name="text">
-        <string>Date de départ :</string>
+        <string>Durée de validité :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="6" column="2" colspan="2">
-      <widget class="QDateEdit" name="DE_Depart">
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="3">
-      <widget class="QLabel" name="label_modif2">
+     <item row="3" column="1">
+      <widget class="QLabel" name="Lb_NomPrestation">
        <property name="text">
-        <string>Credit Restant:</string>
+        <string>Abonnement :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>
-     <item row="2" column="4">
-      <widget class="QLineEdit" name="LE_Restant"/>
+     <item row="7" column="3">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>jours</string>
+       </property>
+      </widget>
      </item>
-     <item row="10" column="3">
+     <item row="13" column="1">
       <widget class="QPushButton" name="Bt_Valider">
        <property name="text">
         <string>Valider</string>
@@ -132,59 +168,6 @@
         <bool>false</bool>
        </property>
       </widget>
-     </item>
-     <item row="10" column="4">
-      <widget class="QPushButton" name="Bt_Annuler">
-       <property name="text">
-        <string>Annuler</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="4">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>€</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="4">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>jours</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1" colspan="4">
-      <spacer name="VS">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>10</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="1" column="1" colspan="4">
-      <spacer name="VS_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>10</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

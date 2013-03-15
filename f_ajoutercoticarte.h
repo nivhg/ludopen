@@ -1,9 +1,7 @@
-
-
 #ifndef F_AJOUTERCOTICARTE_H
 #define F_AJOUTERCOTICARTE_H
 
-// En-ttes propres  l'application necessaires dans ce fichier en-tete --------
+// En-têtes propres l'application nécessaires dans ce fichier en-tête --------
 #include <QWidget>
 
 
@@ -34,10 +32,10 @@ public:
     // METHODEs -----------------------------------------------------------------
 
     //! Permet de modifier un membre.
-    void ModifierMembre( int nIDAbonnement ) ;
+    void ModifierAbonnement( int nIDAbonnement ) ;
 
     //! Permet d'ajouter un membre.
-    void AjouterMembre(int nIDMembre);
+    void AjouterAbonnement(int nIDMembre);
 
     //! Met à jour la liste
     void MaJListeAbonnements() ;
@@ -51,13 +49,15 @@ private slots:
     void on_Bt_Valider_clicked();
 
     //! Change les informations en fonction du choix dans le combo box
-    void on_CBx_Abo_currentIndexChanged(const QString &arg1);
+    void on_CBx_ChoixAbonnement_currentIndexChanged(const QString &arg1);
 
     //! Verrouille le bouton valider si rien n'est sélectionné
-    void on_CBx_Abo_currentIndexChanged(int index) ;
+    void on_CBx_ChoixAbonnement_currentIndexChanged(int index) ;
 
     //! Ferme la fenêtre sans rien mofifier
     void on_Bt_Annuler_clicked();
+
+    void on_Bt_Prolonger_clicked();
 
 private:
     Ui::F_AjouterCotiCarte *ui;

@@ -6,13 +6,9 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/1012
  *  @version      0.1
-<<<<<<< local
  *  @date         29/01/1013
  *  @author       William SOREL
-=======
- *  @date         01/02/1012
  *
->>>>>>> other
  *  Cette classe permet de créer un emprunt, qui associe un jeu, un membre entre autre.
  *  Elle permet aussi de supprimer une réservation d'un membre.
  *
@@ -324,9 +320,9 @@ void F_Emprunt::AfficherJeuxReserve()
         //on ajoute une nouvelle ligne du table view
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteJeuReserve.value(5).toString() ));
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteJeuReserve.value(4).toString()));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("ddd d MMMM yyyy") ));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("ddd d MMMM yyyy") ));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("ddd d MMMM yyyy") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("yyyy-MM-dd ddd") ));
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 5, new QStandardItem(RequeteJeuReserve.value(3).toString() ));
 
         //Savoir si le jeu est disponible ou non
@@ -440,7 +436,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         ui->Bt_SupprimerReservation->setEnabled(false);
 
         //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
-        ui->Le_NbreJeuxEmpr->setText(Requete.value(5).toString());
+        ui->Le_NbJeuxEmpruntables->setText(Requete.value(5).toString());
 
         //Affiche l'état de la cotisation
         //Savoir si le membre  a un membre associer
@@ -452,29 +448,30 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
             qDebug()<<"F_Emprunt::AfficherMembre => RequeteMembreAssocier " << RequeteMembreAssocier.lastError();
         }
         RequeteMembreAssocier.next();
-        //s'i y en a un,
-        if(RequeteMembreAssocier.size()>0)
+        // s'i y a un membre associer,
+        if ( RequeteMembreAssocier.size() > 0 )
         {
             //On Affiche l'état de la cotisation du membre associé au membre actif
             this->EtatCotisationMembre= AfficherEtatCotisation(RequeteMembreAssocier.value(0).toString());
         }
-        //Sinon,
         else
         {
             //On affiche l'état de la cotisation du membre en cours de consultation
             this->EtatCotisationMembre= AfficherEtatCotisation(this->MembreActif);
         }
-        //Affiche les jeux empruntés
+        // Affiche les jeux empruntés
         AfficherJeuxEnEmprunt();
-        //Affiche les jeux réservés
+        // Affiche les jeux réservés
         AfficherJeuxReserve();
-        //Affiche le nombre de crédits restants
+        // Affiche le nombre de crédits restants
         CalculerCreditsRestants();
+        // Affiche en bas à droite le nombre d'emprunt
+        AfficherNbEmpruntsEnCours();
     }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////Emprunte les nouveau Jeux:://////////////////////////////////
+////////////////////////////////////////////Emprunter les nouveaux Jeux //////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
  *  @pre    Connexion avec la base de données, un membre est actif dans la classe, un(des) a(ont) été fait(ent)
@@ -699,7 +696,6 @@ void F_Emprunt::CalculerCreditsRestants()
         qDebug()<<"F_Emprunt::CalculerCreditsRestants => RequeteCartes : " << RequeteCartes.lastError();
     }
 
-
     while(RequeteCartes.next())
     {
         CreditRestant=CreditRestant+RequeteCartes.value(0).toInt();
@@ -772,8 +768,8 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
         //on ajoute une nouvelle ligne du table view
         this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString() ));
         this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteJeuEmprunte.value(2).toString()));
-        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("ddd d MMMM yyyy") ));
-        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("ddd d MMMM yyyy") ));
+        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("yyyy-MM-dd") ));
+        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("yyyy-MM-dd") ));
 
         if (RequeteJeuEmprunte.value(1).toDate()>DateActuelle)
         {
@@ -785,6 +781,23 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
         }
          NbrTotalDeJeuxDejaSurCeCompteAdherent++;
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////Pression sur Entrée lors du code du jeu////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/** Mettre à jour l'affichage du nombre de jeu en cours d'emprunt aujourd'hui et le nombre maxi empruntable aujourdh'ui
+ *  @pre
+ *  @post
+ */
+void F_Emprunt::AfficherNbEmpruntsEnCours()
+{
+    QString NbEmpruntPossibleAujourdhui ;
+    NbEmpruntPossibleAujourdhui.setNum(ui->Le_NbJeuxEmpruntables->text().toInt() - this->ModeleJeuxEmpruntes->rowCount());
+    QString NbNouveauxEmprunts;
+    NbNouveauxEmprunts.setNum( this->ModeleEmpruntsAValider->rowCount() );
+    ui->Lb_NbNouveauEmprunt->setText( NbNouveauxEmprunts );
+    ui->Lb_NbEmpruntPossibleAujourdhui->setText( NbEmpruntPossibleAujourdhui );
 }
 
 //#######################################################################################################
@@ -1351,7 +1364,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     if (ui->Le_StatutJeuARemplir->text()=="Disponible")
     {
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
-        if(ui->Le_NbreJeuxEmpr->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1)
+        if(ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1)
         {
             QString Message ;
             Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
@@ -1439,8 +1452,9 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     }
 
     //qDebug()<<" F_Emprunt::on_Bt_Ajouter_clicked => NbLignesEmpruntsAValider=" << NbLignesEmpruntsAValider << "NbCredits=" << NbCredits ;
+
     //Si le le prix des nouveaux emprunts est plus cher que les crédits restants, alors
-    if (NbCredits>ui->Le_CreditRestantARemplir->text().toInt())
+    if ( NbCredits > ui->Le_CreditRestantARemplir->text().toInt() )
     {
         //mettre en rouge le nombre de crédits restants
         ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:red;}");
@@ -1455,6 +1469,8 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     // Prêt pour permettre un autre emprunt pour cette personne
     ui->LE_CodeJeu->setFocus();
     this->ViderJeu();
+    // Affiche en bas à droite le nombre d'emprunt
+    AfficherNbEmpruntsEnCours();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1486,6 +1502,21 @@ void F_Emprunt::on_Bt_ValiderEmprunt_clicked()
     if (nResultat == 1)
     {
         this->EmprunterJeux();
+
+        // Réactualiser le nombre de crédits restant pour le communiquer à l'adhérent.
+        this->CalculerCreditsRestants();
+        if ( ui->Le_CreditRestantARemplir->text().toInt() <= 0 )
+        {
+            //mettre en rouge le nombre de crédits restants
+            ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:red;}");
+            ui->Lb_CreditRestant->setStyleSheet("QLabel {color:red;}");
+        }
+        else
+        {
+            //Le mettre en noir
+            ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:black;}");
+            ui->Lb_CreditRestant->setStyleSheet("QLabel {color:black;}");
+        }
     }
 }
 
@@ -1552,6 +1583,8 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
         //Grise le bouton de validation des nouveaux emprunts
         ui->Bt_ValiderEmprunt->setEnabled(false);
     }
+    // Affiche en bas à droite le nombre d'emprunt
+    AfficherNbEmpruntsEnCours();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1578,7 +1611,7 @@ void F_Emprunt::on_Bt_RechercheOK_clicked()
     }
     QString CodeMembre =ui->LE_CodeMembre->text();
 
-    // Actualise l'atribut MembreActif avec le code du membre que l'on affiche
+    // Actualise l'attribut MembreActif avec le code du membre que l'on affiche
     MembreActif=CodeMembre;
     //Affiche les informations du membre
     this->AfficherMembre(CodeMembre);
@@ -1738,6 +1771,9 @@ void F_Emprunt::on_Bt_OK_clicked()
     //si le statut est marqué comme "Emprunt à valider", demander s'il faut changer ce statut pour le rendre disponible.
     if ( IdStatut == 2 )
     {
+        // Vérifier si le jeu n'est pas déjà dans la liste des emprunts du jour
+        // TO DO
+
         // Afficher un message indiquant que ce jeu n'est pas en statut disponible
         if( ! QMessageBox::warning(this,"Jeu en cours d'emprunt !","Le jeu "+ Requete.value(0).toString()+" est marqué comme 'en cours d'emprunt'.\nPeut être ce jeu est en ce moment en attente d'emprunt sur un autre poste.\nSi c'est une erreur, voulez-vous forcer son statut et rendre ce jeu disponible pour l'emprunt ?","Rendre disponible","Laisser indisponible") )
         {
@@ -1827,7 +1863,7 @@ void F_Emprunt::on_Bt_OK_clicked()
                 ui->Bt_Ajouter->setEnabled(false);
             }
         }
-        else // pour tout les autres statuts autre que disponible
+        else // pour tous les autres statuts autre que disponible
         {
             //Le mettre en rouge
             ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:red;}");
@@ -1850,7 +1886,8 @@ void F_Emprunt::on_Bt_OK_clicked()
     ui->Le_EtatJeuARemplir->setText(RequeteEtat.value(0).toString());
 
     //met le focus sur le bouton "Ajouter"
-    ui->Bt_Ajouter->setFocus();
+    ui->Bt_Ajouter->setFocus(Qt::TabFocusReason);
+    ui->Bt_Ajouter->setFocusPolicy(Qt::StrongFocus);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

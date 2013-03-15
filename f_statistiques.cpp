@@ -902,7 +902,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmpruntAnnee()
  *  @brief Permet d'afficher la statistique sélectionnée avec les options voulues.
  *
  */
-void F_Statistiques::on_Bt_Valider_clicked()
+void F_Statistiques::on_Bt_AfficherStatistique_clicked()
 {
     int nNombreLigne (0);
     int nNombreLigne2 (0);

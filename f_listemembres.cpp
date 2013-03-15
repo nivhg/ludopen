@@ -70,20 +70,24 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ui->TbW_ListeMembre->setColumnWidth(  9,  90 ) ; // Mobile
     ui->TbW_ListeMembre->setColumnWidth( 10, 200 ) ; // eMail
     ui->TbW_ListeMembre->setColumnWidth( 11,  50 ) ; // Nbre de Retard
-    ui->TbW_ListeMembre->setColumnWidth( 12, 200 ) ; // Fin Cotisation
-    ui->TbW_ListeMembre->setColumnWidth( 13,  50 ) ; // Crédits restant
-    ui->TbW_ListeMembre->setColumnWidth( 14, 200 ) ; // Inscription
+    ui->TbW_ListeMembre->setColumnWidth( 12, 100 ) ; // Fin Cotisation
+    // si je veux la bonne date d'expiration d'une cotisation, ne pas prendre en compte les dates des cartes pré-payées
+    // On affiche pas les crédits restant car la requête qui calcule la SUM(CreditRestant) prend aussi la date d'expiration
+    // des cartes pré-payées.
+    // TO DO  Séparé la table des cotisations et celles des cartes prépayées !
+    ui->TbW_ListeMembre->setColumnWidth( 13,  0 ) ; // Crédits restant
+    ui->TbW_ListeMembre->setColumnWidth( 14, 100 ) ; // Inscription
 
     this->bAdmin = bAdmin ;
     if( this->bAdmin == true )
     {
-        ui->Bt_DeseletionListe->setVisible( true ) ;
+        ui->Bt_DeselectionListe->setVisible( true ) ;
         ui->Bt_SelectionListe->setVisible( true ) ;
         ui->Bt_SupprimerListe->setVisible( true ) ;
     }
     else
     {
-        ui->Bt_DeseletionListe->setHidden( true ) ;
+        ui->Bt_DeselectionListe->setHidden( true ) ;
         ui->Bt_SelectionListe->setHidden( true ) ;
         ui->Bt_SupprimerListe->setHidden( true ) ;
     }
@@ -285,8 +289,7 @@ bool F_ListeMembres::AffichageListe()
     QDate DateCotisation ;
     QStandardItem * item ;
 
-
-    sRequeteSELECTFROM = "SELECT IdMembre, NomTitre, TypeMembre , Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription, DateExpiration, SUM(CreditRestant) FROM membres, typemembres, titremembre, abonnements " ;
+    sRequeteSELECTFROM = "SELECT IdMembre,NomTitre,TypeMembre,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant)FROM membres,typemembres,titremembre,abonnements " ;
     sRequeteWHERE = "WHERE" ;
 
     if ( ui->ChBx_Type->isChecked() )
@@ -321,8 +324,9 @@ bool F_ListeMembres::AffichageListe()
 
     if( ui->ChBx_Retard->isChecked() )
     {
-        sRequeteSELECTFROM = sRequeteSELECTFROM + ", emprunts" ;
-        sRequeteWHERE = sRequeteWHERE + " emprunts.DateRetour IS NULL AND emprunts.DateRetourPrevu<" + sNumero.setNum( QDateTime::currentDateTime().toTime_t() ) + " AND IDMembre=emprunts.Membres_IdMembre AND" ;
+        sRequeteSELECTFROM = sRequeteSELECTFROM + ",emprunts " ;
+        //sRequeteWHERE = sRequeteWHERE + " emprunts.DateRetour IS NULL AND emprunts.DateRetourPrevu<" + sNumero.setNum( QDateTime::currentDateTime().toTime_t() ) + " AND IDMembre=emprunts.Membres_IdMembre AND" ;
+        sRequeteWHERE = sRequeteWHERE + " emprunts.DateRetour IS NULL AND IDMembre=emprunts.Membres_IdMembre AND" ;
     }
 
     if( ui->ChBx_CodePostal->isChecked() )
@@ -338,7 +342,7 @@ bool F_ListeMembres::AffichageListe()
     if( ui->ChBx_DateInscription->isChecked() )
     {
         sRequeteWHERE = sRequeteWHERE + " DateInscription>='" + ui->DtE_DI_Debut->dateTime().toString("yyyy-MM-dd")  + "' AND" ;
-        sRequeteWHERE = sRequeteWHERE + " DateInscription<='" + ui->DtE_DI_Fin->dateTime().toString("yyyy-MM-dd")  + "' AND";
+        sRequeteWHERE = sRequeteWHERE + " DateInscription<='" + ui->DtE_DI_Fin->dateTime().toString("yyyy-MM-dd")    + "' AND" ;
     }
 
     if( ui->ChBx_DateNaissance->isChecked() )
@@ -367,10 +371,10 @@ bool F_ListeMembres::AffichageListe()
         }
     }
 
-    sRequeteWHERE += " IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=Membres_IdMembre " ;
+    sRequeteWHERE += " CartesPrepayees_IdCarte IS NULL AND IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
     sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre " ;
 
-     //qDebug() << sRequete ;
+    //qDebug() << sRequete ;
 
     //Exécution de la requête
     if( RequeteListemembres.exec(sRequete) )
@@ -403,7 +407,7 @@ bool F_ListeMembres::AffichageListe()
             ModeleMembres.setItem( i, 11, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 10 ).toInt() ) ) ) ;
 
             DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
-            ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+            ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
             if ( DateCotisation < QDate::currentDate() )
             {
                 ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
@@ -423,7 +427,7 @@ bool F_ListeMembres::AffichageListe()
             if( DateCotisation > RequeteListemembres.record().value( 12 ).toDate() )
             {
                 DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
-                ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd.MM.yy" ) ) ) ;
+                ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
                 if ( DateCotisation < QDate::currentDate() )
                 {
                     ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
@@ -441,12 +445,10 @@ bool F_ListeMembres::AffichageListe()
                 }
             }
             ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 13 ).toInt() ) ) ) ;
-            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( 11 ).toDate().toString( "dd.MM.yy" ) ) ) ;
+            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( 11 ).toDate().toString( "yyyy-MM-dd" ) ) ) ;
 
             i++ ;
         }
-
-
 
         if( this->bAdmin == true )
         {
@@ -529,7 +531,7 @@ void F_ListeMembres::on_Bt_SelectionListe_clicked()
     }
 }
 
-void F_ListeMembres::on_Bt_DeseletionListe_clicked()
+void F_ListeMembres::on_Bt_DeselectionListe_clicked()
 {
     //Parcour la liste pour "decheck" toute toutes les checkbox
     for (register int i (0) ; i < ui->TbW_ListeMembre->model()->rowCount() ; i++ )

@@ -288,7 +288,7 @@
           <item>
            <widget class="QPushButton" name="Bt_Deselection">
             <property name="text">
-             <string>Tous désélectionner</string>
+             <string>Tout désélectionner</string>
             </property>
            </widget>
           </item>
@@ -369,7 +369,7 @@
     </widget>
    </item>
    <item row="3" column="3">
-    <widget class="QPushButton" name="Bt_DeseletionListe">
+    <widget class="QPushButton" name="Bt_DeselectionListe">
      <property name="text">
       <string>Tous désélectionner</string>
      </property>

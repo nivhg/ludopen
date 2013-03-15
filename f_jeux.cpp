@@ -234,6 +234,25 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->Le_statut->setText(Le_Statut);
     // aligne le curseur à gauche
     ui->Le_statut->setCursorPosition(0) ;
+    //---------------- MISE EN COULEUR DU STATUT ----------------------------
+    switch (IdStatut)
+    {
+    case 1:  // Disponible en vert
+        ui->Le_statut->setStyleSheet("color: green");
+    break ;
+    case 2: // Emprunté ou emprunt à valider en noir
+    case 3:
+        ui->Le_statut->setStyleSheet("color: blue");
+    break ;
+    case 4: // En réparation en orange
+        ui->Le_statut->setStyleSheet("color: orange");
+    break ;
+    case 5: // Indisponible en rouge
+        ui->Le_statut->setStyleSheet("color: red");
+    break ;
+    default :
+        ui->Le_statut->setStyleSheet("color: black");
+    }
     
     //////////////////////////////////////////////////////////
     /////////// Remplissage label Editeur ////////////////////
@@ -312,7 +331,7 @@ void F_Jeux::on_Bt_ok_clicked()
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////
     //////////////////////////////////////////////////////
-    QString sCheminImage=QApplication::applicationDirPath() + "/photos des jeux/" + ui->Le_code->text() ;
+    QString sCheminImage=QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() ;
 
     if( QFile::exists( sCheminImage + ".jpg" ) )
     {
@@ -340,6 +359,7 @@ void F_Jeux::on_Bt_ok_clicked()
     }
 
     QDir CheminFichierImage( sCheminImage );
+    // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
     QPixmap Image( CheminFichierImage.absolutePath() ) ;
     ui->Lb_Image->setPixmap( Image ) ;
     //Met l'image à l'échelle du cadre
@@ -347,8 +367,9 @@ void F_Jeux::on_Bt_ok_clicked()
     //qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() ;
 
     /////////////////////////////////////////////
-    // Msg d'information en cas de champ vide //
-    ///////////////////////////////////////////
+    // action particulière pour certains champs
+    /////////////////////////////////////////////
+    /*
     if(ui->Le_agemax->text() == "" || ui->Le_agemax->text() == "0")
     {
         ui->Le_agemax->setText("Non renseigné");
@@ -437,18 +458,7 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->Le_nbrejoueursmin->setStyleSheet("background-color: white");
     }
-    //--------------------------------------------
-    if(ui->Le_statut->text() == "")
-    {
-        ui->Le_statut->setText("Non renseigné");
-        ui->Le_statut->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_statut->setStyleSheet("color: black");
-    }
     //-------------------------------------------
-    /*
     if(ui->TxE_contenu->toPlainText() == "")
     {
         ui->TxE_contenu->setText("Non renseigné");
@@ -458,9 +468,7 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->TxE_contenu->setStyleSheet("color: black");
     }
-    */
     //-------------------------------------------
-    /*
     if(ui->TxE_description->toPlainText() == "")
     {
         ui->TxE_description->setText("Non renseigné");
@@ -470,7 +478,6 @@ void F_Jeux::on_Bt_ok_clicked()
     {
         ui->TxE_description->setStyleSheet("color: black");
     }
-    */
     //-------------------------------------------
     if(ui->TxE_emplacement->toPlainText() == "")
     {
@@ -482,7 +489,6 @@ void F_Jeux::on_Bt_ok_clicked()
         ui->TxE_emplacement->setStyleSheet("color: black");
     }
     //-------------------------------------------
-    /*
     if(ui->TxE_remarques->toPlainText() == "")
     {
         ui->TxE_remarques->setText("Non renseigné");

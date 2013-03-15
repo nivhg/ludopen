@@ -20,7 +20,7 @@ public:
     /** @brief Destructeur
      */
     ~F_Reservation();
-    /** @brief Met le code du jeu actif passé en paramètre
+    /** @brief Met le code du jeu actif passÃ© en paramÄtre
      */
     void set_JeuActif (QString CodeJeu);
     /** @brief Affiche les informations du membre
@@ -29,28 +29,28 @@ public:
     /** @brief Affiche les informations du jeu
      */
     void AfficherJeu ();
-    /** @brief Affiche les jeux déja empruntés par le membre
+    /** @brief Affiche les jeux dÃ©ja empruntÃ©s par le membre
      */
     void AfficherJeuxEnEmprunt();
-    /** @brief Affiche les jeux déja réservés par le membre
+    /** @brief Affiche les jeux dÃ©ja rÃ©servÃ©s par le membre
      */
     void AfficherJeuxReserve();
     /** @brief Calcule la date du retour
      */
     void CalculerDateRetour();
-    /** @brief Colorie les jours concerné par l'emprunt
+    /** @brief Colorie les jours concernÃ© par l'emprunt
      */
     void ColorierJours();
-    /** @brief Décolorie les jours déja colorié
+    /** @brief DÃ©colorie les jours dÃ©ja coloriÃ©
      */
     void DecolorierJours();
-    /** @brief Affiche l'état du membre passé en paramètre
+    /** @brief Affiche l'Ã©tat du membre passÃ© en paramÄtre
      */
     void ViderMembre();
-    /** @brief Affiche l'état du membre passé en paramètre
+    /** @brief Affiche l'Ã©tat du membre passÃ© en paramÄtre
      */
     void AfficherEtatCotisation(QString CodeMembre);
-    /** @brief Affiche le nombre de crédits restants
+    /** @brief Affiche le nombre de crÃ©dits restants
      */
     void CalculerCreditsRestants();
 
@@ -87,15 +87,15 @@ private slots:
 
 private:
     Ui::F_Reservation *ui;
-//! Code du jeu actif sur la fênentre
+//! Code du jeu actif sur la fÄ™nentre
     QString JeuActif;
-//! Code du membre actif sur la fênentre
+//! Code du membre actif sur la fÄ™nentre
     QString MembreActif;
-//! modèle du TableView des membres
+//! modÄle du TableView des membres
     QStandardItemModel * ModelMembre;
-//! modèle du TableView des jeux réservés
+//! modÄle du TableView des jeux rÃ©servÃ©s
     QStandardItemModel * ModelJeuReserves;
-//! modèle du TableView des jeux empruntés
+//! modÄle du TableView des jeux empruntÃ©s
     QStandardItemModel * ModelJeuEmpruntes;
 //! Date de L'emprunt
     QDate DateEmprunt;

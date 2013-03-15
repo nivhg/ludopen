@@ -72,7 +72,9 @@ public:
     /** @brief Calcule les crédits restants
      */
     void CalculerCreditsRestants();
-
+    /** @brief Met à jour l'affichage du nombre de jeu en cours d'emprunt aujourd'hui
+     */
+    void AfficherNbEmpruntsEnCours() ;
 
 private slots:
     void on_Bt_OK_clicked();

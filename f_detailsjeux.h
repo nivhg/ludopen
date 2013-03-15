@@ -46,17 +46,14 @@ private:
     // ATTRIBUTs ----------------------------------------------------------------
     Ui::F_DetailsJeux *ui;
 
-    /** @brief Contient le code du jeu en consultation
-     *
-     */
+    //! @brief Contient le code du jeu en consultation
     QString JeuEnConsultation ;
     
     //! Model du TableView de l'historique des interventions
-    QStandardItemModel * ModelDetailHistoriqueJeu;
+    QStandardItemModel * ModelHistoriqueInterventions;
 
     //! Model du TableView de l'historique des emprunts
-    QStandardItemModel * ModelDetailEmpruntsJeu ;
-
+    QStandardItemModel * ModelHistoriqueEmprunts ;
 };
 
 //------------------------------------------------------------------------------

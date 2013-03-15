@@ -1641,36 +1641,6 @@ void F_AjoutSuppModifJeux::on_Bt_Renseigner_clicked()
 //###################################################################
 void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
 {
-    /*QSqlQuery RecupCheminDossierImage ;
-
-    RecupCheminDossierImage.prepare("SELECT CheminImage, IdPreferences FROM preferences WHERE IdPreferences = 1") ;
-    RecupCheminDossierImage.exec() ;
-    RecupCheminDossierImage.next() ;
-    QString DebutChemin = RecupCheminDossierImage.value(0).toString() ;
-
-    QString CodeDuJeu ;
-    CodeDuJeu = ui->LE_Code->text() ;
-
-    QString CheminImageComplet ;
-    CheminImageComplet = DebutChemin + "/" + CodeDuJeu + ".png" ;
-
-    qDebug() << "F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()-Le chemin complet est :" << CheminImageComplet ;
-
-    this->CheminPhoto = CheminImageComplet ;
-
-    QImage Image(CheminImageComplet) ;
-    ui->Lb_Photo->setPixmap(QPixmap::fromImage(Image));
-
-    if(ui->Lb_Photo->isHidden())
-    {
-        QMessageBox::information(this, "Image", "Aucune image ne correspond à ce jeu, veuillez en ajoutez-une si vous le souhaitez", "OK") ;
-    }
-
-    //Met l'image à l'échelle du cadre
-    ui->Lb_Photo->setScaledContents(true);
-
-    this->CacherBoutons();*/
-
     QString sCheminImage ;
     sCheminImage = QFileDialog::getOpenFileName( this,tr( "Ouvrir une image." ), "/home", "Image Files (*.png *.jpg *.bmp *.jpeg)" ) ;
 

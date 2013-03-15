@@ -123,10 +123,10 @@ private slots:
     void on_CBx_Titre_activated(int index);
 
     //! Annule l'ajout ou la modification d'un membre
-    void on_Bt_Annuler_clicked() ;
+    void on_Bt_AnnulerMembre_clicked() ;
 
     //! Valide la modification ou l'ajout d'un membre
-    void on_Bt_Valider_clicked() ;
+    void on_Bt_ValiderMembre_clicked() ;
 
     //! Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
     void on_Le_TelFix_textEdited(const QString &arg1) ;
@@ -143,9 +143,6 @@ private slots:
     //! Affiche ou cache membre écarté
     void on_ChBx_MembreEcarte_toggled(bool checked) ;
 
-    //! Non utilisé
-    void on_Lb_MembreEcarte_linkActivated(const QString &link) ;
-
     //! Permet de modifier un membre
     void on_Bt_ModifierMembre_clicked() ;
 
@@ -155,26 +152,28 @@ private slots:
     //! Validation suppression d'un membre
     void on_Bt_SupprimerMembre_clicked();
 
-    //! Permet l'ajout d'un abonnement
-    void on_Bt_Ajouter_clicked();
-
     //! Selectionne une ligne entière dans le tableau LW_Abonnememnt
     void on_LW_Abonnements_clicked(const QModelIndex &index);
 
     //! Selectionne une ligne entière dans e tableau LW_Empruntes
     void on_LW_JeuxEmpruntes_clicked(const QModelIndex &index);
 
+    //! Permet l'ajout d'un abonnement
+    void on_Bt_AjouterAbonnement_clicked();
+
     //! Permet la modifiaction d'un abonnement
-    void on_Bt_Modifier_clicked();
+    void on_Bt_ModifierAbonnement_clicked();
 
     //! Permet de supprimer un abonnement
-    void on_Bt_Supprimer_clicked();
+    void on_Bt_SupprimerAbonnement_clicked();
 
     //! Change de la couleur et met en gras membre  écarter quand le checkbox et check
     void on_ChBx_MembreEcarte_stateChanged(int arg1);
 
     //! Permet l'ajout de Ajouter une ville dans le combox Ville
     void on_CBx_Ville_currentIndexChanged(const QString &arg1);
+
+    void on_LW_Abonnements_doubleClicked(const QModelIndex &index);
 
 private:
     Ui::F_Membres * ui;

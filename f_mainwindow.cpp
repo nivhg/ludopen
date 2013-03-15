@@ -350,8 +350,8 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
     QMessageBox APropos;
 
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\"Ludopen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2013.02.12<br>"
-                  "Programme créé avec Qt Creator 2.4.1 - Qt 4.8.1<br><br>"
+                  "LudOpen version 2013.03.12<br>"
+                  "Programme créé avec Qt Creator 2.6.0 - Qt 4.8.1<br><br>"
                   "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }

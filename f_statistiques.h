@@ -81,7 +81,7 @@ private slots:
      *  @brief Permet d'afficher la statistique sélectionnée avec les options voulues.
      *
      */
-    void on_Bt_Valider_clicked();
+    void on_Bt_AfficherStatistique_clicked();
 
     /**
      *  @brief Permet d'exporter les tableaux dans un fichier .csv.

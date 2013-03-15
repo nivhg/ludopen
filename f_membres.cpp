@@ -19,12 +19,12 @@
 #include "f_membres.h"
 #include "ui_f_membres.h"
 
-// En-ttes standards necessaires dans ce fichier en-tete seulement ------------
+// En-têtes standards nécessaires dans ce fichier en-tête seulement ------------
 #include <QMessageBox>
 
 /** Initialisation de la classe
  *  @param  F_RechercheMembres * pRechercheMembres
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidget *parent ):
     QWidget( parent ),
@@ -109,7 +109,7 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     // TODO tri pas possible car choix gérer par le vecteur !!!
     // donc clic pas possible si on modifie l'ordre dans les colonnes car on ne tombe pas sur le bon item
 }
-
+//==========================================================================================================
 /** Detruit les objets cree
  *  @test
  */
@@ -132,14 +132,10 @@ F_Membres::~F_Membres()
 
     delete ui ;
 }
-
-//---------------------------------------------------------------------------
-// METHODEs PUBLIQUEs
-//---------------------------------------------------------------------------
-
+//==========================================================================================================
 /** Met   jour la liste des Titres depuis la base de données
  *  @pre    Accés à la base de données
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::MaJTitre ()
 {
@@ -151,7 +147,7 @@ void F_Membres::MaJTitre ()
     this->VectorTitre.clear() ;
     ui->CBx_Titre->clear() ;
 
-    //Exécution de la requète qui sélectionne le contenu de la table titremembre
+    //Exécution de la requête qui sélectionne le contenu de la table titremembre
     if( Requete.exec( "SELECT * FROM titremembre" ) )
     {
         oTitre.id = 0 ;
@@ -185,7 +181,7 @@ void F_Membres::MaJTitre ()
         cerr << "F_Membres::MaJTitre (): Erreur bdd : " << Requete.lastError().text().toStdString() << endl ;
     }
 }
-
+//==========================================================================================================
 /**  Met a jour la liste des Types depuis la base de données
  *  @pre    Accès à la base de données
  *  @test
@@ -200,7 +196,7 @@ void F_Membres::MaJType ()
     this->VectorType.clear() ;
     ui->CBx_Type->clear() ;
 
-    //Exécution de la requète qui sélectionne le contenu de la table tytremembres
+    //Exécution de la requête qui sélectionne le contenu de la table tytremembres
     if( Requete.exec( "SELECT * FROM typemembres ;" ) )
     {
         oType.id = 0 ;
@@ -222,7 +218,6 @@ void F_Membres::MaJType ()
 
         this->VectorType.push_back( oType ) ;
 
-
         //Remplissage de la combobox grace au vecteur
         for( i = 0 ; i < VectorType.size() ; i ++ )
         {
@@ -234,13 +229,13 @@ void F_Membres::MaJType ()
         cerr << "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastError().text().toStdString() <<  endl ;
     }
 }
-
+//==========================================================================================================
 /** Recupere l'emplacement d'un titre dans un vecteur en fonction de son id
  *  @pre    Combobox remplie avec le vecteur
  *  @param  unsigned int nIdTitre
  *  @retval int
  *  @return L'emplacement du titre dans le vecteur par rapport à l'id ( 0 par défaut )
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 int F_Membres::RecupererEmplacementTitreVecteur( unsigned int nIdTitre )
 {
@@ -258,13 +253,13 @@ int F_Membres::RecupererEmplacementTitreVecteur( unsigned int nIdTitre )
     }
     return nEmplacementTitre ;
 }
-
+//==========================================================================================================
 /** Recupere l'emplacement d'un type dans un vecteur en fonction de son id
  *  @pre    Combobox remplie avec le vecteur
  *  @param  unsigned int nIdTytre
  *  @retval int
  *  @return L'emplacement du titre dans le vecteur par rapport à l'id ( 0 par défaut )
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 int F_Membres::RecupererEmplacementTypeVecteur( unsigned int nIdType )
 {
@@ -283,22 +278,22 @@ int F_Membres::RecupererEmplacementTypeVecteur( unsigned int nIdType )
 
     return nEmplacementType ;
 }
-
-/** Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractéres dans un string
+//==========================================================================================================
+/** Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractères dans un string
  *  @param QString sNumero
  *  @retval QString
- *  @return Retourne un QString ne contenant plus de lettre ou caractêres speciaux. Un espace est ajouté tous les 2 caractéres
- *  @test   Voir la procédure dans le fichier associé.
+ *  @return Retourne un QString ne contenant plus de lettre ou caractêres speciaux. Un espace est ajouté tous les 2 caractères
+ *
  */
 QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
 {
     QChar cEspace ( ' ' ) ;
     QRegExp Nombres ( "[^0-9]" ) ;
 
-    //Suppression des les caractéres ormis les chiffres
+    //Suppression des les caractères ormis les chiffres
     sNumero.replace( Nombres, "" ) ;
 
-    //Ajout d'un espace tous les 2 caractéres
+    //Ajout d'un espace tous les 2 caractères
     for( register int i = 2 ; i < sNumero.length() ; i= i+3 )
     {
         if( i != sNumero.length() )
@@ -307,14 +302,12 @@ QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
         }
 
     }
-
     return sNumero ;
 }
-
+//==========================================================================================================
 /** Affiche les jeux empruntés dans le tableau TbW_Emprunt
   *  @pre    Accés à  la base de données
   *  @param  unsigned int nIdMembre
-  *  @test   Voir la procédure dans le fichier associé.
   */
 void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
 {
@@ -322,34 +315,32 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     QSqlQuery RequeteJeux    ;
     int i     ( 0 )        ;
 
-    //Création et initialisation du Model
+    //Création et initialisation du Modèle
     QStandardItemModel * modele = new QStandardItemModel() ;
     ui->LW_JeuxEmpruntes->setModel( modele ) ;
     ui->LW_JeuxEmpruntes->setEditTriggers( 0 ) ;
+    ui->LW_JeuxEmpruntes->setColumnWidth( 0, 200 ) ;  // Jeux
+    ui->LW_JeuxEmpruntes->setColumnWidth( 1, 100 ) ;  // Date d'Emprunt
+    ui->LW_JeuxEmpruntes->setColumnWidth( 2, 100 ) ;  // Date de Retour prévu
 
-    //requète permettant d'avoir les jeux empruntés correspondant à l'id du membre
-    RequeteEmprunt.prepare( "SELECT Jeux_IdJeux, DateEmprunt, DateRetourPrevu FROM emprunts WHERE Membres_IdMembre=:nIdMembre AND DateRetour IS NULL ;" ) ;
+    //requête permettant d'avoir les jeux empruntés correspondant à l'id du membre
+    RequeteEmprunt.prepare( "SELECT Jeux_IdJeux,DateEmprunt,DateRetourPrevu FROM emprunts WHERE Membres_IdMembre=:nIdMembre AND DateRetour IS NULL ;" ) ;
     RequeteEmprunt.bindValue( "nIdMembre", nIdMembre ) ;
 
-    //Exectution de la requète
+    //Exectution de la requête
     if( RequeteEmprunt.exec() )
-    {
-
-        /*Cration des caractristiques du tableau : -Nombre de colonnes
-                                                      -Nom des colonnes
-                                                      -Nombre de lignes*/
-        modele->setColumnCount( 3 ) ;
+    {  /*Création des caractéristiques du tableau : -Nom des colonnes
+                                                    -Nombre de lignes*/
         modele->setRowCount( RequeteEmprunt.size() ) ;
-        modele->setHorizontalHeaderItem( 0, new QStandardItem( "Jeux" ) ) ;
-        modele->setHorizontalHeaderItem( 1, new QStandardItem( "Emprunt" ) ) ;
-        modele->setHorizontalHeaderItem( 2, new QStandardItem( "Retour prévu" ) ) ;
-
+        modele->setHorizontalHeaderItem( 0, new QStandardItem( "Nom du jeux" ) ) ;
+        modele->setHorizontalHeaderItem( 1, new QStandardItem( "Emprunté le" ) ) ;
+        modele->setHorizontalHeaderItem( 2, new QStandardItem( "Retour prévu le" ) ) ;
 
         //Remplissage du tableau avec les informations de la table emprunts
         while( RequeteEmprunt.next() )
         {
 
-            //Requete pour rcuperer le nom du jeux
+            //Requete pour récupérer le nom du jeux
             RequeteJeux.prepare( "SELECT NomJeu FROM jeux WHERE IdJeux=:nIdJeux ;" ) ;
             RequeteJeux.bindValue( "nIdJeux", RequeteEmprunt.record().value( 0 ).toInt() ) ;
 
@@ -360,11 +351,11 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
             }
             else
             {
-                cerr << "F_Membres::AfficherJeuxEmpruntes : RequeteJeux : Erreur de connexion avec la base de donne !" << endl ;
+                cerr << "F_Membres::AfficherJeuxEmpruntes : RequeteJeux : Erreur de connexion avec la base de données !" << endl ;
             }
 
-            modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "dd.MM.yy" ) ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "dd.MM.yy" ) ) ) ;
+            modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
 
             if ( RequeteEmprunt.value( 2 ).toDate()>QDate::currentDate() )
             {
@@ -383,22 +374,19 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
         cerr << "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt : Erreur de connexion avec la base de donne !" << endl ;
     }
 }
-
+//==========================================================================================================
 /** Affiche les informations d'un membre
   *  @pre    Accés ? la base de données
   *  @param  unsigned int nIdMembre
-  *  @test   Voir la procédure dans le fichier associé.
   */
 void F_Membres::AfficherMembre()
 {
     this->AfficherMembre( this->nIdMembreSelectionne ) ;
 }
-
-
+//==========================================================================================================
 /** Affiche les informations d'un membre
   *  @pre    Accés ? la base de données
   *  @param  unsigned int nIdMembre
-  *  @test   Voir la procédure dans le fichier associé.
   */
 void F_Membres::AfficherMembre( unsigned int nIdMembre )
 {
@@ -411,17 +399,17 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
     this->nIdMembreSelectionne = nIdMembre ;
 
-    ui->Bt_Modifier->setDisabled( true ) ;
-    ui->Bt_Supprimer->setDisabled( true ) ;
+    ui->Bt_ModifierAbonnement->setDisabled( true ) ;
+    ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
 
     //Si l'id du membre est diffêrent de 0
     if( nIdMembre != 0 )
     {
-        //requète permettant de récuperer tous les informations d'un membre grâce à son Id
+        //requête permettant de récuperer tous les informations d'un membre grâce à son Id
         RequeteMembre.prepare( "SELECT * FROM membres WHERE IdMembre=:id ;" ) ;
         RequeteMembre.bindValue( ":id", nIdMembre ) ;
 
-        //Execution de la requète
+        //Execution de la requête
         if( RequeteMembre.exec() )
         {
             //Remplissage des champs avec les données retournées par la base de données
@@ -508,12 +496,11 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
     }
 
 }
-
+//==========================================================================================================
 /** Permet d'ajouter un membre
   *  @pre    Accês à la base de données
   *  @retval bool
   *  @return True si tous c'est bien passé et false en cas d'erreur
-  *  @test   Voir la procédure dans le fichier associé.
   */
 bool F_Membres::AjouterMembre()
 {
@@ -591,13 +578,13 @@ bool F_Membres::AjouterMembre()
 
     return bRetourne ;
 }
-
+//==========================================================================================================
 /** Permet de modifier le membre dans la base de données
   *  @pre    Accés à la base de données, Base de données contenant minimum un membre
   *  @param  unsigned int nIdMembre
   *  @retval bool
   *  @return True si tous c'est bien passé et false en cas d'erreur
-  *  @test   Voir la procédure dans le fichier associé.
+  *
   */
 bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 {
@@ -702,13 +689,12 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
     }
     return bRetourne ;
 }
-
+//==========================================================================================================
 /** Permet la suppression du dont l'id est passé en paramêtre
  *  @pre    Connexion à la base de données, Membre présent dans la base de données
  *  @param  Indique l'id du membre à supprimer
  *  @retval bool
  *  @return Retourne vrai si la requête a bien été executer sinon elle retourne faux
- *  @test   Voir la procédure dans le fichier associé.
  */
 bool F_Membres::SupprimerMembre( int nIdMembre )
 {
@@ -812,10 +798,9 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
 
     return bRetourne ;
 }
-
+//==========================================================================================================
 /** Verrouille ou deverouille les champs contenant les informations personnelles
  *  @param  bool bVerrouille
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
 {
@@ -841,9 +826,8 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->DtE_Naissance->setReadOnly( bVerrouille ) ;
     ui->ChBx_MembreEcarte->setVisible( !bVerrouille ) ;
 }
-
+//==========================================================================================================
 /** Efface le contenu de tous les champs
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::EffacerTousLesChamps ()
 {
@@ -871,9 +855,8 @@ void F_Membres::EffacerTousLesChamps ()
 
     ui->Lb_MembreEcarte->setHidden( true ) ;
 }
-
+//==========================================================================================================
 /** Affiche ou cache les boutons PB_AjouterMembre et PB_ModifierMembre
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::AfficherAjouterModifierMembre ( bool bAffiche )
 {
@@ -885,42 +868,38 @@ void F_Membres::AfficherAjouterModifierMembre ( bool bAffiche )
     }
 
 }
-
+//==========================================================================================================
 /** Affiche ou cache les boutons PB_Valider et PB_Annuler
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::AfficherValiderAnnuler ( bool bAffiche )
 {
-    ui->Bt_Valider->setVisible( bAffiche ) ;
-    ui->Bt_Annuler->setVisible( bAffiche ) ;
+    ui->Bt_ValiderMembre->setVisible( bAffiche ) ;
+    ui->Bt_AnnulerMembre->setVisible( bAffiche ) ;
     ui->ChBx_MembreEcarte->setVisible( bAffiche ) ;
     ui->Lb_MembreEcarte->setVisible( bAffiche ) ;
 }
-
+//==========================================================================================================
 /** Verrouille ou deverouille l'emplacement des emprunts
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::VerrouillerJeux ( bool bVerrouille )
 {
     ui->LW_JeuxEmpruntes->setDisabled( bVerrouille ) ;
     ui->Bt_Historique->setDisabled( bVerrouille ) ;
 }
-
+//==========================================================================================================
 /** Verouille ou deverouille l'emplacement des abonnements
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::VerrouillerAbonnements ( bool bVerrouille )
 {
     ui->LW_Abonnements->setDisabled( bVerrouille ) ;
-    ui->Bt_Ajouter->setDisabled( bVerrouille ) ;
-    ui->Bt_Modifier->setDisabled( bVerrouille ) ;
-    ui->Bt_Supprimer->setDisabled( bVerrouille ) ;
+    ui->Bt_AjouterAbonnement->setDisabled( bVerrouille ) ;
+    ui->Bt_ModifierAbonnement->setDisabled( bVerrouille ) ;
+    ui->Bt_SupprimerAbonnement->setDisabled( bVerrouille ) ;
 }
-
+//==========================================================================================================
 /** Permet l'affichage d'un membre
  *  @pre    Connexion à la base de données, Membre présent dans la base de données
  *  @param  Indique l'id du membre pour afficher ses abonnements
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::AfficherAbonnements( int nIdMembre )
 {
@@ -933,7 +912,6 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
 
     this->VecteurAbonnements.clear() ;
 
-
     /*Cration des caractristiques du tableau : -Nombre de colonnes
                                                -Nom des colonnes*/
     modele->setColumnCount( 3 ) ;
@@ -941,28 +919,26 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     modele->setHorizontalHeaderItem( 1, new QStandardItem( "Crédit" ) ) ;
     modele->setHorizontalHeaderItem( 2, new QStandardItem( "Date" ) ) ;
 
-
-
     ui->LW_Abonnements->setModel( modele ) ;
     ui->LW_Abonnements->setEditTriggers( 0 ) ;
     ui->LW_Abonnements->verticalHeader()->setVisible( false ) ;
     ui->LW_Abonnements->horizontalHeader()->setVisible( true ) ;
-    ui->LW_Abonnements->setColumnWidth( 0, 138 ) ;
-    ui->LW_Abonnements->setColumnWidth( 1, 50 ) ;
-    ui->LW_Abonnements->setColumnWidth( 2, 73 ) ;
+    ui->LW_Abonnements->setColumnWidth( 0, 138 ) ;  // Abonnement
+    ui->LW_Abonnements->setColumnWidth( 1,  40 ) ;  // Crédit
+    ui->LW_Abonnements->setColumnWidth( 2, 100 ) ;  // Date
 
     //Préparation de la requête
     RequetePrestation.prepare( "SELECT prestations.NomPrestation, abonnements.DateExpiration, abonnements.IdAbonnements FROM abonnements, prestations "
                                "WHERE abonnements.Membres_IdMembre=:IdMembre AND prestations.IdPrestation=abonnements.Prestations_IdPrestation  " ) ;
     RequetePrestation.bindValue( ":IdMembre", nIdMembre ) ;
 
-    //Exectution de la requète
+    //Exectution de la requête
     if( RequetePrestation.exec() )
     {
         while( RequetePrestation.next() )
         {
             modele->setItem( i, 0, new QStandardItem( RequetePrestation.record().value( 0 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString( "dd.MM.yyyy" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
             this->VecteurAbonnements.append( RequetePrestation.record().value( 2 ).toInt() ) ;
 
             if ( RequetePrestation.value( 1 ).toDate()< QDate::currentDate() )
@@ -983,8 +959,6 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
 
             i++ ;
         }
-
-
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
@@ -992,18 +966,18 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
 
     //Préparation de la requête
-    RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte, abonnements.DateExpiration, abonnements.CreditRestant, abonnements.IdAbonnements FROM abonnements, cartesprepayees "
+    RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte,abonnements.DateExpiration,abonnements.CreditRestant,abonnements.IdAbonnements FROM abonnements,cartesprepayees "
                            "WHERE abonnements.Membres_IdMembre=:IdMembre AND cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte  " ) ;
     RequeteCartes.bindValue( ":IdMembre", nIdMembre ) ;
 
-    //Exectution de la requète
+    //Exectution de la requête
     if( RequeteCartes.exec() )
     {
         while( RequeteCartes.next() )
         {
             modele->setItem( i, 0, new QStandardItem( RequeteCartes.record().value( 0 ).toString() ) ) ;
             modele->setItem( i, 1, new QStandardItem( RequeteCartes.record().value( 2 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteCartes.record().value( 1 ).toDateTime().toString( "dd.MM.yyyy" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequeteCartes.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
             this->VecteurAbonnements.append( RequeteCartes.record().value( 3 ).toInt() ) ;
 
             if ( RequeteCartes.value( 1 ).toDate()< QDate::currentDate() )
@@ -1031,10 +1005,9 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
 
 }
-
+//==========================================================================================================
 /** Affiche les ville dans le combobox et selectionne la ville passé en paramétre
  *  @param  QString VilleSelectionne
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::AfficherVilles( QString VilleSelectionne )
 {
@@ -1076,33 +1049,26 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
         ui->CBx_Ville->setCurrentIndex( 0 ) ;
     }
 }
-
-//---------------------------------------------------------------------------
-// SLOTS PUBLIQUES
-//---------------------------------------------------------------------------
-
+//==========================================================================================================
 /** Permet l'ajout d'un type
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_ChoisirNouveauType ()
 {
     this->MaJType() ;
     ui->CBx_Type->setCurrentIndex( this->VectorType.size()- 2 ) ;
 }
-
+//==========================================================================================================
 /** Permet l'ajout d'un titre
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_ChoisirNouveauTitre ()
 {
     this->MaJTitre() ;
     ui->CBx_Titre->setCurrentIndex( this->VectorTitre.size()- 2 ) ;
 }
-
-/** Recupere l'id d'un membre pour l'afficher
+//==========================================================================================================
+/** Récupère l'id d'un membre pour l'afficher
  *  @pre    Recevoir un signal avec l'id d'un membre
  *  @param  unsigned int nIdMembre
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
 {
@@ -1110,19 +1076,17 @@ void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
     this->VerrouillerJeux( false ) ;
     this->AfficherMembre( nIdMembre ) ;
 }
-
+//==========================================================================================================
 /** Acualise les abonnements du membre sélectionné
  *  @pre    Recevoir un signal avec l'id d'un membre
  *  @param  unsigned int nIdMembre
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_ActualiserAbonnements()
 {
     this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
 }
-
+//==========================================================================================================
 /** Permet l'ajout d'une ville
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_ValiderAjoutVille()
 {
@@ -1131,82 +1095,74 @@ void F_Membres::slot_ValiderAjoutVille()
     this->LE_AjoutVille->clear() ;
     this->oFenetreAjoutVille->hide() ;
 }
-
+//==========================================================================================================
 /** Permet l'annulation de l'ajour d'une ville
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::slot_AnnulerAjoutVille()
 {
     this->LE_AjoutVille->clear() ;
     this->oFenetreAjoutVille->hide() ;
 }
-
-
+//==========================================================================================================
 /** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_Le_TelFix_textEdited( const QString &arg1 )
 {
     ui->Le_TelFix->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
 }
-
+//==========================================================================================================
 /** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_Le_TelMobile_textEdited( const QString &arg1 )
 {
     ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
 }
-
+//==========================================================================================================
 /** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_LE_Fax_textEdited( const QString &arg1 )
 {
     ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
 }
-
-/** Non utilisé
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_Lb_MembreEcarte_linkActivated( const QString &link )
-{
-
-}
-
+//==========================================================================================================
 /** Active ou désactive le bouton valider en fonction de lineedit nom
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
 {
     if( arg1 == "" )
     {
-        ui->Bt_Valider->setDisabled( true ) ;
+        ui->Bt_ValiderMembre->setDisabled( true ) ;
     }
     else
     {
-        ui->Bt_Valider->setEnabled( true ) ;
+        ui->Bt_ValiderMembre->setEnabled( true ) ;
     }
 }
-
+//==========================================================================================================
+/**  Permet de supprimer un abonnement
+ *  @param index : numéro de la ligne qui a été sélectionnée
+ */
+void F_Membres::on_LW_Abonnements_doubleClicked(const QModelIndex &index)
+{
+    this->on_Bt_ModifierAbonnement_clicked();
+}
+//==========================================================================================================
 /** Selectionne une ligne entière dans le tableau LW_Abonnememnt
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
 {
-    ui->Bt_Modifier->setEnabled( true ) ;
-    ui->Bt_Supprimer->setEnabled( true ) ;
+    ui->Bt_ModifierAbonnement->setEnabled( true ) ;
+    ui->Bt_SupprimerAbonnement->setEnabled( true ) ;
 }
-
+//==========================================================================================================
 /** Selectionne une ligne entière dans le tableau LW_Empruntes
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_LW_JeuxEmpruntes_clicked( const QModelIndex &index )
 {
 }
-
+//==========================================================================================================
 /** Affiche ou cache membre écarté
- *  @test   Voir la procédure dans le fichier associé.
  */
 void F_Membres::on_ChBx_MembreEcarte_toggled( bool checked )
 {
@@ -1219,9 +1175,9 @@ void F_Membres::on_ChBx_MembreEcarte_toggled( bool checked )
         ui->ChBx_MembreEcarte->setPalette( QPalette( Qt::black ) ) ;
     }
 }
-
-/**  Change de la couleur et met en gras membre écarter quand le checkbox et check
- *  @test   Voir la procédure dans le fichier associé.
+//==========================================================================================================
+/**  Change la couleur et met en gras un membre écarté quand le checkbox est coché
+ *
  */
 void F_Membres::on_ChBx_MembreEcarte_stateChanged( int arg1 )
 {
@@ -1243,9 +1199,9 @@ void F_Membres::on_ChBx_MembreEcarte_stateChanged( int arg1 )
         ui->Lb_MembreEcarte->setPalette( palette ) ;
     }
 }
-
+//==========================================================================================================
 /**  Permet l'ajout de Ajouter une ville dans le combox Ville
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_CBx_Ville_currentIndexChanged(const QString &arg1)
 {
@@ -1254,7 +1210,7 @@ void F_Membres::on_CBx_Ville_currentIndexChanged(const QString &arg1)
         this->oFenetreAjoutVille->show() ;
     }
 }
-
+//==========================================================================================================
 /** Permet d'ajout un nouveau type si "Créer type..." a été sélectionné
  *  @pre    l'utilisateur a choisi Créer type...
  *  @post   Ouverture d'un popup pour l'ajout d'un type
@@ -1269,7 +1225,7 @@ void F_Membres::on_CBx_Type_activated(int index)
         ui->CBx_Type->setCurrentIndex( 0 ) ;
     }
 }
-
+//==========================================================================================================
 /** Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
  *  @pre    l'utilisateur a choisi Créer titre...
  *  @post   Ouverture d'un popup pour l'ajout d'un titre
@@ -1288,12 +1244,9 @@ void F_Membres::on_CBx_Titre_activated(int index)
         ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
     }
 }
-
-//---------------------------------------------------------------------------
-// SLOTS PRIVEES
-//---------------------------------------------------------------------------
+//==========================================================================================================
 /** Permet l'ajout d'un membre
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_Bt_AjouterMembre_clicked()
 {
@@ -1324,11 +1277,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     this->VerrouillerAbonnements( false ) ;
 
-    /*
-    // Ancien code qui ne marche pas
-    sNombre.setNum( this->pRechercheMembres->RecupererProchainCodeNonUtilise() ) ;
-    ui->Le_Code->setText( sNombre ) ;
-    */
     //Sélectionne le premier CodeMembre qui est libre (supérieur au plus grand)
     QSqlQuery RequetePremierCodeLibre ;
     RequetePremierCodeLibre.exec("SELECT MIN(CodeMembre+1) FROM membres WHERE (CodeMembre+1) NOT IN (SELECT CodeMembre FROM membres)") ;
@@ -1338,9 +1286,9 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     ui->DtE_Insritption->setDate( DateActuelle.currentDate() ) ;
 
-    ui->Bt_Valider->setDisabled( true ) ;
+    ui->Bt_ValiderMembre->setDisabled( true ) ;
 
-    ui->Bt_Valider->setText( "Valider ce nouveau membre" ) ;
+    ui->Bt_ValiderMembre->setText( "Valider création" ) ;
 
     ui->Lb_MembreEcarte->hide() ;
 
@@ -1348,16 +1296,16 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     ui->SPx_NbreRetards->setDisabled( true ) ;
 
-    ui->DtE_Naissance->setDate( QDate( 1900, 1, 1 ) ) ;
-    ui->Bt_Ajouter->setDisabled( true ) ;
-    ui->Bt_Modifier->setDisabled( true ) ;
-    ui->Bt_Supprimer->setDisabled( true ) ;
+    ui->DtE_Naissance->setDate( QDate( 1920, 1, 1 ) ) ;
+    ui->Bt_AjouterAbonnement->setDisabled( true ) ;
+    ui->Bt_ModifierAbonnement->setDisabled( true ) ;
+    ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
 }
-
+//==========================================================================================================
 /** Annule l'ajout ou la modification d'un membre
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
-void F_Membres::on_Bt_Annuler_clicked()
+void F_Membres::on_Bt_AnnulerMembre_clicked()
 {
     this->pRechercheMembres->setDisabled( false ) ;
     ui->LW_JeuxEmpruntes->setDisabled( true ) ;
@@ -1379,16 +1327,16 @@ void F_Membres::on_Bt_Annuler_clicked()
 
     this->AfficherMembre( this->nIdMembreSelectionne ) ;
 
-    ui->Bt_Valider->setEnabled( true ) ;
+    ui->Bt_ValiderMembre->setEnabled( true ) ;
 
     ui->LW_Abonnements->setModel( NULL ) ;
     ui->LW_JeuxEmpruntes->setModel( NULL ) ;
 }
-
+//==========================================================================================================
 /** Valide la modification ou l'ajout d'un membre
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
-void F_Membres::on_Bt_Valider_clicked()
+void F_Membres::on_Bt_ValiderMembre_clicked()
 {
     QSqlQuery RequeteCodeMembre ;
 
@@ -1461,30 +1409,30 @@ void F_Membres::on_Bt_Valider_clicked()
         qDebug() << "F_Membres::AjouterMembre() : RequeteCodeMembre :" << RequeteCodeMembre.lastError().text()  ;
     }
 }
-
+//==========================================================================================================
 /** Affiche l'historique des jeux empruntés
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_Bt_Historique_clicked()
 {
     this->pHistoriqueJeux->AfficherHistorique( this->nIdMembreSelectionne ) ;
     this->pHistoriqueJeux->show() ;
 }
-
+//==========================================================================================================
 /** Permet de modifier un membre
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_Bt_ModifierMembre_clicked()
 {
     this->VerrouillerInfosPerso( false ) ;
     this->AfficherValiderAnnuler( true ) ;
     this->AfficherAjouterModifierMembre( false ) ;
-    ui->Bt_Valider->setText( "Valider les Modifications" ) ;
+    ui->Bt_ValiderMembre->setText( "Valider Modifications" ) ;
     this->pRechercheMembres->setDisabled( true ) ;
 }
-
+//==========================================================================================================
 /** Validation suppression d'un membre
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
 void F_Membres::on_Bt_SupprimerMembre_clicked()
 {
@@ -1504,35 +1452,39 @@ void F_Membres::on_Bt_SupprimerMembre_clicked()
         ui->LW_Abonnements->setModel( modeleVide ) ;
     }
 }
-
+//==========================================================================================================
 /** Permet l'ajout d'un abonnement
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
-void F_Membres::on_Bt_Ajouter_clicked()
+void F_Membres::on_Bt_AjouterAbonnement_clicked()
 {
     this->pAjouterCotiCarte->MaJListeAbonnements() ;
-    this->pAjouterCotiCarte->AjouterMembre( this->nIdMembreSelectionne ) ;
+    this->pAjouterCotiCarte->AjouterAbonnement( this->nIdMembreSelectionne ) ;
 }
-/** Permet la modifiaction d'un abonnement
- *  @test   Voir la procédure dans le fichier associé.
+//==========================================================================================================
+/** Permet la modification d'un abonnement
+ *
  */
-void F_Membres::on_Bt_Modifier_clicked()
+void F_Membres::on_Bt_ModifierAbonnement_clicked()
 {
     this->pAjouterCotiCarte->MaJListeAbonnements() ;
-    this->pAjouterCotiCarte->ModifierMembre( this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
+    this->pAjouterCotiCarte->ModifierAbonnement( this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
+    // masquer les boutons Modifier/Supprimer abonnement
+    ui->Bt_ModifierAbonnement->setEnabled(false);
+    ui->Bt_SupprimerAbonnement->setEnabled(false);
 }
-
+//==========================================================================================================
 /**  Permet de supprimer un abonnement
- *  @test   Voir la procédure dans le fichier associé.
+ *
  */
-void F_Membres::on_Bt_Supprimer_clicked()
+void F_Membres::on_Bt_SupprimerAbonnement_clicked()
 {
     QSqlQuery RequeteSupprimer ;
 
-    if ( QMessageBox::information( this, "Suppression Abonnement","Voulez vraiment supprimer cet abonnement?", "Supprimer", "Annuler" )== 0 )
+    if ( QMessageBox::information( this, "Suppression d'un abonnement","Voulez vraiment supprimer cet abonnement ?", "Supprimer", "Garder" )== 0 )
     {
-        //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
-        RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE IdAbonnements=:nIdAbonnement " ) ;
+        //Préparation de la requête permettant la suppression dans la table abonnements
+        RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE IdAbonnements=:nIdAbonnement" ) ;
         RequeteSupprimer.bindValue( ":nIdAbonnement", this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
 
         //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
@@ -1541,8 +1493,8 @@ void F_Membres::on_Bt_Supprimer_clicked()
             cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
         }
         this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
-
-        ui->Bt_Modifier->setDisabled( true ) ;
-        ui->Bt_Supprimer->setDisabled( true ) ;
+        // masquer les boutons Modifier/Supprimer abonnement
+        ui->Bt_ModifierAbonnement->setDisabled( true ) ;
+        ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
     }
 }

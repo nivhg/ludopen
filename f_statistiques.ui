@@ -212,9 +212,9 @@
       </widget>
      </item>
      <item row="4" column="5">
-      <widget class="QPushButton" name="Bt_Valider">
+      <widget class="QPushButton" name="Bt_AfficherStatistique">
        <property name="text">
-        <string>Valider la sélection</string>
+        <string>Afficher la statistique</string>
        </property>
       </widget>
      </item>

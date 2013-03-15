@@ -105,7 +105,7 @@ private slots:
 
     void on_Bt_SelectionListe_clicked();
 
-    void on_Bt_DeseletionListe_clicked();
+    void on_Bt_DeselectionListe_clicked();
 
     void on_Bt_SupprimerListe_clicked();
 

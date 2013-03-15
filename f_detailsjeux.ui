@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
-    <height>400</height>
+    <width>695</width>
+    <height>566</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -31,7 +31,7 @@
      <item row="0" column="0">
       <widget class="QLabel" name="Lb_DateAchat">
        <property name="text">
-        <string>Date achat :</string>
+        <string>Date d'achat :</string>
        </property>
       </widget>
      </item>
@@ -41,7 +41,7 @@
      <item row="0" column="2">
       <widget class="QLabel" name="Lb_PrixAchat">
        <property name="text">
-        <string>Prix achat :</string>
+        <string>Prix d'achat :</string>
        </property>
       </widget>
      </item>
@@ -55,7 +55,7 @@
      <item row="1" column="0">
       <widget class="QLabel" name="Lb_Etat">
        <property name="text">
-        <string>État Initial :</string>
+        <string>État initial :</string>
        </property>
       </widget>
      </item>
@@ -69,7 +69,7 @@
      <item row="1" column="2">
       <widget class="QLabel" name="Lb_Location">
        <property name="text">
-        <string>Prix location :</string>
+        <string>Prix de location :</string>
        </property>
       </widget>
      </item>
@@ -102,7 +102,7 @@
       </widget>
      </item>
      <item row="4" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_Historique">
+      <widget class="QTableView" name="TbV_HistoriqueInterventions">
        <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
