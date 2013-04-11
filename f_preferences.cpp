@@ -190,6 +190,16 @@ void F_Preferences::closeEvent( QCloseEvent * event )
     event->accept() ;
 }
 
+/**
+ *  @brief  Permet de changer d'onglet
+ *
+ *  @param  nOnglet Permet de choisir l'onglet
+ */
+void F_Preferences::SelectionnerOnglet(int nOnglet)
+{
+    ui->tabWidget->setCurrentIndex( nOnglet ) ;
+}
+
 //---------------------------------------------------------------------------
 // METHODEs PRIVEEs
 //---------------------------------------------------------------------------

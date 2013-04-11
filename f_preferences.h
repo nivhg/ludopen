@@ -61,6 +61,12 @@ public:
 
     void closeEvent( QCloseEvent * event ) ;
 
+    /**
+     *  @brief Permet de changer d'anglais.
+     *
+     */
+    void SelectionnerOnglet( int nOnglet ) ;
+
 signals:
     void SignalFermerFenetre() ;
 

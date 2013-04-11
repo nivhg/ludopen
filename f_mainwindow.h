@@ -32,6 +32,7 @@ class F_MainWindow : public QMainWindow
 public:
     explicit F_MainWindow(QWidget *parent = 0);
     ~F_MainWindow();
+    void VerifierConnexionBDD() ;
 
 public slots:
     void slot_ChangerOnglet();

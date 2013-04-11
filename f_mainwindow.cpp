@@ -114,6 +114,62 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->TbW_Main->setCurrentIndex(9);
 
     //qDebug()<<"Constructeur F_MainWindow = OK";
+
+    this->VerifierConnexionBDD() ;
+}
+
+void F_MainWindow::VerifierConnexionBDD()
+{
+
+    QString sNomBDD;
+    QString sAdresseIP;
+    QString sNomUtilisateur;
+    QString sMotDePasse;
+    unsigned int nPort;
+
+    QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
+
+    // Ouverture du fichier INI.
+    QSettings settings("config.ini", QSettings::IniFormat);
+
+    // Recupération des valeurs dans le fichier INI.
+    sNomBDD = settings.value("BaseDeDonnees/NomDeLaBDD", "config").toString();
+    sAdresseIP = settings.value("BaseDeDonnees/AdresseIP", "config").toString();
+    sNomUtilisateur = settings.value("BaseDeDonnees/NomUtilisateur", "config").toString();
+    sMotDePasse = settings.value("BaseDeDonnees/MotDePasse", "config").toString();
+    nPort = settings.value("BaseDeDonnees/Port", "config").toInt();
+
+    // Ouverture de la BDD en entrant les valeurs du fichier INI.
+    db.setDatabaseName(sNomBDD);
+    db.setHostName(sAdresseIP);
+    db.setUserName(sNomUtilisateur);
+    db.setPassword(sMotDePasse);
+    db.setPort(nPort);
+
+    db.open();
+
+    // Test d'accès à la base de données
+    if(db.isOpen() == false)
+    {
+        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données" ,"Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
+        Err.exec();
+        cerr << "Vous etes sur l'adresse IP " << sAdresseIP.toStdString() << " sur le port " << nPort << " en tant que " << sNomUtilisateur.toStdString() << "." << endl << endl;
+        cerr << endl << "La connexion à la BDD " << sNomBDD.toStdString() << " a échouée." << endl;
+
+        this->pPreferences = new F_Preferences;
+        this->pPreferences->setWindowTitle("Préférences");
+        this->pPreferences->setWindowModality(Qt::ApplicationModal);
+        connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preference() ) ) ;
+
+        this->pPreferences->show();
+        this->pPreferences->SelectionnerOnglet( 1 ) ;
+
+    }
+    else
+    {
+        cerr << "Connexion BDD OK sur l'adresse IP " << sAdresseIP.toStdString() << " sur le port " << nPort << " en tant que " << sNomUtilisateur.toStdString() << "." << endl << endl;
+        cerr << endl << "Démarrage de Ludopen!" << endl ;
+    }
 }
 
 F_MainWindow::~F_MainWindow()
@@ -243,9 +299,9 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // Rendre visible le menu jeu pour imprimer les étiquettes et les fiches des jeux
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
-        {
-            ui->menuImprimer->setEnabled(true);
-        }
+    {
+        ui->menuImprimer->setEnabled(true);
+    }
         //this->pJeux->ActualiserJeux();
         break;
     case 3 : //Liste jeux
