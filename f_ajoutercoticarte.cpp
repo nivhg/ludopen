@@ -15,9 +15,9 @@
 #include "ui_f_ajoutercoticarte.h"
 
 // En-ttes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
-#include <iostream>
+#include <QtDebug>
 
 using namespace std;
 
@@ -78,7 +78,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
     }
     else
     {
-        cerr << "F_AjouterCotiCarte::ModifierAbonnement : Vérification carte ou prestation : " <<RequeteAbonnement.lastError().text().toStdString() << endl ;
+        qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Vérification carte ou prestation : " <<RequeteAbonnement.lastError().text() << endl ;
     }
 
     // Afficher la fenêtre d'ajout/Modif d'abonnement
@@ -124,7 +124,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         }
         else
         {
-            cerr << "F_AjouterCotiCarte::ModifierAbonnement : Carte : " << RequeteCarte.lastError().text().toStdString() << endl ;
+            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Carte : " << RequeteCarte.lastError().text() << endl ;
         }
     }
     // Sinon c'est un abonnement
@@ -163,7 +163,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         }
         else
         {
-            cerr << "F_AjouterCotiCarte::ModifierAbonnement : prestation : " << RequetePrestation.lastError().text().toStdString() << endl ;
+            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : prestation : " << RequetePrestation.lastError().text() << endl ;
         }
     }
 }
@@ -320,7 +320,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         {
             if( !query.exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query.lastError().text() << endl ;
             }
             else
             {
@@ -338,14 +338,14 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue(":CreditRestant", ui->LE_CreditsDisponibles->text().toInt() ) ;
             if( !query.exec() )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : enregistrement carte : " << query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : enregistrement carte : " << query.lastError().text() << endl ;
             }
         }
         else
         {
             if( !query.exec( "SELECT IdPrestation FROM prestations WHERE NomPrestation='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query.lastError().text() << endl ;
             }
             else
             {
@@ -362,9 +362,9 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
             if( !query.exec() )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastError().text() << endl ;
             }
-            cerr << nIdPrestation << endl ;
+            qDebug()<< nIdPrestation << endl ;
         }
     }
 
@@ -379,7 +379,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue(":CreditRestant", ui->LE_CreditsRestants->text().toInt() ) ;
             if( !query.exec() )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query.lastError().text() << endl ;
             }
         }
         else
@@ -391,7 +391,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue( ":DateSouscription" , ui->DtE_DateSouscription->date() ) ;
             if( !query.exec() )
             {
-                cerr << "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastError().text().toStdString() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastError().text() << endl ;
             }
         }
     }

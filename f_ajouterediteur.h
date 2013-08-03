@@ -6,7 +6,7 @@
 class F_AjouterEditeur ;
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QDialog>
+#include <QtWidgets\QDialog>
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
 #include "f_ajoutsuppmodifjeux.h"

@@ -4,7 +4,7 @@
 #define F_RETARDS_H
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
-#include <QWidget>
+#include <QtWidgets>
 #include "Courriel.h"
 
 namespace Ui {

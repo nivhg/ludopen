@@ -2,7 +2,7 @@
 #define F_MAINWINDOW_H
 
 #include <QDebug>
-#include <QMainWindow>
+#include <QtWidgets\QMainWindow>
 #include "f_emprunt.h"
 #include "f_jeux.h"
 #include "f_retour.h"

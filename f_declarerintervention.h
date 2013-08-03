@@ -3,7 +3,7 @@
 #define F_DECLARERINTERVENTION_H
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QWidget>
+#include <QtWidgets>
 
 namespace Ui {
     class F_DeclarerIntervention;

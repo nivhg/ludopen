@@ -1,7 +1,7 @@
 #ifndef F_RESERVATION_H
 #define F_RESERVATION_H
 
-#include <QMainWindow>
+#include <QtWidgets\QMainWindow>
 #include <QDate>
 #include <QStandardItem>
 

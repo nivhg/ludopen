@@ -2,8 +2,8 @@
 #define F_HISTORIQUEJEUX_H
 
 // En-ttes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QWidget>
-#include <iostream>
+#include <QtWidgets>
+#include <QtDebug>
 #include <QtSql/QtSql>
 #include <QStandardItemModel>
 

@@ -3,8 +3,8 @@
 #define F_CLESTTEM_H
 
 // En-têtes standards necessaires dans ce fichier en-tête seulement ------------
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
+#include <QtWidgets>
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tête --------
 #include "f_popupclesttem.h"

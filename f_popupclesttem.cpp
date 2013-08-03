@@ -34,7 +34,7 @@
 //------------------------------------------------------------------------------
 
 // En-tête propre à l'objet ----------------------------------------------------
-#include <iostream>
+#include <QtDebug>
 using namespace std;
 //------------------------------------------------------------------------------
 
@@ -155,7 +155,7 @@ void F_PopUpCLESTTEM::Ajouter()
         break;
 
         default: // Erreur création fenêtre.
-            cerr << "Erreur lors de la création du F_PopUpSTELTECM." << endl;
+            qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
         break;
     }
 
@@ -341,7 +341,7 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
         break;
 
         default: // Erreur création fenêtre.
-            cerr << "Erreur lors de la création du F_PopUpSTELTECM." << endl;
+            qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
         break;
     }
 
@@ -427,7 +427,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             {
                 if(this->bCLESTTEM == false)
                 {
-                    cerr << this->sCLESTTEM.toStdString() << endl;
+                    qDebug()<< this->sCLESTTEM << endl;
                     RequeteValider.prepare("UPDATE typejeux SET TypeJeux=:TypeJeux, Classification=:Classification WHERE TypeJeux=:TypeJeuxPrecedent");
                     RequeteValider.bindValue(":TypeJeux", ui->LE_CLESTTEM->text());
                     RequeteValider.bindValue(":Classification", ui->LE_Autres->text());
@@ -565,7 +565,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
         break;
 
         default: // Erreur création fenêtre.
-            cerr << "Erreur lors de la création du F_PopUpSTELTECM." << endl;
+            qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
         break;
     }
 

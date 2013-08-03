@@ -7,7 +7,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QDebug>
-#include <QtGui/QMessageBox>
+#include <QtWidgets\QMessageBox>
 #include <QThread>
 
 

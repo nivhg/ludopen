@@ -2,7 +2,7 @@
 #define F_AJOUTERCOTICARTE_H
 
 // En-têtes propres l'application nécessaires dans ce fichier en-tête --------
-#include <QWidget>
+#include <QtWidgets>
 
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------

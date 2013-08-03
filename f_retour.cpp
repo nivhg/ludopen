@@ -109,7 +109,7 @@ F_Retour::F_Retour(QWidget *parent) :
    ui->TbV_JeuxEmprunte->setEditTriggers(0);
    // Autorise le tri pour ce tableau
    ui->TbV_JeuxEmprunte->setSortingEnabled(true);
-   //Initialise les colones du TableView des nouveaux emprunts
+   //Initialise les colonnes du TableView des nouveaux emprunts
    this->ModelJeuEmpruntes->setColumnCount(4);
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
@@ -127,7 +127,7 @@ F_Retour::F_Retour(QWidget *parent) :
    // Autorise le tri pour ce tableau
    ui->TbV_JeuxReserve->setSortingEnabled(true);
 
-   //Initialise les colones du TableView des nouveaux emprunts
+   //Initialise les colonnes du TableView des nouveaux emprunts
    this->ModelJeuReserves->setColumnCount(5);
    this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Code"));
    this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
@@ -177,13 +177,13 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
 
         //On vide le modèle
         this->ModelMembre->clear();
-        //Indique le nombes de colones puis leurs noms
+        //Indique le nombes de colonnes puis leurs noms
         this->ModelMembre->setColumnCount(4);
         this->ModelMembre->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModelMembre->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
         this->ModelMembre->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
         this->ModelMembre->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
-        //Impose une taille aux colones
+        //Impose une taille aux colonnes
         ui->TbV_Recherche->setColumnWidth(0,40);
         ui->TbV_Recherche->setColumnWidth(3,40);
 
@@ -196,28 +196,24 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
                 this->ModelMembre->setItem(NumeroLigne, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
                 this->ModelMembre->setItem(NumeroLigne, 3, new QStandardItem(RequeteMembre.value(3).toString() ));
                 NumeroLigne++;
-
              }
-
     }
     else
     {
-
-
                 QSqlQuery RequeteMembre;
                 NumeroLigne =0;
-                RequeteMembre.exec("SELECT `CodeMembre`,`Nom`,Prenom,`DateNaissance` FROM`membres`,`emprunts`"
-                                   " WHERE `emprunts`.DateRetour  IS NULL "
-                                   " AND `Membres_IdMembre`=`IdMembre` GROUP BY `CodeMembre`");
+                RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres,emprunts"
+                                   " WHERE emprunts.DateRetour IS NULL"
+                                   " AND Membres_IdMembre=IdMembre GROUP BY CodeMembre");
                 //On vide le modèle
                 this->ModelMembre->clear();
-                //Indique le nombes de colones puis leurs noms
+                //Indique le nombes de colonnes puis leurs noms
                 this->ModelMembre->setColumnCount(4);
                 this->ModelMembre->setHorizontalHeaderItem(0, new QStandardItem("Code"));
                 this->ModelMembre->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
                 this->ModelMembre->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
                 this->ModelMembre->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
-                //impose une taille aux colones
+                //impose une taille aux colonnes
                 ui->TbV_Recherche->setColumnWidth(0,40);
                 ui->TbV_Recherche->setColumnWidth(3,40);
                 ui->TbV_Recherche->verticalHeader()->setVisible(false);
@@ -341,11 +337,11 @@ void F_Retour::AfficherMembre(QString CodeMembre)
 
     QSqlQuery Requete;
 
-//Prépare la requête
+    //Prépare la requête
     Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises FROM membres WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",CodeMembre);
 
-//Execute la requête
+    //Execute la requête
     if (!Requete.exec())
     {
         qDebug()<<"F_Retour::AfficherMembre || requete info membre "<<Requete.lastError();
@@ -353,16 +349,16 @@ void F_Retour::AfficherMembre(QString CodeMembre)
 
     Requete.next();
 
-//Récupère le Nom dans la base de données puis l'affiche
+    //Récupère le Nom dans la base de données puis l'affiche
     ui->LE_NomARemplir->setText(Requete.value(0).toString());
 
-//Récupère le Prénom dans la base de données puis l'affiche
+    //Récupère le Prénom dans la base de données puis l'affiche
     ui->LE_PrenomARemplir->setText(Requete.value(1).toString());
 
-//Récupère le nombre de retards dans la base de données  puis l'affiche
+    //Récupère le nombre de retards dans la base de données  puis l'affiche
     ui->LE_RetardARemplir->setText(Requete.value(2).toString());
 
-//Regarde dans la base de données si le membre est écarté
+    //Regarde dans la base de données si le membre est écarté
     bool MembreEcarte = (Requete.value(3).toBool());
     if (MembreEcarte)
     {
@@ -376,44 +372,42 @@ void F_Retour::AfficherMembre(QString CodeMembre)
        ui->Lb_MembreEcarte->setText(" ");
     }
 
-//Récupère les remarques dans la base de données puis les afficher
+    //Récupère les remarques dans la base de données puis les afficher
     ui->Txe_RemarqueMembre->setText(Requete.value(4).toString());
 
-//Grise les boutons de modification des remarques du membre
+    //Grise les boutons de modification des remarques du membre
     ui->Bt_ValiderRemarqueMembre->setEnabled(false);
     ui->Bt_AnnulerRemarqueMembre->setEnabled(false);
 
-//Récupère le nombre de jeux empruntables dans la base de données puis l'afficher
+    //Récupère le nombre de jeux empruntables dans la base de données puis l'afficher
     ui->LE_JeuxMaxARemplir->setText(Requete.value(5).toString());
 
-//Affiche l'état de la cotisation
-       //Savoir si le membre à un memmbre assosier
-       QSqlQuery RequeteMembreAssocier ;
-       RequeteMembreAssocier.prepare("SELECT `MembreAssocie`FROM`membres` WHERE `CodeMembre`=:CodeDuMembre AND `MembreAssocie`!=0");
-       RequeteMembreAssocier.bindValue(":codeDuMembre",this->MembreActif);
-       RequeteMembreAssocier.exec();
-       RequeteMembreAssocier.next();
-       //s'i y en a un,
-       if(RequeteMembreAssocier.size()>0)
-       {
-           //On Affiche l'état de la cotisation du membre associé au membre actif
-           EtatCotisation(RequeteMembreAssocier.value(0).toString());
-       }
-       //Sinon,
-       else
-       {
-           //On affiche l'état de la cotisation du membre en cours de consultation
-           EtatCotisation(this->MembreActif);
-       }
+    //Affiche l'état de la cotisation
+    //Savoir si le membre à un memmbre assosier
+    QSqlQuery RequeteMembreAssocier ;
+    RequeteMembreAssocier.prepare("SELECT MembreAssocie FROM membres WHERE CodeMembre=:CodeDuMembre AND MembreAssocie!=0");
+    RequeteMembreAssocier.bindValue(":codeDuMembre",this->MembreActif);
+    RequeteMembreAssocier.exec();
+    RequeteMembreAssocier.next();
+    //s'i y en a un,
+    if(RequeteMembreAssocier.size() > 0)
+    {
+        //On Affiche l'état de la cotisation du membre associé au membre actif
+        EtatCotisation(RequeteMembreAssocier.value(0).toString());
+    }
+    //Sinon,
+    else
+    {
+        //On affiche l'état de la cotisation du membre en cours de consultation
+        EtatCotisation(this->MembreActif);
+    }
 
-//Affiche les jeux empruntés
+    //Affiche les jeux empruntés
     JeuxEnEmprunt();
-//Affiche les jeux réservés
+    //Affiche les jeux réservés
     JeuxReserve();
-//Affiche le nombre de crédits restants
+    //Affiche le nombre de crédits restants
     CalculerCreditsRestants();
-
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -559,18 +553,14 @@ void F_Retour::on_Txe_RemarqueMembre_textChanged()
  */
 void F_Retour::JeuxEnEmprunt()
 {
-    QDate DateActuelle;
-    DateActuelle=DateActuelle.currentDate();
     QSqlQuery RequeteIdMembre;
     unsigned int IdDuMembre (0);
 
-//Prépare le reqête pour récupérer l'id du membre
+    //Prépare le requête pour récupérer l'id du membre
     RequeteIdMembre.prepare("SELECT IdMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
     RequeteIdMembre.bindValue(":CodeDuMembre",MembreActif);
 
-
-
-//Execute la requête
+    //Execute la requête
     if (!RequeteIdMembre.exec())
     {
         qDebug()<< "F_Retour::JeuxEnEmprunt =>  RequeteIdMembre  "<< RequeteIdMembre.lastError();
@@ -582,9 +572,9 @@ void F_Retour::JeuxEnEmprunt()
     IdDuMembre=RequeteIdMembre.value(0).toInt();
     QSqlQuery RequeteJeuEmprunte;
     unsigned int NumeroLigne =0;
-    RequeteJeuEmprunte.prepare("SELECT `DateEmprunt`,`DateRetourPrevu`,`NomJeu`,`CodeJeu` "
-                               "FROM `emprunts`,`jeux`"
-                               "WHERE  `DateRetour` IS NULL AND`Membres_IdMembre`=:IdDuMembre AND `IdJeux`=`Jeux_IdJeux`" );
+    RequeteJeuEmprunte.prepare("SELECT DateEmprunt,DateRetourPrevu,NomJeu,CodeJeu "
+                               "FROM emprunts,jeux "
+                               "WHERE DateRetour IS NULL AND Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux" );
     RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
     if(!RequeteJeuEmprunte.exec())
     {
@@ -593,25 +583,40 @@ void F_Retour::JeuxEnEmprunt()
 
     //On vide le modèle
     this->ModelJeuEmpruntes->clear();
-    //Initialise les colones du TableView des jeux empruntés
-         this->ModelJeuEmpruntes->setColumnCount(4);
-         this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-         this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
-         this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
-         this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
-         ui->TbV_JeuxEmprunte->setColumnWidth(0,40);
-         ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
-         ui->TbV_JeuxEmprunte->verticalHeader()->setVisible(false);
+    //Initialise les colonnes du TableView des jeux empruntés
+    this->ModelJeuEmpruntes->setColumnCount(4);
+    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
+    this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
+    this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
+    ui->TbV_JeuxEmprunte->setColumnWidth(0,40);
+    ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
+    ui->TbV_JeuxEmprunte->verticalHeader()->setVisible(false);
+
+    // obtenir le nombre de jours tolérés pour un retard
+    QDate DateActuelle;
+    DateActuelle=DateActuelle.currentDate();
+    QSqlQuery RequeteNbJoursRetardToleres;
+    if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
+    {
+        qDebug()<<"F_Retour::JeuxEnEmprunt() =>  RequeteNbJoursRetardToleres "<<RequeteNbJoursRetardToleres.lastError();
+    }
+    else
+    {
+        // Calculer la date de retour avec la tolérance du nombre de jours
+        DateActuelle.addDays(RequeteNbJoursRetardToleres.value(0).toInt() );
+        qDebug()<<"F_Retour::JeuxEnEmprunt() => DateTolérée=" << DateActuelle ;
+    }
 
     //Tant qu'il y a des jeux,
     while(RequeteJeuEmprunte.next())
     {
         //on ajoute une nouvelle ligne du table view
-        this->ModelJeuEmpruntes->setItem(NumeroLigne, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString() ));
+        this->ModelJeuEmpruntes->setItem(NumeroLigne, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString()));
         this->ModelJeuEmpruntes->setItem(NumeroLigne, 1, new QStandardItem(RequeteJeuEmprunte.value(2).toString()));
         this->ModelJeuEmpruntes->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("yyyy-MM-dd ddd") ));
         this->ModelJeuEmpruntes->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("yyyy-MM-dd ddd") ));
-        if (RequeteJeuEmprunte.value(1).toDate()>DateActuelle)
+        if (RequeteJeuEmprunte.value(1).toDate() > DateActuelle )
         {
             this->ModelJeuEmpruntes->setData(ModelJeuEmpruntes->index(NumeroLigne,3),QColor(Qt::green), Qt::BackgroundColorRole);
         }
@@ -623,9 +628,7 @@ void F_Retour::JeuxEnEmprunt()
         QString NbJeux ;
         NbJeux.setNum(NumeroLigne);
         ui->LE_NbreJeuxRendre->setText(NbJeux);
-
     }
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -671,7 +674,7 @@ void F_Retour::JeuxReserve()
 
     //On vide le modèle
     this->ModelJeuReserves->clear();
-    //Initialise les colones du TableView des nouveaux emprunts
+    //Initialise les colonnes du TableView des nouveaux emprunts
     this->ModelJeuReserves->setColumnCount(5);
     this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Code"));
     this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));

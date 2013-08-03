@@ -90,7 +90,7 @@ bool F_RechercheMembres::MaJListeMembres()
     } 
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "RechercheMembre::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
+        qDebug()<< "RechercheMembre::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
         bRetourner = false ;
     }
     this->VecteurRechercheMembres = VecteurMembres ;
@@ -168,7 +168,9 @@ void F_RechercheMembres::RechercherParNomEtNumero()
         {
             //On vérifie que la suite de lettres entrées dans LE_Nom correpondent aux Noms du vecteur VecteurMembre ou que la suite de chiffre entrées dans LE_Code correspondent aux CodeMembres du Vecteur VecteurMembres
             //Si le Nom, le code ou les 2 correspondent, on l'ajoute dans le vecteur VecteurRechercheMembres
-            if( this->VecteurMembres[i].sCodeMembre.toUpper().toStdString().find( ui->LE_Code->text().toUpper().toStdString().c_str() ) != string::npos && this->VecteurMembres[i].sNom.toUpper().toStdString().find( ui->LE_Nom->text().toUpper().toStdString().c_str() ) != string::npos )
+            // QT5
+            // if( this->VecteurMembres[i].sCodeMembre.toUpper().find( ui->LE_Code->text().toUpper().c_str() ) != string::npos && this->VecteurMembres[i].sNom.toUpper().find( ui->LE_Nom->text().toUpper().c_str() ) != string::npos )
+            if( this->VecteurMembres[i].sCodeMembre.toUpper().indexOf( ui->LE_Code->text().toUpper() ) != string::npos && this->VecteurMembres[i].sNom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
             {
                 this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
             }

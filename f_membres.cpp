@@ -178,7 +178,7 @@ void F_Membres::MaJTitre ()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::MaJTitre (): Erreur bdd : " << Requete.lastError().text().toStdString() << endl ;
+        qDebug()<< "F_Membres::MaJTitre (): Erreur bdd : " << Requete.lastError().text() << endl ;
     }
 }
 //==========================================================================================================
@@ -226,7 +226,7 @@ void F_Membres::MaJType ()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastError().text().toStdString() <<  endl ;
+        qDebug()<< "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastError().text() <<  endl ;
     }
 }
 //==========================================================================================================
@@ -351,7 +351,7 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
             }
             else
             {
-                cerr << "F_Membres::AfficherJeuxEmpruntes : RequeteJeux : Erreur de connexion avec la base de données !" << endl ;
+                qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteJeux : Erreur de connexion avec la base de données !" << endl ;
             }
 
             modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
@@ -371,7 +371,7 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt : Erreur de connexion avec la base de donne !" << endl ;
+        qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt : Erreur de connexion avec la base de donne !" << endl ;
     }
 }
 //==========================================================================================================
@@ -486,7 +486,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
         }
         else //Sinon on affiche un message d'erreur et on retourne Faux
         {
-            cerr << "F_Membres::AfficherMembre : Erreur de connexion avec la base de données !" << RequeteMembre.lastError().text().toStdString() <<  endl ;
+            qDebug()<< "F_Membres::AfficherMembre : Erreur de connexion avec la base de données !" << RequeteMembre.lastError().text() <<  endl ;
             ui->Bt_ModifierMembre->setDisabled( true ) ;
         }
     }
@@ -572,7 +572,7 @@ bool F_Membres::AjouterMembre()
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::AjouterMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text().toStdString()<< endl ;
+        qDebug()<< "F_Membres::AjouterMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text()<< endl ;
         bRetourne = false ;
     }
 
@@ -607,7 +607,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text().toStdString()<< endl ;
+        qDebug()<< "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text()<< endl ;
     }
 
 
@@ -679,7 +679,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         //Si le membre n'a pas été enregisté on indique l'erreur qu'il y a une erreur et on retourne l'erreur de sql
         if( RequeteMembre.exec()== false )
         {
-            cerr << "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << endl <<  RequeteMembre.lastError().text().toStdString()<< endl ;
+            qDebug()<< "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << endl <<  RequeteMembre.lastError().text()<< endl ;
             bRetourne = false ;
         }
     }
@@ -708,7 +708,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
 
     if( !RequeteEmprunts.exec() )
     {
-        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text().toStdString()<< endl ;
+        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text()<< endl ;
         bRetourne = false ;
     }
 
@@ -729,7 +729,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                 bRetourne = false ;
             }
 
@@ -744,7 +744,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                 bRetourne = false ;
             }
 
@@ -759,7 +759,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                 bRetourne = false ;
             }
 
@@ -775,7 +775,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                 bRetourne = false ;
             }
 
@@ -962,7 +962,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::AfficherAbonnements : RequetePrestation : Erreur de connexion avec la base de donne !"<< RequetePrestation.lastError().text().toStdString()<< endl ;
+        qDebug()<< "F_Membres::AfficherAbonnements : RequetePrestation : Erreur de connexion avec la base de donne !"<< RequetePrestation.lastError().text()<< endl ;
     }
 
     //Préparation de la requête
@@ -1001,7 +1001,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << "F_Membres::AfficherAbonnements : RequeteCartes : Erreur de connexion avec la base de donne !"<< RequeteCartes.lastError().text().toStdString()<< endl ;
+        qDebug()<< "F_Membres::AfficherAbonnements : RequeteCartes : Erreur de connexion avec la base de donne !"<< RequeteCartes.lastError().text()<< endl ;
     }
 
 }
@@ -1031,7 +1031,7 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
     }
     else
     {
-        cerr << "F_Membres::AfficherVilles : Erreur de connexion avec la base de donnée !"<< Requete.lastError().text().toStdString() << endl ;
+        qDebug()<< "F_Membres::AfficherVilles : Erreur de connexion avec la base de donnée !"<< Requete.lastError().text() << endl ;
     }
 
     i = 0 ;
@@ -1490,7 +1490,7 @@ void F_Membres::on_Bt_SupprimerAbonnement_clicked()
         //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
         if( !RequeteSupprimer.exec() )
         {
-            cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
+            qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
         }
         this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
         // masquer les boutons Modifier/Supprimer abonnement

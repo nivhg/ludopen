@@ -20,7 +20,7 @@
 // En-têtes standards  --------------
 #include <qfiledialog.h>
 #include <QtSql>
-#include <QtGui>
+#include <QtWidgets>
 #include <QMessageBox>
 
 // En-tête propre à l'application ----------------------------------------------
@@ -1642,7 +1642,7 @@ void F_AjoutSuppModifJeux::on_Bt_Renseigner_clicked()
 void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
 {
     QString sCheminImage ;
-    sCheminImage = QFileDialog::getOpenFileName( this,tr( "Ouvrir une image." ), "/home", "Image Files (*.png *.jpg *.bmp *.jpeg)" ) ;
+    sCheminImage = QFileDialog::getOpenFileName( this,tr( "Ouvrir une image." ), "/home", "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)" ) ;
 
     this->AjouterImage( sCheminImage, ui->LE_Code->text() );
 

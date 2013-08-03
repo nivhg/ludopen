@@ -65,8 +65,8 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
     ui->TW_Paiement->verticalHeader()->hide();
 
-    ui->TW_Paiement->horizontalHeader()->setResizeMode( 0, QHeaderView::Stretch );
-    ui->TW_Paiement->horizontalHeader()->setResizeMode( 1, QHeaderView::ResizeToContents );
+    ui->TW_Paiement->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::Stretch );
+    ui->TW_Paiement->horizontalHeader()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
     ui->TW_Paiement->setColumnHidden(2,true);
 
 //Initialise le tableau des Autres moyens de paiement
@@ -77,8 +77,8 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
     ui->TW_PaiementAutre->verticalHeader()->hide();
 
-    ui->TW_PaiementAutre->horizontalHeader()->setResizeMode( 0, QHeaderView::Stretch );
-    ui->TW_PaiementAutre->horizontalHeader()->setResizeMode( 1, QHeaderView::ResizeToContents );
+    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::Stretch );
+    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
 
 //Grise le bouton OK
     QPushButton* BoutonOk;

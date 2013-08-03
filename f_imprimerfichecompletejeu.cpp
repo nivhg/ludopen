@@ -16,7 +16,13 @@
  */
 //-------------------------------------------------------------------------------
 // En-têtes standards  ----------------------------------------------------------
+/*
 #include <QtSql>
+#include <QPrintDialog>
+#include <QPrinter>
+*/
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
 
 // En-tête propre à l'application -----------------------------------------------
 #include "f_imprimerfichecompletejeu.h"
@@ -174,8 +180,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     ui->LE_Emplacement->setReadOnly(true);
     
 
-
-
     QSqlQuery RequeteEtat ;
     QString Etat = RequeteFicheJeuComplete.value(17).toString() ;
     RequeteEtat.prepare("SELECT IdEtatsJeu, Etat FROM etatsjeu WHERE IdEtatsJeu =:IdEtatsDuJeu") ;
@@ -192,8 +196,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     }
     ui->LE_Etat->setReadOnly(true);
     
-
-
 
     QSqlQuery RequeteStatut ;
     QString Statut = RequeteFicheJeuComplete.value(18).toString() ;
@@ -212,9 +214,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     ui->LE_Statut->setReadOnly(true);
 
     
-
-
-
     QSqlQuery RequeteFournisseur ;
     QString Fournisseur = RequeteFicheJeuComplete.value(19).toString() ;
     RequeteFournisseur.prepare("SELECT IdFournisseur, NomFournisseur, Fournisseur FROM fournisseursediteur WHERE IdFournisseur =:IdDuFournisseur AND Fournisseur = 1") ;
@@ -231,9 +230,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     }
     ui->LE_Fournisseur->setReadOnly(true);
     
-
-
-
     QSqlQuery RequeteEditeur ;
     QString Editeur = RequeteFicheJeuComplete.value(20).toString() ;
     RequeteEditeur.prepare("SELECT IdFournisseur, NomFournisseur, Editeur FROM fournisseursediteur WHERE IdFournisseur =:IdDuFournisseur AND Editeur = 1") ;
@@ -249,10 +245,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
         ui->LE_Editeur->setText(RequeteEditeur.value(1).toString());
     }
     ui->LE_Editeur->setReadOnly(true);
-    
-
-
-
 
     QSqlQuery RequeteImage ;
     QString CheminImage ;
@@ -268,7 +260,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
 
     //Met l'image à l'échelle du cadre
     ui->Lb_Photo->setScaledContents(true);
-
 }
 
 /**
@@ -329,16 +320,6 @@ void F_ImprimerFicheCompleteJeu::on_Bt_Imprimer_clicked()
 
         editor->append(this->ui->Lb_Contenu->text() + ": " + "\n");
         editor->append("<b>" + this->ui->TxE_Contenu->toPlainText() + "</b" + "\n");
-
-
-
-
-
-
-
-
-
-
 
         editor->setAlignment(Qt::AlignCenter);
         editor->setCurrentCharFormat(TailleTexte);

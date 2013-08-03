@@ -1,7 +1,7 @@
 #ifndef F_POSTIT_H
 #define F_POSTIT_H
 
-#include <QWidget>
+#include <QtWidgets>
 
 namespace Ui {
 class F_POSTIT;

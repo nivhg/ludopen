@@ -459,7 +459,7 @@ void F_ListeJeux::on_Bt_ExporterListe_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
-    ecrire << "Code,Nom,Classification,JoueursMin,JoueursMax,AgeMin,AgeMax,DateAchat\r\n" ;
+    ecrire << "Code;Nom;Classification;JoueursMin;JoueursMax;AgeMin;AgeMax,DateAchat\r\n" ;
     for(nNombreLigne = 0; nNombreLigne<ui->TbV_Recherche->model()->rowCount(); nNombreLigne++)
     {
         for(nNombreColonne = 0 ; nNombreColonne<ui->TbV_Recherche->model()->columnCount(); nNombreColonne++)
@@ -471,7 +471,7 @@ void F_ListeJeux::on_Bt_ExporterListe_clicked()
             {
                 sCaractere = "";
             }
-            ecrire << "\"" << sCaractere << "\",";
+            ecrire << "\"" << sCaractere << "\";";  // séparateur ";"
         }
         ecrire << "\r\n";
         nNombreColonne = 0;

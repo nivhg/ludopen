@@ -7,9 +7,9 @@
 #include <QtSql/QtSql>
 
 // En-ttes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QWidget>
+#include <QtWidgets>
 #include <QStandardItem>
-#include <iostream>
+#include <QtDebug>
 #include <QVector>
 
 using namespace std ;

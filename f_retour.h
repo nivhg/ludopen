@@ -13,7 +13,7 @@
 #ifndef F_RETOUR_H
 #define F_RETOUR_H
 
-#include <QWidget>
+#include <QtWidgets>
 #include <QStandardItem>
 #include "f_paiement.h"
 

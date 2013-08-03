@@ -15,8 +15,8 @@
 //------------------------------------------------------------------------------
 
 // En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
-#include <iostream>
-#include <QtGui>
+#include <QtDebug>
+#include <QtWidgets>
 using namespace std ;
 //------------------------------------------------------------------------------
 

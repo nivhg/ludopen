@@ -9,6 +9,9 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //qDebug()<<"Constructeur F_MainWindow = Début";
+
+    this->VerifierConnexionBDD() ;
+
     ui->centralWidget->setLayout(ui->gridLayout);
 
     ui->menuImprimer->setEnabled(false);
@@ -114,8 +117,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->TbW_Main->setCurrentIndex(9);
 
     //qDebug()<<"Constructeur F_MainWindow = OK";
-
-    this->VerifierConnexionBDD() ;
 }
 
 void F_MainWindow::VerifierConnexionBDD()
@@ -153,8 +154,8 @@ void F_MainWindow::VerifierConnexionBDD()
     {
         QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données" ,"Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
         Err.exec();
-        cerr << "Vous etes sur l'adresse IP " << sAdresseIP.toStdString() << " sur le port " << nPort << " en tant que " << sNomUtilisateur.toStdString() << "." << endl << endl;
-        cerr << endl << "La connexion à la BDD " << sNomBDD.toStdString() << " a échouée." << endl;
+        qDebug()<< "Vous etes sur l'adresse IP " << sAdresseIP << " sur le port " << nPort << " en tant que " << sNomUtilisateur << "." << endl << endl;
+        qDebug()<< endl << "La connexion à la BDD " << sNomBDD << " a échouée." << endl;
 
         this->pPreferences = new F_Preferences;
         this->pPreferences->setWindowTitle("Préférences");
@@ -163,12 +164,11 @@ void F_MainWindow::VerifierConnexionBDD()
 
         this->pPreferences->show();
         this->pPreferences->SelectionnerOnglet( 1 ) ;
-
     }
     else
     {
-        cerr << "Connexion BDD OK sur l'adresse IP " << sAdresseIP.toStdString() << " sur le port " << nPort << " en tant que " << sNomUtilisateur.toStdString() << "." << endl << endl;
-        cerr << endl << "Démarrage de Ludopen!" << endl ;
+        qDebug()<< "Connexion BDD OK sur l'adresse IP " << sAdresseIP << " sur le port " << nPort << " en tant que " << sNomUtilisateur << "." << endl << endl;
+        qDebug()<< endl << "Démarrage de Ludopen!" << endl ;
     }
 }
 

@@ -8,7 +8,7 @@
  *  @version      0.1
  *  @date         02/02/2013 Nicolas
  *
- *  Description dtaille du fichier f_listmembres.ccp
+ *  Description détaillée du fichier f_listmembres.ccp
  *
  *  @bug          aucun connu
  */
@@ -17,14 +17,9 @@
 #include "f_listemembres.h"
 #include "ui_f_listemembres.h"
 
-#include <iostream>
+#include <QtDebug>
 #include <QStandardItem>
-#include <QDialog>
-#include <QFileDialog>
-#include <QTableView>
-#include <QLabel>
-#include <QPushButton>
-#include <QMessageBox>
+#include <QtWidgets>
 
 using namespace std ;
 
@@ -542,7 +537,6 @@ void F_ListeMembres::on_Bt_DeselectionListe_clicked()
 
 void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 {
-    bool bRetourne ( true ) ;
     QSqlQuery RequeteSupprimer ;
     QSqlQuery RequeteEmprunts ;
     QSqlQuery RequeteMembre ;
@@ -561,8 +555,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
                 if( !RequeteEmprunts.exec() )
                 {
-                    cerr << "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text().toStdString()<< endl ;
-                    bRetourne = false ;
+                    qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text()<< endl ;
                 }
 
                 //S'il n'y a pas d'emprunt en cour
@@ -574,14 +567,9 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
+                    if( !RequeteSupprimer.exec() )
                     {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                     }
 
                     //Préparation de la requête permettant la suppression dans la table reservation -------------------------------
@@ -589,14 +577,9 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
+                    if( !RequeteSupprimer.exec() )
                     {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                     }
 
                     //Préparation de la requête permettant la suppression dans la table emprunts ------------------------
@@ -604,45 +587,28 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
+                    if( !RequeteSupprimer.exec() )
                     {
-                        bRetourne = true ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                     }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
-                    }
-
 
                     //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
                     RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre " ) ;
                     RequeteSupprimer.bindValue( ":IdMembre", this->ModeleMembres.data( this->ModeleMembres.index( i, 0 )).toInt() ) ;
 
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
-                    if( RequeteSupprimer.exec() )
+                    if( !RequeteSupprimer.exec() )
                     {
-                        bRetourne = true ;
-                    }
-                    else//Sinon on affiche un message d'erreur et on met la variable de retoure à  faux
-                    {
-                        cerr << "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text().toStdString()<< endl ;
-                        bRetourne = false ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
                     }
                 }
                 else
                 {
-                    bRetourne = false ;
                     QMessageBox::information( this, "Suppression Membre","Impossible de supprimer " + ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index(i ,1) ).toString()  + " " + ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index(i ,2) ).toString() + " membre.\nIl a encore des jeux en cours d'emprunts.",  "Ok" ) ;
                 }
             }
         }
     }
-    else
-    {
-        bRetourne = false ;
-    }
-
     this->AffichageListe() ;
 }
 
@@ -657,19 +623,19 @@ void F_ListeMembres::on_Bt_Exporter_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
-    ecrire << "Nom, Prenom, Ville, Code Membre, Telephone, Email, Nombre de retard\r\n" ;
+    ecrire << "Nom;Prenom;Ville;Code Membre;Telephone;Email;Nombre de retard\r\n" ;
     for(nNombreLigne = 0; nNombreLigne<ui->TbW_ListeMembre->model()->rowCount(); nNombreLigne++)
     {
         for(nNombreColonne = 1; nNombreColonne<ui->TbW_ListeMembre->model()->columnCount(); nNombreColonne++)
         {
             sCaractere = ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
-            // On rejete les valeurs à  caractère unique et on le remplace par un champs vide
+            // On rejete les valeurs à caractère unique et on le remplace par un champs vide
             sCaractere.replace(" ", "\ ") ;
             if(sCaractere == "-" || sCaractere == "_" || sCaractere == ".")
             {
                 sCaractere = "";
             }
-            ecrire << "\"" << sCaractere << "\",";
+            ecrire << "\"" << sCaractere << "\";";
         }
         ecrire << "\r\n";
         nNombreColonne = 0;

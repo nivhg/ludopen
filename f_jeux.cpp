@@ -12,7 +12,7 @@
   *
   * Fabrication QtCreator
   *
-  * @todo Vérification du bon fonctionnement et de la cohérence des résultats
+  * @todo Afficher les photos des jeux
   *
 */
 #include <QtSql>
@@ -364,7 +364,7 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->Lb_Image->setPixmap( Image ) ;
     //Met l'image à l'échelle du cadre
     ui->Lb_Image->setScaledContents( true ) ;
-    //qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() ;
+    qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() ;
 
     /////////////////////////////////////////////
     // action particulière pour certains champs

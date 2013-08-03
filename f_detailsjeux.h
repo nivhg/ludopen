@@ -3,7 +3,7 @@
 #define F_DETAILSJEUX_H
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QWidget>
+#include <QtWidgets>
 #include <QStandardItemModel>
 
 namespace Ui {

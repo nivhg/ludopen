@@ -4,13 +4,10 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
-QT       += sql
-QT       += network
-
-TARGET = LudOpen
-TEMPLATE = app
-
+QT        = widgets sql network core printsupport
+TARGET    = LudOpen
+TEMPLATE  = app
+RESOURCES = ImagesIcones.qrc
 
 SOURCES += \
     main.cpp \
@@ -114,6 +111,3 @@ FORMS    += \
     f_imprimerfichecompletejeu.ui \
     f_imprimeretiquettejeu.ui \
     f_listereservations.ui
-
-RESOURCES += \
-    ImagesIcones.qrc

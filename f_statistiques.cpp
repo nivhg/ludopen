@@ -21,21 +21,16 @@
  *  @todo       Classe terminée.
  */
 //------------------------------------------------------------------------------
-
-// En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
 #include <fstream>
-#include <iostream>
+#include <QtDebug>
+
 using namespace std;
 //------------------------------------------------------------------------------
-
-// En-t?te propre ? l'objet ----------------------------------------------------
 #include "f_statistiques.h"
 #include "ui_f_statistiques.h"
 //------------------------------------------------------------------------------
-
-// En-tête propre à l'application ----------------------------------------------
 #include "f_plusdestatistiques.h"
 //------------------------------------------------------------------------------
 
@@ -199,7 +194,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_4->show();
         break;
     default:
-        cerr << "Erreur de combo" << endl;
+        qDebug()<< "Erreur de combo" << endl;
     }
 }
 
@@ -951,7 +946,7 @@ void F_Statistiques::on_Bt_AfficherStatistique_clicked()
             this->EffectuerRequeteAdherentInscritAnnee();
             break;
         default:
-            cerr << "Erreur dans la valeur nPeriode" << endl;
+            qDebug()<< "F_Statistiques::on_Bt_AfficherStatistique_clicked()=Erreur dans la valeur nPeriode" << endl;
             break;
         }
         break;
@@ -986,7 +981,7 @@ void F_Statistiques::on_Bt_AfficherStatistique_clicked()
             this->EffectuerRequeteAdherentEmpruntAnnee();
             break;
         default:
-            cerr << "Erreur dans la valeur nPeriode" << endl;
+            qDebug()<< "F_Statistiques::on_Bt_AfficherStatistique_clicked()=Erreur dans la valeur nPeriode" << endl;
             break;
         }
         break;
@@ -1060,12 +1055,12 @@ void F_Statistiques::on_Bt_AfficherStatistique_clicked()
             this->EffectuerRequeteJeuxEmpruntAnnee();
             break;
         default:
-            cerr << "Erreur dans la valeur nPeriode" << endl;
+            qDebug()<< "F_Statistiques::on_Bt_AfficherStatistique_clicked()=Erreur dans la valeur nPeriode" << endl;
             break;
         }
         break;
     default:
-        cerr << "Erreur dans la valeur nChampsCombo" << endl;
+        qDebug()<< "F_Statistiques::on_Bt_AfficherStatistique_clicked()=Erreur dans la valeur nChampsCombo" << endl;
         break;
     }
 }

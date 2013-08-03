@@ -1,7 +1,7 @@
 #ifndef F_PLUSDESTATISTIQUES_H
 #define F_PLUSDESTATISTIQUES_H
 
-#include <QMainWindow>
+#include <QtWidgets\QMainWindow>
 
 namespace Ui {
     class F_PlusDeStatistiques;

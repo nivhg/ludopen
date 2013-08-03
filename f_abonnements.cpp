@@ -21,9 +21,9 @@
 //------------------------------------------------------------------------------
 
 // En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
-#include <iostream>
+
 using namespace std;
 //------------------------------------------------------------------------------
 
@@ -145,7 +145,7 @@ void F_Abonnements::MettreAJourPrestation(QString sTexte, unsigned int nDuree, f
     Requete.bindValue(":Prix", fPrix);
     if(!Requete.exec())
     {
-        cerr << "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
     }
 }
 
@@ -171,7 +171,7 @@ void F_Abonnements::MettreAJourCartePrepayee(QString sTexte, unsigned int nDuree
     Requete.bindValue(":CreditDisponible", nCredit);
     if(!Requete.exec())
     {
-        cerr << "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
     }
 }
 
@@ -194,7 +194,7 @@ void F_Abonnements::CreerPrestation(QString sTexte, unsigned int nDuree, float f
     Requete.bindValue(":Prix", fPrix);
     if(!Requete.exec())
     {
-        cerr << "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
     }
 }
 
@@ -219,7 +219,7 @@ void F_Abonnements::CreerCartePrepayee(QString sTexte, unsigned int nDuree, floa
     Requete.bindValue(":CreditDisponible", nCredit);
     if(!Requete.exec())
     {
-        cerr << "L'insertion dans la base de données a échoué" << endl;
+        qDebug()<< "L'insertion dans la base de données a échoué" << endl;
     }
 }
 
@@ -234,9 +234,12 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
 {
     QSqlQuery Requete;
 
-    Requete.prepare("SELECT NomCarte, DureeValidite, Prix, CreditDisponible FROM cartesprepayees WHERE NomCarte=:NomCarte");
+    Requete.prepare("SELECT NomCarte,DureeValidite,Prix,CreditDisponible FROM cartesprepayees WHERE NomCarte=:NomCarte");
     Requete.bindValue(":NomCarte", sTexte);
-    Requete.exec();
+    if(!Requete.exec())
+    {
+        qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette "<<Requete.lastError();
+    }
     Requete.next();
     if (Requete.isValid()==true)
     {
@@ -245,9 +248,12 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
     }
     else
     {
-        Requete.prepare("SELECT NomPrestation, DureeValidite, Prix FROM prestations WHERE NomPrestation=:NomPrestation");
+        Requete.prepare("SELECT NomPrestation,DureeValidite,Prix FROM prestations WHERE NomPrestation=:NomPrestation");
         Requete.bindValue(":NomPrestation", sTexte);
-        Requete.exec();
+        if(!Requete.exec())
+        {
+            qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette "<<Requete.lastError();
+        }
         Requete.next();
         if(Requete.isValid()==true)
         {
@@ -277,19 +283,22 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
  */
 void F_Abonnements::SupprimerAbonnement(QString sTexte, int nCredit)
 {
-    QSqlQuery Requete;
+    QSqlQuery RequeteSupprimerAbonnement;
 
-    Requete.prepare("DELETE FROM cartesprepayees WHERE NomCarte=:NomCarte AND CreditDisponible=:CreditDisponible");
-    Requete.bindValue(":NomCarte", sTexte);
-    Requete.bindValue(":CreditDisponible", nCredit);
-    Requete.exec();
-    Requete.next();
-    if (Requete.isValid()!=true)
+    RequeteSupprimerAbonnement.prepare("DELETE FROM cartesprepayees WHERE NomCarte=:NomCarte AND CreditDisponible=:CreditDisponible");
+    RequeteSupprimerAbonnement.bindValue(":NomCarte", sTexte);
+    RequeteSupprimerAbonnement.bindValue(":CreditDisponible", nCredit);
+    if(!RequeteSupprimerAbonnement.exec())
     {
-        Requete.prepare("DELETE FROM prestations WHERE NomPrestation=:NomPrestation");
-        Requete.bindValue(":NomPrestation", sTexte);
-        Requete.exec();
-        Requete.next();
+        qDebug()<<"F_Abonnements::SupprimerAbonnement =>  RequetteSupprimerAbonnement "<<RequeteSupprimerAbonnement.lastError();
+    }
+    RequeteSupprimerAbonnement.next();
+    if (RequeteSupprimerAbonnement.isValid()!=true)
+    {
+        RequeteSupprimerAbonnement.prepare("DELETE FROM prestations WHERE NomPrestation=:NomPrestation");
+        RequeteSupprimerAbonnement.bindValue(":NomPrestation", sTexte);
+        RequeteSupprimerAbonnement.exec();
+        RequeteSupprimerAbonnement.next();
     }
 }
 
@@ -425,7 +434,7 @@ void F_Abonnements::on_Bt_Valider_clicked()
                 Requete.bindValue(":NomCarte", sTexteValide);
                 if(!Requete.exec())
                 {
-                    cerr << "F_Abonnements::on_Bt_Valider_clicked() = Erreur d'acc?s ? la BDD" << endl;
+                    qDebug()<< "F_Abonnements::on_Bt_Valider_clicked() = Erreur d'acc?s ? la BDD" << endl;
                 }
                 else
                 {

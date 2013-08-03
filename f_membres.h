@@ -6,8 +6,9 @@
 #include "f_ajoutercoticarte.h"
 #include "f_popupclesttem.h"
 #include "TitreType.h"
-#include <QtSql/QtSql>
-#include <QtGui>
+
+#include <QtSql>
+#include <QtWidgets>
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
 
@@ -197,8 +198,8 @@ private:
 
 
     /////////////Fenêtre d'ajout d'une ville///////////////
-    QDialog * oFenetreAjoutVille ;                     //! Fenêtre pour l'ajout d'une ville
-    QLineEdit * LE_AjoutVille ;                   //! LigneEdit permettant d'indiquer la ville
+    QDialog     * oFenetreAjoutVille ;       //! Fenêtre pour l'ajout d'une ville
+    QLineEdit   * LE_AjoutVille ;            //! LigneEdit permettant d'indiquer la ville
     QPushButton * Bt_ValiderVille ;          //! Bouton Valider pour la fenêtre d'ajout d'une ville
     QPushButton * Bt_AnnuerVille ;           //! Bouton Annuler pour la fenêtre d'ajout d'une ville
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville

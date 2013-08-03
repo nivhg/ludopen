@@ -6,7 +6,7 @@ class F_Emprunt;
 
 #include <QStandardItem>
 #include <QDate>
-#include <QWidget>
+#include <QtWidgets>
 #include "f_paiement.h"
 //#include "montableview.h"
 

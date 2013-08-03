@@ -17,9 +17,9 @@
 #include "f_listereservations.h"
 #include "ui_f_listereservations.h"
 
-#include <iostream>
+#include <QtDebug>
 #include <QStandardItem>
-#include <QDialog>
+#include <QtWidgets\QDialog>
 #include <QFileDialog>
 #include <QTableView>
 #include <QLabel>

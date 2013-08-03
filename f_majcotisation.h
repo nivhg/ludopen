@@ -1,7 +1,7 @@
 #ifndef F_MAJCOTISATION_H
 #define F_MAJCOTISATION_H
 
-#include <QWidget>
+#include <QtWidgets>
 
 namespace Ui {
     class F_MajCotisation;

@@ -82,7 +82,7 @@ void F_HistoriqueJeux::AfficherHistorique( unsigned int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        cerr << " ID membre " << nIdMembre << "->" << "F_HistoriqueJeux::AfficherHistorique : queryHistorique : Erreur de connexion avec la base de donnée ! Erreur -> " << queryHistorique.lastError().databaseText().toStdString() << endl ;
+        qDebug()<< " ID membre " << nIdMembre << "->" << "F_HistoriqueJeux::AfficherHistorique : queryHistorique : Erreur de connexion avec la base de donnée ! Erreur -> " << queryHistorique.lastError().databaseText() << endl ;
     }
 }
 

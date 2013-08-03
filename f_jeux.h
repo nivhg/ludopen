@@ -3,14 +3,13 @@
 #define F_JEUX_H
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
-#include <QWidget>
+#include <QtWidgets>
 #include <QStandardItemModel>
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
 #include "f_declarerintervention.h"
 #include "f_detailsjeux.h"
 #include "f_reservation.h"
-
 
 namespace Ui {
     class F_Jeux;

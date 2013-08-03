@@ -4,10 +4,10 @@
 // En-ttes propres  l'application necessaires dans ce fichier en-tete --------
 #include <QtSql/QtSql>  //Nécessaire pour la base de données
 
-#include <QWidget>
-#include <QTableView>
-#include <QPushButton>
-#include <QLabel>
+#include <QtWidgets>
+#include <QtWidgets\QTableView>
+#include <QtWidgets\QPushButton>
+#include <QtWidgets\QLabel>
 #include <QStandardItem>
 #include "TitreType.h"
 

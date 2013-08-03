@@ -15,6 +15,9 @@
   *
 */
 //-------------------------------------------------------
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrinter>
+
 // En-tête propre à l'application ----------------------------------------------
 #include "f_imprimeretiquettejeu.h"
 #include "ui_f_imprimeretiquettejeu.h"

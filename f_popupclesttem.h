@@ -3,7 +3,7 @@
 #define F_POPUPCLESTTEM_H
 
 // En-têtes standards necessaires dans ce fichier en-tête seulement ------------
-#include <QWidget>
+#include <QtWidgets>
 #include <QtSql>
 
 namespace Ui {

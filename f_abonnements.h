@@ -3,8 +3,7 @@
 #define F_ABONNEMENTS_H
 
 // En-têtes standards necessaires dans ce fichier en-tête seulement ------------
-#include <QWidget>
-#include <QtGui>
+#include <QtWidgets>
 
 namespace Ui {
 class F_Abonnements;

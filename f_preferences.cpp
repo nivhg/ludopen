@@ -39,10 +39,10 @@
 //------------------------------------------------------------------------------
 
 // En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
-#include <QtGui>
+#include <QtWidgets>
 #include <QtSql>
 #include <fenv.h>
-#include <iostream>
+#include <QtDebug>
 using namespace std;
 //------------------------------------------------------------------------------
 
@@ -601,7 +601,7 @@ void F_Preferences::on_Bt_Connection_clicked()
     }
     else
     {
-        cerr << "Erreur : " << db.lastError().text().toStdString() << endl;
+        qDebug()<< "Erreur : " << db.lastError().text() << endl;
         ui->Lb_InfoConnexion->setText("<font color=red> La connexion a échouée. Veuiller réassayer. </font>");
     }
 }
