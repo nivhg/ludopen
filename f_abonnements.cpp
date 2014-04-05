@@ -6,7 +6,7 @@
  *  @author     STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since      01/2012
  *  @version    1.0
- *  @date       12/06/2012
+ *  @date       06/03/2014
  *
  *  Les options disponibles dans cette classe sont:
  *      - l'ajout d'un abonnement.
@@ -16,18 +16,14 @@
  *
  *  Fabrication   Qt Creator, projet    .pro
  *
+ *  @bug        <Création de 2 abonnements avec le même nom> <corrigé> <William> <06/03/2014>
  *  @todo       Classe terminée.
  */
 //------------------------------------------------------------------------------
-
-// En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
 #include <QtWidgets>
 #include <QtSql>
-
 using namespace std;
 //------------------------------------------------------------------------------
-
-// En-tête propre à l'objet ----------------------------------------------------
 #include "f_abonnements.h"
 #include "ui_f_abonnements.h"
 //------------------------------------------------------------------------------
@@ -58,6 +54,9 @@ F_Abonnements::F_Abonnements(QWidget *parent) :
     ui->Bt_Annuler->hide();
     ui->Bt_Valider->hide();
 
+    ui->RBt_CartePrepayee->setEnabled(false);
+    ui->RBt_Prestation->setEnabled(false);
+
     this->TbRechercheModele = new QStandardItemModel();
     ui->TbV_Recherche->setModel(this->TbRechercheModele);
     ui->TbV_Recherche->setEditTriggers(0);
@@ -87,42 +86,42 @@ F_Abonnements::~F_Abonnements()
  */
 void F_Abonnements::MettreAJourBDD()
 {
-    QSqlQuery RechercheTableau;
-    int nNombreLigne(0);
+   QSqlQuery RechercheTableau;
+   unsigned nNombreLigne(0);
 
-    this->TbRechercheModele->setColumnCount(5);
-    this->TbRechercheModele->setRowCount(nNombreLigne);
-    this->TbRechercheModele->setHorizontalHeaderItem(0, new QStandardItem("Type"));
-    this->TbRechercheModele->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-    this->TbRechercheModele->setHorizontalHeaderItem(2, new QStandardItem("Prix"));
-    this->TbRechercheModele->setHorizontalHeaderItem(3, new QStandardItem("Durée de Validité"));
-    this->TbRechercheModele->setHorizontalHeaderItem(4, new QStandardItem("Crédit Disponible"));
+   this->TbRechercheModele->setColumnCount(5);
+   //this->TbRechercheModele->setRowCount(nNombreLigne);
+   this->TbRechercheModele->setHorizontalHeaderItem(0, new QStandardItem("Type"));
+   this->TbRechercheModele->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+   this->TbRechercheModele->setHorizontalHeaderItem(2, new QStandardItem("Prix"));
+   this->TbRechercheModele->setHorizontalHeaderItem(3, new QStandardItem("Durée de validité"));
+   this->TbRechercheModele->setHorizontalHeaderItem(4, new QStandardItem("Crédit disponible"));
 
-    ui->TbV_Recherche->setColumnWidth(1, 300);
-    ui->TbV_Recherche->setColumnWidth(2, 90);
-    ui->TbV_Recherche->setColumnWidth(3, 130);
-    ui->TbV_Recherche->setColumnWidth(4, 130);
+   ui->TbV_Recherche->setColumnWidth(1, 300);
+   ui->TbV_Recherche->setColumnWidth(2, 90);
+   ui->TbV_Recherche->setColumnWidth(3, 130);
+   ui->TbV_Recherche->setColumnWidth(4, 130);
 
-    RechercheTableau.exec("SELECT * FROM cartesprepayees");
-    while (RechercheTableau.next())
-    {
-        this->TbRechercheModele->setItem(nNombreLigne, 0, new QStandardItem("Carte"));
-        this->TbRechercheModele->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
-        this->TbRechercheModele->setItem(nNombreLigne, 2, new QStandardItem(RechercheTableau.value(3).toString()));
-        this->TbRechercheModele->setItem(nNombreLigne, 3, new QStandardItem(RechercheTableau.value(2).toString()));
-        this->TbRechercheModele->setItem(nNombreLigne, 4, new QStandardItem(RechercheTableau.value(4).toString()));
-        nNombreLigne = nNombreLigne +1;
-    }
+   RechercheTableau.exec("SELECT * FROM cartesprepayees");
+   while (RechercheTableau.next())
+   {
+      this->TbRechercheModele->setItem(nNombreLigne, 0, new QStandardItem("Carte"));
+      this->TbRechercheModele->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
+      this->TbRechercheModele->setItem(nNombreLigne, 2, new QStandardItem(RechercheTableau.value(3).toString()));
+      this->TbRechercheModele->setItem(nNombreLigne, 3, new QStandardItem(RechercheTableau.value(2).toString()));
+      this->TbRechercheModele->setItem(nNombreLigne, 4, new QStandardItem(RechercheTableau.value(4).toString()));
+      nNombreLigne++;
+   }
 
-    RechercheTableau.exec("SELECT * FROM prestations");
-    while (RechercheTableau.next())
-    {
-        this->TbRechercheModele->setItem(nNombreLigne, 0, new QStandardItem("Prestation"));
-        this->TbRechercheModele->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
-        this->TbRechercheModele->setItem(nNombreLigne, 2, new QStandardItem(RechercheTableau.value(3).toString()));
-        this->TbRechercheModele->setItem(nNombreLigne, 3, new QStandardItem(RechercheTableau.value(2).toString()));
-        nNombreLigne = nNombreLigne +1;
-    }
+   RechercheTableau.exec("SELECT * FROM prestations");
+   while (RechercheTableau.next())
+   {
+      this->TbRechercheModele->setItem(nNombreLigne, 0, new QStandardItem("Prestation"));
+      this->TbRechercheModele->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
+      this->TbRechercheModele->setItem(nNombreLigne, 2, new QStandardItem(RechercheTableau.value(3).toString()));
+      this->TbRechercheModele->setItem(nNombreLigne, 3, new QStandardItem(RechercheTableau.value(2).toString()));
+      nNombreLigne++;
+   }
 }
 
 /**
@@ -145,7 +144,7 @@ void F_Abonnements::MettreAJourPrestation(QString sTexte, unsigned int nDuree, f
     Requete.bindValue(":Prix", fPrix);
     if(!Requete.exec())
     {
-        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "F_Abonnements::MettreAJourPrestation : " << Requete.lastQuery();
     }
 }
 
@@ -171,7 +170,7 @@ void F_Abonnements::MettreAJourCartePrepayee(QString sTexte, unsigned int nDuree
     Requete.bindValue(":CreditDisponible", nCredit);
     if(!Requete.exec())
     {
-        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "F_Abonnements::MettreAJourCartePrepayee" << Requete.lastQuery();
     }
 }
 
@@ -188,13 +187,13 @@ void F_Abonnements::CreerPrestation(QString sTexte, unsigned int nDuree, float f
 {
     QSqlQuery Requete;
 
-    Requete.prepare("INSERT INTO prestations (NomPrestation, DureeValidite, Prix) VALUES (:NomPrestation, :DureeValidite, :Prix)");
+    Requete.prepare("INSERT INTO prestations (NomPrestation,DureeValidite,Prix) VALUES (:NomPrestation, :DureeValidite, :Prix)");
     Requete.bindValue(":NomPrestation", sTexte);
     Requete.bindValue(":DureeValidite", nDuree);
     Requete.bindValue(":Prix", fPrix);
     if(!Requete.exec())
     {
-        qDebug()<< "L'insertion dans la base de donnée a échoué" << endl;
+        qDebug()<< "F_Abonnements::CreerPrestation" << Requete.lastQuery();
     }
 }
 
@@ -219,7 +218,7 @@ void F_Abonnements::CreerCartePrepayee(QString sTexte, unsigned int nDuree, floa
     Requete.bindValue(":CreditDisponible", nCredit);
     if(!Requete.exec())
     {
-        qDebug()<< "L'insertion dans la base de données a échoué" << endl;
+        qDebug()<< "F_Abonnements::CreerCartePrepayee" << Requete.lastQuery();
     }
 }
 
@@ -238,7 +237,7 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
     Requete.bindValue(":NomCarte", sTexte);
     if(!Requete.exec())
     {
-        qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette "<<Requete.lastError();
+        qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette "<<Requete.lastQuery();
     }
     Requete.next();
     if (Requete.isValid()==true)
@@ -252,7 +251,7 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
         Requete.bindValue(":NomPrestation", sTexte);
         if(!Requete.exec())
         {
-            qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette "<<Requete.lastError();
+            qDebug()<<"F_Abonnements::AfficherDetailAbonnement =>  Requette " << Requete.lastQuery();
         }
         Requete.next();
         if(Requete.isValid()==true)
@@ -283,23 +282,32 @@ void F_Abonnements::AfficherDetailAbonnement(QString sTexte)
  */
 void F_Abonnements::SupprimerAbonnement(QString sTexte, int nCredit)
 {
-    QSqlQuery RequeteSupprimerAbonnement;
+   QSqlQuery RequeteSupprimerAbonnement;
 
-    RequeteSupprimerAbonnement.prepare("DELETE FROM cartesprepayees WHERE NomCarte=:NomCarte AND CreditDisponible=:CreditDisponible");
-    RequeteSupprimerAbonnement.bindValue(":NomCarte", sTexte);
-    RequeteSupprimerAbonnement.bindValue(":CreditDisponible", nCredit);
-    if(!RequeteSupprimerAbonnement.exec())
-    {
-        qDebug()<<"F_Abonnements::SupprimerAbonnement =>  RequetteSupprimerAbonnement "<<RequeteSupprimerAbonnement.lastError();
-    }
-    RequeteSupprimerAbonnement.next();
-    if (RequeteSupprimerAbonnement.isValid()!=true)
-    {
-        RequeteSupprimerAbonnement.prepare("DELETE FROM prestations WHERE NomPrestation=:NomPrestation");
-        RequeteSupprimerAbonnement.bindValue(":NomPrestation", sTexte);
-        RequeteSupprimerAbonnement.exec();
-        RequeteSupprimerAbonnement.next();
-    }
+   // C'est une carte pré-payée
+   if(ui->RBt_CartePrepayee->isChecked() == true)
+   {
+      // TO DO
+      // Vérifier que la carte n'est pas utilisé par des adhérents.
+      // Si oui, demander quoi faire et proposer de leur affecté une autre prestation
+      RequeteSupprimerAbonnement.prepare("DELETE FROM cartesprepayees WHERE NomCarte=:NomCarte AND CreditDisponible=:CreditDisponible");
+      RequeteSupprimerAbonnement.bindValue(":NomCarte", sTexte);
+      RequeteSupprimerAbonnement.bindValue(":CreditDisponible", nCredit);
+      if(!RequeteSupprimerAbonnement.exec())
+      {
+         qDebug()<<"F_Abonnements::SupprimerAbonnement =>  RequetteSupprimerCarte "<<RequeteSupprimerAbonnement.lastQuery();
+      }
+   }
+   // C'est une prestation
+   else
+   {
+      RequeteSupprimerAbonnement.prepare("DELETE FROM prestations WHERE NomPrestation=:NomPrestation");
+      RequeteSupprimerAbonnement.bindValue(":NomPrestation", sTexte);
+      if(!RequeteSupprimerAbonnement.exec())
+      {
+         qDebug()<<"F_Abonnements::SupprimerAbonnement =>  RequetteSupprimerPrestation "<<RequeteSupprimerAbonnement.lastQuery();
+      }
+   }
 }
 
 /**
@@ -340,10 +348,12 @@ void F_Abonnements::on_Bt_Ajouter_clicked()
     ui->RBt_CartePrepayee->setAutoExclusive(true);
     ui->RBt_Prestation->setAutoExclusive(true);
 
-    ui->LE_Nom->setReadOnly(false);
-    ui->LE_Duree->setReadOnly(false);
-    ui->LE_Prix->setReadOnly(false);
-    ui->LE_Credit->setReadOnly(false);
+    ui->TbV_Recherche->setEnabled(false);
+
+    ui->LE_Credit->setEnabled(false);
+    ui->LE_Nom->setEnabled(false);
+    ui->LE_Duree->setEnabled(false);
+    ui->LE_Prix->setEnabled(false);
 
     ui->LE_Nom->clear();
     ui->LE_Duree->clear();
@@ -351,11 +361,11 @@ void F_Abonnements::on_Bt_Ajouter_clicked()
     ui->LE_Credit->clear();
     ui->LE_Nom->setFocus(Qt::OtherFocusReason);
 
-    ui->Bt_Annuler->show();
-    ui->Bt_Valider->show();
     ui->Bt_Ajouter->hide();
     ui->Bt_Modifier->hide();
     ui->Bt_Supprimer->hide();
+
+    ui->Bt_Annuler->show();
 }
 
 /**
@@ -402,108 +412,139 @@ void F_Abonnements::on_Bt_Modifier_clicked()
  */
 void F_Abonnements::on_Bt_Valider_clicked()
 {
-    QString sTexteValide;
-    unsigned int nDureeValide;
-    float fPrixValide;
-    unsigned int nCreditValide;
+   QString sTexteValide;
+   unsigned int nDureeValide;
+   float fPrixValide;
+   unsigned int nCreditValide;
 
-    // Récupération des valeurs des LineEdit dans des variables.
-    sTexteValide = ui->LE_Nom->text();
-    nDureeValide = ui->LE_Duree->text().toInt();
-    fPrixValide = ui->LE_Prix->text().toFloat();
+   // Récupération des valeurs des LineEdit dans des variables.
+   sTexteValide = ui->LE_Nom->text();
+   nDureeValide = ui->LE_Duree->text().toInt();
+   fPrixValide = ui->LE_Prix->text().toFloat();
 
-    // SI-SINON pour savoir s'il s'agit d'une carte prépayée ou d'une prestation.
-    if(ui->RBt_CartePrepayee->isChecked() == true)
-    {
-        // C'est une carte pré-payée
-        nCreditValide = ui->LE_Credit->text().toInt();
-        // SI-SINON pour savoir si les champs sont vides. Seul le prix peut ?tre nul
-        if (sTexteValide.isEmpty()==true || nDureeValide==0 || nCreditValide==0)
-        {
-            QMessageBox::critical(this, "Message Erreur", "Les informations ne sont pas toutes remplies.");
-        }
-        else
-        {
-            // SI-SINON pour savoir s'il s'agit d'un nouvel abonnement ou pas.
+   // savoir s'il s'agit d'une carte prépayée ou d'une prestation.
+   if(ui->RBt_CartePrepayee->isChecked() == true)
+   {
+      // C'est une carte pré-payée
+      nCreditValide = ui->LE_Credit->text().toInt();
+      // SI-SINON pour savoir si les champs sont vides. Seul le prix peut être nul
+      if ( sTexteValide.isEmpty()==true || nDureeValide==0 || nCreditValide==0 )
+      {
+         QMessageBox::critical(this, "Erreur de saisie", "Les informations de cette carte pré-payée ne sont pas toutes remplies.");
+      }
+      else
+      {
+         // savoir s'il s'agit d'un nouvel abonnement ou pas.
+         if(bEstUnNouvelAbo == true)
+         {
+            // Vérification si cette carte existe dans la BDD
+            QSqlQuery RequeteCarteExistante;
+            if(!RequeteCarteExistante.exec("SELECT COUNT(*) FROM cartesprepayees WHERE NomCarte='"+sTexteValide+"'") )
+            {
+                qDebug()<< "F_Abonnements::on_Bt_Valider_clicked() : Requete cartesprepayees" << RequeteCarteExistante.lastQuery() << RequeteCarteExistante.lastQuery();
+            }
+            else
+            {
+               // récupérer le nombre de carte ayant le même nom
+               RequeteCarteExistante.next();
+               if (RequeteCarteExistante.value(0).toInt() > 0)
+               {
+                  QMessageBox::critical(this, "Carte existant déjà", "Une carte portant le même nom existe déjà. Merci de changer le nom.");
+                  this->ui->LE_Nom->setFocus();
+               }
+               else  // C'est bien une nouvelle carte
+               {
+                  this->CreerCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
+               }
+            }
+         }
+         else
+         {
+            if(bEstUnNouvelAbo == false)
+            {
+               this->MettreAJourCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
+               ui->Bt_Annuler->hide();
+               ui->Bt_Valider->hide();
+               ui->Bt_Ajouter->show();
+               ui->Bt_Modifier->show();
+               ui->Bt_Supprimer->show();
+               ui->TbV_Recherche->setEnabled(true);
+               ui->RBt_CartePrepayee->setEnabled(false);
+               ui->RBt_Prestation->setEnabled(false);
+            }
+         }
+      }
+   }
+   // C'est une prestation
+   else
+   {
+      if (ui->RBt_Prestation->isChecked() == true)
+      {
+         // savoir si des champs sont vides.
+         if (sTexteValide.isEmpty()==true || nDureeValide==0 || fPrixValide==0.0)
+         {
+           QMessageBox::critical(this, "Erreur de saisie", "Les informations de cette prestation ne sont pas toutes remplies.");
+         }
+         else
+         {
+            // savoir s'il s'agit d'un nouvel abonnement ou pas.
             if(bEstUnNouvelAbo == true)
             {
-                // Vérification si cette carte existe dans la BDD
-                QSqlQuery Requete;
-
-                Requete.prepare("SELECT COUNT(*) FROM  cartesprepayees WHERE NomCarte=:NomCarte");
-                Requete.bindValue(":NomCarte", sTexteValide);
-                if(!Requete.exec())
-                {
-                    qDebug()<< "F_Abonnements::on_Bt_Valider_clicked() = Erreur d'acc?s ? la BDD" << endl;
-                }
-                else
-                {
-                    if (Requete.value(0).toInt() > 0)
-                    {
-                         QMessageBox::critical(this, "Donnée existante", "Une carte portant le m?me nom existe déj?. Merci de changer le nom.");
-                    }
-                    else  // C'est bien une nouvelle carte
-                    {
-                        this->CreerCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
-                    }
-                }
+               // Vérification si cette prestation existe dans la BDD
+               QSqlQuery RequetePrestationExistante;
+               if(!RequetePrestationExistante.exec("SELECT COUNT(*) FROM prestations WHERE NomPrestation='"+sTexteValide+"'"))
+               {
+                  qDebug()<< "F_Abonnements::on_Bt_Valider_clicked() : Requete prestations" << RequetePrestationExistante.lastQuery() << RequetePrestationExistante.lastQuery();
+               }
+               else
+               {
+                  // récupérer le nombre de Prestation ayant le même nom
+                  RequetePrestationExistante.next();
+                  if (RequetePrestationExistante.value(0).toInt() > 0)
+                  {
+                     QMessageBox::critical(this, "Prestation existant déjà", "Une prestation portant le même nom existe déjà. Merci de changer le nom.");
+                     this->ui->LE_Nom->setFocus();
+                  }
+                  else  // C'est bien une nouvelle prestation
+                  {
+                     this->CreerPrestation(sTexteValide, nDureeValide, fPrixValide);
+                     ui->Bt_Annuler->hide();
+                     ui->Bt_Valider->hide();
+                     ui->Bt_Ajouter->show();
+                     ui->Bt_Modifier->show();
+                     ui->Bt_Supprimer->show();
+                     ui->TbV_Recherche->setEnabled(true);
+                     ui->RBt_CartePrepayee->setEnabled(false);
+                     ui->RBt_Prestation->setEnabled(false);
+                  }
+               }
             }
             else
             {
-                if(bEstUnNouvelAbo == false)
-                {
-                    this->MettreAJourCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
-                }
+               if(bEstUnNouvelAbo == false)
+               {
+                  this->MettreAJourPrestation(sTexteValide, nDureeValide, fPrixValide);
+                  ui->Bt_Annuler->hide();
+                  ui->Bt_Valider->hide();
+                  ui->Bt_Ajouter->show();
+                  ui->Bt_Modifier->show();
+                  ui->Bt_Supprimer->show();
+                  ui->TbV_Recherche->setEnabled(true);
+                  ui->RBt_CartePrepayee->setEnabled(false);
+                  ui->RBt_Prestation->setEnabled(false);
+               }
             }
-            ui->Bt_Annuler->hide();
-            ui->Bt_Valider->hide();
-            ui->Bt_Ajouter->show();
-            ui->Bt_Modifier->show();
-            ui->Bt_Supprimer->show();
-        }
+         }
+      }
+      else
+      {
+         // aucun radio bouton de cocher.
+         if(ui->RBt_CartePrepayee->isChecked()==false && ui->RBt_Prestation->isChecked()==false)
+         {
+            QMessageBox::information(this, "Erreur", "Merci de choisir soit une carte pré-payée soit une prestation.");
+         }
+      }
     }
-    else
-    {
-        if (ui->RBt_Prestation->isChecked() == true)
-        {
-            // SI-SINON pour savoir si les champs sont vides.
-            if (sTexteValide.isEmpty()==true || nDureeValide==0 || fPrixValide==0.0)
-            {
-                QMessageBox::critical(this, "Message Erreur", "Impossible d'inscrire dans la base de donnee, les champs ne sont pas tous remplis.");
-            }
-            else
-            {
-                // SI-SINON pour savoir s'il s'agit d'un nouvel abonnement ou pas.
-                if(bEstUnNouvelAbo == true)
-                {
-                    this->CreerPrestation(sTexteValide, nDureeValide, fPrixValide);
-                }
-                else
-                {
-                    if(bEstUnNouvelAbo == false)
-                    {
-                        this->MettreAJourPrestation(sTexteValide, nDureeValide, fPrixValide);
-                    }
-                }
-                ui->Bt_Annuler->hide();
-                ui->Bt_Valider->hide();
-                ui->Bt_Ajouter->show();
-                ui->Bt_Modifier->show();
-                ui->Bt_Supprimer->show();
-            }
-        }
-        else
-        {
-            // SI pour erreur car aucun radio bouton de cocher.
-            if(ui->RBt_CartePrepayee->isChecked()==false && ui->RBt_Prestation->isChecked()==false)
-            {
-                QMessageBox::critical(this, "Message Erreur", "Impossible d'inscrire dans la base de donnee, les champs ne sont pas tous remplis.");
-            }
-        }
-    }
-
-    ui->RBt_CartePrepayee->setEnabled(true);
-    ui->RBt_Prestation->setEnabled(true);
 
     // Appel de la fonction pour actualiser le tableau.
     this->MettreAJourBDD();
@@ -515,13 +556,12 @@ void F_Abonnements::on_Bt_Valider_clicked()
  *  @see    MettreAJourBDD()
  */
 void F_Abonnements::on_Bt_Supprimer_clicked()
-{
-    if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cet abonnement ?", "Oui", "Non") == 0)
-    {
-        this->SupprimerAbonnement(ui->LE_Nom->text(), ui->LE_Credit->text().toInt());
-    }
-
-    this->MettreAJourBDD();
+   {
+   if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cet abonnement ?", "Oui", "Non") == 0)
+   {
+      this->SupprimerAbonnement(ui->LE_Nom->text(), ui->LE_Credit->text().toInt());
+      this->MettreAJourBDD();
+   }
 }
 
 /**
@@ -531,8 +571,8 @@ void F_Abonnements::on_Bt_Supprimer_clicked()
  */
 void F_Abonnements::on_Bt_Annuler_clicked()
 {
-    ui->RBt_CartePrepayee->setEnabled(true);
-    ui->RBt_Prestation->setEnabled(true);
+    ui->RBt_CartePrepayee->setEnabled(false);
+    ui->RBt_Prestation->setEnabled(false);
     ui->RBt_CartePrepayee->setAutoExclusive(false);
     ui->RBt_Prestation->setAutoExclusive(false);
     ui->RBt_CartePrepayee->setChecked(false);
@@ -551,6 +591,8 @@ void F_Abonnements::on_Bt_Annuler_clicked()
     ui->Bt_Ajouter->show();
     ui->Bt_Modifier->show();
     ui->Bt_Supprimer->show();
+
+    ui->TbV_Recherche->setEnabled(true);
 }
 
 /**
@@ -559,7 +601,17 @@ void F_Abonnements::on_Bt_Annuler_clicked()
  */
 void F_Abonnements::on_RBt_Prestation_clicked()
 {
-    ui->LE_Credit->setEnabled(false);
+   ui->LE_Nom->setReadOnly(false);
+   ui->LE_Duree->setReadOnly(false);
+   ui->LE_Prix->setReadOnly(false);
+   ui->LE_Credit->setReadOnly(false);
+
+   ui->LE_Credit->setEnabled(false);
+   ui->LE_Nom->setEnabled(true);
+   ui->LE_Duree->setEnabled(true);
+   ui->LE_Prix->setEnabled(true);
+
+   ui->Bt_Valider->show();
 }
 
 /**
@@ -568,7 +620,17 @@ void F_Abonnements::on_RBt_Prestation_clicked()
  */
 void F_Abonnements::on_RBt_CartePrepayee_clicked()
 {
-    ui->LE_Credit->setEnabled(true);
+   ui->LE_Nom->setReadOnly(false);
+   ui->LE_Duree->setReadOnly(false);
+   ui->LE_Prix->setReadOnly(false);
+   ui->LE_Credit->setReadOnly(false);
+
+   ui->LE_Credit->setEnabled(true);
+   ui->LE_Nom->setEnabled(true);
+   ui->LE_Duree->setEnabled(true);
+   ui->LE_Prix->setEnabled(true);
+
+   ui->Bt_Valider->show();
 }
 
 //---------------------------------------------------------------------------

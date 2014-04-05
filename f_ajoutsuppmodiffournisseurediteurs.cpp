@@ -187,7 +187,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
         RequeteInfoFournisseur.bindValue(":NomDuFournisseur", this->Selection);
         if(!RequeteInfoFournisseur.exec())
         {
-            qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()" << RequeteInfoFournisseur.lastError();
+            qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()" << RequeteInfoFournisseur.lastQuery();
         }
         RequeteInfoFournisseur.next() ;
 
@@ -307,7 +307,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
 
             if(!RequeteAjoutFournEdit.exec())
             {
-                qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteAjoutFournEdit.lastError();
+                qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteAjoutFournEdit.lastQuery();
             }            
             ViderChamps();
             this->AjoutOuModif = false ;
@@ -334,7 +334,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
 
         if(!RequeteModifFournOuEdit.exec())
         {
-            qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteModifFournOuEdit.lastError();
+            qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteModifFournOuEdit.lastQuery();
         }
         RequeteModifFournOuEdit.next() ;
         QMessageBox::information(this, "Confirmation", "Nouveau fournisseur/éditeur ajouter avec succès", "OK") ;
@@ -357,7 +357,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()
     RequeteAnnulModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
     if(!RequeteAnnulModifFournOuEdit.exec())
     {
-        qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()" << RequeteAnnulModifFournOuEdit.lastError() ;
+        qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()" << RequeteAnnulModifFournOuEdit.lastQuery() ;
     }
     RequeteAnnulModifFournOuEdit.next();
 

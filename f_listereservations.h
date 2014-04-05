@@ -47,13 +47,11 @@ private slots:
 
     void on_Bt_Deselection_clicked();
 
-    void on_ChBx_Lieux_clicked();
+    void on_ChBx_LieuxDeReservation_clicked();
 
-    void on_CBx_Lieux_activated(int index);
+    void on_CBx_LieuxDeReservation_activated(int index);
 
-    void on_ChBx_NomAdherent_clicked();
-
-    void on_LE_NomAdherent_textEdited(const QString &arg1);
+    void on_ChBx_LieuxDeRetrait_clicked();
 
     void on_ChBx_StatutJeu_clicked();
 
@@ -65,7 +63,7 @@ private slots:
 
     void on_SBx_NbreRetard_valueChanged(int arg1);
 
-    void on_ChBx_Retard_clicked();
+    //void on_ChBx_Retard_clicked();
 
     void on_ChBx_DateReservation_clicked();
 

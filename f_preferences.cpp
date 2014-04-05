@@ -55,8 +55,8 @@ using namespace std;
  *  @brief  Constructeur de la classe.
  *
  *  @param  parent
- *  @see    MettreAJourBDD()
- *  @see    AfficherInfoDemarrage()
+ *  @see    AfficherTousLesTableaux()
+ *  @see    AfficherAutresInformations()
  */
 F_Preferences::F_Preferences(QWidget *parent) :
     QWidget(parent),
@@ -143,8 +143,8 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->LE_ConfirmerCode->setEchoMode(QLineEdit::Password);
     ui->LE_MotdePasse->setEchoMode(QLineEdit::Password);
 
-    this->MettreAJourBDD();
-    this->AfficherInfoDemarrage();
+    this->AfficherTousLesTableaux();
+    this->AfficherAutresInformations();
 
     connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
@@ -177,11 +177,11 @@ F_Preferences::~F_Preferences()
 /**
  *  @brief  Slot qui récupère un signal pour la classe F_Preferences.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::slot_Valider()
 {
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 void F_Preferences::closeEvent( QCloseEvent * event )
@@ -227,11 +227,11 @@ QString F_Preferences::BlocNumeroTelFax(QString sNumero)
 }
 
 /**
- * @brief   Consulte la BDD et récupère les informations de celle-ci. Il sont ensuite mis dans les champs correspondant.
+ * @brief   Consulte la BDD et récupère les informations de celle-ci. Ils sont ensuite mis dans les champs correspondant.
  *
  * @pre     Etre connecté à  la BDD.
  */
-void F_Preferences::AfficherInfoDemarrage()
+void F_Preferences::AfficherAutresInformations()
 {
     QSqlQuery RequeteDemarrage;
     QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
@@ -245,7 +245,7 @@ void F_Preferences::AfficherInfoDemarrage()
 
 
     RequeteDemarrage.exec("SELECT Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, "
-                          "JourAvantMail, JourRetard, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP FROM preferences WHERE IdPreferences = 1");
+                          "JourAvantMail, JourRetard, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP, PrixAmende FROM preferences WHERE IdPreferences = 1");
     RequeteDemarrage.next();
 
     ui->LE_Nom->setText(RequeteDemarrage.value(0).toString());
@@ -264,17 +264,20 @@ void F_Preferences::AfficherInfoDemarrage()
     ui->LE_CheminRegle->setText(RequeteDemarrage.value(13).toString());
     ui->LE_AdresseSMTP->setText(RequeteDemarrage.value(14).toString());
     ui->LE_PortSMTP->setText(RequeteDemarrage.value(15).toString());
+    ui->DSBx_PrixAmende->setValue(RequeteDemarrage.value(16).toFloat());
 }
 
 /**
- *  @brief  Fonction qui permet de mettre à  jour le tableau contenant toutes les informations de la BDD.
+ *  @brief  Fonction qui permet de mettre à  jour les tableaux contenant toutes les informations de la BDD.
  *
  *  @pre    Etre connecté à  la BDD.
  */
-void F_Preferences::MettreAJourBDD()
+void F_Preferences::AfficherTousLesTableaux()
 {
     QSqlQuery RechercheTableau;
     int nNombreLigne(0);
+
+    //################################ onglet Membres/Emprunts #################################################
 
     //Affichage de la BDD dans le tableau titre qui est dans l'onglet Membres/Emprunts de F_Preferences.
     this->TbMembresTitre->setColumnCount(2);
@@ -284,7 +287,7 @@ void F_Preferences::MettreAJourBDD()
     ui->TbV_MembresTitre->setColumnWidth(0, 100);
     ui->TbV_MembresTitre->setColumnWidth(1, 65);
 
-    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntable FROM titremembre");
+    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntables FROM titremembre");
     while (RechercheTableau.next())
     {
         this->TbMembresTitre->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
@@ -338,6 +341,8 @@ void F_Preferences::MettreAJourBDD()
     }
 
     nNombreLigne = 0;
+
+    //################################ onglet Jeux #################################################
 
     //Affichage de la BDD dans le tableau type qui est dans l'onglet Jeux de F_Preferences.
     this->TbJeuxType->setColumnCount(2);
@@ -398,6 +403,8 @@ void F_Preferences::MettreAJourBDD()
     }
     nNombreLigne=0;
 
+    //################################ onglet Info Ludo #################################################
+
     //Affichage de la BDD dans le tableau lieu qui est dans l'onglet Info Ludo de F_Preferences.
     this->TbInfoLudoLieux->setColumnCount(1);
     this->TbInfoLudoLieux->setRowCount(nNombreLigne);
@@ -453,8 +460,8 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
 
     if(nIdPreferences == 0)
     {
-        RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences, Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, JourRetard, JourAvantMail, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP)"
-                                   "VALUES (:IdPreferences, :Nom, :Adresse, :CodePostal, :Ville, :NumeroTel, :NumeroFax, :Email, :SiteWeb, :JeuxAutorises, :UniteLocation, :JourRetard, :JourAvantMail, :CheminImage, :CheminRegle, :AdresseServeurSMTP, :PortSMTP)");
+        RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences, Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, JourRetard, JourAvantMail, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP, PrixAmende)"
+                                   "VALUES (:IdPreferences, :Nom, :Adresse, :CodePostal, :Ville, :NumeroTel, :NumeroFax, :Email, :SiteWeb, :JeuxAutorises, :UniteLocation, :JourRetard, :JourAvantMail, :CheminImage, :CheminRegle, :AdresseServeurSMTP, :PortSMTP, :PrixAmende)");
         RequeteEnregistrer.bindValue("IdPreferences", 1);
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
@@ -472,12 +479,13 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":CheminRegle", ui->LE_CheminRegle->text());
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
+        RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
         RequeteEnregistrer.exec();        
     }
     else
     {
         RequeteEnregistrer.prepare("UPDATE preferences SET Nom=:Nom, Adresse=:Adresse, CodePostal=:CodePostal, Ville=:Ville, NumeroTel=:NumeroTel, NumeroFax=:NumeroFax, Email=:Email, SiteWeb=:SiteWeb, JeuxAutorises=:JeuxAutorises,"
-                                   "UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail, JourRetard=:JourRetard, CheminImage=:CheminImage, CheminRegle=:CheminRegle, AdresseServeurSMTP=:AdresseServeurSMTP, PortSMTP=:PortSMTP WHERE IdPreferences = 1");
+                                   "UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail, JourRetard=:JourRetard, CheminImage=:CheminImage, CheminRegle=:CheminRegle, AdresseServeurSMTP=:AdresseServeurSMTP, PortSMTP=:PortSMTP, PrixAmende=:PrixAmende WHERE IdPreferences = 1");
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
         RequeteEnregistrer.bindValue(":CodePostal", ui->LE_CodePostal->text().toInt());
@@ -494,6 +502,7 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":CheminRegle", ui->LE_CheminRegle->text());
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
+        RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
         RequeteEnregistrer.exec();
     }
     // écriture de certaines données dans le fichier de configuration config.ini
@@ -601,7 +610,7 @@ void F_Preferences::on_Bt_Connection_clicked()
     }
     else
     {
-        qDebug()<< "Erreur : " << db.lastError().text() << endl;
+        qDebug()<< "Erreur : " << db.lastError() << endl;
         ui->Lb_InfoConnexion->setText("<font color=red> La connexion a échouée. Veuiller réassayer. </font>");
     }
 }
@@ -668,7 +677,7 @@ void F_Preferences::on_Bt_ModifierMembreTitre_clicked()
  *  @brief   Permet de supprimer un titre d'un membre.
  *
  *  @pre    Etre connecté à  la BDD.
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
 {
@@ -682,7 +691,7 @@ void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
         RequeteSupprimer.next();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 /**
@@ -713,7 +722,7 @@ void F_Preferences::on_Bt_ModifierMembreType_clicked()
 /**
  *  @brief  Permet de supprimer un type de membre.
  *
- *  @see MettreAJourBDD()
+ *  @see AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerMembreType_clicked()
 {
@@ -727,7 +736,7 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
         RequeteSupprimer.next();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 void F_Preferences::on_Bt_AjouterMembrePaiement_clicked()
@@ -759,7 +768,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
         RequeteSupprimer.next();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 void F_Preferences::on_Bt_AjouterEmpruntType_clicked()
@@ -790,7 +799,7 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 // Onglet Jeux - Partie Type. -----------------------------------------------
@@ -872,7 +881,7 @@ void F_Preferences::on_Bt_ModifierJeuxType_clicked()
 /**
  *  @brief  Permet de supprimer un type de jeu.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
 {
@@ -885,7 +894,7 @@ void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 /**
@@ -916,7 +925,7 @@ void F_Preferences::on_Bt_ModifierEtat_clicked()
 /**
  *  @brief  Permet de supprimer un état de jeu.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerEtat_clicked()
 {
@@ -929,7 +938,7 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 /**
@@ -960,7 +969,7 @@ void F_Preferences::on_Bt_ModifierStatut_clicked()
 /**
  *  @brief  Permet de supprimer un statut de jeu.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerStatut_clicked()
 {
@@ -973,7 +982,7 @@ void F_Preferences::on_Bt_SupprimerStatut_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 /**
@@ -1004,7 +1013,7 @@ void F_Preferences::on_Bt_ModifierEmplacement_clicked()
 /**
  *  @brief  Permet de supprimer un emplacement du jeu.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
 {
@@ -1017,7 +1026,7 @@ void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 // Onglet Jeux - Chemin document. -------------------------------------------
@@ -1086,7 +1095,7 @@ void F_Preferences::on_Bt_ModifierLieux_clicked()
 /**
  *  @brief  Permet de supprimer un lieu de l'info ludo.
  *
- *  @see    MettreAJourBDD()
+ *  @see    AfficherTousLesTableaux()
  */
 void F_Preferences::on_Bt_SupprimerLieux_clicked()
 {
@@ -1099,7 +1108,7 @@ void F_Preferences::on_Bt_SupprimerLieux_clicked()
         RequeteSupprimer.exec();
     }
 
-    this->MettreAJourBDD();
+    this->AfficherTousLesTableaux();
 }
 
 /**

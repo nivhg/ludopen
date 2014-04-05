@@ -17,6 +17,21 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <item row="1" column="0" colspan="3">
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
@@ -35,27 +50,27 @@
       <item row="0" column="0">
        <layout class="QGridLayout" name="GLay2">
         <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Lieux"/>
+         <widget class="QComboBox" name="CBx_LieuxDeReservation"/>
         </item>
         <item row="1" column="0">
-         <widget class="QCheckBox" name="ChBx_NomAdherent">
+         <widget class="QCheckBox" name="ChBx_LieuxDeRetrait">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
-           <string>Nom adhérent</string>
+           <string>Lieu de retrait</string>
           </property>
          </widget>
         </item>
         <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_Lieux">
+         <widget class="QCheckBox" name="ChBx_LieuxDeReservation">
           <property name="text">
-           <string>Lieu de la réservation</string>
+           <string>Lieu de réservation</string>
           </property>
          </widget>
         </item>
         <item row="1" column="1" colspan="2">
-         <widget class="QLineEdit" name="LE_NomAdherent"/>
+         <widget class="QComboBox" name="CBx_LieuxDeRetrait"/>
         </item>
        </layout>
       </item>
@@ -257,10 +272,14 @@
           <item>
            <widget class="QPushButton" name="Bt_Deselection">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Tous désélectionner</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Decocher_tout.png</normaloff>:/Decocher_tout.png</iconset>
             </property>
            </widget>
           </item>
@@ -269,10 +288,14 @@
         <item row="3" column="0">
          <widget class="QPushButton" name="Bt_RAZ">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
-           <string>Remise à zéro de critères</string>
+           <string>Remise à zéro des critères</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/RAZ.png</normaloff>:/RAZ.png</iconset>
           </property>
          </widget>
         </item>
@@ -289,6 +312,10 @@
           </property>
           <property name="text">
            <string>Exporter cette liste</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/CSV.png</normaloff>:/CSV.png</iconset>
           </property>
          </widget>
         </item>
@@ -338,6 +365,12 @@
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="Lb_NombreResultat">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>130</width>
@@ -345,7 +378,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Nombre de résultats :</string>
+      <string>Nombre de réservations répondant à vos critères :</string>
      </property>
     </widget>
    </item>
@@ -367,7 +400,7 @@
       <enum>QAbstractItemView::SelectRows</enum>
      </property>
      <attribute name="horizontalHeaderVisible">
-      <bool>true</bool>
+      <bool>false</bool>
      </attribute>
      <attribute name="horizontalHeaderHighlightSections">
       <bool>true</bool>

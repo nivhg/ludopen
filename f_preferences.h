@@ -460,13 +460,13 @@ private:
      *  @brief Consulte la BDD et récupère les informations de celle-ci. Il sont ensuite mis dans les champs correspondant.
      *
      */
-    void AfficherInfoDemarrage();
+    void AfficherAutresInformations();
 
     /**
      *  @brief Fonction qui permet de mettre à  jour le tableau contenant toutes les informations de la BDD.
      *
      */
-    void MettreAJourBDD();
+    void AfficherTousLesTableaux();
 };
 
 //------------------------------------------------------------------------------

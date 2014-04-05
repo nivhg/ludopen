@@ -242,7 +242,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
     QSqlQuery Statistique;
     int nNombreLigne (0);
 
-    Statistique.prepare("SELECT Nom, Prenom, CodeMembre FROM membres WHERE DateInscription>=:DateDebut AND DateInscription<=:DateFin AND Ecarte=0 ORDER BY Nom");
+    Statistique.prepare("SELECT Nom,Prenom,CodeMembre FROM membres WHERE DateInscription>=:DateDebut AND DateInscription<=:DateFin AND Ecarte=0 ORDER BY Nom");
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
@@ -253,6 +253,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
         this->TbStatModele->setItem(nNombreLigne, 2, new QStandardItem(Statistique.value(2).toString()));
         nNombreLigne = nNombreLigne +1;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 /**
  *  @brief  Fonction qui exécute la requête SQL "SELECT".
@@ -309,6 +310,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscritJour()
         }
         nDetail = 0;
     }
+    ui->Lb_Resultat->setNum( Statistique.numRowsAffected() ) ;
 }
 /**
  *  @brief Fonction qui exécute la requête SQL "SELECT".

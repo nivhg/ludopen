@@ -123,15 +123,15 @@ void F_POSTIT::on_Bt_Valider1_clicked()
     QSqlQuery RequeteValiderPostIt1;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt1.prepare("UPDATE postit SET PostIt1 =:LePostIt1");
+    RequeteValiderPostIt1.prepare("UPDATE postit SET PostIt1=:LePostIt1");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt1.bindValue("::LePostIt1",ui->TxE_PostIt1->toPlainText());
+    RequeteValiderPostIt1.bindValue(":LePostIt1",ui->TxE_PostIt1->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt1.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt1_textChanged()" << RequeteValiderPostIt1.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt1_textChanged()" << RequeteValiderPostIt1.lastQuery() ;
     }
     ui->Bt_Annuler1->setEnabled(false);
     ui->Bt_Valider1->setEnabled(false);
@@ -164,15 +164,15 @@ void F_POSTIT::on_Bt_Valider2_clicked()
     QSqlQuery RequeteValiderPostIt2;
 
 //prépare le requęte de mise à jour
-    RequeteValiderPostIt2.prepare("UPDATE postit SET PostIt2 =:LePostIt2");
+    RequeteValiderPostIt2.prepare("UPDATE postit SET PostIt2=:LePostIt2");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt2.bindValue("::LePostIt2",ui->TxE_PostIt2->toPlainText());
+    RequeteValiderPostIt2.bindValue(":LePostIt2",ui->TxE_PostIt2->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt2.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt2_textChanged()" << RequeteValiderPostIt2.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt2_textChanged()" << RequeteValiderPostIt2.lastQuery() ;
     }
     ui->Bt_Annuler2->setEnabled(false);
     ui->Bt_Valider2->setEnabled(false);
@@ -205,15 +205,15 @@ void F_POSTIT::on_Bt_Valider3_clicked()
     QSqlQuery RequeteValiderPostIt3;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt3.prepare("UPDATE postit SET PostIt3 =:LePostIt3");
+    RequeteValiderPostIt3.prepare("UPDATE postit SET PostIt3=:LePostIt3");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt3.bindValue("::LePostIt3",ui->TxE_PostIt3->toPlainText());
+    RequeteValiderPostIt3.bindValue(":LePostIt3",ui->TxE_PostIt3->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt3.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt3_textChanged()" << RequeteValiderPostIt3.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt3_textChanged()" << RequeteValiderPostIt3.lastQuery() ;
     }
     ui->Bt_Annuler3->setEnabled(false);
     ui->Bt_Valider3->setEnabled(false);
@@ -248,15 +248,15 @@ void F_POSTIT::on_Bt_Valider4_clicked()
     QSqlQuery RequeteValiderPostIt4;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt4.prepare("UPDATE postit SET PostIt4 =:LePostIt4");
+    RequeteValiderPostIt4.prepare("UPDATE postit SET PostIt4=:LePostIt4");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt4.bindValue("::LePostIt4",ui->TxE_PostIt4->toPlainText());
+    RequeteValiderPostIt4.bindValue(":LePostIt4",ui->TxE_PostIt4->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt4.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt4_textChanged()" << RequeteValiderPostIt4.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt4_textChanged()" << RequeteValiderPostIt4.lastQuery() ;
     }
     ui->Bt_Annuler4->setEnabled(false);
     ui->Bt_Valider4->setEnabled(false);
@@ -284,21 +284,20 @@ void F_POSTIT::on_TxE_PostIt5_textChanged()
     ui->Bt_Valider5->setEnabled(true);
 }
 
-
 void F_POSTIT::on_Bt_Valider5_clicked()
 {
     QSqlQuery RequeteValiderPostIt5;
 
-//prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt5.prepare("UPDATE postit SET PostIt5 =:LePostIt5");
+//prépare le requête de mise à jour
+    RequeteValiderPostIt5.prepare("UPDATE postit SET PostIt5=:LePostIt5");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt5.bindValue("::LePostIt5",ui->TxE_PostIt5->toPlainText());
+    RequeteValiderPostIt5.bindValue(":LePostIt5",ui->TxE_PostIt5->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt5.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt5_textChanged()" << RequeteValiderPostIt5.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt5_textChanged()" << RequeteValiderPostIt5.lastQuery() ;
     }
     ui->Bt_Annuler5->setEnabled(false);
     ui->Bt_Valider5->setEnabled(false);
@@ -334,15 +333,15 @@ void F_POSTIT::on_Bt_Valider6_clicked()
     QSqlQuery RequeteValiderPostIt6;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt6.prepare("UPDATE postit SET PostIt6 =:LePostIt6");
+    RequeteValiderPostIt6.prepare("UPDATE postit SET PostIt6=:LePostIt6");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt6.bindValue("::LePostIt6",ui->TxE_PostIt6->toPlainText());
+    RequeteValiderPostIt6.bindValue(":LePostIt6",ui->TxE_PostIt6->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt6.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt6_textChanged()" << RequeteValiderPostIt6.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt6_textChanged()" << RequeteValiderPostIt6.lastQuery() ;
     }
     ui->Bt_Annuler6->setEnabled(false);
     ui->Bt_Valider6->setEnabled(false);
@@ -377,15 +376,15 @@ void F_POSTIT::on_Bt_Valider7_clicked()
     QSqlQuery RequeteValiderPostIt7;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt7.prepare("UPDATE postit SET PostIt7 =:LePostIt7");
+    RequeteValiderPostIt7.prepare("UPDATE postit SET PostIt7=:LePostIt7");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt7.bindValue("::LePostIt7",ui->TxE_PostIt7->toPlainText());
+    RequeteValiderPostIt7.bindValue(":LePostIt7",ui->TxE_PostIt7->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt7.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt7_textChanged()" << RequeteValiderPostIt7.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt7_textChanged()" << RequeteValiderPostIt7.lastQuery() ;
     }
     ui->Bt_Annuler7->setEnabled(false);
     ui->Bt_Valider7->setEnabled(false);
@@ -419,15 +418,15 @@ void F_POSTIT::on_Bt_Valider8_clicked()
     QSqlQuery RequeteValiderPostIt8;
 
 //prépare le requęte de mise ŕ jour
-    RequeteValiderPostIt8.prepare("UPDATE postit SET PostIt8 =:LePostIt8");
+    RequeteValiderPostIt8.prepare("UPDATE postit SET PostIt8=:LePostIt8");
 
 //Entre les valeurs de la requęte
-    RequeteValiderPostIt8.bindValue("::LePostIt8",ui->TxE_PostIt8->toPlainText());
+    RequeteValiderPostIt8.bindValue(":LePostIt8",ui->TxE_PostIt8->toPlainText());
 
  //Execut la requęte
     if (!RequeteValiderPostIt8.exec())
     {
-        qDebug() << "f_postit::on_TxE_PostIt8_textChanged()" << RequeteValiderPostIt8.lastError() ;
+        qDebug() << "f_postit::on_TxE_PostIt8_textChanged()" << RequeteValiderPostIt8.lastQuery() ;
     }
     ui->Bt_Annuler8->setEnabled(false);
     ui->Bt_Valider8->setEnabled(false);

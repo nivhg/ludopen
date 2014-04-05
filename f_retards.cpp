@@ -55,7 +55,7 @@ F_Retards::F_Retards(QWidget *parent) :
     }
     else
     {
-        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastError().text() ;
+        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastQuery() ;
     }
 }
 
@@ -138,7 +138,7 @@ void F_Retards::MaJListe()
             }
             else
             {
-                qDebug() << "F_Retards::MaJListe() : RequeteJeux :" << RequeteJeux.lastError().text() ;
+                qDebug() << "F_Retards::MaJListe() : RequeteJeux :" << RequeteJeux.lastQuery() ;
             }
 
             //Permet d'ajout un checkbox à  la 1ére case de la ligne
@@ -158,7 +158,7 @@ void F_Retards::MaJListe()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_Retards::MaJListe() : RequeteMembre :" << RequeteMembre.lastError().text() ;
+        qDebug() << "F_Retards::MaJListe() : RequeteMembre :" << RequeteMembre.lastQuery() ;
     }
 }
 
@@ -238,7 +238,7 @@ void F_Retards::slot_ConfirmerMailEnvoyer( Courriel * pCourriel )
 
         if ( !RequeteMail.exec() )
         {
-            qDebug() << "Erreur RequeteMail : F_Retards::on_PB_Enregistrer_clicked() : " << RequeteMail.lastError().text() ;
+            qDebug() << "Erreur RequeteMail : F_Retards::on_PB_Enregistrer_clicked() : " << RequeteMail.lastQuery() ;
         }
 
 
@@ -316,7 +316,7 @@ void F_Retards::on_PB_Envoyer_clicked()
     }
     else
     {
-        qDebug() << "F_Retards : on_PB_Enregistrer_clicked() : " << RequeteConnexion.lastError().text() ;
+        qDebug() << "F_Retards : on_PB_Enregistrer_clicked() : " << RequeteConnexion.lastQuery() ;
     }
 
     //On vide le vecteur fesant un lien entre les ids des membes et les adresses des objets
@@ -414,7 +414,7 @@ void F_Retards::on_PB_Enregistrer_clicked()
     }
     else
     {
-        qDebug() << " Erreur : F_Retards::on_PB_Enregistrer_clicked() : " << Requete.lastError().text() ;
+        qDebug() << " Erreur : F_Retards::on_PB_Enregistrer_clicked() : " << Requete.lastQuery() ;
     }
 }
 
@@ -437,7 +437,7 @@ void F_Retards::on_PB_Annuler_clicked()
     }
     else
     {
-        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastError().text() ;
+        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastQuery() ;
     }
 }
 

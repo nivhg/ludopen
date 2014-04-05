@@ -199,8 +199,6 @@ private slots:
     /** @brief Appelé lorsque l'état du RBt_Occasion change
      */
     void on_RBt_Occasion_toggled(bool checked);
-    
-    void on_Bt_Renseigner_clicked();
 
     void on_Bt_ChargerImage_clicked();
 
@@ -222,31 +220,31 @@ private:
     //! Model du TableView des membres
     QStandardItemModel * ModelJeu;
     
-    /** @brief Pointeur qui fati le lien entre la classe F_PopUpCLESTTEM et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pEmplacementAjMod;
 
-    /** @brief Pointeur qui fai le lien entre la classe F_PopUpCLESTTEM et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pStatutAjMod;
 
-    /** @brief Pointeur qui fai le lien entre la classe F_PopUpCLESTTEM et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pEtatAjMod;
 
-    /** @brief Pointeur qui fai le lien entre la classe F_PopUpCLESTTEM et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pClassificationAjMod;
     
-    /** @brief Pointeur qui fai le lien entre la classe F_PopUpCLESTTEM et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pMotCleAjMod;
 
-    /** @brief Pointeur qui fai le lien entre la classe F_AjouterFournisseur et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_AjouterFournisseur et celle-ci
      */
     F_AjouterFournisseur * pAjoutFournisseur;
 
-    /** @brief Pointeur qui fai le lien entre la classe F_AjouterEditeur et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe F_AjouterEditeur et celle-ci
      */
     F_AjouterEditeur * pAjoutEditeur;
 

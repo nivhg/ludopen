@@ -6,67 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>526</width>
-    <height>433</height>
+    <width>596</width>
+    <height>503</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>59</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>596</width>
+    <height>503</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>596</width>
+    <height>503</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
-   <item row="0" column="0">
+  <property name="windowIcon">
+   <iconset resource="ImagesIcones.qrc">
+    <normaloff>:/Paiement.png</normaloff>:/Paiement.png</iconset>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="3">
-      <widget class="QComboBox" name="CBx_Cartes"/>
-     </item>
-     <item row="0" column="6">
-      <widget class="QCommandLinkButton" name="Bt_Supprimer">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="icon">
-        <iconset resource="ImagesIcones.qrc">
-         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>15</width>
-         <height>15</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0" colspan="7">
-      <widget class="QTableWidget" name="TW_Paiement">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="Lb_RestAPayer">
-       <property name="text">
-        <string>Reste à payer :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="LE_RestAPayer">
+     <item row="5" column="3">
+      <widget class="QLineEdit" name="LE_ResteAPayer">
        <property name="maximumSize">
         <size>
          <width>40</width>
@@ -81,22 +54,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QLabel" name="Lb_Euro">
-       <property name="text">
-        <string>€</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QLabel" name="Lb_ModePaiement">
-       <property name="text">
-        <string>Autres moyens de paiement : </string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="6">
-      <widget class="QCommandLinkButton" name="Bt_SupprimerAutres">
+     <item row="4" column="8" alignment="Qt::AlignTop">
+      <widget class="QCommandLinkButton" name="Bt_SupprimerAutrePaiement">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -105,6 +64,9 @@
          <width>30</width>
          <height>30</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ne plus utiliser le moyen de paiement choisi&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string/>
@@ -121,7 +83,110 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0" colspan="7">
+     <item row="1" column="8" alignment="Qt::AlignTop">
+      <widget class="QCommandLinkButton" name="Bt_SupprimerCartePaiement">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ne plus utiliser la carte de paiement choisie&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>15</width>
+         <height>15</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="4">
+      <widget class="QLabel" name="Lb_Euro">
+       <property name="text">
+        <string>€</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="6" colspan="3">
+      <widget class="QDialogButtonBox" name="Bt_OK_Annuler">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QLabel" name="Lb_RestAPayer">
+       <property name="text">
+        <string>Reste à payer :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="4" colspan="4">
+      <widget class="QComboBox" name="CBx_ModePaiement"/>
+     </item>
+     <item row="0" column="4" colspan="4">
+      <widget class="QComboBox" name="CBx_Cartes"/>
+     </item>
+     <item row="0" column="1" colspan="3">
+      <widget class="QPushButton" name="Bt_AjouterCartePaiement">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Utiliser cette carte pré-payée &gt;&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1" colspan="3">
+      <widget class="QPushButton" name="Bt_AjouterAutrePaiement">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <weight>50</weight>
+         <bold>false</bold>
+        </font>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Utiliser ce moyen de paiement &gt;&gt;</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="8">
       <widget class="QTableWidget" name="TW_PaiementAutre">
        <property name="alternatingRowColors">
         <bool>true</bool>
@@ -134,30 +199,22 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="4" colspan="3">
-      <widget class="QDialogButtonBox" name="buttonBox">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+     <item row="1" column="0" colspan="8">
+      <widget class="QTableWidget" name="TW_PaiementCarte">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
        </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
        </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QComboBox" name="CBx_ModePaiement"/>
-     </item>
-     <item row="3" column="3">
-      <widget class="QPushButton" name="Bt_AjouterAutres">
-       <property name="text">
-        <string>Utiliser</string>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QPushButton" name="Bt_Ajouter">
-       <property name="text">
-        <string>Utiliser</string>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
        </property>
       </widget>
      </item>
@@ -170,7 +227,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>Bt_OK_Annuler</sender>
    <signal>accepted()</signal>
    <receiver>F_Paiement</receiver>
    <slot>accept()</slot>
@@ -186,7 +243,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>buttonBox</sender>
+   <sender>Bt_OK_Annuler</sender>
    <signal>rejected()</signal>
    <receiver>F_Paiement</receiver>
    <slot>reject()</slot>

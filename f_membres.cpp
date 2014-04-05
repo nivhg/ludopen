@@ -6,12 +6,10 @@
  *  @author       STS IRIS, Lyce Nicolas APPERT, ORVAULT ( FRANCE )
  *  @since        01/01/2012
  *  @version      0.1
- *  @date         22/09/2012 par William
- *
- *  Description dtaille du fichier f_membres.ccp
+ *  @date         22/02/2014 par William
  *
  *
- *  @todo         Voir post-it Création d'un fenètre liste membre admimnistrateur pour pouvoir supprimer
+ *  @todo         Voir post-it Création d'un fenètre liste membre administrateur pour pouvoir supprimer
  *
  *  @bug          aucun
  */
@@ -43,14 +41,19 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
 
     //Initialisation des pointeur
     this->pRechercheMembres = pRechercheMembres ;
+    qDebug()<< "F_Membres::Creation F_HistoriqueJeux";
     this->pHistoriqueJeux = new F_HistoriqueJeux ;
     this->pHistoriqueJeux->setWindowModality( Qt::ApplicationModal ) ;
+    qDebug()<< "F_Membres::Creation F_AjouterCotiCarte";
     this->pAjouterCotiCarte = new F_AjouterCotiCarte ;
     this->pAjouterCotiCarte->setWindowModality( Qt::ApplicationModal ) ;
 
-    // Création des 2 fenetres d'ajout d'un nouveau titre et type de membre
+    // Création des 2 fenêtres d'ajout d'un nouveau titre et type de membre
+
+    qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM Code 5";
     this->pTypeAjMod = new F_PopUpCLESTTEM(5);
     this->pTypeAjMod->setWindowModality(Qt::ApplicationModal);
+    qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM code 6";
     this->pTitreAjMod = new F_PopUpCLESTTEM(6);
     this->pTitreAjMod->setWindowModality(Qt::ApplicationModal);
 
@@ -58,6 +61,7 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     this->VerrouillerInfosPerso( true ) ;
 
     this->AfficherAjouterModifierMembre( true ) ;
+
     ui->Bt_ModifierMembre->setDisabled( true ) ;
 
     this->AfficherValiderAnnuler( false ) ;
@@ -110,7 +114,7 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     // donc clic pas possible si on modifie l'ordre dans les colonnes car on ne tombe pas sur le bon item
 }
 //==========================================================================================================
-/** Detruit les objets cree
+/** Détruit les objets crées
  *  @test
  */
 F_Membres::~F_Membres()
@@ -139,11 +143,13 @@ F_Membres::~F_Membres()
  */
 void F_Membres::MaJTitre ()
 {
+   qDebug()<< "F_Membres::MaJTitre";
+
     int i           ( 0 )    ;
     QSqlQuery Requete        ;
     Titre oTitre             ;
 
-    //Suppression du contenu du vecteur de la combobox CBx_Titre
+   //Suppression du contenu du vecteur de la combobox CBx_Titre
     this->VectorTitre.clear() ;
     ui->CBx_Titre->clear() ;
 
@@ -170,7 +176,7 @@ void F_Membres::MaJTitre ()
 
         this->VectorTitre.push_back( oTitre ) ;
 
-        //Remplissage de la combobox grace au vecteur
+        //Remplissage de la combobox grâce au vecteur
         for( i = 0 ; i < VectorTitre.size() ; i ++ )
         {
             ui->CBx_Titre->insertItem( i, VectorTitre[i].sTitre ) ;
@@ -178,7 +184,7 @@ void F_Membres::MaJTitre ()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::MaJTitre (): Erreur bdd : " << Requete.lastError().text() << endl ;
+        qDebug()<< "F_Membres::MaJTitre : Erreur bdd : " << Requete.lastQuery() << endl ;
     }
 }
 //==========================================================================================================
@@ -188,6 +194,8 @@ void F_Membres::MaJTitre ()
  */
 void F_Membres::MaJType ()
 {
+   qDebug()<< "F_Membres::MaJType";
+
     int i( 0 ) ;
     QSqlQuery Requete ;
     Type oType ;
@@ -197,7 +205,7 @@ void F_Membres::MaJType ()
     ui->CBx_Type->clear() ;
 
     //Exécution de la requête qui sélectionne le contenu de la table tytremembres
-    if( Requete.exec( "SELECT * FROM typemembres ;" ) )
+    if( Requete.exec( "SELECT * FROM typemembres" ) )
     {
         oType.id = 0 ;
         oType.sType = "" ;
@@ -226,7 +234,7 @@ void F_Membres::MaJType ()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastError().text() <<  endl ;
+        qDebug()<< "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastQuery() <<  endl ;
     }
 }
 //==========================================================================================================
@@ -311,6 +319,8 @@ QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
   */
 void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
 {
+   qDebug()<< "F_Membres::AfficherJeuxEmpruntes";
+
     QSqlQuery RequeteEmprunt ;
     QSqlQuery RequeteJeux    ;
     int i     ( 0 )        ;
@@ -324,8 +334,9 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     ui->LW_JeuxEmpruntes->setColumnWidth( 2, 100 ) ;  // Date de Retour prévu
 
     //requête permettant d'avoir les jeux empruntés correspondant à l'id du membre
-    RequeteEmprunt.prepare( "SELECT Jeux_IdJeux,DateEmprunt,DateRetourPrevu FROM emprunts WHERE Membres_IdMembre=:nIdMembre AND DateRetour IS NULL ;" ) ;
-    RequeteEmprunt.bindValue( "nIdMembre", nIdMembre ) ;
+    RequeteEmprunt.prepare( "SELECT Jeux_IdJeux,DateEmprunt,DateRetourPrevu "
+                            "FROM emprunts WHERE Membres_IdMembre=:nIdMembre AND DateRetour IS NULL" ) ;
+    RequeteEmprunt.bindValue( ":nIdMembre", nIdMembre ) ;
 
     //Exectution de la requête
     if( RequeteEmprunt.exec() )
@@ -339,10 +350,9 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
         //Remplissage du tableau avec les informations de la table emprunts
         while( RequeteEmprunt.next() )
         {
-
             //Requete pour récupérer le nom du jeux
-            RequeteJeux.prepare( "SELECT NomJeu FROM jeux WHERE IdJeux=:nIdJeux ;" ) ;
-            RequeteJeux.bindValue( "nIdJeux", RequeteEmprunt.record().value( 0 ).toInt() ) ;
+            RequeteJeux.prepare( "SELECT NomJeu FROM jeux WHERE IdJeux=:nIdJeux" ) ;
+            RequeteJeux.bindValue( ":nIdJeux", RequeteEmprunt.record().value( 0 ).toInt() ) ;
 
             if( RequeteJeux.exec() )
             {
@@ -351,18 +361,36 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
             }
             else
             {
-                qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteJeux : Erreur de connexion avec la base de données !" << endl ;
+                qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteJeux " << RequeteJeux.lastQuery() ;
             }
 
             modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
             modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
 
-            if ( RequeteEmprunt.value( 2 ).toDate()>QDate::currentDate() )
+            // Met en rouge la ligne si le jeu emprunté est rendu en retard, sinon en vert
+            // Tient compte du nombre de jour de retard toléré
+            QDate DateActuelle;
+            DateActuelle=DateActuelle.currentDate();
+            QSqlQuery RequeteNbJoursRetardToleres;
+            if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
             {
+               qDebug()<<"F_Membres::AfficherJeuxEmpruntes =>  RequeteNbJoursRetardToleres "<<RequeteNbJoursRetardToleres.lastQuery();
+            }
+            else
+            {
+              // Calculer la date de retour avec la tolérance du nombre de jours
+              DateActuelle.addDays(RequeteNbJoursRetardToleres.value(0).toInt() );
+            }
+            if ( RequeteEmprunt.value( 2 ).toDate() > DateActuelle )
+            {
+                modele->setData( modele->index( i,0 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
+                modele->setData( modele->index( i,1 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                 modele->setData( modele->index( i,2 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
             }
             else
             {
+                modele->setData( modele->index( i,0 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                modele->setData( modele->index( i,1 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
                 modele->setData( modele->index( i,2 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
             }
             i++ ;
@@ -371,12 +399,12 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt : Erreur de connexion avec la base de donne !" << endl ;
+        qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt " << RequeteEmprunt.lastQuery() ;
     }
 }
 //==========================================================================================================
 /** Affiche les informations d'un membre
-  *  @pre    Accés ? la base de données
+  *  @pre    Accés à la base de données
   *  @param  unsigned int nIdMembre
   */
 void F_Membres::AfficherMembre()
@@ -390,6 +418,8 @@ void F_Membres::AfficherMembre()
   */
 void F_Membres::AfficherMembre( unsigned int nIdMembre )
 {
+   qDebug()<< "F_Membres::AfficherMembre";
+
     QSqlQuery RequeteMembre ;
     QPalette palette ;
     QFont font ;
@@ -406,7 +436,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
     if( nIdMembre != 0 )
     {
         //requête permettant de récuperer tous les informations d'un membre grâce à son Id
-        RequeteMembre.prepare( "SELECT * FROM membres WHERE IdMembre=:id ;" ) ;
+        RequeteMembre.prepare( "SELECT * FROM membres WHERE IdMembre=:id" ) ;
         RequeteMembre.bindValue( ":id", nIdMembre ) ;
 
         //Execution de la requête
@@ -474,7 +504,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->SPx_NbreRetards->setValue( RequeteMembre.record().value( 22 ).toInt() ) ;
 
-
                 this->AfficherJeuxEmpruntes( nIdMembre ) ;
 
                 ui->Bt_ModifierMembre->setEnabled( true ) ;
@@ -486,7 +515,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
         }
         else //Sinon on affiche un message d'erreur et on retourne Faux
         {
-            qDebug()<< "F_Membres::AfficherMembre : Erreur de connexion avec la base de données !" << RequeteMembre.lastError().text() <<  endl ;
+            qDebug()<< "F_Membres::AfficherMembre :RequeteMembre " << RequeteMembre.lastQuery() <<  endl ;
             ui->Bt_ModifierMembre->setDisabled( true ) ;
         }
     }
@@ -504,12 +533,17 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
   */
 bool F_Membres::AjouterMembre()
 {
+   qDebug()<< "F_Membres::AjouterMembre";
+
     bool bRetourne( true ) ;
     QSqlQuery RequeteMembre ;
 
     //Enregistrement d'un nouveau membre dans la base de données
-    RequeteMembre.prepare( "INSERT INTO membres ( TitreMembre_IdTitreMembre, TypeMembres_IdTypeMembres, Nom, Prenom, Rue, CP, Ville, Telephone, Mobile, Fax, Email, NbreJeuxAutorises, DateInscription, DateNaissance, Remarque, Ecarte, CodeMembre, MembreAssocie )"
-                           "VALUES ( :TitreMembre_IdTitreMembre, :TypeMembres_IdTypeMembres, :Nom, :Prenom, :Rue, :CP, :Ville, :Telephone, :Mobile, :Fax, :Email, :NbreJeuxAutorises, :DateInscription, :DateNaissance, :Remarque, :Ecarte, :CodeMembre, :MembreAssocie )" ) ;
+    RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,Nom,Prenom,Rue,CP,Ville,Telephone,"
+                           "Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,DateNaissance,Remarque,Ecarte,CodeMembre,MembreAssocie) "
+                           "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,:Telephone,"
+                           ":Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,:Ecarte,:CodeMembre,"
+                           ":MembreAssocie)" ) ;
 
     //Titre Membre
     RequeteMembre.bindValue( ":TitreMembre_IdTitreMembre", this->VectorTitre[ui->CBx_Titre->currentIndex()].id ) ;
@@ -565,14 +599,14 @@ bool F_Membres::AjouterMembre()
     //Membre associé
     RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text().toInt() ) ;
 
-    //Si le membre à bien était enregistrer this->nIdMembreSelectionne prend pour valeur l'id du membre créé
+    //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
     if( RequeteMembre.exec() )
     {
         this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt() ;
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::AjouterMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text()<< endl ;
+        qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
         bRetourne = false ;
     }
 
@@ -588,12 +622,13 @@ bool F_Membres::AjouterMembre()
   */
 bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 {
+   qDebug()<< "F_Membres::ModifierMembre";
 
     bool bRetourne ( true ) ;
     QSqlQuery RequeteMembre ;
 
     //On vérifie que l'id est présent dans la base donnée
-    RequeteMembre.prepare( " SELECT IdMembre FROM membres WHERE IdMembre=:id " ) ;
+    RequeteMembre.prepare( "SELECT IdMembre FROM membres WHERE IdMembre=:id" ) ;
     RequeteMembre.bindValue( ":id", nIdMembre ) ;
 
     //Exécution de la requête
@@ -607,16 +642,20 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << RequeteMembre.lastError().text()<< endl ;
+        qDebug()<< "F_Membres::ModifierMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
     }
-
-
 
     //S'il l'id est différent de 0 on ne mofifie pas le membre
     if( nIdMembre != 0 )
     {
         //Mise à des nouvelles informations sur le membre sélectionné dans la base de données
-        RequeteMembre.prepare( "UPDATE membres SET membres.TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre, membres.TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres, membres.Nom=:Nom, membres.Prenom=:Prenom, membres.Rue=:Rue, membres.CP=:CP, membres.Ville=:Ville, membres.Telephone=:Telephone, membres.Mobile=:Mobile, membres.Fax=:Fax, membres.Email=:Email, membres.NbreJeuxAutorises=:NbreJeuxAutorises, membres.DateInscription=:DateInscription, DateNaissance=:DateNaissance, membres.Remarque=:Remarque, membres.Ecarte=:Ecarte, membres.CodeMembre=:CodeMembre ,membres.MembreAssocie=:MembreAssocie "
+        RequeteMembre.prepare( "UPDATE membres SET membres.TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre,"
+                               "membres.TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,membres.Nom=:Nom,"
+                               "membres.Prenom=:Prenom,membres.Rue=:Rue,membres.CP=:CP,membres.Ville=:Ville,"
+                               "membres.Telephone=:Telephone,membres.Mobile=:Mobile,membres.Fax=:Fax,membres.Email=:Email,"
+                               "membres.NbreJeuxAutorises=:NbreJeuxAutorises,membres.DateInscription=:DateInscription,"
+                               "DateNaissance=:DateNaissance,membres.Remarque=:Remarque,membres.Ecarte=:Ecarte,"
+                               "membres.CodeMembre=:CodeMembre ,membres.MembreAssocie=:MembreAssocie "
                                "WHERE membres.IdMembre=:IdMembre" ) ;
 
         //ID Membre
@@ -679,7 +718,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         //Si le membre n'a pas été enregisté on indique l'erreur qu'il y a une erreur et on retourne l'erreur de sql
         if( RequeteMembre.exec()== false )
         {
-            qDebug()<< "F_Membres::ModifierMembre : Erreur de connexion avec la base de donne !" << endl <<  RequeteMembre.lastError().text()<< endl ;
+            qDebug()<< "F_Membres::ModifierMembre : RequeteMembre" << endl <<  RequeteMembre.lastQuery()<< endl ;
             bRetourne = false ;
         }
     }
@@ -694,21 +733,23 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
  *  @pre    Connexion à la base de données, Membre présent dans la base de données
  *  @param  Indique l'id du membre à supprimer
  *  @retval bool
- *  @return Retourne vrai si la requête a bien été executer sinon elle retourne faux
+ *  @return Retourne vrai si la requête a bien été exécuter sinon elle retourne faux
  */
 bool F_Membres::SupprimerMembre( int nIdMembre )
 {
+   qDebug()<< "F_Membres::SupprimerMembre";
+
     bool bRetourne ( true ) ;
     QSqlQuery RequeteSupprimer ;
     QSqlQuery RequeteEmprunts ;
 
     //Préparation de la requête la recherche des emprunts
-    RequeteEmprunts.prepare( "SELECT IdEmprunts FROM emprunts WHERE Membres_IdMembre=:IdMembre AND DateRetour IS NULL  " ) ;
+    RequeteEmprunts.prepare( "SELECT IdEmprunts FROM emprunts WHERE Membres_IdMembre=:IdMembre AND DateRetour IS NULL" ) ;
     RequeteEmprunts.bindValue( ":IdMembre", nIdMembre ) ;
 
     if( !RequeteEmprunts.exec() )
     {
-        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text()<< endl ;
+        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts " << RequeteEmprunts.lastQuery()<< endl ;
         bRetourne = false ;
     }
 
@@ -719,7 +760,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
         if ( QMessageBox::information( this, "Suppression Membre","Voulez vraiment supprimer ce membre ?", "Supprimer", "Annuler" ) == 0 )
         {
             //Préparation de la requête permettant la suppression dans la table de membre --------------------------
-            RequeteSupprimer.prepare( "DELETE FROM membres WHERE IdMembre=:IdMembre " ) ;
+            RequeteSupprimer.prepare( "DELETE FROM membres WHERE IdMembre=:IdMembre" ) ;
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
@@ -729,12 +770,12 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
             }
 
             //Préparation de la requête permettant la suppression dans la table reservation -------------------------------
-            RequeteSupprimer.prepare( "DELETE FROM reservation WHERE Membres_IdMembre=:IdMembre " ) ;
+            RequeteSupprimer.prepare( "DELETE FROM reservation WHERE Membres_IdMembre=:IdMembre" ) ;
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
@@ -744,12 +785,12 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
             }
 
             //Préparation de la requête permettant la suppression dans la table emprunts ------------------------
-            RequeteSupprimer.prepare( "DELETE FROM emprunts WHERE Membres_IdMembre=:IdMembre " ) ;
+            RequeteSupprimer.prepare( "DELETE FROM emprunts WHERE Membres_IdMembre=:IdMembre" ) ;
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
@@ -759,13 +800,12 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
             }
-
 
             //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
-            RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre " ) ;
+            RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre" ) ;
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
@@ -775,23 +815,20 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             }
             else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
             {
-                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
             }
-
         }
         else
         {
             bRetourne = false ;
         }
-
     }
     else
     {
         bRetourne = false ;
-        QMessageBox::information( this, "Suppression Membre","Impossible de supprimer ce membre.\nIl a encore des jeux en cours d'emprunts.",  "Ok" ) ;
+        QMessageBox::information( this, "Suppression Membre","Impossible de supprimer ce membre.\nIl a des jeux encore en cours d'emprunts.",  "Ok" ) ;
     }
-
 
     this->pRechercheMembres->MaJListeMembres() ;
     this->pRechercheMembres->AfficherListe() ;
@@ -903,6 +940,8 @@ void F_Membres::VerrouillerAbonnements ( bool bVerrouille )
  */
 void F_Membres::AfficherAbonnements( int nIdMembre )
 {
+   qDebug()<< "F_Membres::AfficherAbonnements";
+
     QSqlQuery RequetePrestation ;
     QSqlQuery RequeteCartes ;
     int i     ( 0 )        ;
@@ -928,8 +967,10 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     ui->LW_Abonnements->setColumnWidth( 2, 100 ) ;  // Date
 
     //Préparation de la requête
-    RequetePrestation.prepare( "SELECT prestations.NomPrestation, abonnements.DateExpiration, abonnements.IdAbonnements FROM abonnements, prestations "
-                               "WHERE abonnements.Membres_IdMembre=:IdMembre AND prestations.IdPrestation=abonnements.Prestations_IdPrestation  " ) ;
+    RequetePrestation.prepare( "SELECT prestations.NomPrestation,abonnements.DateExpiration,abonnements.IdAbonnements "
+                               "FROM abonnements,prestations "
+                               "WHERE abonnements.Membres_IdMembre=:IdMembre "
+                               "AND prestations.IdPrestation=abonnements.Prestations_IdPrestation" ) ;
     RequetePrestation.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -962,12 +1003,13 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::AfficherAbonnements : RequetePrestation : Erreur de connexion avec la base de donne !"<< RequetePrestation.lastError().text()<< endl ;
+        qDebug()<< "F_Membres::AfficherAbonnements : RequetePrestation "<< RequetePrestation.lastQuery()<< endl ;
     }
 
     //Préparation de la requête
-    RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte,abonnements.DateExpiration,abonnements.CreditRestant,abonnements.IdAbonnements FROM abonnements,cartesprepayees "
-                           "WHERE abonnements.Membres_IdMembre=:IdMembre AND cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte  " ) ;
+    RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte,abonnements.DateExpiration,abonnements.CreditRestant,"
+                           "abonnements.IdAbonnements FROM abonnements,cartesprepayees "
+                           "WHERE abonnements.Membres_IdMembre=:IdMembre AND cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte" ) ;
     RequeteCartes.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -1001,16 +1043,18 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::AfficherAbonnements : RequeteCartes : Erreur de connexion avec la base de donne !"<< RequeteCartes.lastError().text()<< endl ;
+        qDebug()<< "F_Membres::AfficherAbonnements : RequeteCartes "<< RequeteCartes.lastQuery()<< endl ;
     }
 
 }
 //==========================================================================================================
-/** Affiche les ville dans le combobox et selectionne la ville passé en paramétre
+/** Affiche les villes dans le combobox et sélectionne la ville passée en paramétre
  *  @param  QString VilleSelectionne
  */
 void F_Membres::AfficherVilles( QString VilleSelectionne )
 {
+   qDebug()<< "F_Membres::AfficherVilles";
+
     QSqlQuery Requete ;
     int i ( 1 ) ;
 
@@ -1031,7 +1075,7 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
     }
     else
     {
-        qDebug()<< "F_Membres::AfficherVilles : Erreur de connexion avec la base de donnée !"<< Requete.lastError().text() << endl ;
+        qDebug()<< "F_Membres::AfficherVilles : RequeteVille "<< Requete.lastQuery();
     }
 
     i = 0 ;
@@ -1250,6 +1294,8 @@ void F_Membres::on_CBx_Titre_activated(int index)
  */
 void F_Membres::on_Bt_AjouterMembre_clicked()
 {
+   qDebug()<< "F_Membres::on_Bt_AjouterMembre_clicked";
+
     QString sNombre      ;
     QDate   DateActuelle ;
     QStandardItemModel * modeleVide ;
@@ -1279,9 +1325,11 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     //Sélectionne le premier CodeMembre qui est libre (supérieur au plus grand)
     QSqlQuery RequetePremierCodeLibre ;
-    RequetePremierCodeLibre.exec("SELECT MIN(CodeMembre+1) FROM membres WHERE (CodeMembre+1) NOT IN (SELECT CodeMembre FROM membres)") ;
+    if ( !RequetePremierCodeLibre.exec("SELECT MIN(CodeMembre+1) FROM membres WHERE (CodeMembre+1) NOT IN (SELECT CodeMembre FROM membres)"))
+    {
+       qDebug()<< "F_Membres::AfficherVilles : on_Bt_AjouterMembre_clicked "<< RequetePremierCodeLibre.lastQuery();
+    }
     RequetePremierCodeLibre.next() ;
-    //ui->LE_Code->setText(CodeJeu);
     ui->Le_Code->setText( RequetePremierCodeLibre.value(0).toString()) ;
 
     ui->DtE_Insritption->setDate( DateActuelle.currentDate() ) ;
@@ -1300,6 +1348,8 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     ui->Bt_AjouterAbonnement->setDisabled( true ) ;
     ui->Bt_ModifierAbonnement->setDisabled( true ) ;
     ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
+
+    ui->Le_Nom->setFocus();
 }
 //==========================================================================================================
 /** Annule l'ajout ou la modification d'un membre
@@ -1338,10 +1388,12 @@ void F_Membres::on_Bt_AnnulerMembre_clicked()
  */
 void F_Membres::on_Bt_ValiderMembre_clicked()
 {
+   qDebug()<< "F_Membres::on_Bt_ValiderMembre_clicked";
+
     QSqlQuery RequeteCodeMembre ;
 
     RequeteCodeMembre.prepare( "SELECT IdMembre FROM membres "
-                               "WHERE CodeMembre=:CodeMembre " ) ;
+                               "WHERE CodeMembre=:CodeMembre" ) ;
     RequeteCodeMembre.bindValue( ":CodeMembre", ui->Le_Code->text().toInt() ) ;
     qDebug() << ui->Le_Code->text().toInt();
 
@@ -1386,7 +1438,7 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
             }
             else
             {
-                if( RequeteCodeMembre.record().value(0).toInt() == this->nIdMembreSelectionne )
+                if( RequeteCodeMembre.record().value(0).toUInt() == this->nIdMembreSelectionne )
                 {
                     this->ModifierMembre( this->nIdMembreSelectionne ) ;
                     this->pRechercheMembres->MaJListeMembres() ;
@@ -1406,7 +1458,7 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
     }
     else
     {
-        qDebug() << "F_Membres::AjouterMembre() : RequeteCodeMembre :" << RequeteCodeMembre.lastError().text()  ;
+        qDebug() << "F_Membres::AjouterMembre() : RequeteCodeMembre :" << RequeteCodeMembre.lastQuery()  ;
     }
 }
 //==========================================================================================================
@@ -1429,6 +1481,7 @@ void F_Membres::on_Bt_ModifierMembre_clicked()
     this->AfficherAjouterModifierMembre( false ) ;
     ui->Bt_ValiderMembre->setText( "Valider Modifications" ) ;
     this->pRechercheMembres->setDisabled( true ) ;
+    ui->LE_Email->setFocus();
 }
 //==========================================================================================================
 /** Validation suppression d'un membre
@@ -1469,7 +1522,8 @@ void F_Membres::on_Bt_ModifierAbonnement_clicked()
 {
     this->pAjouterCotiCarte->MaJListeAbonnements() ;
     this->pAjouterCotiCarte->ModifierAbonnement( this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
-    // masquer les boutons Modifier/Supprimer abonnement
+
+   // masquer les boutons Modifier/Supprimer abonnement
     ui->Bt_ModifierAbonnement->setEnabled(false);
     ui->Bt_SupprimerAbonnement->setEnabled(false);
 }
@@ -1479,6 +1533,8 @@ void F_Membres::on_Bt_ModifierAbonnement_clicked()
  */
 void F_Membres::on_Bt_SupprimerAbonnement_clicked()
 {
+   qDebug()<< "F_Membres::on_Bt_SupprimerAbonnement_clicked";
+
     QSqlQuery RequeteSupprimer ;
 
     if ( QMessageBox::information( this, "Suppression d'un abonnement","Voulez vraiment supprimer cet abonnement ?", "Supprimer", "Garder" )== 0 )
@@ -1487,14 +1543,17 @@ void F_Membres::on_Bt_SupprimerAbonnement_clicked()
         RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE IdAbonnements=:nIdAbonnement" ) ;
         RequeteSupprimer.bindValue( ":nIdAbonnement", this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
 
-        //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
+        //Execution de la requête
         if( !RequeteSupprimer.exec() )
         {
-            qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+            qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
         }
-        this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
-        // masquer les boutons Modifier/Supprimer abonnement
-        ui->Bt_ModifierAbonnement->setDisabled( true ) ;
-        ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
+        else
+        {
+           this->AfficherAbonnements( this->nIdMembreSelectionne ) ;
+           // masquer les boutons Modifier/Supprimer abonnement
+           ui->Bt_ModifierAbonnement->setDisabled( true ) ;
+           ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
+        }
     }
 }

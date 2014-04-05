@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------
 /** @file         f_listejeux.cpp
- *  @brief        Permet de consulter la liste de tout les jeux
+ *  @brief        Permet de consulter la liste de tous les jeux
  *
  *  @author       Florian MARY
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
@@ -305,7 +305,7 @@ void F_ListeJeux::RecupererContenuIndex()
     qDebug() << "F_ListeJeux::RecupererContenuIndex()- Requete finale =" << FiltreJeux ;
     if(!RequeteFiltreJeux.exec(FiltreJeux))
     {
-        qDebug() << "F_ListeJeux::RecupererContenuIndex()" << RequeteFiltreJeux.lastError() ;
+        qDebug() << "F_ListeJeux::RecupererContenuIndex()" << RequeteFiltreJeux.lastQuery() ;
     }
     
     
@@ -540,7 +540,7 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteEtatJeu ;
 
-    RequeteEtatJeu.exec("SELECT `Etat` FROM `etatsjeu`");
+    RequeteEtatJeu.exec("SELECT Etat FROM etatsjeu");
 
     //Tant qu'il y a différents états dans la table etatsjeu,
    while(RequeteEtatJeu.next())
@@ -555,7 +555,7 @@ void F_ListeJeux::RAZCriteres()
    ///////////////////////////////////////
    QSqlQuery RequeteStatutJeu ;
 
-  RequeteStatutJeu.exec("SELECT `StatutJeu` FROM `statutjeux`");
+  RequeteStatutJeu.exec("SELECT StatutJeu FROM statutjeux");
 
 //Tant qu'il y a différents états dans la table jeux,
   while(RequeteStatutJeu.next())
@@ -572,7 +572,7 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteAgeMax ;
 
-    RequeteAgeMax.exec("SELECT `AgeMax` FROM `jeux` GROUP BY `AgeMax` ") ;
+    RequeteAgeMax.exec("SELECT AgeMax FROM jeux GROUP BY AgeMax ") ;
 
     //Tant qu'il y a différents ages dans la table jeux,
     while(RequeteAgeMax.next())
@@ -589,7 +589,7 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteAgeMin ;
 
-    RequeteAgeMin.exec("SELECT `AgeMin` FROM `jeux` GROUP BY `AgeMin` ") ;
+    RequeteAgeMin.exec("SELECT AgeMin FROM jeux GROUP BY AgeMin ") ;
 
     //Tant qu'il y a différents ages dans la table jeux,
     while(RequeteAgeMin.next())
@@ -605,7 +605,7 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteNbrJoueurMin ;
 
-    RequeteNbrJoueurMin.exec("SELECT `NbrJoueurMin` FROM `jeux` GROUP BY `NbrJoueurMin`") ;
+    RequeteNbrJoueurMin.exec("SELECT NbrJoueurMin FROM jeux GROUP BY NbrJoueurMin") ;
 
     //Tant qu'il y a différents nombres de joueurs mininmum dans la table jeux,
 
@@ -623,7 +623,7 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteNbrJoueurMax ;
 
-    RequeteNbrJoueurMax.exec("SELECT `NbrJoueurMax` FROM `jeux` GROUP BY `NbrJoueurMax`") ;
+    RequeteNbrJoueurMax.exec("SELECT NbrJoueurMax FROM jeux GROUP BY NbrJoueurMax") ;
 
     //Tant qu'il y a différents nombres de joueurs maximum dans la table jeux,
 

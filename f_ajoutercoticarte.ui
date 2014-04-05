@@ -117,6 +117,11 @@
        <property name="text">
         <string>Annuler</string>
        </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Annuler.png</normalon>
+        </iconset>
+       </property>
       </widget>
      </item>
      <item row="5" column="1">
@@ -163,6 +168,11 @@
       <widget class="QPushButton" name="Bt_Valider">
        <property name="text">
         <string>Valider</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Valider.png</normalon>
+        </iconset>
        </property>
        <property name="default">
         <bool>false</bool>

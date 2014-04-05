@@ -17,7 +17,7 @@
  *      -Si 5, il s'agit d'un Type Membre.
  *      -Si 6, il s'agit d'un Titre Membre.
  *      -Si 7, il s'agit d'un Type Emprunt.
- *      -Si 8, il s'agit d'un Lieux Ludothèque.
+ *      -Si 8, il s'agit d'un Lieu Ludothèque.
  *      -Si 9, il s'agit d'un Paiement Membre.
  *
  *  Fabrication   Qt Creator, projet    .pro
@@ -230,7 +230,7 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->show();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT TypeJeux, Classification FROM typejeux WHERE TypeJeux=:TypeJeux");
+            Recherche.prepare("SELECT TypeJeux,Classification FROM typejeux WHERE TypeJeux=:TypeJeux");
             Recherche.bindValue(":TypeJeux", sCLESTTEM);
             Recherche.exec();
             Recherche.next();
@@ -280,7 +280,7 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->show();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT NomTitre, NbrJeuxEmpruntable FROM titremembre WHERE NomTitre=:NomTitre");
+            Recherche.prepare("SELECT NomTitre,NbrJeuxEmpruntables FROM titremembre WHERE NomTitre=:NomTitre");
             Recherche.bindValue(":NomTitre", sCLESTTEM);
             Recherche.exec();
             Recherche.next();
@@ -298,7 +298,7 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->show();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT TypeEmprunt, DureeEmprunt FROM typeemprunt WHERE TypeEmprunt=:TypeEmprunt");
+            Recherche.prepare("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt WHERE TypeEmprunt=:TypeEmprunt");
             Recherche.bindValue(":TypeEmprunt", sCLESTTEM);
             Recherche.exec();
             Recherche.next();
@@ -483,9 +483,9 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
         case 6: // Titre Membre.
             if(this->bCLESTTEM == true)
             {
-                RequeteValider.prepare("INSERT INTO titremembre (NomTitre, NbrJeuxEmpruntable) VALUES (:NomTitre, :NbrJeuxEmpruntable)");
+                RequeteValider.prepare("INSERT INTO titremembre (NomTitre, NbrJeuxEmpruntables) VALUES (:NomTitre, :NbrJeuxEmpruntables)");
                 RequeteValider.bindValue(":NomTitre", ui->LE_CLESTTEM->text());
-                RequeteValider.bindValue(":NbrJeuxEmpruntable", ui->LE_Autres->text().toInt());
+                RequeteValider.bindValue(":NbrJeuxEmpruntables", ui->LE_Autres->text().toInt());
                 RequeteValider.exec();
                 RequeteValider.next();
             }
@@ -493,9 +493,9 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             {
                 if(this->bCLESTTEM == false)
                 {
-                    RequeteValider.prepare("UPDATE titremembre SET NomTitre=:NomTitre, NbrJeuxEmpruntable=:NbrJeuxEmpruntable WHERE NomTitre=:NomTitrePrecedent");
+                    RequeteValider.prepare("UPDATE titremembre SET NomTitre=:NomTitre, NbrJeuxEmpruntables=:NbrJeuxEmpruntables WHERE NomTitre=:NomTitrePrecedent");
                     RequeteValider.bindValue(":NomTitre", ui->LE_CLESTTEM->text());
-                    RequeteValider.bindValue(":NbrJeuxEmpruntable", ui->LE_Autres->text().toInt());
+                    RequeteValider.bindValue(":NbrJeuxEmpruntables", ui->LE_Autres->text().toInt());
                     RequeteValider.bindValue(":NomTitrePrecedent", this->sCLESTTEM);
                     RequeteValider.exec();
                     RequeteValider.next();

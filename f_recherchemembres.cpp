@@ -151,7 +151,7 @@ void F_RechercheMembres::AfficherListe(QVector<Membre> VecteurMembres)
  */
 void F_RechercheMembres::RechercherParNomEtNumero()
 {
-    int i (0) ;
+    unsigned int i (0) ;
 
     //Remize à  zéro de du Vecteur VecteurRechercheMembres
     this->VecteurRechercheMembres.clear();
@@ -168,8 +168,6 @@ void F_RechercheMembres::RechercherParNomEtNumero()
         {
             //On vérifie que la suite de lettres entrées dans LE_Nom correpondent aux Noms du vecteur VecteurMembre ou que la suite de chiffre entrées dans LE_Code correspondent aux CodeMembres du Vecteur VecteurMembres
             //Si le Nom, le code ou les 2 correspondent, on l'ajoute dans le vecteur VecteurRechercheMembres
-            // QT5
-            // if( this->VecteurMembres[i].sCodeMembre.toUpper().find( ui->LE_Code->text().toUpper().c_str() ) != string::npos && this->VecteurMembres[i].sNom.toUpper().find( ui->LE_Nom->text().toUpper().c_str() ) != string::npos )
             if( this->VecteurMembres[i].sCodeMembre.toUpper().indexOf( ui->LE_Code->text().toUpper() ) != string::npos && this->VecteurMembres[i].sNom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
             {
                 this->VecteurRechercheMembres.push_back(VecteurMembres[i]);

@@ -10,16 +10,12 @@
  *  @author       William SOREL
  */
 //------------------------------------------------------------------------------
-// En-tte propre  l'objet ----------------------------------------------------
 #include "f_ajoutercoticarte.h"
 #include "ui_f_ajoutercoticarte.h"
 
-// En-ttes standards necessaires dans ce fichier en-tete seulement ------------
 #include <QtWidgets>
 #include <QtSql>
 #include <QtDebug>
-
-using namespace std;
 
 //======================================================================================================
 /** Initialisation de la classe. Permet de remplir les combobox avec les abonnements.
@@ -70,15 +66,16 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
     ui->LE_CreditsRestants->setReadOnly( false ) ;
 
     //Vérification carte ou prestation
-    RequeteAbonnement.prepare("SELECT Prestations_IdPrestation,CartesPrepayees_IdCarte,DateExpiration,CreditRestant,DateSouscription FROM abonnements WHERE IdAbonnements=:IdAbonnement");
-    RequeteAbonnement.bindValue(":IdAbonnemnts", this->nIDAbonnement);
+    RequeteAbonnement.prepare("SELECT Prestations_IdPrestation,CartesPrepayees_IdCarte,DateExpiration,CreditRestant,DateSouscription "
+                              "FROM abonnements WHERE IdAbonnements=:IdAbonnement");
+    RequeteAbonnement.bindValue(":IdAbonnement", this->nIDAbonnement);
     if( RequeteAbonnement.exec() )
     {
         RequeteAbonnement.next();
     }
     else
     {
-        qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Vérification carte ou prestation : " <<RequeteAbonnement.lastError().text() << endl ;
+        qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Vérification carte ou prestation : " <<RequeteAbonnement.lastQuery();
     }
 
     // Afficher la fenêtre d'ajout/Modif d'abonnement
@@ -124,7 +121,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         }
         else
         {
-            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Carte : " << RequeteCarte.lastError().text() << endl ;
+            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : Carte : " << RequeteCarte.lastQuery() << endl ;
         }
     }
     // Sinon c'est un abonnement
@@ -163,7 +160,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         }
         else
         {
-            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : prestation : " << RequetePrestation.lastError().text() << endl ;
+            qDebug()<< "F_AjouterCotiCarte::ModifierAbonnement : prestation : " << RequetePrestation.lastQuery() << endl ;
         }
     }
 }
@@ -210,23 +207,36 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
 //======================================================================================================
 void F_AjouterCotiCarte::MaJListeAbonnements()
 {
-    QSqlQuery query;
-    QString Abo;
+   //qDebug()<< "F_AjouterCotiCarte::MaJListeAbonnements ";
+
+    QSqlQuery Requete;
 
     ui->CBx_ChoixAbonnement->clear() ;
-    query.exec("SELECT NomCarte FROM cartesprepayees");
-    while(query.next())
+    if ( Requete.exec("SELECT NomCarte FROM cartesprepayees"))
     {
-        Abo = (query.value(0).toString());
-        ui->CBx_ChoixAbonnement->addItem(Abo);
+       while(Requete.next())
+       {
+           ui->CBx_ChoixAbonnement->addItem(Requete.value(0).toString());
+           //qDebug()<< "F_AjouterCotiCarte::MaJListeAbonnements : Carte=" << Requete.value(0).toString();
+       }
+    }
+    else
+    {
+       qDebug()<< "F_AjouterCotiCarte::MaJListeAbonnements : Requete Carte pré-payée : " << Requete.lastQuery() ;
     }
 
-    query.exec("SELECT NomPrestation FROM prestations");
-    while(query.next())
+    if ( Requete.exec("SELECT NomPrestation FROM prestations") )
     {
-        Abo = (query.value(0).toString());
-        ui->CBx_ChoixAbonnement->addItem(Abo);
+       while(Requete.next())
+       {
+           ui->CBx_ChoixAbonnement->addItem(Requete.value(0).toString());
+       }
     }
+    else
+    {
+       qDebug()<< "F_AjouterCotiCarte::MaJListeAbonnements : Requete prestations: " << Requete.lastQuery() ;
+    }
+    //qDebug()<< "F_AjouterCotiCarte::MaJListeAbonnements : OK";
 }
 //======================================================================================================
 /** Permet l'affichage d'un abonnement
@@ -239,13 +249,13 @@ void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(const QStrin
 
     this->sCombo = arg1;
 
-    Requete.prepare("SELECT NomCarte, DureeValidite, Prix, CreditDisponible FROM cartesprepayees WHERE NomCarte=:NomCarte");
+    Requete.prepare("SELECT NomCarte,DureeValidite,Prix,CreditDisponible FROM cartesprepayees WHERE NomCarte=:NomCarte");
     Requete.bindValue(":NomCarte", this->sCombo);
     Requete.exec();
     Requete.next();
     if (Requete.isValid()!=true)
     {
-        Requete.prepare("SELECT NomPrestation, DureeValidite, Prix FROM prestations WHERE NomPrestation=:NomPrestation");
+        Requete.prepare("SELECT NomPrestation,DureeValidite,Prix FROM prestations WHERE NomPrestation=:NomPrestation");
         Requete.bindValue(":NomPrestation", this->sCombo);
         Requete.exec();
         Requete.next();
@@ -320,7 +330,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         {
             if( !query.exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query.lastQuery() << endl ;
             }
             else
             {
@@ -328,8 +338,9 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
                 nIdCarte = query.record().value( 0 ).toInt() ;
             }
 
-            query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte, Membres_IdMembre, DateSouscription, DateExpiration, CreditRestant) "
-                          "VALUES ( :cartesprepayees_IdCarte, :Membres_IdMembre, :DateSouscription, :DateExpiration, :CreditRestant) ");
+            query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
+                          "DateExpiration,CreditRestant) "
+                          "VALUES (:cartesprepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
             query.bindValue(":CartesPrepayees_IdCarte", nIdCarte);
             query.bindValue(":Membres_IdMembre", this->nIDMembre);
             query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
@@ -338,14 +349,14 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue(":CreditRestant", ui->LE_CreditsDisponibles->text().toInt() ) ;
             if( !query.exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : enregistrement carte : " << query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : enregistrement carte : " << query.lastQuery() << endl ;
             }
         }
         else
         {
             if( !query.exec( "SELECT IdPrestation FROM prestations WHERE NomPrestation='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query.lastQuery();
             }
             else
             {
@@ -362,36 +373,35 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query.bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
             if( !query.exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastQuery();
             }
-            qDebug()<< nIdPrestation << endl ;
+            qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : nIdPrestation="<<nIdPrestation ;
         }
     }
-
     else
     {
         if ( ui->LE_CreditsRestants->isEnabled() == true )
         {
-            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration, CreditRestant=:CreditRestant "
+            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,CreditRestant=:CreditRestant "
                           "WHERE IdAbonnements=:IdAbonnements");
             query.bindValue(":IdAbonnements", this->nIDAbonnement);
-            query.bindValue( ":DateExpiration", ui->DtE_Expiration->date() ) ;
+            query.bindValue(":DateExpiration", ui->DtE_Expiration->date() ) ;
             query.bindValue(":CreditRestant", ui->LE_CreditsRestants->text().toInt() ) ;
             if( !query.exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query.lastQuery() ;
             }
         }
         else
         {
-            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration, DateSouscription=:DateSouscription "
+            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,DateSouscription=:DateSouscription "
                           "WHERE IdAbonnements=:IdAbonnements");
             query.bindValue( ":IdAbonnements"    , this->nIDAbonnement);
             query.bindValue( ":DateExpiration"   , ui->DtE_Expiration->date() ) ;
             query.bindValue( ":DateSouscription" , ui->DtE_DateSouscription->date() ) ;
             if( !query.exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastError().text() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastQuery() << endl ;
             }
         }
     }

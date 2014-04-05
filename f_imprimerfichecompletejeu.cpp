@@ -63,7 +63,7 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     RequeteFicheJeuComplete.bindValue(":CodeDuJeu", CodeJeu) ;
     if(!RequeteFicheJeuComplete.exec())
     {
-        qDebug() << "F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu) : " << RequeteFicheJeuComplete.lastError() ;
+        qDebug() << "F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu) : " << RequeteFicheJeuComplete.lastQuery() ;
     }
     RequeteFicheJeuComplete.next() ;
 

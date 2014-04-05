@@ -30,12 +30,38 @@
     <normaloff>:/IconeLO.png</normaloff>:/IconeLO.png</iconset>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>30</width>
+       <height>30</height>
+      </size>
      </property>
      <widget class="QWidget" name="PrefGeneral">
+      <attribute name="icon">
+       <iconset>
+        <normalon>:/Reparation.png</normalon>
+       </iconset>
+      </attribute>
       <attribute name="title">
        <string>Préférences Générales</string>
       </attribute>
@@ -55,55 +81,24 @@
        </item>
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_4">
-         <item row="2" column="0">
-          <widget class="QLabel" name="Lb_UniteLocation">
+         <item row="10" column="1" colspan="2">
+          <widget class="QLabel" name="Lb_VerifCode">
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
            <property name="text">
-            <string>Prix d'une unité de location :</string>
+            <string>MDP ok ou pas ?</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="Lb_JourEmail">
-           <property name="text">
-            <string>Nombre de jours avant envoie d'un email :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="Lb_JourRetard">
-           <property name="text">
-            <string>Nombre de jours de retard toléré :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QLineEdit" name="LE_NouveauCode"/>
-         </item>
-         <item row="8" column="0">
+         <item row="9" column="0">
           <widget class="QLabel" name="Lb_ConfirmerCode">
            <property name="text">
-            <string>Confirmer nouveau code :</string>
+            <string>Confirmer nouveau ce mot de passe :</string>
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
-          <widget class="QLineEdit" name="LE_ConfirmerCode"/>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="Lb_NouveauCode">
-           <property name="text">
-            <string>Nouveau code administrateur :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="Lb_JeuxAutorises">
-           <property name="text">
-            <string>Nombres de jeux autorisés :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0" colspan="4">
+         <item row="6" column="0" colspan="4">
           <spacer name="VS_4">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -119,66 +114,7 @@
            </property>
           </spacer>
          </item>
-         <item row="9" column="1" colspan="2">
-          <widget class="QLabel" name="Lb_VerifCode">
-           <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
-           </property>
-           <property name="text">
-            <string>MDP ok ou pas ?</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_3">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Paramètres par defaut :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Code :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="2">
-          <widget class="QPushButton" name="Bt_ValiderCode">
-           <property name="text">
-            <string>Valider</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QSpinBox" name="SBx_JeuxAutorises"/>
-         </item>
-         <item row="2" column="1">
-          <widget class="QDoubleSpinBox" name="DSBx_UniteLocation">
-           <property name="singleStep">
-            <double>0.010000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QSpinBox" name="SBx_JourRetard"/>
-         </item>
-         <item row="4" column="1">
-          <widget class="QSpinBox" name="SBx_JourEmail"/>
-         </item>
-         <item row="6" column="3" rowspan="4">
+         <item row="7" column="3" rowspan="4">
           <spacer name="HS_5">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -194,7 +130,33 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="3" rowspan="5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_3">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Paramètres par défaut :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="2">
+          <widget class="QPushButton" name="Bt_ValiderCode">
+           <property name="text">
+            <string>Valider</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QLineEdit" name="LE_NouveauCode"/>
+         </item>
+         <item row="9" column="1">
+          <widget class="QLineEdit" name="LE_ConfirmerCode"/>
+         </item>
+         <item row="0" column="3" rowspan="6">
           <spacer name="HS_6">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
@@ -207,11 +169,112 @@
            </property>
           </spacer>
          </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="Lb_NouveauCode">
+           <property name="text">
+            <string>Mot de passe  :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Mot de passe administrateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="2">
+          <widget class="QSpinBox" name="SBx_JeuxAutorises">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="DSBx_UniteLocation">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="DSBx_PrixAmende">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QSpinBox" name="SBx_JourRetard">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QSpinBox" name="SBx_JourEmail">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="Lb_JeuxAutorises">
+           <property name="text">
+            <string>Nombre de jeux autorisés :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="Lb_UniteLocation">
+           <property name="text">
+            <string>Prix d'une unité de location :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="Lb_PrixAmende">
+           <property name="text">
+            <string>Prix de l'amende par jeu en retard :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="Lb_JourRetard">
+           <property name="text">
+            <string>Nombre de jours de retard tolérés :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="Lb_JourEmail">
+           <property name="text">
+            <string>Nombre de jours avant envoi d'un email :</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
       </layout>
      </widget>
      <widget class="QWidget" name="Reseaux">
+      <attribute name="icon">
+       <iconset>
+        <normalon>:/BBD_Ajouter.png</normalon>
+       </iconset>
+      </attribute>
       <attribute name="title">
        <string>Réseaux</string>
       </attribute>
@@ -444,6 +507,11 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Jeux">
+      <attribute name="icon">
+       <iconset>
+        <normalon>:/De_par_2.png</normalon>
+       </iconset>
+      </attribute>
       <attribute name="title">
        <string>Jeux</string>
       </attribute>
@@ -850,6 +918,11 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Membre">
+      <attribute name="icon">
+       <iconset>
+        <normalon>:/Adherents_liste.png</normalon>
+       </iconset>
+      </attribute>
       <attribute name="title">
        <string>Membres/Emprunt</string>
       </attribute>
@@ -1197,6 +1270,10 @@
       </layout>
      </widget>
      <widget class="QWidget" name="Informations">
+      <attribute name="icon">
+       <iconset resource="ImagesIcones.qrc">
+        <normaloff>:/Information.png</normaloff>:/Information.png</iconset>
+      </attribute>
       <attribute name="title">
        <string>Informations Ludothèque</string>
       </attribute>
@@ -1429,6 +1506,9 @@
    </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="Bt_Aide">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Aide</string>
      </property>
@@ -1455,12 +1535,22 @@
      <property name="text">
       <string>Enregistrer</string>
      </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/Valider.png</normalon>
+      </iconset>
+     </property>
     </widget>
    </item>
    <item row="1" column="3">
     <widget class="QPushButton" name="Bt_Annuler">
      <property name="text">
       <string>Annuler</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normalon>:/Supprimer.png</normalon>
+      </iconset>
      </property>
     </widget>
    </item>

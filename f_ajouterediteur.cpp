@@ -83,7 +83,7 @@ void F_AjouterEditeur::on_Bt_Valider_clicked()
         RequeteAjouterEditeur.bindValue(":CommentairesEdit", ui->TxE_CommentairesEdit->toPlainText());
         if(!RequeteAjouterEditeur.exec())
         {
-            qDebug() << "Erreur RequeteAjouterEditeur :" << RequeteAjouterEditeur.lastError() ;
+            qDebug() << "Erreur RequeteAjouterEditeur :" << RequeteAjouterEditeur.lastQuery() ;
         }
 
         RequeteAjouterEditeur.next() ;

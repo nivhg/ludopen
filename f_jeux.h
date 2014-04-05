@@ -52,7 +52,7 @@ private slots:
     /** @brief Appeler lorsque l'on clic sur le bouton Declarer intervention
      *
      */
-    void on_Bt_declarer_clicked();
+    void on_Bt_DeclarerIntervention_clicked();
 
     /** @brief Appeler lorsque l'on modifier le contenu du champ remarques
      *
@@ -102,7 +102,7 @@ private slots:
     /** @brief Appeler lorsque l'on clic sur le bouton Valider
      *
      */
-    void on_Bt_reserver_clicked();
+    void on_Bt_Reserver_clicked();
 
     /** @brief Appeler lorsque l'on clic sur le bouton Détails
      *
@@ -134,6 +134,8 @@ private slots:
      */
     void on_Le_recherchecode_textChanged(const QString &arg1);
     
+
+    void on_Le_nom_textChanged(const QString &arg1);
 
 private:
     //ATTRIBUTS--------------------------------------------------

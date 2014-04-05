@@ -50,7 +50,7 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
 
     if ( !  Requete.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt") )
     {
-        qDebug()<<"F_Emprunt::F_Emprunt => Requete "<<Requete.lastError();
+        qDebug()<<"F_Emprunt::F_Emprunt => Requete "<<Requete.lastQuery();
     }
     //Tant qu'il y a des types d'emprunt dans la table TupesEmprunt,
     while(Requete.next())
@@ -224,7 +224,7 @@ void F_Emprunt::CalculerDateRetour()
     Requete.exec();
     if ( ! Requete.exec() )
     {
-        qDebug()<<"F_Emprunt::CalculerDateRetour => Requete "<<Requete.lastError();
+        qDebug()<<"F_Emprunt::CalculerDateRetour => Requete "<<Requete.lastQuery();
     }
     Requete.next();
 
@@ -279,7 +279,7 @@ void F_Emprunt::AfficherJeuxReserve()
     //Exécute la requête
     if (!RequeteIdMembre.exec())
     {
-        qDebug()<<"F_Emprunt::JeuxReserve => Requete IdDuMembre "<<RequeteIdMembre.lastError();
+        qDebug()<<"F_Emprunt::JeuxReserve => Requete IdDuMembre "<<RequeteIdMembre.lastQuery();
     }
 
     RequeteIdMembre.next();
@@ -291,13 +291,13 @@ void F_Emprunt::AfficherJeuxReserve()
     unsigned int  NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
     RequeteJeuReserve.prepare("SELECT DateReservation,DatePrevuEmprunt,DatePrevuRetour,NomLieux,NomJeu,CodeJeu "
                               "FROM reservation,lieux,jeux "
-                              "WHERE JeuEmprunte=1 AND Membres_IdMembre=:IdMembre AND IdLieux=Lieux_IdLieux AND IdJeux=Jeux_IdJeux" );
+                              "WHERE JeuEmprunte=1 AND Membres_IdMembre=:IdMembre AND IdLieux=Lieux_IdLieuxReservation AND IdJeux=Jeux_IdJeux" );
 
     RequeteJeuReserve.bindValue(":IdMembre",IdDuMembre);
 
     if (!RequeteJeuReserve.exec())
     {
-        qDebug()<<"F_Emprunt::JeuxReserve => Requete Jeux Reservés "<<RequeteJeuReserve.lastError();
+        qDebug()<<"F_Emprunt::JeuxReserve => Requete Jeux Reservés "<<RequeteJeuReserve.lastQuery();
     }
 
     //On vide le modèle
@@ -332,7 +332,7 @@ void F_Emprunt::AfficherJeuxReserve()
 
         if ( ! Requetejeu.exec() )
         {
-            qDebug()<<"F_Emprunt::AfficherJeuxReserve => Requetejeu "<<Requetejeu.lastError();
+            qDebug()<<"F_Emprunt::AfficherJeuxReserve => Requetejeu "<<Requetejeu.lastQuery();
         }
 
         if(Requetejeu.size()==0)
@@ -397,7 +397,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         Requete.bindValue(":CodeDuMembre",CodeMembre);
         if ( ! Requete.exec() )
         {
-            qDebug()<<"F_Emprunt::AfficherMembre => Requete " << Requete.lastError();
+            qDebug()<<"F_Emprunt::AfficherMembre => Requete " << Requete.lastQuery();
         }
         Requete.next();
 
@@ -445,7 +445,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         RequeteMembreAssocier.bindValue(":codeDuMembre",this->MembreActif);
         if ( ! RequeteMembreAssocier.exec() )
         {
-            qDebug()<<"F_Emprunt::AfficherMembre => RequeteMembreAssocier " << RequeteMembreAssocier.lastError();
+            qDebug()<<"F_Emprunt::AfficherMembre => RequeteMembreAssocier " << RequeteMembreAssocier.lastQuery();
         }
         RequeteMembreAssocier.next();
         // s'i y a un membre associer,
@@ -520,7 +520,7 @@ void F_Emprunt::EmprunterJeux()
         RequeteEmprunt.bindValue(":MontantCaution",NouveauEmprunts[i].PrixCaution);
         if (!RequeteEmprunt.exec())
         {
-            qDebug()<<"F_Emprunt::EmprunterJeux "<<RequeteEmprunt.lastError().text();
+            qDebug()<<"F_Emprunt::EmprunterJeux "<<RequeteEmprunt.lastQuery();
         }
 
         //Mettre le statut du jeux à "Emprunté"
@@ -529,7 +529,7 @@ void F_Emprunt::EmprunterJeux()
         RequeteStatut.bindValue(":IdDuJeu",NouveauEmprunts[i].idJeu);
         if (!RequeteStatut.exec())
         {
-            qDebug()<<"F_Emprunt::EmprunterJeux => requête statut  " << RequeteStatut.lastError() ;
+            qDebug()<<"F_Emprunt::EmprunterJeux => requête statut  " << RequeteStatut.lastQuery() ;
         }
 
         //Virer la résa une fois que le jeu réservé a été emprunté
@@ -539,7 +539,7 @@ void F_Emprunt::EmprunterJeux()
         RequeteResa.bindValue(":IdDuJeu",NouveauEmprunts[i].idJeu);
         if ( ! RequeteResa.exec() )
         {
-            qDebug()<<"F_Emprunt::EmprunterJeux => RequeteResa=" << RequeteResa.lastError().text();
+            qDebug()<<"F_Emprunt::EmprunterJeux => RequeteResa=" << RequeteResa.lastQuery();
         }
         RequeteResa.next();
         if ( RequeteResa.size() != 0 )
@@ -550,7 +550,7 @@ void F_Emprunt::EmprunterJeux()
             RequeteSuppressionResa.exec();
             if ( ! RequeteSuppressionResa.exec() )
             {
-                qDebug()<<"F_Emprunt::EmprunterJeux => RequeteSuppressionResa=" << RequeteSuppressionResa.lastError().text();
+                qDebug()<<"F_Emprunt::EmprunterJeux => RequeteSuppressionResa=" << RequeteSuppressionResa.lastQuery();
             }
         }
     }
@@ -596,7 +596,7 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
     if ( ! RequeteCotisation.exec())
     {
-        qDebug()<<"F_Emprunt::AfficherEtatCotisation => RequeteCotisation : "<<RequeteCotisation.lastError();
+        qDebug()<<"F_Emprunt::AfficherEtatCotisation => RequeteCotisation : "<<RequeteCotisation.lastQuery();
     }
 
     RequeteCotisation.next();
@@ -690,10 +690,10 @@ void F_Emprunt::CalculerCreditsRestants()
                           "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
                           "AND abonnements.CreditRestant >0 "
                           "AND IdCarte=CartesPrepayees_IdCarte ");
-    RequeteCartes.bindValue("CodeDuMembre",this->MembreActif);
+    RequeteCartes.bindValue(":CodeDuMembre",this->MembreActif);
     if ( ! RequeteCartes.exec())
     {
-        qDebug()<<"F_Emprunt::CalculerCreditsRestants => RequeteCartes : " << RequeteCartes.lastError();
+        qDebug()<<"F_Emprunt::CalculerCreditsRestants => RequeteCartes : " << RequeteCartes.lastQuery();
     }
 
     while(RequeteCartes.next())
@@ -733,7 +733,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
     //Exécute la requête
     if (!RequeteIdMembre.exec())
     {
-        qDebug()<< "F_Emprunt::AfficherJeuxEnEmprunt => RequeteIdMembre  "<< RequeteIdMembre.lastError();
+        qDebug()<< "F_Emprunt::AfficherJeuxEnEmprunt => RequeteIdMembre  "<< RequeteIdMembre.lastQuery();
     }
 
     RequeteIdMembre.next();
@@ -747,7 +747,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
     RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
     if( ! RequeteJeuEmprunte.exec())
     {
-        qDebug()<<"F_Emprunt::AfficherJeuxEnEmprunt => RequeteJeuEmprunte : "<<RequeteJeuEmprunte.lastError();
+        qDebug()<<"F_Emprunt::AfficherJeuxEnEmprunt => RequeteJeuEmprunte : "<<RequeteJeuEmprunte.lastQuery();
     }
 
     //On vide le modèle
@@ -847,7 +847,7 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
         RequeteMembre.bindValue(":Nom",Nom);
         if( ! RequeteMembre.exec())
         {
-            qDebug()<<"F_Emprunt::AfficherJeuxEnEmprunt => RequeteMembre : "<<RequeteMembre.lastError();
+            qDebug()<<"F_Emprunt::AfficherJeuxEnEmprunt => RequeteMembre : "<<RequeteMembre.lastQuery();
         }
         //On vide le modèle
         this->ModeleListeDesMembres->clear();
@@ -879,7 +879,7 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
         NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
         if ( ! RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres ORDER BY Nom ASC") )
         {
-            qDebug()<<"F_Emprunt::F_Emprunt => RequeteMembre "<<RequeteMembre.lastError();
+            qDebug()<<"F_Emprunt::F_Emprunt => RequeteMembre "<<RequeteMembre.lastQuery();
         }
         //On vide le modèle
         this->ModeleListeDesMembres->clear();
@@ -1075,7 +1075,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         if(!req.exec())
         {
 
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
     dates=dates.currentDate() ;
@@ -1090,7 +1090,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1106,7 +1106,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1122,7 +1122,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1138,7 +1138,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1154,7 +1154,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1170,7 +1170,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1186,7 +1186,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1202,7 +1202,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 
@@ -1218,7 +1218,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
         req.bindValue(":Date",dates);
         if(!req.exec())
         {
-            qDebug()<< req.lastError();
+            qDebug()<< req.lastQuery();
         }
     }
 */
@@ -1309,7 +1309,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     RequeteNbJeuEmprunte.bindValue(":CodeDuMembre",this->MembreActif);
     if(!RequeteNbJeuEmprunte.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked() => RequeteNbJeuEmprunte "<<RequeteNbJeuEmprunte.lastError();
+        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked() => RequeteNbJeuEmprunte "<<RequeteNbJeuEmprunte.lastQuery();
     }
 
     //Tant qu'il y a des jeux
@@ -1334,7 +1334,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     //Exécute la requête
     if (!RequeteIdJeu.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdJeu : "<< RequeteIdJeu.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdJeu : "<< RequeteIdJeu.lastQuery() ;
     }
 
     RequeteIdJeu.next();
@@ -1352,7 +1352,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     //Exécute la requête
     if (!RequeteIdMembre.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<< RequeteIdMembre.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<< RequeteIdMembre.lastQuery() ;
     }
 
     RequeteIdMembre.next();
@@ -1381,7 +1381,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
         if (!RequeteJeuReserve.exec())
         {
-            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastError() ;
+            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
         }
         RequeteJeuReserve.next();
         // Si ce jeu est réservé
@@ -1403,7 +1403,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
                 RequeteJeuEmprunte.bindValue(":IdDuJeu",IdDuJeu);
                 if (!RequeteJeuEmprunte.exec())
                 {
-                    qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastError() ;
+                    qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
 
                 }
                 AfficherJeuxReserve();
@@ -1439,7 +1439,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
         if ( ! RequeteStatut.exec())
         {
-            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteStatut "<< RequeteStatut.lastError() ;
+            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteStatut "<< RequeteStatut.lastQuery() ;
         }
     }
 
@@ -1538,7 +1538,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     RequeteStatut.bindValue( ":CodeDuJeu" , this->ModeleEmpruntsAValider->index(ui->TbV_EmpruntAValider->currentIndex().row(),0).data().toString() );
     if ( ! RequeteStatut.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteStatut : "<< RequeteStatut.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteStatut : "<< RequeteStatut.lastQuery() ;
     }
 
     // Si ce jeu était un jeu réservé par cet adhérent
@@ -1549,7 +1549,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
     if (!RequeteJeuReserve.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
     }
     RequeteJeuReserve.next();
     // Si ce jeu était bien réservé
@@ -1562,7 +1562,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
         RequeteJeuEmprunte.bindValue(":IdDuJeu",IdDuJeu);
         if (!RequeteJeuEmprunte.exec())
         {
-            qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastError() ;
+            qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
 
         }
         AfficherJeuxReserve();
@@ -1646,7 +1646,7 @@ void F_Emprunt::on_Bt_ValiderRemarques_clicked()
 
     if (!Requete.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_ValiderRemarques_clicked => Requete : "<< Requete.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_ValiderRemarques_clicked => Requete : "<< Requete.lastQuery() ;
 
     }
     //Grise les boutons de modification de la remarque
@@ -1675,7 +1675,7 @@ void F_Emprunt::on_Bt_AnnulerRemarques_clicked()
     Requete.bindValue(":CodeDuMembre",MembreActif);
     if (!Requete.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_AnnulerRemarques_clicked => Requete : "<< Requete.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_AnnulerRemarques_clicked => Requete : "<< Requete.lastQuery() ;
 
     }
 
@@ -1710,7 +1710,7 @@ void F_Emprunt::on_Bt_OK_clicked()
     RequeteMembre.bindValue(":CodeDuMembre",this->MembreActif);
     if (!RequeteMembre.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteMembre : "<< RequeteMembre.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteMembre : "<< RequeteMembre.lastQuery() ;
 
     }
     RequeteMembre.next();
@@ -1735,10 +1735,10 @@ void F_Emprunt::on_Bt_OK_clicked()
     QSqlQuery Requete;
     //Prépare la requête et entre ses valeurs
     Requete.prepare("SELECT NomJeu,ContenuJeu,PrixLoc,Caution,Remarque,StatutJeux_IdStatutJeux,EtatsJeu_idEtatsJeu,IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    Requete.bindValue(":CodeDuJeux",this->JeuActif);
+    Requete.bindValue(":CodeDuJeu",this->JeuActif);
     if (!Requete.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => Requete : "<< Requete.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => Requete : "<< Requete.lastQuery();
 
     }
     Requete.next();
@@ -1797,7 +1797,7 @@ void F_Emprunt::on_Bt_OK_clicked()
     RequeteStatut.bindValue(":IdStatutDuJeu",IdStatut);
     if (!RequeteStatut.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteStatut : "<< RequeteStatut.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteStatut : "<< RequeteStatut.lastQuery() ;
 
     }
     RequeteStatut.next();
@@ -1829,7 +1829,7 @@ void F_Emprunt::on_Bt_OK_clicked()
             //Exécute la requête
             if (!RequeteIdMembre.exec())
             {
-                qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<<RequeteIdMembre.lastError() ;
+                qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<<RequeteIdMembre.lastQuery() ;
             }
 
             RequeteIdMembre.next();
@@ -1840,7 +1840,7 @@ void F_Emprunt::on_Bt_OK_clicked()
             RequeteJeuReserve.bindValue(":IdDuJeu",Requete.value(7));
             if (!RequeteJeuReserve.exec())
             {
-                qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteJeuReserve : "<<RequeteJeuReserve.lastError() ;
+                qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteJeuReserve : "<<RequeteJeuReserve.lastQuery() ;
             }
 
             RequeteJeuReserve.next();
@@ -1879,7 +1879,7 @@ void F_Emprunt::on_Bt_OK_clicked()
     RequeteEtat.bindValue(":IdEtatDuJeu",IdEtat);
     if (!RequeteEtat.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteEtat : "<<RequeteEtat.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteEtat : "<<RequeteEtat.lastQuery() ;
     }
     RequeteEtat.next();
     //Récupère l'état et l'affiche
@@ -1914,7 +1914,7 @@ void F_Emprunt::on_Bt_ValiderRemarquesJeu_clicked()
     Requete.bindValue(":NouvelRemarque",ui->TxE_RemarquesJeu->toPlainText());
     if (!Requete.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_ValiderRemarquesJeu_clicked => Requete : "<<Requete.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_ValiderRemarquesJeu_clicked => Requete : "<<Requete.lastQuery() ;
     }
 
     //Grise les boutons de modification de le remarque
@@ -1944,7 +1944,7 @@ void F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked()
     Requete.bindValue(":CodeDuJeu",JeuActif);
     if (!Requete.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked => Requete : "<<Requete.lastError() ;
+        qDebug()<<"F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked => Requete : "<<Requete.lastQuery() ;
     }
 
     Requete.next();

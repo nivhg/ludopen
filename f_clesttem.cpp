@@ -167,7 +167,7 @@ void F_CLESTTEM::MettreAJourBDD()
     ui->TbV_TitreMembre->setColumnWidth(0, 100);
     ui->TbV_TitreMembre->setColumnWidth(1, 65);
 
-    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntable FROM titremembre");
+    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntables FROM titremembre");
     while (RechercheTableau.next())
     {
         this->TbTitreMembre->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));

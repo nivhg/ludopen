@@ -32,16 +32,16 @@ public:
     ~F_Retour();
     /** @brief Permet d'afficher les information du membre dans le volet central
      */
-    void AfficherMembre(QString CodeMembre);
-    /** @brief Permet d'afficher les information du jeu dans le volet de droite
+    void AfficherMembre();
+    /** @brief Permet d'afficher les informations du jeu dans le volet de droite
      */
-    void AfficherJeu(QString CodeJeu);
-    /** @brief Affiche les jeux emprunté par le membre
+    void AfficherDetailDuJeu();
+    /** @brief Affiche les jeux empruntés par le membre
      */
-    void JeuxEnEmprunt();
-    /** @brief Affiche les jeux réservé par le membre
+    void AfficherJeuxEnEmprunt();
+    /** @brief Affiche les jeux réservés par le membre
      */
-    void JeuxReserve();
+    void AfficherJeuxEnReservation();
     /** @brief Vide les informations du jeu
      */
     void ViderJeu();
@@ -57,10 +57,10 @@ public:
     void ActualiserListeEmprunteurs();
     /** @brief Affiche l'état du membre passé en paramètre
      */
-    void EtatCotisation(QString CodeMembre);
+    void AfficherEtatCotisation(QString CodeMembre);
     /** @brief Emprunte les jeux
      */
-    void EmprunteJeux();
+    void EmprunterJeux();
     /** @brief Affiche le nombre de crédits restants
      */
     void CalculerCreditsRestants();
@@ -115,9 +115,8 @@ private:
     QStandardItemModel * ModelJeuReserves;
     //! modèle du TableView des jeux empruntés
     QStandardItemModel * ModelJeuEmpruntes;
-    //! Pointeur qui pointe sur la fenêtre du paiement
-    F_Paiement * pPaiement;
-
+    //! Amende calculée pour jours de retard
+    float Amende ;
 };
 
 #endif // F_RETOUR_H

@@ -9,12 +9,27 @@
         <file>Paiement.png</file>
         <file>Rendre.png</file>
         <file>Reparation.png</file>
-        <file>Reservation.png</file>
         <file>Reserver.png</file>
         <file>Supprimer.png</file>
         <file>Valider.png</file>
         <file>Verrouiller.png</file>
         <file>RAZ.png</file>
         <file>Ajouter.png</file>
+        <file>Reservations.png</file>
+        <file>Sablier.png</file>
+        <file>Adherent_info.png</file>
+        <file>CSV.png</file>
+        <file>De_6_faces.png</file>
+        <file>Information.png</file>
+        <file>Postit.png</file>
+        <file>Decocher_tout.png</file>
+        <file>De_par_2.png</file>
+        <file>Adherents_liste.png</file>
+        <file>Aide.png</file>
+        <file>Download.png</file>
+        <file>Upload.png</file>
+        <file>Statistiques.png</file>
+        <file>Panier.png</file>
+        <file>Fournisseurs.png</file>
     </qresource>
 </RCC>

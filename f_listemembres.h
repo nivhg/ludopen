@@ -23,7 +23,7 @@ public:
     explicit F_ListeMembres(bool bAdmin = false, QWidget *parent = 0) ;
     ~F_ListeMembres() ;
 
-    void TousSelectionner( bool bSelection) ;
+    void DecocherTout( bool bSelection) ;
 
     //! Recupere l'emplacement d'un titre dans un vecteur en fonction de son id
     int EmplacementTypeVector( unsigned int nIdType ) ;
@@ -49,7 +49,7 @@ signals:
 private slots:
     void on_Bt_RAZ_clicked();
 
-    void on_Bt_Deselection_clicked();
+    void on_Bt_ToutDecocher_clicked();
 
     void on_ChBx_Type_clicked();
 
@@ -81,7 +81,7 @@ private slots:
 
     void on_SBx_NbreRetard_valueChanged(int arg1);
 
-    void on_ChBx_Retard_clicked();
+    //void on_ChBx_Retard_clicked();
 
     void on_ChBx_AncienMembre_clicked();
 

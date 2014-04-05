@@ -18,7 +18,6 @@ SOURCES += \
     f_plusdestatistiques.cpp \
     f_paiement.cpp \
     f_membres.cpp \
-    f_majcotisation.cpp \
     f_mainwindow.cpp \
     f_listejeux.cpp \
     f_jeux.cpp \
@@ -52,7 +51,6 @@ HEADERS  += \
     f_plusdestatistiques.h \
     f_paiement.h \
     f_membres.h \
-    f_majcotisation.h \
     f_mainwindow.h \
     f_listejeux.h \
     f_jeux.h \
@@ -87,7 +85,6 @@ FORMS    += \
     f_plusdestatistiques.ui \
     f_paiement.ui \
     f_membres.ui \
-    f_majcotisation.ui \
     f_mainwindow.ui \
     f_listejeux.ui \
     f_jeux.ui \

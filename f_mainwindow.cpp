@@ -8,7 +8,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui(new Ui::F_MainWindow)
 {
     ui->setupUi(this);
-    //qDebug()<<"Constructeur F_MainWindow = Début";
+    qDebug()<<"Constructeur F_MainWindow = Début";
 
     this->VerifierConnexionBDD() ;
 
@@ -25,24 +25,36 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //Layout///////////////
 
     //Widgets-onglets//////
+    qDebug()<<"Création F_Emprunt";
     this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
-    this->pJeux=new F_Jeux (this->ui->Jeux);
+    qDebug()<<"Création F_Jeux";
+    this->pJeux=new F_Jeux (this->ui->Jeu);
+    qDebug()<<"Création F_Retour";
     this->pRetour=new F_Retour (this->ui->Retour);
+    qDebug()<<"Création F_ListeJeux";
     this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
-    this->pRechercheMembres = new F_RechercheMembres (this->ui->Membres) ;
-    this->pMembres=new F_Membres (this->pRechercheMembres, false, this->ui->Membres);
+    qDebug()<<"Création F_RechercheMembres";
+    this->pRechercheMembres = new F_RechercheMembres (this->ui->Membre) ;
+    qDebug()<<"Création F_Membres";
+    this->pMembres=new F_Membres (this->pRechercheMembres, false, this->ui->Membre);
+    qDebug()<<"Création F_ListeMembres";
     this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
+    qDebug()<<"Création F_Retards";
     this->pRetards=new F_Retards (this->ui->Retards);
+    qDebug()<<"Création F_ListeReservation";
     this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
+    qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
 
     //Widget-admin/////////
     ////Fournisseur////////
+    qDebug()<<"Création ADMIN-F_AjoutSuppModifFournisseursEditeurs";
     this->pAjoutSuppModifFournisseurEditeurs=new F_AjoutSuppModifFournisseursEditeurs (this->ui->admin);
     this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
 
     ////Membre/////////////
+    qDebug()<<"Création ADMIN-F_RechercheMembres";
     this->pRechercheMembresAdmin = new F_RechercheMembres (this->ui->admin) ;
     this->pAdministrerMembres=new F_Membres (this->pRechercheMembresAdmin, true,this->ui->admin);
     this->pAdministrerMembres->setVisible(false);
@@ -53,26 +65,31 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
 
     ////Liste Membres//////
+    qDebug()<<"Création ADMIN-F_ListeMembres";
     this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
     this->pListeMembresAdmin->setVisible( false ) ;
     this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
     this->pListeMembresAdmin->setLayout( ui->Lay_Admin ) ;
 
     ////Statistiques////////
+    qDebug()<<"Création ADMIN-F_ListeMembres";
     this->pStatistiques=new F_Statistiques (this->ui->admin);
     this->ui->Lay_Admin->addWidget(this->pStatistiques);
     this->pStatistiques->setVisible(false);
 
     ////Jeux////////
+    qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
     this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
     this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
     this->pAjoutSuppModifJeux->setVisible(false);
 
     ////Abonnement////////
+    qDebug()<<"Création ADMIN-F_Abonnements";
     this->pAbonnements=new F_Abonnements(this->ui->admin);
     this->ui->Lay_Admin->addWidget(this->pAbonnements);
     this->pAbonnements->setVisible(false);
 
+    qDebug()<<"Création ADMIN-F_PopUpCode";
     this->pPopUpCode = new F_PopUpCode;
     this->pPopUpCode->setWindowTitle("Code d'accés");
     this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
@@ -113,10 +130,10 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
     connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
 
-    // Afficher les post-it au démarage de l'application
+    // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(9);
 
-    //qDebug()<<"Constructeur F_MainWindow = OK";
+    qDebug()<<"Constructeur F_MainWindow = OK";
 }
 
 void F_MainWindow::VerifierConnexionBDD()
@@ -406,8 +423,8 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
     QMessageBox APropos;
 
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\"Ludopen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2013.03.12<br>"
-                  "Programme créé avec Qt Creator 2.6.0 - Qt 4.8.1<br><br>"
+                  "LudOpen version 2014.04.02<br><br>"
+                  "Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
                   "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }

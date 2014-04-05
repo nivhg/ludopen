@@ -6,8 +6,8 @@
 #include <QtWidgets\QAbstractButton>
 #include <QtWidgets>
 
-
-namespace Ui {
+namespace Ui
+{
     class F_Paiement;
 }
 
@@ -25,21 +25,21 @@ public:
     void AfficherPaiement(unsigned int Somme,QString CodeMembre);
 
 private slots:
-    void on_Bt_Ajouter_clicked();
-    void on_Bt_Supprimer_clicked();
-    void on_TW_Paiement_clicked(const QModelIndex &index);
-    void slot_CalculerPrix ();
-    void on_Bt_AjouterAutres_clicked();
+    void on_Bt_AjouterCartePaiement_clicked();
+    void on_Bt_AjouterAutrePaiement_clicked();
+    void on_TW_PaiementCarte_clicked(const QModelIndex &index);
     void on_TW_PaiementAutre_clicked(const QModelIndex &index);
-    void on_Bt_SupprimerAutres_clicked();
-    void on_buttonBox_clicked(QAbstractButton *button);
+    void on_Bt_SupprimerCartePaiement_clicked();
+    void on_Bt_SupprimerAutrePaiement_clicked();
+    void on_Bt_OK_Annuler_accepted();
+    void slot_CalculerPrix ();
 
 private:
     Ui::F_Paiement *ui;
-    //! Nombre de ligne dans le TableWidget des catres
-    int NombreLignePaiement;
-    //! Nombre de ligne dans le TableWidget des autres paiemeents
-    int NombreLignePaiementAutre;
+    //! Nombre de lignes dans le TableWidget des catres
+    unsigned int NombreLignePaiement;
+    //! Nombre de lignes dans le TableWidget des autres paiemeents
+    unsigned int NombreLignePaiementAutre;
     //! Prix à payer en crédits
     int Prix;
     //! Reste à payer en crédits

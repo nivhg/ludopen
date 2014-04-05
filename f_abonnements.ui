@@ -14,6 +14,21 @@
    <string>Abonnement</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <item row="0" column="0">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
@@ -126,17 +141,32 @@
          </spacer>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="LE_Nom"/>
+         <widget class="QLineEdit" name="LE_Nom">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="LE_Credit"/>
+         <widget class="QLineEdit" name="LE_Credit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QLineEdit" name="LE_Prix"/>
+         <widget class="QLineEdit" name="LE_Prix">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
         <item row="3" column="3">
          <widget class="QLineEdit" name="LE_Duree">
           <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="readOnly">
            <bool>true</bool>
           </property>
          </widget>
@@ -195,8 +225,9 @@
            <string>Valider</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>valider.png</normaloff>valider.png</iconset>
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Valider.png</normaloff>
+            <normalon>:/Valider.png</normalon>:/Valider.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -225,8 +256,8 @@
            <string>Annuler</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>annuler.png</normaloff>annuler.png</iconset>
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
           </property>
           <property name="iconSize">
            <size>

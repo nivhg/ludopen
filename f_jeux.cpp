@@ -26,7 +26,7 @@
 #include <QProcess>
 #include <QPixmap>
 #include <QDir>
-#include<QMessageBox>
+#include <QMessageBox>
 
 /**
  * @brief Constructeur de la classe f_jeux
@@ -82,7 +82,7 @@ F_Jeux::~F_Jeux()
  * @brief Méthode qui lance la fenêtre de réservation d'un jeu
  *
  */
-void F_Jeux::on_Bt_reserver_clicked()
+void F_Jeux::on_Bt_Reserver_clicked()
 {
     //Savoir si le jeux existe
     QSqlQuery RequeteJeu;
@@ -91,35 +91,41 @@ void F_Jeux::on_Bt_reserver_clicked()
     RequeteJeu.exec();
     if (!RequeteJeu.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteJeu :" << RequeteJeu.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteJeu :" << RequeteJeu.lastQuery()  ;
     }
     RequeteJeu.next();
 
     if(RequeteJeu.size()==0)
     {
-        QMessageBox::information(this,"Réservation impossible","Ce jeu n'existe pas\nSélectionnez un jeu valide","Ok");
+        QMessageBox::information(this,"Réservation impossible !","Ce jeu n'existe pas\nSélectionnez un jeu valide","Ok");
         return;
     }
-
-    //Savoir si le jeux est déja réservé :
-    QSqlQuery RequeteResa;
-    RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
-    RequeteResa.bindValue(":IdDuJeu",RequeteJeu.value(0));
-
-    if (!RequeteResa.exec())
+    else
     {
-        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteResa :" << RequeteResa.lastError().text()  ;
-    }
-    if (RequeteResa.size()!=0)
-    {
-        QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
-        return;
-    }
+       //Savoir si le jeux est déja réservé
+       QSqlQuery RequeteResa;
+       RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
+       RequeteResa.bindValue(":IdDuJeu",RequeteJeu.value(0));
 
-    pReservation->setWindowModality(Qt::ApplicationModal);
-    pReservation->show();
-    pReservation->set_JeuActif(this->JeuEnConsultation);
-    pReservation->AfficherJeu();
+       if (!RequeteResa.exec())
+       {
+           qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteResa :" << RequeteResa.lastQuery()  ;
+       }
+       else
+       {
+          if (RequeteResa.size()!=0)
+          {
+             QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
+          }
+          else
+          {
+             pReservation->setWindowModality(Qt::ApplicationModal);
+             pReservation->set_JeuActif(this->JeuEnConsultation);
+             pReservation->AfficherJeu();
+             pReservation->show();
+          }
+       }
+    }
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Clique sur le bouton Details/////////////
@@ -136,10 +142,8 @@ void F_Jeux::on_Bt_details_clicked()
     pDetailsJeux->show();
     pDetailsJeux->set_JeuEnConsultation(this->JeuEnConsultation);
     pDetailsJeux->AfficherDetailJeu();
-    
-    
-
 }
+
 ////////////////////////////////////////////////////////////
 ////// Clique sur le bouton Declarer Intervention /////////
 //////////////////////////////////////////////////////////
@@ -148,7 +152,7 @@ void F_Jeux::on_Bt_details_clicked()
  * @brief Méthode qui lance la fenêtre de déclaration d'intervention
  *
  */
-void F_Jeux::on_Bt_declarer_clicked()
+void F_Jeux::on_Bt_DeclarerIntervention_clicked()
 {
     this->pDeclarerIntervention->show();
     pDeclarerIntervention->set_JeuEnConsultation(this->JeuEnConsultation);
@@ -176,11 +180,13 @@ void F_Jeux::on_Bt_ok_clicked()
 
     JeuEnConsultation = Code ;
 
-    RequeteRechercheCode.prepare("SELECT NomJeu, CodeJeu, NomCreateurJeu, ContenuJeu, Remarque, StatutJeux_IdStatutJeux, EtatsJeu_IdEtatsJeu, Emplacement_IdEmplacement, AgeMin, AgeMax, NbrJoueurMin, NbrJoueurMax, TypeJeux_Classification, DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
+    RequeteRechercheCode.prepare("SELECT NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
+                                 "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
+                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", Code);
     if (!RequeteRechercheCode.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_ok_clicked() : RequeteRechercheCode :" << RequeteRechercheCode.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_ok_clicked() : RequeteRechercheCode :" << RequeteRechercheCode.lastQuery()  ;
     }
     RequeteRechercheCode.next();
 
@@ -197,10 +203,12 @@ void F_Jeux::on_Bt_ok_clicked()
 
     // Remplir les champs en fonction du jeu choisi.
     ui->Le_nom->setText(Le_Nom) ;
+
     // aligne le curseur à gauche
     ui->Le_nom->setCursorPosition(0) ;
     ui->Le_code->setText(Le_Code);
     ui->Le_createur->setText(Le_Createur);
+
     // aligne le curseur à gauche
     ui->Le_createur->setCursorPosition(0) ;
     ui->TxE_contenu->setText(TxE_Contenu);
@@ -314,7 +322,7 @@ void F_Jeux::on_Bt_ok_clicked()
     QString Le_Classification ;
     QString LE_NumClassification ;
 
-    RequeteClassification.prepare("SELECT TypeJeux, Classification FROM typejeux WHERE Classification=:NumDeLaClassifciation");
+    RequeteClassification.prepare("SELECT TypeJeux,Classification FROM typejeux WHERE Classification=:NumDeLaClassifciation");
     RequeteClassification.bindValue(":NumDeLaClassifciation",Classification);
     RequeteClassification.exec() ;
     RequeteClassification.next();
@@ -331,40 +339,55 @@ void F_Jeux::on_Bt_ok_clicked()
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////
     //////////////////////////////////////////////////////
+
+    QPixmap Image;
+    QString TypeImage;
+
     QString sCheminImage=QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() ;
 
     if( QFile::exists( sCheminImage + ".jpg" ) )
     {
         sCheminImage = sCheminImage + ".jpg" ;
+        TypeImage="JPG";
     }
     else
     if( QFile::exists( sCheminImage + ".jpeg" ) )
     {
         sCheminImage = sCheminImage + ".jpeg" ;
+        TypeImage="JPEG";
     }
     else
     if( QFile::exists( sCheminImage + ".png" ) )
     {
         sCheminImage = sCheminImage + ".png" ;
+        TypeImage="PNG";
     }
     else
     if( QFile::exists( sCheminImage + ".bmp" ) )
     {
         sCheminImage = sCheminImage + ".bmp" ;
+        TypeImage="BMP";
     }
     else
     if( QFile::exists( sCheminImage + ".gif" ) )
     {
         sCheminImage = sCheminImage + ".gif" ;
+        TypeImage="GIF";
     }
 
     QDir CheminFichierImage( sCheminImage );
     // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
-    QPixmap Image( CheminFichierImage.absolutePath() ) ;
-    ui->Lb_Image->setPixmap( Image ) ;
-    //Met l'image à l'échelle du cadre
-    ui->Lb_Image->setScaledContents( true ) ;
-    qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() ;
+    if ( Image.load(CheminFichierImage.absolutePath(),TypeImage.toLocal8Bit().data()) )
+    {
+       ui->Lb_Image->setPixmap( Image ) ;
+       //Met l'image à l'échelle du cadre
+       ui->Lb_Image->setScaledContents( true ) ;
+       qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() << "TypeImage" << TypeImage.toLocal8Bit().data();
+    }
+    else
+    {
+       ui->Lb_Image->setText("Photo n°1\nindisponible");
+    }
 
     /////////////////////////////////////////////
     // action particulière pour certains champs
@@ -579,7 +602,7 @@ void F_Jeux::on_Bt_AnnulerRemarques_clicked()
     //Exécute la requête
     if (!RequeteAnnulerRemarques.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_AnnulerRemarques_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerRemarques.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_AnnulerRemarques_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerRemarques.lastQuery()  ;
     }
 
     RequeteAnnulerRemarques.next();
@@ -614,7 +637,7 @@ void F_Jeux::on_Bt_ValiderDescription_clicked()
     //Exécute la requête
     if (!RequeteValiderDescription.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_ValiderDescription_clicked() : RequeteValiderDescription :" << RequeteValiderDescription.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_ValiderDescription_clicked() : RequeteValiderDescription :" << RequeteValiderDescription.lastQuery()  ;
     }
     //Grise les boutons de modification de la description
     ui->Bt_ValiderDescription->setEnabled(false);
@@ -637,7 +660,7 @@ void F_Jeux::on_Bt_AnnulerDescription_clicked()
     //Execut la requête
     if (!RequeteAnnulerDescription.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_AnnulerDescription_clicked() : RequeteAnnulerDescription :" << RequeteAnnulerDescription.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_AnnulerDescription_clicked() : RequeteAnnulerDescription :" << RequeteAnnulerDescription.lastQuery()  ;
     }
 
     RequeteAnnulerDescription.next();
@@ -672,7 +695,7 @@ void F_Jeux::on_Bt_ValiderContenu_clicked()
     //Exécute la requête
     if (!RequeteValiderContenu.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_ValiderContenu_clicked() : RequeteValiderContenu :" << RequeteValiderContenu.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_ValiderContenu_clicked() : RequeteValiderContenu :" << RequeteValiderContenu.lastQuery()  ;
     }
 
     //Grise les boutons de modification du contenu
@@ -696,7 +719,7 @@ void F_Jeux::on_Bt_AnnulerContenu_clicked()
     //Exécute la requête
     if (!RequeteAnnulerContenu.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_AnnulerContenu_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerContenu.lastError().text()  ;
+        qDebug() << "F_Jeux::on_Bt_AnnulerContenu_clicked() : RequeteAnnulerContenu :" << RequeteAnnulerContenu.lastQuery()  ;
     }
 
     RequeteAnnulerContenu.next();
@@ -773,7 +796,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
 
         if (!RequeteRechercheJeu.exec())
         {
-            qDebug() << "F_Jeux::on_Le_recherchenom_textChanged() : RequeteRechercheJeu :" << RequeteRechercheJeu.lastError().text()  ;
+            qDebug() << "F_Jeux::on_Le_recherchenom_textChanged() : RequeteRechercheJeu :" << RequeteRechercheJeu.lastQuery()  ;
         }
         //On vide le modèle
         this->ModelJeu->clear();
@@ -854,9 +877,7 @@ void F_Jeux::on_TbV_NomJeux_clicked(const QModelIndex &index)
  * @param arg1
  */
 void F_Jeux::on_Le_recherchecode_textChanged(const QString &arg1)
-{
-    //ui->Le_recherchenom->setText("");
-    
+{    
     if(ui->Le_recherchecode->text() == "" && ui->Le_recherchenom->text() == "")
     {
         on_Le_recherchenom_textChanged("") ;
@@ -892,3 +913,23 @@ void F_Jeux::set_JeuEnConsultation(QString CodeJeuChoisi)
     this->JeuEnConsultation = CodeJeuChoisi ;
 }
 
+/**
+ * @brief Grise les boutons de réservation et d'intervention si aucun jeu choisi
+ *
+ */
+void F_Jeux::on_Le_nom_textChanged(const QString &arg1)
+{
+   // Si pas de nom de jeu
+   if ( ui->Le_nom->text().isEmpty() )
+   {
+      ui->Bt_DeclarerIntervention->setDisabled(true);
+      ui->Bt_Reserver->setDisabled(true);
+   }
+   else
+   {
+      // Rendre possible la réservation et les interventions pour ce jeu affiché
+      // et seulement si un jeu a été choisi
+      ui->Bt_DeclarerIntervention->setEnabled(true);
+      ui->Bt_Reserver->setEnabled(true);
+   }
+}

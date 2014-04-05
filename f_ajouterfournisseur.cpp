@@ -82,7 +82,7 @@ void F_AjouterFournisseur::on_Bt_Valider_clicked()
         RequeteAjouterFournisseur.bindValue(":CommentairesFourn", ui->TxE_CommentairesFourn->toPlainText());
         if(!RequeteAjouterFournisseur.exec())
         {
-            qDebug() << "Erreur RequeteAjouterFournisseur :" << RequeteAjouterFournisseur.lastError() ;
+            qDebug() << "Erreur RequeteAjouterFournisseur :" << RequeteAjouterFournisseur.lastQuery() ;
         }
          
         RequeteAjouterFournisseur.next() ;

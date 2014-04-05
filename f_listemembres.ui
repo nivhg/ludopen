@@ -23,6 +23,21 @@
    <enum>Qt::LeftToRight</enum>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>2</number>
+   </property>
+   <property name="topMargin">
+    <number>2</number>
+   </property>
+   <property name="rightMargin">
+    <number>2</number>
+   </property>
+   <property name="bottomMargin">
+    <number>2</number>
+   </property>
+   <property name="spacing">
+    <number>2</number>
+   </property>
    <item row="1" column="0" colspan="5">
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
@@ -97,7 +112,7 @@
         <item row="1" column="0">
          <widget class="QCheckBox" name="ChBx_NbreRetard">
           <property name="text">
-           <string>Nbre Retard(s) </string>
+           <string>Nombre de Retard</string>
           </property>
          </widget>
         </item>
@@ -279,6 +294,11 @@
               <string>Expire dans un mois</string>
              </property>
             </item>
+            <item>
+             <property name="text">
+              <string>A jour</string>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
@@ -286,9 +306,19 @@
         <item row="4" column="0">
          <layout class="QHBoxLayout" name="HLay">
           <item>
-           <widget class="QPushButton" name="Bt_Deselection">
+           <widget class="QPushButton" name="Bt_ToutDecocher">
             <property name="text">
-             <string>Tout désélectionner</string>
+             <string>Tout décocher</string>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Decocher_tout.png</normaloff>:/Decocher_tout.png</iconset>
+            </property>
+            <property name="iconSize">
+             <size>
+              <width>16</width>
+              <height>16</height>
+             </size>
             </property>
            </widget>
           </item>
@@ -297,7 +327,11 @@
         <item row="3" column="0">
          <widget class="QPushButton" name="Bt_RAZ">
           <property name="text">
-           <string>Remise à zéro de critères</string>
+           <string>Remise à zéro des critères</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/RAZ.png</normaloff>:/RAZ.png</iconset>
           </property>
          </widget>
         </item>
@@ -311,6 +345,10 @@
           </property>
           <property name="text">
            <string>Exporter cette liste</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/CSV.png</normaloff>:/CSV.png</iconset>
           </property>
          </widget>
         </item>
@@ -347,6 +385,11 @@
        <width>0</width>
        <height>300</height>
       </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+      </font>
      </property>
      <property name="alternatingRowColors">
       <bool>true</bool>
@@ -402,6 +445,12 @@
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="Lb_NombreResultat">
+     <property name="minimumSize">
+      <size>
+       <width>230</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>130</width>
@@ -409,7 +458,7 @@
       </size>
      </property>
      <property name="text">
-      <string>Nombre de résultats :</string>
+      <string>Nombre de membres répondant à vos critères :</string>
      </property>
     </widget>
    </item>

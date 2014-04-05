@@ -37,6 +37,8 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     // Création du tableau pour afficher les réservations
     ui->TbW_ListeReservations->setModel(&ModeleReservations) ;
     ui->TbW_ListeReservations->setEditTriggers(QAbstractItemView::SelectedClicked);
+    //Affiche les noms des colonnes dans le tableau
+    ui->TbW_ListeReservations->horizontalHeader()->setVisible(true);
     // Création des caractétiques du tableau : Nom des colonnes
     ModeleReservations.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;  // case à cocher pour la suppression
     ModeleReservations.setHorizontalHeaderItem( 1, new QStandardItem( "Code jeu" ) ) ;
@@ -48,6 +50,7 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Emprunt prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Retour prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Lieu de retrait" ) ) ;
 
     // Règle la largeur des colonnes
     ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
@@ -60,17 +63,37 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->TbW_ListeReservations->setColumnWidth( 7, 120 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 8, 120 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 9, 120 ) ;
+    ui->TbW_ListeReservations->setColumnWidth( 9, 120 ) ;
 
     // Permettre le tri des colonnes
     ui->TbW_ListeReservations->setSortingEnabled(true);
 
-    //Initialisation de la liste de titres et de types
-    this->MiseAJourStatutJeu() ;
+    //Initialisation de la liste de lieux de réservation et de retrait
+    //this->MiseAJourStatutJeu() ;
     this->MaJLieux() ;
 
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
     ui->DtE_DateResa_Fin->setDate(QDate::currentDate());
+
+    // Cache les widgets qui ne servent pas pour l'instant repris de F_ListeMembre
+    ui->CBx_Retards->setVisible(false);
+    ui->CBx_StatutJeu->setVisible(false) ;
+    ui->CBx_Cotisation->setVisible(false) ;
+    ui->ChBx_StatutJeu->setVisible(false) ;
+    ui->ChBx_NbreRetard->setVisible(false) ;
+    ui->ChBx_Cotisation->setVisible(false) ;
+    ui->ChBx_DateEmpruntPrevue->setVisible(false) ;
+    ui->ChBx_Cotisation->setVisible(false) ;
+    ui->ChBx_NbreRetard->setVisible(false);
+    ui->ChBx_DateEmpruntPrevue->setVisible(false) ;
+    ui->ChBx_Cotisation->setVisible(false) ;
+    ui->Lb_DateInscription->setVisible(false);
+    ui->Lb_DateNaissance->setVisible(false) ;
+    ui->SBx_NbreRetard->setVisible(false) ;
+    ui->DtE_DateEmpruntPrevue_Debut->setVisible(false) ;
+    ui->DtE_DateEmpruntPrevue_Fin->setVisible(false);
+    ui->Bt_Exporter->setVisible(false);
 }
 
 F_ListeReservations::~F_ListeReservations()
@@ -80,9 +103,9 @@ F_ListeReservations::~F_ListeReservations()
 
 void F_ListeReservations::TousSelectionner( bool bSelection )
 {
-    ui->ChBx_Lieux->setChecked( bSelection ) ;
+    ui->ChBx_LieuxDeReservation->setChecked( bSelection ) ;
     ui->ChBx_StatutJeu->setChecked( bSelection ) ;
-    ui->ChBx_NomAdherent->setChecked( bSelection ) ;
+    ui->ChBx_LieuxDeRetrait->setChecked( bSelection ) ;
     ui->ChBx_NbreRetard->setChecked( bSelection ) ;
     ui->ChBx_DateReservation->setChecked( bSelection ) ;
     ui->ChBx_DateEmpruntPrevue->setChecked( bSelection ) ;
@@ -150,10 +173,11 @@ void F_ListeReservations::MaJLieux ()
 
     //Suppression du contenu du vecteur de la combobox CBx_Lieu
     this->VectorLieux.clear() ;
-    ui-> CBx_Lieux->clear() ;
+    ui->CBx_LieuxDeReservation->clear() ;
+    ui->CBx_LieuxDeRetrait->clear() ;
 
     //Exécution de la requête qui sélectionne le contenu de la table tytremembres
-    if( RequeteDesReservations.exec( "SELECT * FROM lieux ;" ) )
+    if( RequeteDesReservations.exec( "SELECT * FROM lieux" ) )
     {
         oLieux.id = 0 ;
         oLieux.sType = "" ;
@@ -171,12 +195,13 @@ void F_ListeReservations::MaJLieux ()
         //Remplissage de la combobox grace au vecteur
         for( i = 0 ; i < VectorLieux.size() ; i ++ )
         {
-            ui-> CBx_Lieux->insertItem( i, VectorLieux[ i ].sType ) ;
+            ui->CBx_LieuxDeReservation->insertItem( i, VectorLieux[ i ].sType ) ;
+            ui->CBx_LieuxDeRetrait->insertItem( i, VectorLieux[ i ].sType ) ;
         }
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_Membres::MaJLieux () : Erreur de connexion avec la base de données !"  ;
+        qDebug() << "F_Membres::MaJLieux () : RequeteDesReservations="<<RequeteDesReservations.lastQuery()  ;
     }
 }
 
@@ -217,7 +242,7 @@ void F_ListeReservations::MiseAJourStatutJeu()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_ListeReservations::MiseAJourStatutJeu => " << RequeteDesReservations.lastError().text() ;
+        qDebug() << "F_ListeReservations::MiseAJourStatutJeu => " << RequeteDesReservations.lastQuery() ;
     }
 }
 
@@ -241,13 +266,13 @@ bool F_ListeReservations::AffichageListe()
 
     if( ui->ChBx_DateReservation->isChecked() )
     {       
-        sRequeteWHERE = sRequeteWHERE + " DateReservation>=" + ui->DtE_DateResa_Debut->dateTime().toString("yyyy-MM-dd") + " AND " ;
-        sRequeteWHERE = sRequeteWHERE + " DateReservation<=" + ui->DtE_DateResa_Fin->dateTime().toString("yyyy-MM-dd") + " AND ";
+        sRequeteWHERE = sRequeteWHERE + " DateReservation>='" + ui->DtE_DateResa_Debut->dateTime().toString("yyyy-MM-dd") + "' AND " ;
+        sRequeteWHERE = sRequeteWHERE + " DateReservation<='" + ui->DtE_DateResa_Fin->dateTime().toString("yyyy-MM-dd") + "' AND ";
     }
 
-    if ( ui->ChBx_Lieux->isChecked() )
+    if ( ui->ChBx_LieuxDeReservation->isChecked() )
     {
-        sRequeteWHERE = sRequeteWHERE + " Lieux_IdLieux=" +  sNumero.setNum(this->VectorLieux[ui-> CBx_Lieux->currentIndex()].id) + " AND " ;
+        sRequeteWHERE = sRequeteWHERE + " Lieux_IdLieuxReservation=" +  sNumero.setNum(this->VectorLieux[ui-> CBx_LieuxDeReservation->currentIndex()].id) + " AND " ;
     }
 /*
     if ( ui->ChBx_StatutJeu->isChecked() )
@@ -255,7 +280,7 @@ bool F_ListeReservations::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " StatutDuJeuMembre_IdStatutDuJeuMembre=" + sNumero.setNum(this->VectorStatutDuJeu[ui->CBx_StatutJeu->currentIndex()].id) + " AND " ;
     }
 
-    if( ui->ChBx_NomAdherent->isChecked() )
+    if( ui->CBx_LieuxDeRetraitt->isChecked() )
     {
         sRequeteWHERE =  sRequeteWHERE + " Nom LIKE '%" + ui->LE_NomAdherent->text() + "%' AND" ;
     }
@@ -309,7 +334,7 @@ bool F_ListeReservations::AffichageListe()
     // Assemblage des différents morceaux de la requête
     sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdReservation" ;
 
-    //qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
+    qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
 
     //Exécution de la requête
     if( RequeteDesReservations.exec(sRequete) )
@@ -357,13 +382,13 @@ bool F_ListeReservations::AffichageListe()
                     }
                     else
                     {
-                        qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastError().text()  ;
+                        qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastQuery()  ;
                     }
                 }
             }
             else
             {
-                qDebug() << "F_ListeReservations::AffichageListe RequeteJeux=" << RequeteJeu.lastError().text()  ;
+                qDebug() << "F_ListeReservations::AffichageListe RequeteJeux=" << RequeteJeu.lastQuery()  ;
             }
 
             //Récupérer infos sur le membre qui a réservé
@@ -382,7 +407,7 @@ bool F_ListeReservations::AffichageListe()
             }
             else
             {
-                qDebug() << "F_ListeReservations::AffichageListe => RequeteMembre :" << RequeteMembre.lastError().text()  ;
+                qDebug() << "F_ListeReservations::AffichageListe => RequeteMembre :" << RequeteMembre.lastQuery()  ;
             }
 
             // Date réservation
@@ -399,7 +424,7 @@ bool F_ListeReservations::AffichageListe()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_ListeReservations:: : RequeteDesReservations :" << RequeteDesReservations.lastError().text()  ;
+        qDebug() << "F_ListeReservations:: : RequeteDesReservations :" << RequeteDesReservations.lastQuery()  ;
     }
 
     ui->Lb_Resultat->setNum( i ) ;
@@ -409,13 +434,13 @@ bool F_ListeReservations::AffichageListe()
 
 void F_ListeReservations::on_Bt_RAZ_clicked()
 {
-    ui-> CBx_Lieux->clear() ;
+    ui-> CBx_LieuxDeReservation->clear() ;
     this->MaJLieux() ;
 
     ui->CBx_StatutJeu->clear() ;
     this->MiseAJourStatutJeu() ;
 
-    ui->LE_NomAdherent->clear() ;
+    ui->CBx_LieuxDeRetrait->clear() ;
     ui->SBx_NbreRetard->clear() ;
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
@@ -425,11 +450,13 @@ void F_ListeReservations::on_Bt_RAZ_clicked()
     ui->DtE_DateEmpruntPrevue_Fin->clear() ;
 
     this->TousSelectionner( false ) ;
+    // Remettre à jour la liste des réservations affichées
+    this->AffichageListe();
 }
 
 void F_ListeReservations::on_Bt_Deselection_clicked()
 {
-    this->TousSelectionner( false ) ;
+   this->TousSelectionner( false ) ;
 }
 
 void F_ListeReservations::on_Bt_SupprimerListe_clicked()
@@ -449,13 +476,16 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
                 RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
                 if( ! RequeteSupprimer.exec() )
                 {
-                    qDebug() << "F_ListeReservations::on_Bt_SupprimerListe_clicked => RequeteSupprimer" << RequeteSupprimer.lastError().text()<< endl ;
+                    qDebug() << "F_ListeReservations::on_Bt_SupprimerListe_clicked => RequeteSupprimer" << RequeteSupprimer.lastQuery()<< endl ;
+                }
+                // Suppression des réservations effectuée. Mettre à jour la liste affichée
+                else
+                {
+                   this->AffichageListe() ;
                 }
             }
         }
     }
-
-    this->AffichageListe() ;
 }
 
 void F_ListeReservations::on_Bt_Exporter_clicked()
@@ -489,17 +519,17 @@ void F_ListeReservations::on_Bt_Exporter_clicked()
 }
 
 
-void F_ListeReservations::on_CBx_Lieux_activated(int index)
+void F_ListeReservations::on_CBx_LieuxDeReservation_activated(int index)
 {
     this->AffichageListe() ;
 }
 
-void F_ListeReservations::on_ChBx_Lieux_clicked()
+void F_ListeReservations::on_ChBx_LieuxDeReservation_clicked()
 {
     this->AffichageListe() ;
 }
 
-void F_ListeReservations::on_ChBx_NomAdherent_clicked()
+void F_ListeReservations::on_ChBx_LieuxDeRetrait_clicked()
 {
     this->AffichageListe() ;
 }
@@ -519,10 +549,12 @@ void F_ListeReservations::on_ChBx_NbreRetard_clicked()
     this->AffichageListe() ;
 }
 
+/* A virer car pas de Chexbox de ce nom
 void F_ListeReservations::on_ChBx_Retard_clicked()
 {
     this->AffichageListe() ;
 }
+*/
 
 void F_ListeReservations::on_ChBx_Cotisation_clicked()
 {
@@ -530,11 +562,6 @@ void F_ListeReservations::on_ChBx_Cotisation_clicked()
 }
 
 void F_ListeReservations::on_ChBx_DateEmpruntPrevue_clicked()
-{
-    this->AffichageListe() ;
-}
-
-void F_ListeReservations::on_LE_NomAdherent_textEdited(const QString &arg1)
 {
     this->AffichageListe() ;
 }

@@ -23,6 +23,9 @@
    <iconset resource="ImagesIcones.qrc">
     <normaloff>:/IconeLO.png</normaloff>:/IconeLO.png</iconset>
   </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>true</bool>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
@@ -49,11 +52,22 @@
        <string notr="true"/>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="Membres">
+      <property name="iconSize">
+       <size>
+        <width>20</width>
+        <height>20</height>
+       </size>
+      </property>
+      <widget class="QWidget" name="Membre">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Adherent_info.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
-        <string>Membres</string>
+        <string>Membre</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
@@ -62,6 +76,11 @@
        </layout>
       </widget>
       <widget class="QWidget" name="ListeMembres">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Adherents_liste.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Liste membres</string>
        </attribute>
@@ -71,9 +90,14 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Jeux">
+      <widget class="QWidget" name="Jeu">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/De_6_faces.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
-        <string>Jeux</string>
+        <string>Jeu</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
@@ -82,6 +106,11 @@
        </layout>
       </widget>
       <widget class="QWidget" name="ListeJeux">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/De_par_2.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Liste jeux</string>
        </attribute>
@@ -92,16 +121,30 @@
        </layout>
       </widget>
       <widget class="QWidget" name="Emprunt">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Upload.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Emprunt</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
-         <layout class="QGridLayout" name="Lay_Emprunt"/>
+         <layout class="QGridLayout" name="Lay_Emprunt">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+         </layout>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="Retour">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Download.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Retour</string>
        </attribute>
@@ -115,6 +158,11 @@
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
        </property>
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Reservations.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Liste réservations</string>
        </attribute>
@@ -129,6 +177,11 @@
        </layout>
       </widget>
       <widget class="QWidget" name="Retards">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Sablier.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Retards</string>
        </attribute>
@@ -139,55 +192,212 @@
        </layout>
       </widget>
       <widget class="QWidget" name="admin">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Verrouiller.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Administration</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="Lay_Admin">
+          <property name="spacing">
+           <number>2</number>
+          </property>
           <item>
            <widget class="QSplitter" name="SP_Admin">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
             <widget class="QPushButton" name="Bt_Membre">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>60</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
               <string>Membres</string>
              </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Adherent_info.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
             </widget>
             <widget class="QPushButton" name="Bt_ListeMembres">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Liste Membres</string>
+              <string>Liste
+Membres</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Adherents_liste.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
              </property>
             </widget>
             <widget class="QPushButton" name="Bt_Jeux">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="maximumSize">
               <size>
-               <width>110</width>
-               <height>16777215</height>
+               <width>100</width>
+               <height>60</height>
               </size>
              </property>
              <property name="text">
               <string>Jeux</string>
              </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/De_par_2.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
             </widget>
             <widget class="QPushButton" name="Bt_FournisseurEditeur">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
-              <string>Fournisseur
--
-Editeur</string>
+              <string>Fournisseurs
+Editeurs</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Fournisseurs.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
              </property>
             </widget>
             <widget class="QPushButton" name="Bt_Abonnements">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
               <string>Abonnements
--
 Cotisations</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Paiement.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
              </property>
             </widget>
             <widget class="QPushButton" name="Bt_Statistiques">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+               <horstretch>120</horstretch>
+               <verstretch>60</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
              <property name="text">
               <string>Statistiques</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Statistiques.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
              </property>
             </widget>
            </widget>
@@ -197,6 +407,11 @@ Cotisations</string>
        </layout>
       </widget>
       <widget class="QWidget" name="PostIt">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Postit.png</normalon>
+        </iconset>
+       </attribute>
        <attribute name="title">
         <string>Post-It</string>
        </attribute>
@@ -216,7 +431,7 @@ Cotisations</string>
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -245,7 +460,7 @@ Cotisations</string>
    </widget>
    <widget class="QMenu" name="menu_Edition">
     <property name="title">
-     <string>Édition</string>
+     <string>Configuration</string>
     </property>
     <addaction name="Menu_Edition_Preferences"/>
    </widget>

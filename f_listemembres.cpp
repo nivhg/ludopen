@@ -123,7 +123,7 @@ F_ListeMembres::~F_ListeMembres()
     delete ui;
 }
 
-void F_ListeMembres::TousSelectionner( bool bSelection )
+void F_ListeMembres::DecocherTout( bool bSelection )
 {
     ui->ChBx_Type->setChecked( bSelection ) ;
     ui->ChBx_Titre->setChecked( bSelection ) ;
@@ -137,6 +137,7 @@ void F_ListeMembres::TousSelectionner( bool bSelection )
     ui->ChBx_DateNaissance->setChecked( bSelection ) ;
     ui->ChBx_Cotisation->setChecked( bSelection ) ;
     ui->ChBx_Abonnements->setChecked( bSelection ) ;
+    this->AffichageListe();
 }
 
 /** Description dtaille de la mthode
@@ -203,7 +204,7 @@ void F_ListeMembres::MaJType ()
     ui->CBx_Type->clear() ;
 
     //Exécution de la requête qui sélectionne le contenu de la table tytremembres
-    if( query.exec( "SELECT * FROM typemembres ;" ) )
+    if( query.exec( "SELECT * FROM typemembres" ) )
     {
         oType.id = 0 ;
         oType.sType = "" ;
@@ -350,18 +351,29 @@ bool F_ListeMembres::AffichageListe()
     {
         switch( ui->CBx_Cotisation->currentIndex() )
         {
-        case 0 :
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" ) + "' AND IdMembre=Membres_IdMembre AND" ;
+        case 0 : // cotisation expirée
+            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=Membres_IdMembre AND" ;
             break ;
 
-        case 1 :
+        case 1 : // cotisation expirant dans 2 semaines (14 jours)
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )  + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
+                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=Membres_IdMembre AND" ;
             break ;
 
-        case 2 :
+        case 2 : // cotisation expirant dans 1 mois
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" ) + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
+                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=Membres_IdMembre AND" ;
+            break ;
+        case 3 :  // cotisation à jour
+            Date = Date.currentDate() ;
+            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addYears( 1 ).toString( "yyyy-MM-dd" )
+                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=Membres_IdMembre AND" ;
             break ;
         }
     }
@@ -456,7 +468,7 @@ bool F_ListeMembres::AffichageListe()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_ListeMembres:: : RequeteListeMembres :" << RequeteListemembres.lastError().text()  ;
+        qDebug() << "F_ListeMembres:: : RequeteListeMembres :" << RequeteListemembres.lastQuery()  ;
     }
 
     ui->Lb_Resultat->setNum( i ) ;
@@ -509,12 +521,12 @@ void F_ListeMembres::on_Bt_RAZ_clicked()
     ui->DtE_DN_Debut->clear() ;
     ui->DtE_DN_Fin->clear() ;
 
-    this->TousSelectionner( false ) ;
+    this->DecocherTout( false ) ;
 }
 
-void F_ListeMembres::on_Bt_Deselection_clicked()
+void F_ListeMembres::on_Bt_ToutDecocher_clicked()
 {
-    this->TousSelectionner( false ) ;
+    this->DecocherTout( false ) ;
 }
 
 void F_ListeMembres::on_Bt_SelectionListe_clicked()
@@ -555,7 +567,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
                 if( !RequeteEmprunts.exec() )
                 {
-                    qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastError().text()<< endl ;
+                    qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteEmprunts : Erreur de connexion avec la base de donne !" << RequeteEmprunts.lastQuery()<< endl ;
                 }
 
                 //S'il n'y a pas d'emprunt en cour
@@ -569,7 +581,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( !RequeteSupprimer.exec() )
                     {
-                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                     }
 
                     //Préparation de la requête permettant la suppression dans la table reservation -------------------------------
@@ -579,7 +591,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( !RequeteSupprimer.exec() )
                     {
-                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                     }
 
                     //Préparation de la requête permettant la suppression dans la table emprunts ------------------------
@@ -589,7 +601,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( !RequeteSupprimer.exec() )
                     {
-                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                     }
 
                     //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
@@ -599,7 +611,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
                     //Execution de la requête, si elle fonctionne on met la variable de retoure à  vrai
                     if( !RequeteSupprimer.exec() )
                     {
-                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastError().text()<< endl ;
+                        qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                     }
                 }
                 else
@@ -698,11 +710,13 @@ void F_ListeMembres::on_ChBx_NbreRetard_clicked()
     this->AffichageListe() ;
 }
 
+/*
+ * A virer car pas de Chexbox de ce nom
 void F_ListeMembres::on_ChBx_Retard_clicked()
 {
     this->AffichageListe() ;
 }
-
+*/
 void F_ListeMembres::on_ChBx_Cotisation_clicked()
 {
     this->AffichageListe() ;
