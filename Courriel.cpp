@@ -1,13 +1,13 @@
 //------------------------------------------------------------------------------
 /** @file         Courriel.cpp
- *  @brief        Permet l'envoie d'un mail via un serveur smtp
+ *  @brief        Permet l'envoi d'un email via un serveur smtp
  *
  *  @author       Padiou Nicolas
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        05/2012
  *  @version      0.1
  *  @date         13/06/2012
- *
+ *  @date         10/05/2014 <William> <Un seul thread pour envoyer tous les emails stockés dans un vecteur
  *
  *
  *  @todo         Connexion avec authentification
@@ -20,42 +20,29 @@
 #include "Courriel.h"
 #include <QtNetwork/QAbstractSocket>
 
-/** Initialise la connexion vers un serveur ftp puis lui envoie les différentes informations pour l'envoie d'un mail.
+/** Initialise la connexion vers un serveur smtp puis lui envoie les différentes informations pour l'envoie d'un email.
  *  S'il y a une erreur un signal est emis avec le type d'erreur.
- *  Quand le mail est envoyer ou une demande de fermeture est faites, un signal est emis pour que l'objet puisse être détruit.
+ *  Quand le mail est envoyé ou une demande de fermeture est faite, un signal est émis pour que l'objet puisse être détruit.
  *
  *  @param const QString sAdresseSmtp, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps
  *  @test   Voir la procédure dans le fichier associé.
  */
-Courriel::Courriel( const QString sAdresseSmtp, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps ) :
+Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> *ListeEMailAEnvoyer ) :
     QThread ( NULL )
 {
-    //Création du socket
-    this->oSocket = new QTcpSocket( NULL ) ;
+   //QTcpSocket Courriel::SocketSMTP(this);
+   qDebug()<<"Courriel::Courriel SocketSMTP="<< &SocketSMTP;
 
-    //connect avec le socket-----------------------------------------------------------------------------------------------
-    connect( this->oSocket, SIGNAL( readyRead() ), this, SLOT( slot_PretALire() ) ) ;
-    connect( this->oSocket, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
-    connect( this->oSocket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecu( QAbstractSocket::SocketError ) ) ) ;
-    connect( this->oSocket, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
+   //  avoir accès au vecteur qui contient les emails à envoyer
+   this->ListeEMailAEnvoyer = ListeEMailAEnvoyer ;
 
-    //Récupération des données passées en paramètre
-    this->sFrom = sFrom ;
-    this->sTo = sTo ;
-    this->sAdresseSmtp = sAdresseSmtp ;
-    this->nPort = nPort ;
+   //Récupération des données passées en paramètre
+   this->sAdresseSmtp = sAdresseServeurSNMP ;
+   this->nPort = nPort ;
 
-    this->sMessage = "To: " + this->sTo + "\n" ;
-    this->sMessage.append("From: " + this->sFrom + "\n") ;
-    this->sMessage.append("Subject: " + sSujet + "\n") ;
-    this->sMessage.append( sCorps ) ;
-    this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
-    this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
-
-    //Création du flux
-    this->oFlux = new QTextStream( this->oSocket ) ;
-
-    this->start();
+   //QTcpSocket Courriel::SocketSMTP ;
+   //Création du flux
+   this->FluxSMTP.setDevice( &SocketSMTP ) ;
 }
 
 /** Détruit les objets dynamiques créés
@@ -63,38 +50,10 @@ Courriel::Courriel( const QString sAdresseSmtp, const int nPort, const QString s
  */
 Courriel::~Courriel()
 {
-    if(this->oFlux != NULL)
-    {
-        delete this->oFlux ;
-        this->oFlux = NULL ;
-    }
-
-    if( this->oSocket )
-    {
-        delete this->oSocket ;
-        this->oSocket = NULL ;
-    }
-
-}
-
-/** Permet la connexion au serveur smtp. Etape d'initialisation
- *  @test   Voir la procédure dans le fichier associé.
- */
-void Courriel::EnvoyerUnMessage()
-{
-    //Connection au serveur smtp
-    this->oSocket->connectToHost( this->sAdresseSmtp , this->nPort) ;
-
-    this->EtapeConnexion = Init ;
-}
-
-/** Permet de lancer le thread
- *  @test   Voir la procédure dans le fichier associé.
- */
-void Courriel::run()
-{
-    qDebug("Courriel::run") ;
-    this->EnvoyerUnMessage() ;
+   qDebug("Courriel::~Courriel DEB") ;
+   this->FluxSMTP.flush(); ;
+   SocketSMTP.disconnectFromHost();
+   qDebug("Courriel::~Courriel FIN") ;
 }
 
 /** Indique s'il y a une erreur de connexion et quelle est cette erreur
@@ -102,19 +61,18 @@ void Courriel::run()
  *  @test   Voir la procédure dans le fichier associé.
  *  @see    afficherAttribut
  */
-void Courriel::slot_ErreurRecu(QAbstractSocket::SocketError ErreurSocket)
+void Courriel::slot_ErreurRecue(QAbstractSocket::SocketError ErreurSocket)
 {
     if (ErreurSocket != QAbstractSocket::RemoteHostClosedError)
     {
-        qDebug() << "Courriel::slot_ErreurRecu :  " << ErreurSocket ;
-        emit( this->SignalErreur( "Impossible de se connecter au serveur smtp. Veuillez vérifier les paramètres de connexion." ) ) ;
-        emit( this->SignalFermerThread( this ) ) ;
+        qDebug() << "Courriel::slot_ErreurRecue :  " << ErreurSocket ;
+        emit( this->Signal_Erreur_EMail( this->sTo + ": Impossible de se connecter au serveur smtp." ) ) ;
+        emit( this->Signal_Fermer_Thread_EMail( ) ) ;
     }
     else
     {
-        qDebug() << "L'hote a fermé la connexion" ;
+        qDebug() << "L'hôte SMTP a fermé la connexion" ;
     }
-
 }
 
 /** Indique que il y a une deconnexion avec le serveur
@@ -122,7 +80,7 @@ void Courriel::slot_ErreurRecu(QAbstractSocket::SocketError ErreurSocket)
  */
 void Courriel::slot_Deconnecte()
 {
-    qDebug() << "disconneted" ;
+    qDebug() << "Courriel::slot_Deconnecte : Déconnecté du serveur d'email" ;
 }
 
 /** Indique que il y a une connexion avec le serveur
@@ -130,36 +88,70 @@ void Courriel::slot_Deconnecte()
  */
 void Courriel::slot_Connecte()
 {
-    qDebug() << "Connecté " ;
+    qDebug() << "Connecté au serveur d'email" ;
+}
+
+/** Permet de lancer le thread qui envoie le message par email
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void Courriel::run()
+{
+    qDebug()<<"Courriel::run DEB="<<this ;
+
+    // On traite le premier email :
+    this->NumeroEmailATraiter = 0 ;
+
+    this->sFrom = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sFrom ;
+    this->sTo = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sTo ;
+
+    this->sMessage = "To: " + this->sTo + "\n" ;
+    this->sMessage.append("From: " + this->sFrom + "\n") ;
+    this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+    this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
+    this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
+    this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
+
+    //connect avec le socket-----------------------------------------------------------------------------------------------
+    connect( &this->SocketSMTP, SIGNAL( readyRead() ), this, SLOT( slot_ReceptionDonnees() ) ) ;
+    connect( &this->SocketSMTP, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
+    connect( &this->SocketSMTP, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecue( QAbstractSocket::SocketError ) ) ) ;
+    connect( &this->SocketSMTP, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
+    //connect( this, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( TraiterEMailSuivant( uint ) ) ) ;
+
+    //Connection au serveur smtp
+    SocketSMTP.connectToHost( this->sAdresseSmtp , this->nPort) ;
+    this->EtapeConnexion = Init ;
+
+    qDebug("Courriel::run FIN") ;
 }
 
 /** Permet d'exécuter les différentes étapes pour l'envoie d'un mail
  *  @test   Voir la procédure dans le fichier associé.
  */
-void Courriel::slot_PretALire()
+void Courriel::slot_ReceptionDonnees()
 {
-    QString sReponseDeLigne ;
+    QString ReponseServeurSMTP ;
     //Attente de la réponse
     do
     {
-        sReponseDeLigne = this->oSocket->readLine() ;
-        qDebug() << sReponseDeLigne ;
+        ReponseServeurSMTP = this->SocketSMTP.readLine() ;
+        //qDebug() << ReponseServeurSMTP ;
     }
-    while ( this->oSocket->canReadLine() ) ;
+    while ( this->SocketSMTP.canReadLine() ) ;
 
-    sReponseDeLigne.truncate( 3 ) ;
+    ReponseServeurSMTP.truncate( 3 ) ;
 
-    //Envoie des différents messages
+    //Envoi des différents messages email
     switch(this->EtapeConnexion)
     {
     case Init :
     {
-        if( sReponseDeLigne == "220" )
+        if( ReponseServeurSMTP == "220" )
         {
             //Bannière, On dit bonjour au serveur
-            *this->oFlux << "HELO there\r\n" ;
-            this->oFlux->flush() ;
-
+            this->FluxSMTP << "HELO there\r\n" ;
+            this->FluxSMTP.flush() ;
+            qDebug() << "Etape : INIT-----------------";
             this->EtapeConnexion = From ;
         }
         else
@@ -167,42 +159,43 @@ void Courriel::slot_PretALire()
             //Indique qu'il y a une erreur lors de l'initialisation
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : Init";
-            emit( this->SignalErreur( "Erreur lors de l'étape de connexion." ) ) ;
+            emit( this->Signal_Erreur_EMail( this->sTo + ": Erreur lors de l'étape de connexion." ) ) ;
+            emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
         break ;
     }
 
     case From :
     {
-        if( sReponseDeLigne == "250" )
+        if( ReponseServeurSMTP == "250" )
         {
             // Expediteur. On indique le mail de l'expediteur
-
-            *this->oFlux << "MAIL FROM: " << this->sFrom << "\r\n" ;
-            this->oFlux->flush() ;
+            qDebug() << "Etape : FROM=" << this->sFrom;
+            this->FluxSMTP << "MAIL FROM: " << this->sFrom << "\r\n" ;
+            this->FluxSMTP.flush() ;
             this->EtapeConnexion = To ;
         }
         else
         {
             //Indique qu'il y a une erreur lors de l'envoie de la bannière
             this->EtapeConnexion = Erreur ;
-            qDebug() << "Erreur, Etape : From";
-            emit( this->SignalErreur( "Erreur lors de l'étape d'initialisation." ) ) ;
+            qDebug() << "Erreur, Etape : From=" << this->sFrom;
+            emit( this->Signal_Erreur_EMail( this->sTo + ": Erreur lors de l'étape d'initialisation." ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
-
         break ;
     }
 
     case To :
     {
-        if ( sReponseDeLigne == "250" )
+        if ( ReponseServeurSMTP == "250" )
         {
             //Destinataire. On indique le mail du destinataire
-
-            *this->oFlux << "RCPT TO: " << this->sTo << "\r\n" ;
-            this->oFlux->flush() ;
+            qDebug() << "Etape : To=" << this->sTo;
+            this->FluxSMTP << "RCPT TO: " << this->sTo << "\r\n" ;
+            this->FluxSMTP.flush() ;
             this->EtapeConnexion = Data ;
         }
         else
@@ -210,21 +203,22 @@ void Courriel::slot_PretALire()
             //Indique qu'il y a une erreur lors de l'envoie du mail de l'expediteur
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : To";
-            emit( this->SignalErreur( "Adresse email de l'expediteur incorrect." ) ) ;
+            emit( this->Signal_Erreur_EMail( this->sTo + ": Adresse email de l'expediteur incorrect." ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
-
         break ;
     }
 
     case Data :
     {
-        if ( sReponseDeLigne == "250" )
+        if ( ReponseServeurSMTP == "250" )
         {
             //Indique au serveur que l'on va lui envoyer un message
-
-            *this->oFlux << "DATA\r\n" ;
-            this->oFlux->flush() ;
+            qDebug() << "Etape : DATA------------------";
+            this->FluxSMTP << "DATA\r\n" ;
+            this->FluxSMTP.flush() ;
             this->EtapeConnexion = Body ;
         }
         else
@@ -232,70 +226,94 @@ void Courriel::slot_PretALire()
             //Indique qu'il y a une erreur lors de l'envoie du mail du destinataire
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : Data";
-            emit( this->SignalErreur( "Adresse email du destinataire incorrect." ) ) ;
+            emit( this->Signal_Erreur_EMail( this->sTo + ": Adresse email du destinataire incorrect." ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
-
         break ;
     }
 
     case Body :
     {
-
-        if ( sReponseDeLigne == "354" )
+        if ( ReponseServeurSMTP == "354" )
         {
-            //Message, Envoie du message au serveur
+            //Message, Envoi du message au serveur
 
-            qDebug() << this ->sMessage ;
-            *this->oFlux << this->sMessage << "\r\n.\r\n" ;
-            this->oFlux->flush() ;
-            this->EtapeConnexion = Quitter ;
+            qDebug() << "Etape Body=" ; //<<this ->sMessage ;
+            this->FluxSMTP << this->sMessage << "\r\n.\r\n" ;
+            this->FluxSMTP.flush() ;
+            emit( this->SignalMailEnvoyer(  this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).IDMembre ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
         }
         else
         {
             //Indique qu'il y a une erreur lors de la demande pour envoyer le message
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : Body";
-            emit( this->SignalErreur( "Erreur lors de l'étape DATA" ) ) ;
+            emit( this->Signal_Erreur_EMail( this->sTo + ": Erreur lors de l'étape DATA" ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
-
         break ;
     }
 
     case Quitter :
     {
-        if ( sReponseDeLigne == "250" )
+        if ( ReponseServeurSMTP == "250" )
         {
             //On termine la connection
 
-            *this->oFlux << "QUIT\r\n" ;
-            this->oFlux->flush() ;
-
-            qDebug() << "Fin de la connection" ;
-            emit( this->SignalMailEnvoyer( this ) ) ;
+            this->FluxSMTP << "QUIT\r\n" ;
+            this->FluxSMTP.flush() ;
+            qDebug() << "Etape QUIT--------------------" ;
+            emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
         else
         {
             //Indique qu'il y a une erreur lors de l'envoie du message
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : Quitter";
-            emit( this->SignalErreur( "Message incorrect." ) ) ;
+            //emit( this->Signal_Erreur_EMail( "EMAIL : Fin de connexion impossible" ) ) ;
+            emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
-
-
         break ;
     }
-
-
 
     //S'il y a une erreur on indique qu'il y a une erreur et on quitte la connexion
     default :
         qDebug() << "Erreur de connection" ;
-        *this->oFlux << "QUIT\r\n" ;
-        this->oFlux->flush() ;
-        emit( this->SignalFermerThread( this ) ) ;
+        this->FluxSMTP << "QUIT\r\n" ;
+        this->FluxSMTP.flush() ;
+        emit( this->Signal_Erreur_EMail( "EMAIL : Fin de connexion impossible" ) ) ;
+        emit( this->Signal_Fermer_Thread_EMail( ) ) ;
     }
 }
 
+/** Permet de traiter l'email suivant du vecteur des emails à envoyer ou de finir la connexion avec le serveur SMTP si plus d'email à traiter
+ *  @param Courriel virera surement plus tard car servait seulement si pls thread pour envoyer chacun un seul email
+ */
+void Courriel::TraiterEMailSuivant()
+{
+   // On passe à l'email suivant:
+   this->NumeroEmailATraiter++ ;
 
+   if ( this->NumeroEmailATraiter < this->ListeEMailAEnvoyer->count() )
+   {
+      this->sFrom = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sFrom ;
+      this->sTo = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sTo ;
+      this->sMessage = "To: " + this->sTo + "\n" ;
+      this->sMessage.append("From: " + this->sFrom + "\n") ;
+      this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+      this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
+      this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
+      this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
+      this->EtapeConnexion = From ;
+   }
+   else
+   {
+      this->EtapeConnexion = Quitter ;
+   }
+}

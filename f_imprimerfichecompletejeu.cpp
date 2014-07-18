@@ -6,11 +6,12 @@
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/06/2012
  *  @version      0.1
- *  @date         11/05/2012
+ *  @date         20/04/2014  William  Message d'erreur sir pas d'imprimante installée
  *
  *  Permet d'imprimer une fiche complète sur le jeu.
  *
  *  Fabrication   QtCreator
+ *
  *
  *
  */
@@ -23,6 +24,7 @@
 */
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
+#include <QPrinterInfo>
 
 // En-tête propre à l'application -----------------------------------------------
 #include "f_imprimerfichecompletejeu.h"
@@ -246,20 +248,68 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     }
     ui->LE_Editeur->setReadOnly(true);
 
+    /*
     QSqlQuery RequeteImage ;
-    QString CheminImage ;
+    QString CheminPhotosJeux ;
     
     RequeteImage.prepare("SELECT CheminPhotoJeu, CodeJeu FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
     RequeteImage.bindValue(":CodeDuJeu", ui->LE_Code->text());
     RequeteImage.exec() ;
     RequeteImage.next() ;
-    
-    CheminImage = RequeteImage.value(0).toString() ;
-    QImage Image(CheminImage) ;
-    ui->Lb_Photo->setPixmap(QPixmap::fromImage(Image));
+    */
 
-    //Met l'image à l'échelle du cadre
-    ui->Lb_Photo->setScaledContents(true);
+    ////////////////////////////////////////////////////////
+    ////////////// Photo //////////////////////////////////
+    //////////////////////////////////////////////////////
+
+    QPixmap Image;
+    QString TypeImage;
+
+    QString sCheminImage=QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() ;
+
+    if( QFile::exists( sCheminImage + ".jpg" ) )
+    {
+        sCheminImage = sCheminImage + ".jpg" ;
+        TypeImage="JPG";
+    }
+    else
+    if( QFile::exists( sCheminImage + ".jpeg" ) )
+    {
+        sCheminImage = sCheminImage + ".jpeg" ;
+        TypeImage="JPEG";
+    }
+    else
+    if( QFile::exists( sCheminImage + ".png" ) )
+    {
+        sCheminImage = sCheminImage + ".png" ;
+        TypeImage="PNG";
+    }
+    else
+    if( QFile::exists( sCheminImage + ".bmp" ) )
+    {
+        sCheminImage = sCheminImage + ".bmp" ;
+        TypeImage="BMP";
+    }
+    else
+    if( QFile::exists( sCheminImage + ".gif" ) )
+    {
+        sCheminImage = sCheminImage + ".gif" ;
+        TypeImage="GIF";
+    }
+
+    QDir CheminFichierImage( sCheminImage );
+    // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
+    if ( Image.load(CheminFichierImage.absolutePath(),TypeImage.toLocal8Bit().data()) )
+    {
+       ui->Lb_Photo->setPixmap( Image ) ;
+       //Met l'image à l'échelle du cadre
+       ui->Lb_Photo->setScaledContents( true ) ;
+       qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() << "TypeImage" << TypeImage.toLocal8Bit().data();
+    }
+    else
+    {
+       ui->Lb_Photo->setText("Photo n°1\nindisponible");
+    }
 }
 
 /**
@@ -268,65 +318,77 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
  */
 void F_ImprimerFicheCompleteJeu::on_Bt_Imprimer_clicked()
 {
-    QPrinter * Imprimante = new QPrinter(QPrinter::HighResolution);
-    Imprimante->setPaperSize (QPrinter::A4);
-    Imprimante->setOrientation(QPrinter::Landscape);
-    Imprimante->setFullPage(true);
+   QPrinterInfo InformationsImprimantes ;
+   if (InformationsImprimantes.defaultPrinter().isNull() )
+   {
+      QMessageBox::information(this,"Pas d'impression possible !","Il n'y a pas d'imprimante reconnue sur votre ordinateur !\n\n"
+                               "1°) Soit il n'y a pas d'imprimante installée sur ce poste.\n"
+                               "2°) Soit elle n'est pas allumée.\n"
+                               "3°) Soit elle n'est pas branchée.\n\n"
+                               "Contactez votre administrateur réseau.","Ok");
+   }
+   else
+   {
+      QPrinter Imprimante(QPrinter::HighResolution);
+      Imprimante.setPaperSize (QPrinter::A4);
+      Imprimante.setOrientation(QPrinter::Landscape);
+      Imprimante.setFullPage(true);
 
-    QPrintDialog printDialog(Imprimante, this);
-    if ( printDialog.exec() == 1)
-    {
-        QTextBrowser * editor = new QTextBrowser;
+      QPrintDialog printDialog(&Imprimante, this);
+      if ( printDialog.exec() == QDialog::Accepted)
+      {
+        QTextBrowser FeuilleAImprimer ;
 
         //Création des formats de textes
         QTextCharFormat TailleTexte;
         TailleTexte.setFontPointSize(12);
 
         //Creation des QString
-        editor->setCurrentCharFormat(TailleTexte);
+        FeuilleAImprimer.setCurrentCharFormat(TailleTexte);
 
         //Mise en place dans la feuille
-        editor->append(this->ui->Lb_Nom->text() + ": " + "<b>" + this->ui->LE_Nom->text() + "</b>") ;
-        
-        editor->append(this->ui->Lb_Code->text() + ": " +"<b>" + this->ui->LE_Code->text() + "</b>" + "\n");
-        
-        editor->append(this->ui->Lb_Classification->text() + ": " + "<b>" + this->ui->LE_Classification->text() + "</b>" + "\n");
-        
-        editor->append(this->ui->Lb_AgeMin->text() + ": " + "<b>" + this->ui->LE_AgeMin->text() + "</b>" + " - " + this->ui->Lb_AgeMax->text() + ": " + "<b>" + this->ui->LE_AgeMax->text() + "</b>" + "\n");
-        
-        editor->append(this->ui->Lb_JoueurMin->text() + ": " + "<b>" + this->ui->LE_JoueurMin->text() + "</b>" + " - " + this->ui->Lb_JoueurMax->text() + ": " + "<b>" + this->ui->LE_JoueurMax->text() + "</b>" + "\n");
-        
-        editor->append(this->ui->Lb_Createur->text() + ": " + "<b>" + this->ui->LE_Createur->text() + "</b>" + "\n");
-        
-        editor->append(this->ui->Lb_Editeur->text() + ": " + "<b>" + this->ui->LE_Editeur->text() + "</b>");
+        FeuilleAImprimer.append(this->ui->Lb_Nom->text() + ": " + "<b>" + this->ui->LE_Nom->text() + "</b>") ;
 
-        editor->append(this->ui->Lb_Fournisseur->text() + ": " + "<b>" + this->ui->LE_Fournisseur->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Code->text() + ": " +"<b>" + this->ui->LE_Code->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_Statut->text() + ": " + "<b>" + this->ui->LE_Statut->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Classification->text() + ": " + "<b>" + this->ui->LE_Classification->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_Etat->text() + ": " + "<b>" + this->ui->LE_Etat->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_AgeMin->text() + ": " + "<b>" + this->ui->LE_AgeMin->text() + "</b>" + " - " + this->ui->Lb_AgeMax->text() + ": " + "<b>" + this->ui->LE_AgeMax->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_EtatInitial->text() + ": " + "<b>" + this->ui->LE_EtatInitial->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_JoueurMin->text() + ": " + "<b>" + this->ui->LE_JoueurMin->text() + "</b>" + " - " + this->ui->Lb_JoueurMax->text() + ": " + "<b>" + this->ui->LE_JoueurMax->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_DateAchat->text() + ": " + "<b>" + this->ui->LE_DateAchat->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Createur->text() + ": " + "<b>" + this->ui->LE_Createur->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_PrixAchat->text() + ": " + "<b>" + this->ui->LE_PrixAchat->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Editeur->text() + ": " + "<b>" + this->ui->LE_Editeur->text() + "</b>");
 
-        editor->append(this->ui->Lb_PrixLoc->text() + ": " + "<b>" + this->ui->LE_PrixLoc->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Fournisseur->text() + ": " + "<b>" + this->ui->LE_Fournisseur->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_Caution->text() + ": " + "<b>" + this->ui->LE_Caution->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Statut->text() + ": " + "<b>" + this->ui->LE_Statut->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_Emplacement->text() + ": " + "<b>" + this->ui->LE_Emplacement->text() + "</b>" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_Etat->text() + ": " + "<b>" + this->ui->LE_Etat->text() + "</b>" + "\n");
 
-        editor->append(this->ui->Lb_Contenu->text() + ": " + "\n");
-        editor->append("<b>" + this->ui->TxE_Contenu->toPlainText() + "</b" + "\n");
+        FeuilleAImprimer.append(this->ui->Lb_EtatInitial->text() + ": " + "<b>" + this->ui->LE_EtatInitial->text() + "</b>" + "\n");
 
-        editor->setAlignment(Qt::AlignCenter);
-        editor->setCurrentCharFormat(TailleTexte);
-        editor->setAlignment(Qt::AlignCenter);
+        FeuilleAImprimer.append(this->ui->Lb_DateAchat->text() + ": " + "<b>" + this->ui->LE_DateAchat->text() + "</b>" + "\n");
 
-        editor->print(Imprimante);
-    }
+        FeuilleAImprimer.append(this->ui->Lb_PrixAchat->text() + ": " + "<b>" + this->ui->LE_PrixAchat->text() + "</b>" + "\n");
+
+        FeuilleAImprimer.append(this->ui->Lb_PrixLoc->text() + ": " + "<b>" + this->ui->LE_PrixLoc->text() + "</b>" + "\n");
+
+        FeuilleAImprimer.append(this->ui->Lb_Caution->text() + ": " + "<b>" + this->ui->LE_Caution->text() + "</b>" + "\n");
+
+        FeuilleAImprimer.append(this->ui->Lb_Emplacement->text() + ": " + "<b>" + this->ui->LE_Emplacement->text() + "</b>" + "\n");
+
+        FeuilleAImprimer.append(this->ui->Lb_Contenu->text() + ": " + "\n");
+        FeuilleAImprimer.append("<b>" + this->ui->TxE_Contenu->toPlainText() + "</b" + "\n");
+
+        FeuilleAImprimer.setAlignment(Qt::AlignCenter);
+        FeuilleAImprimer.setCurrentCharFormat(TailleTexte);
+        FeuilleAImprimer.setAlignment(Qt::AlignCenter);
+
+        FeuilleAImprimer.print(&Imprimante);
+      }
+   }
 }
 /**
  * @brief Méthode qui quitte la fenêtre d'aperçu des informations

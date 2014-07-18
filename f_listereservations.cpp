@@ -612,5 +612,5 @@ void F_ListeReservations::on_TbW_ListeReservations_clicked(const QModelIndex &in
 
 void F_ListeReservations::on_TbW_ListeReservations_doubleClicked(const QModelIndex &index)
 {
-    emit( this->SignalSelectionMembre( this->VecteurListeReservations.at( index.row() ) ) ) ;
+    emit( this->Signal_DoubleClic_ListeMembres( this->VecteurListeReservations.at( index.row() ) ) ) ;
 }

@@ -38,6 +38,7 @@ public slots:
     void slot_ChangerOnglet();
     void slot_Preferences() ;
     void slot_DoubleClic_ListeJeux(QString CodeJeu);
+    void slot_DoubleClic_ListeMembres(uint IdMembre) ;
 
 private slots:
     void on_Bt_Membre_clicked();
@@ -72,7 +73,6 @@ private:
     F_ListeMembres * pListeMembresAdmin ;
     F_Membres * pAdministrerMembres;
     F_Paiement * pPaiement;
-    F_Preferences * pPreferences;
     F_Retards * pRetards;
     F_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;

@@ -793,5 +793,5 @@ void F_ListeMembres::on_TbW_ListeMembre_clicked(const QModelIndex &index)
 
 void F_ListeMembres::on_TbW_ListeMembre_doubleClicked(const QModelIndex &index)
 {
-    emit( this->SignalSelectionMembre( this->ModeleMembres.data( this->ModeleMembres.index( index.row(), 0 )).toInt() ) ) ;
+    emit( this->Signal_DoubleClic_ListeMembres( this->ModeleMembres.data( this->ModeleMembres.index( index.row(), 0 )).toInt() ) ) ;
 }

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1050</width>
+    <width>1065</width>
     <height>600</height>
    </rect>
   </property>
@@ -14,46 +14,45 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
-   <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QPushButton" name="PB_Selectionner">
-       <property name="text">
-        <string>Tous sélectionner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="PB_Deselectionner">
-       <property name="text">
-        <string>Tous déselectionner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0" colspan="2">
-      <widget class="QTableView" name="TbW_Retards">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <attribute name="verticalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QPushButton" name="PB_Envoyer">
-       <property name="text">
-        <string>Envoyer</string>
-       </property>
-      </widget>
-     </item>
+   <item row="0" column="1">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <layout class="QGridLayout" name="gridLayout">
      <item row="4" column="0" colspan="2">
+      <widget class="QPushButton" name="Bt_Enregistrer">
+       <property name="text">
+        <string>Enregistrer ce modèle</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Valider.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="3">
+      <widget class="QLabel" name="Lb_Instruction">
+       <property name="text">
+        <string>Liste de jeux : %jeux 
+Nom : %nom
+Prénom : %prenom
+Adresse email du destinataire : %destinataire
+Adresse email de l'expéditeur : %expediteur
+Date d'envoie de l'email : %date
+Prix de l'amende : %amende
+Nb de jours de retard : %jours</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0" colspan="3">
       <widget class="QLabel" name="Lb_Erreur">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -99,42 +98,7 @@
         </palette>
        </property>
        <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="2">
-      <widget class="QProgressBar" name="BP_Mail">
-       <property name="value">
-        <number>24</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="0" column="1">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="2">
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0" colspan="3">
-      <widget class="QLabel" name="Lb_FormatMail">
-       <property name="text">
-        <string>Format Mail</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <string>Erreur</string>
        </property>
       </widget>
      </item>
@@ -154,13 +118,10 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="1" colspan="2">
-      <widget class="QLineEdit" name="LE_Sujet"/>
-     </item>
      <item row="2" column="0" colspan="3">
       <widget class="QLabel" name="Lb_Corps">
        <property name="text">
-        <string>Contenu du mail</string>
+        <string>Contenu de l'email</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -170,35 +131,103 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0" colspan="3">
-      <widget class="QTextEdit" name="TE_Corps"/>
-     </item>
-     <item row="4" column="0" colspan="2">
-      <widget class="QPushButton" name="PB_Enregistrer">
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="Lb_FormatMail">
        <property name="text">
-        <string>Enregistrer</string>
+        <string>Format de l'email</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
      <item row="4" column="2">
-      <widget class="QPushButton" name="PB_Annuler">
+      <widget class="QPushButton" name="Bt_Annuler">
        <property name="text">
         <string>Annuler</string>
        </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Annuler.png</normalon>
+        </iconset>
+       </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="3">
-      <widget class="QLabel" name="Lb_Instruction">
+     <item row="1" column="1" colspan="2">
+      <widget class="QLineEdit" name="LE_Sujet"/>
+     </item>
+     <item row="3" column="0" colspan="3">
+      <widget class="QTextEdit" name="TE_Corps"/>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="2" column="0" colspan="2">
+      <widget class="QTableView" name="TbW_Retards">
+       <property name="minimumSize">
+        <size>
+         <width>600</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Cocher les membres devant recevoir un email</string>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QPushButton" name="Bt_Deselectionner">
        <property name="text">
-        <string>Liste de jeux : %jeux 
-Nom : %nom
-Prenom : %prenom
-Adresse mail du Destinataire : %destinataire
-Adresse mail de l'expediteur : %expediteur
-Date d'envoie du mail : %date</string>
+        <string>Tous déselectionner</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Decocher_tout.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="Bt_Selectionner">
+       <property name="text">
+        <string>Tous sélectionner</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QPushButton" name="Bt_Envoyer">
+       <property name="text">
+        <string>Envoyer</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="Lb_NbDeMembresEnRetard">
+       <property name="text">
+        <string>Nombre de membres en retard :</string>
        </property>
        <property name="alignment">
-        <set>Qt::AlignCenter</set>
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="Lb_Resultat">
+       <property name="text">
+        <string>0</string>
        </property>
       </widget>
      </item>

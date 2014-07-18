@@ -60,16 +60,13 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pAdministrerMembres->setVisible(false);
     this->ui->Lay_Admin->addWidget(this->pRechercheMembresAdmin);
     this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
-    this->pRechercheMembresAdmin->setLayout(ui->Lay_Admin);
     this->pAdministrerMembres->setVisible(true);
-
 
     ////Liste Membres//////
     qDebug()<<"Création ADMIN-F_ListeMembres";
     this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
     this->pListeMembresAdmin->setVisible( false ) ;
     this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
-    this->pListeMembresAdmin->setLayout( ui->Lay_Admin ) ;
 
     ////Statistiques////////
     qDebug()<<"Création ADMIN-F_ListeMembres";
@@ -123,15 +120,25 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //PostIt
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
 
-    connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
-    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
-    connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this->pAdministrerMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
-    connect( this->pListeMembres, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( slot_ChangerOnglet() ) ) ;
-    connect( this->pListeMembresAdmin, SIGNAL( SignalSelectionMembre( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
-    connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
-
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(9);
+
+    // #################################################
+    // ##################### SIGNAUX  ##################
+    // #################################################
+    connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
+    // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
+
+    connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+    connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
+
+    // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
+    connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
+
+    connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
+
+    // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
+    connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
 
     qDebug()<<"Constructeur F_MainWindow = OK";
 }
@@ -169,18 +176,17 @@ void F_MainWindow::VerifierConnexionBDD()
     // Test d'accès à la base de données
     if(db.isOpen() == false)
     {
-        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données" ,"Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
+        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données !" ,"Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
         Err.exec();
         qDebug()<< "Vous etes sur l'adresse IP " << sAdresseIP << " sur le port " << nPort << " en tant que " << sNomUtilisateur << "." << endl << endl;
         qDebug()<< endl << "La connexion à la BDD " << sNomBDD << " a échouée." << endl;
 
-        this->pPreferences = new F_Preferences;
-        this->pPreferences->setWindowTitle("Préférences");
-        this->pPreferences->setWindowModality(Qt::ApplicationModal);
-        connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preference() ) ) ;
-
-        this->pPreferences->show();
-        this->pPreferences->SelectionnerOnglet( 1 ) ;
+        // Création de la fenêtre de choix des préférences du logiciel
+        F_Preferences f_Preferences;
+        connect( &f_Preferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
+        f_Preferences.exec();
+        // choisir l'onglet des préférences Réseau de la fenêtre Préférences
+        f_Preferences.SelectionnerOnglet( 1 ) ;
     }
     else
     {
@@ -199,7 +205,7 @@ void F_MainWindow::slot_ChangerOnglet()
     ui->TbW_Main->setCurrentIndex( 0 ) ;
 }
 
-// Si les préférencslot_Preferences, mettre à jour certains affichages sur certaines fenêtres
+// Si les préférences ont été mise à jours, mettre à jour certains affichages sur certaines fenêtres
 void F_MainWindow::slot_Preferences()
 {
     this->pAdministrerMembres->MaJTitre() ;
@@ -208,11 +214,6 @@ void F_MainWindow::slot_Preferences()
     this->pMembres->MaJTitre() ;
     this->pMembres->MaJType() ;
     this->pMembres->AfficherMembre() ;
-
-    if( this->pPreferences != NULL )
-    {
-        delete this->pPreferences ;
-    }
 }
 
 void F_MainWindow::on_Bt_Membre_clicked()
@@ -269,20 +270,6 @@ void F_MainWindow::on_Bt_Statistiques_clicked()
     this->pRechercheMembresAdmin->setVisible(false);
     this->pStatistiques->setVisible(true);
 }
-
-/*
-void F_MainWindow::on_Bt_PostIt_clicked()
-{
-    this->pAdministrerMembres->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
-    this->pStatistiques->setVisible(false);
-    this->pPostIt->setVisible(true);
-}
-*/
 
 void F_MainWindow::on_Bt_ListeMembres_clicked()
 {
@@ -372,12 +359,10 @@ void F_MainWindow::on_Menu_Fichier_Quitter_triggered()
 
 void F_MainWindow::on_Menu_Edition_Preferences_triggered()
 {
-    this->pPreferences = new F_Preferences;
-    this->pPreferences->setWindowTitle("Préférences");
-    this->pPreferences->setWindowModality(Qt::ApplicationModal);
-    connect( this->pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preference() ) ) ;
-
-    this->pPreferences->show();
+   // Création de la fenêtre de choix des préférences du logiciel
+   F_Preferences f_Preferences;
+   connect( &f_Preferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
+   f_Preferences.exec();
 }
 
 void F_MainWindow::on_Menu_Aide_Aide_triggered()
@@ -404,18 +389,46 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
     ui->TbW_Main->setCurrentIndex(2);
 }
 
+/**
+ * Quand double clic sur un jeu dans l'onglet Liste de jeux, affiche l'onglet jeu avec le jeu concerné pour avoir le détail
+ * grâce à un signal envoyé par f_listejeux.
+ * @param index Ligne choisie dans le modèle associé au tableau TbV_Recherche
+ */
+void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
+{
+    // Indiquer à l'onglet Membre quel membre afficher
+    this->pMembres->slot_AfficherMembre( IdMembre );
+    // Faire apparaître l'onglet Membre
+    ui->TbW_Main->setCurrentIndex(0);
+}
+
 void F_MainWindow::on_Menu_Jeux_Imprimer_Etiquette_triggered()
 {
-    F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu ;
-    f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(this->pJeux->get_JeuEnConsultation() ) ;
-    f_ImprimerEtiquetteJeu.exec() ;
+   // ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
+   if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
+   {
+       F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu ;
+       f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(this->pJeux->get_JeuEnConsultation() ) ;
+       f_ImprimerEtiquetteJeu.exec() ;
+   }
+   else
+   {
+      QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner un avant de lancer l'impression de son étiquette.", "OK") ;
+   }
 }
 
 void F_MainWindow::on_Menu_Jeux_Imprimer_Fiche_Complete_triggered()
 {
-    F_ImprimerFicheCompleteJeu f_ImprimerFicheCompleteJeu ;
-    f_ImprimerFicheCompleteJeu.ImprimerFicheJeuComplete(this->pJeux->get_JeuEnConsultation()) ;
-    f_ImprimerFicheCompleteJeu.exec() ;
+   if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
+   {
+      F_ImprimerFicheCompleteJeu f_ImprimerFicheCompleteJeu ;
+      f_ImprimerFicheCompleteJeu.ImprimerFicheJeuComplete(this->pJeux->get_JeuEnConsultation()) ;
+      f_ImprimerFicheCompleteJeu.exec() ;
+   }
+   else
+   {
+      QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner un avant de lancer l'impression de sa fiche complête.", "OK") ;
+   }
 }
 
 void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
@@ -423,8 +436,8 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
     QMessageBox APropos;
 
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\"Ludopen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2014.04.02<br><br>"
+                  "LudOpen version 2014.05.16<br><br>"
                   "Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
-                  "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William. Tous droits réservés.");
+                  "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }

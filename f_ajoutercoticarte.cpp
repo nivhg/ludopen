@@ -340,7 +340,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
 
             query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
                           "DateExpiration,CreditRestant) "
-                          "VALUES (:cartesprepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
+                          "VALUES (:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
             query.bindValue(":CartesPrepayees_IdCarte", nIdCarte);
             query.bindValue(":Membres_IdMembre", this->nIDMembre);
             query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;

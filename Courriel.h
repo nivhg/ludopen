@@ -9,7 +9,7 @@
 #include <QDebug>
 #include <QtWidgets\QMessageBox>
 #include <QThread>
-
+#include <QVector>
 
 
 /** @enum   Etape
@@ -18,14 +18,23 @@
  */
 typedef enum
 {
-    Init, ///< initialisation
-    From, /// < envoie du mail de l'expediteur
-    To,   ///< envoie du mail du destinataire
-    Data, ///< Indique que l'on va envoyer les différentes information du mail
-    Body, ///< envoie du mail
-    Quitter, ///< envoie un signal pour arrêter la connexion
-    Erreur ///< S'il y a une erreur on passe par cette étape
+    Init,      ///< initialisation
+    From,      /// < envoie du mail de l'expediteur
+    To,        ///< envoie du mail du destinataire
+    Data,      ///< Indique que l'on va envoyer les différentes information du mail
+    Body,      ///< envoie du mail
+    Quitter,   ///< envoie un signal pour arrêter la connexion
+    Erreur     ///< S'il y a une erreur on passe par cette étape
 }Etape ;
+
+typedef struct
+{
+   uint    IDMembre ;         ///< ID du membre destinataire de l'email
+   QString sFrom ;            ///< Email de l'expéditeur
+   QString sTo ;              ///< Email du destinataire
+   QString sSujet ;           ///< Sujet de l'email
+   QString sCorps ;           ///< Corps de l'email
+} EMail ;
 
 /** @brief Permet l'envoie d'un mail via un serveur smpt ne demandant pas d'authentification
  *
@@ -41,44 +50,51 @@ Q_OBJECT
 
 public:
     //! Permet d'initialiser tous les attributs de la classe et les 'connect' avec le socket.
-    Courriel(const QString sAdresseCourriel, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps) ;
+    Courriel(const QString sAdresseServeurSNMP, const uint nPort, QVector<EMail> *ListeEMailAEnvoyer ) ;
     //! Détruit les objets créé par le pointeur
     ~Courriel() ;
 
-    //! Permet la connexion au serveur. Indique que l'on rentre dans l'étape d'initialisation
-    void EnvoyerUnMessage() ;
-
 private slots:
     //! Indique qu'il y a une erreur lors de la connection et quelle est cette erreur.
-    void slot_ErreurRecu(QAbstractSocket::SocketError ErreurSocket) ;
+    void slot_ErreurRecue(QAbstractSocket::SocketError ErreurSocket) ;
     //! Indique la deconnexion du serveur
     void slot_Deconnecte() ;
     //! Indique la connexion au serveur
     void slot_Connecte() ;
     //! Permet l'envoie du mail. Est appelé a chaque fois qu'un étape est validé.
-    void slot_PretALire() ;
+    void slot_ReceptionDonnees() ;
 
 private:
     // METHODEs -----------------------------------------------------------------
-    //! Permet de lancer le thread.
+    //! Permet de passer à l'email suivant du vecteur, s'il en reste à traiter
+    void TraiterEMailSuivant( ) ;
+    //! Permet de lancer le thread d'envoie d'email
     void run() ;
 
     // ATTRIBUTs ----------------------------------------------------------------
-    QString sMessage ;///< Contient le message à envoyer au serveur
-    QTextStream *oFlux ; ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
-    QTcpSocket *oSocket ; ///< Pointeur sur le socket
-    QString sFrom ; ///< Email de l'expediteur
-    QString sTo ; ///< Email du destinataire
-    QString sAdresseSmtp ; ///< Contient l'adresse du serveur smtp
-    int nPort ; ///< Contient le numéro du port
-    Etape EtapeConnexion ; ///< Contient l'étape ou en rendu la connexion
+
+    QString sAdresseSmtp ;       ///< l'adresse du serveur smtp
+    int nPort ;                  ///< le numéro du port
+    Etape EtapeConnexion ;       ///< l'étape ou en rendu la connexion
+
+    QString sFrom ;            ///< Email de l'expéditeur
+    QString sTo ;              ///< Email du destinataire
+    QString sMessage ;         ///< le message à envoyer au serveur
+
+    QVector <EMail> * ListeEMailAEnvoyer ;  ///< vecteur qui contient la liste des emails à envoyer.
+    unsigned short NumeroEmailATraiter ;  ///< Numéro de la case du vecteur qui contient la liste des emails à envoyer
+
+private:
+    QTextStream FluxSMTP ;       ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
+    QTcpSocket SocketSMTP ;      ///< socket pour l'envoie d'email
 
 signals:
     //! Signal indiquand qu'il faut détruire le thread
-    void SignalFermerThread( Courriel * ) ;
+    void Signal_Fermer_Thread_EMail( ) ;
     //! Signal indiquand que le mail a bien été envoyé et qu'il faut détruire le thread
-    void SignalMailEnvoyer( Courriel * ) ;
+    void SignalMailEnvoyer( uint IDMembre ) ;
     //! Signal indiquand qu'il y a une erreur lors de la connexion
-    void SignalErreur( QString ) ;
+    void Signal_Erreur_EMail( QString ) ;
 } ;
+
 #endif

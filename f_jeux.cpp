@@ -27,6 +27,7 @@
 #include <QPixmap>
 #include <QDir>
 #include <QMessageBox>
+#include "acces_photos_http.h"
 
 /**
  * @brief Constructeur de la classe f_jeux
@@ -337,54 +338,59 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->LE_NumClassification->setCursorPosition(0);
     
     ////////////////////////////////////////////////////////
-    ////////////// Photo //////////////////////////////////
+    ////////////// Chargement Photo n°1 //////////////////////////////////
     //////////////////////////////////////////////////////
 
     QPixmap Image;
     QString TypeImage;
 
-    QString sCheminImage=QApplication::applicationDirPath() + "/photos/" + ui->Le_code->text() ;
+    QSqlQuery RequeteCheminPhotosJeux;
+    RequeteCheminPhotosJeux.exec("SELECT CheminPhotosJeux FROM preferences WHERE IdPreferences = 1");
+    // si on a un chemin pour le répertoire des photos des jeux
+    if ( RequeteCheminPhotosJeux.next() )
+    {
+       QString sCheminImagePref = RequeteCheminPhotosJeux.value(0).toString();
+       QString sCheminImage;
 
-    if( QFile::exists( sCheminImage + ".jpg" ) )
-    {
-        sCheminImage = sCheminImage + ".jpg" ;
-        TypeImage="JPG";
-    }
-    else
-    if( QFile::exists( sCheminImage + ".jpeg" ) )
-    {
-        sCheminImage = sCheminImage + ".jpeg" ;
-        TypeImage="JPEG";
-    }
-    else
-    if( QFile::exists( sCheminImage + ".png" ) )
-    {
-        sCheminImage = sCheminImage + ".png" ;
-        TypeImage="PNG";
-    }
-    else
-    if( QFile::exists( sCheminImage + ".bmp" ) )
-    {
-        sCheminImage = sCheminImage + ".bmp" ;
-        TypeImage="BMP";
-    }
-    else
-    if( QFile::exists( sCheminImage + ".gif" ) )
-    {
-        sCheminImage = sCheminImage + ".gif" ;
-        TypeImage="GIF";
-    }
+       QString filename;
+       sCheminImage= sCheminImagePref + "\\" + ui->Le_code->text();
 
-    QDir CheminFichierImage( sCheminImage );
-    // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
-    if ( Image.load(CheminFichierImage.absolutePath(),TypeImage.toLocal8Bit().data()) )
-    {
-       ui->Lb_Image->setPixmap( Image ) ;
-       //Met l'image à l'échelle du cadre
-       ui->Lb_Image->setScaledContents( true ) ;
-       qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() << "TypeImage" << TypeImage.toLocal8Bit().data();
+       AccesPhotosParHTTP manager;
+
+       if( ! manager.FileOrURLExists( &filename, sCheminImage, "jpg", &TypeImage ) )
+       {
+          if( ! manager.FileOrURLExists( &filename, sCheminImage, "jpeg", &TypeImage ) )
+          {
+             if( ! manager.FileOrURLExists( &filename, sCheminImage, "png", &TypeImage ) )
+             {
+                if( ! manager.FileOrURLExists( &filename, sCheminImage, "bmp", &TypeImage ) )
+                {
+                   manager.FileOrURLExists( &filename, sCheminImage, "gif", &TypeImage );
+                }
+             }
+          }
+       }
+       // S'il s'agit d'une URL
+       if( sCheminImage.indexOf("http://",0,Qt::CaseInsensitive) != -1)
+       {
+          sCheminImage=filename;
+       }
+
+       QDir CheminFichierImage( sCheminImage );
+       // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
+       if ( Image.load(CheminFichierImage.absolutePath(),TypeImage.toLocal8Bit().data()) )
+       {
+          ui->Lb_Image->setPixmap( Image ) ;
+          //Met l'image à l'échelle du cadre
+          ui->Lb_Image->setScaledContents( true ) ;
+          qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() << "TypeImage" << TypeImage.toLocal8Bit().data();
+       }
+       else   // pas de photo à afficher
+       {
+          ui->Lb_Image->setText("Photo n°1\nindisponible");
+       }
     }
-    else
+    else   // pas de photo à afficher
     {
        ui->Lb_Image->setText("Photo n°1\nindisponible");
     }
@@ -538,7 +544,7 @@ void F_Jeux::on_Bt_regle_clicked()
     QString FinCheminRegleJeu ;
     QString CheminComplet ;
 
-    RequeteRegleDuJeu.prepare("SELECT CodeJeu,CheminRegle, IdPreferences FROM jeux, preferences WHERE CodeJeu = :CodeDuJeu AND IdPreferences = 1") ;
+    RequeteRegleDuJeu.prepare("SELECT CodeJeu,CheminReglesJeux, IdPreferences FROM jeux, preferences WHERE CodeJeu = :CodeDuJeu AND IdPreferences = 1") ;
     RequeteRegleDuJeu.bindValue(":CodeDuJeu", ui->Le_code->text().toInt());
     RequeteRegleDuJeu.exec() ;
 
@@ -553,7 +559,7 @@ void F_Jeux::on_Bt_regle_clicked()
 
     if(!QDesktopServices::openUrl(QUrl::fromLocalFile(CheminComplet)))
     {
-        QMessageBox::information(this, "Règle du jeu", "Ce jeu n'a pas de règle correspondant", "OK") ;
+        QMessageBox::information(this, "Règle du jeu", "Ce jeu n'a pas de règle correspondante.", "OK") ;
     }
 }
 ////////////////////////////////////////////////////////////

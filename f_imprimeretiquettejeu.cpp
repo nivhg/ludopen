@@ -6,7 +6,7 @@
   * @author STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
   * @since 01/05/2012
   * @version 0.1
-  * @date 15/08/2012
+  * @date 20/04/2014  William
   *
   * Cette classe permet d'imprimer une étiquette de jeu avec les informations sur la ludothèque ainsi que le nom et le code du jeu
   *
@@ -17,6 +17,7 @@
 //-------------------------------------------------------
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrinter>
+#include <QPrinterInfo>
 
 // En-tête propre à l'application ----------------------------------------------
 #include "f_imprimeretiquettejeu.h"
@@ -79,32 +80,45 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
  */
 void F_ImprimerEtiquetteJeu::on_Bt_Imprimer_clicked()
 {
-    QPrinter * Imprimante = new QPrinter(QPrinter::HighResolution);
-    Imprimante->setPaperSize (QPrinter::A4);
-    Imprimante->setOrientation(QPrinter::Landscape);
-    Imprimante->setFullPage(true);
+   QPrinterInfo InformationsImprimantes ;
+   if (InformationsImprimantes.defaultPrinter().isNull() )
+   {
+      QMessageBox::information(this,"Pas d'impression possible !","Il n'y a pas d'imprimante reconnue sur votre ordinateur !\n\n"
+                               "1°) Soit il n'y a pas d'imprimante installée sur ce poste.\n"
+                               "2°) Soit elle n'est pas allumée.\n"
+                               "3°) Soit elle n'est pas branchée.\n\n"
+                               "Contactez votre administrateur réseau.","Ok");
+   }
+   else
+   {
+      QPrinter Imprimante(QPrinter::HighResolution);
+      Imprimante.setPaperSize (QPrinter::A4);
+      Imprimante.setOrientation(QPrinter::Landscape);
+      Imprimante.setFullPage(true);
 
-    QPrintDialog printDialog(Imprimante, this);
-    if ( printDialog.exec() == 1)
-    {
-        QTextBrowser * editor = new QTextBrowser;
+      QPrintDialog printDialog(&Imprimante, this);
+      // Si pas d'imprimante connectée, la fenêtre ne peut s'afficher
+      if ( printDialog.exec() == QDialog::Accepted )
+      {
+         QTextBrowser FeuilleAImprimer ;
 
-        //Création des formats de textes
-        QTextCharFormat TailleTexte;
-        TailleTexte.setFontPointSize(10);
+         //Création des formats de textes
+         QTextCharFormat TailleTexte;
+         TailleTexte.setFontPointSize(10);
 
-        //Creation des QString
-        editor->setCurrentCharFormat(TailleTexte);
+         //Creation des QString
+         FeuilleAImprimer.setCurrentCharFormat(TailleTexte);
 
-        //Mise en place dans la feuille
-        editor->append(this->ui->Lb_InfoLudo->text());
-        editor->append( "<b>" + ui->Le_CodeJeu->text()+ " - " + ui->Lb_NomJeu->text()+ "</b>");
-        editor->append(ui->TxE_Contenu->toPlainText() + "\n");
-        editor->setAlignment(Qt::AlignCenter);
-        editor->setCurrentCharFormat(TailleTexte);
-        editor->setAlignment(Qt::AlignCenter);
-        editor->print(Imprimante);
-    }    
+         //Mise en place dans la feuille
+         FeuilleAImprimer.append(this->ui->Lb_InfoLudo->text());
+         FeuilleAImprimer.append( "<b>" + ui->Le_CodeJeu->text()+ " - " + ui->Lb_NomJeu->text()+ "</b>");
+         FeuilleAImprimer.append(ui->TxE_Contenu->toPlainText() + "\n");
+         FeuilleAImprimer.setAlignment(Qt::AlignCenter);
+         FeuilleAImprimer.setCurrentCharFormat(TailleTexte);
+         FeuilleAImprimer.setAlignment(Qt::AlignCenter);
+         FeuilleAImprimer.print(&Imprimante);
+      }
+   }
 }
 
 /**

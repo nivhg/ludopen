@@ -43,9 +43,8 @@ public:
     QString ModifierSyntaxeNumTelephone ( QString sNum) ;
 
 signals:
-    void SignalSelectionMembre( unsigned int nIdMembre ) ;
+    void Signal_DoubleClic_ListeMembres( unsigned int nIdMembre ) ;
 
-    
 private slots:
     void on_Bt_RAZ_clicked();
 

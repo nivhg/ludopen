@@ -8,17 +8,19 @@
  *  @version      0.1
  *  @date         13/06/2012
  *
+ *  @bug          26/04/2014 <William> <Ajout de champ dans le tableau des retards>
+ *
  *L'utilisateur peut envoyer un mail à  un membre s'il a n'a pas rendu le jeu à  la date prévu.
  *Il peut définir le mail type qui sera envoyé.
  *
  */
-// En-tÃªte propre à  l'objet ----------------------------------------------------
+// En-tête propre à  l'objet ----------------------------------------------------
 
 #include "Courriel.h"
 #include "f_retards.h"
 #include "ui_f_retards.h"
 
-// En-tÃªtes standards ----------------------------------------------------------
+// En-têtes standards ----------------------------------------------------------
 #include <QStandardItemModel>
 #include <QtSql>
 
@@ -32,31 +34,68 @@ F_Retards::F_Retards(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::F_Retards)
 {
-    QSqlQuery Requete ;
+   QSqlQuery Requete ;
 
-    ui->setupUi(this);
+   ui->setupUi(this);
+   this->pCourriel = NULL ;
 
-    //Mise à  jour de la liste
-    this->MaJListe() ;
+   //Mise à  jour de la liste
+   this->MaJListe() ;
 
-    this->nNombreEmailEnvoye = 0 ;
+   this->NbEmailAEnvoyer = 0 ;
 
-    ui->BP_Mail->setValue( 0 ) ;
+   // Permettre le tri des colonnes
+   ui->TbW_Retards->setSortingEnabled(true);
 
-    //Recupération de l'objet et du corps du mail
-    if( Requete.exec( "SELECT SujetEmail, CorpsEmail FROM preferences WHERE IdPreferences=1") )
-    {
-        Requete.next() ;
-        ui->LE_Sujet->setText( Requete.record().value( 0 ).toString() ) ;
-        ui->TE_Corps->setPlainText( Requete.record().value( 1 ).toString() ) ;
+   ui->TbW_Retards->setEditTriggers( QAbstractItemView::SelectedClicked ) ;
 
-        ui->PB_Enregistrer->setDisabled( true ) ;
-        ui->PB_Annuler->setDisabled( true ) ;
-    }
-    else
-    {
-        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastQuery() ;
-    }
+   // Pas d'édition possible dans les cases
+   ui->TbW_Retards->setEditTriggers( 0 ) ;
+
+   // Création des caractéristiques du tableau : Nombre de colonnes, Nom des colonnes
+   // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
+   modeleTabRetard.setHorizontalHeaderItem(  0, new QStandardItem( "" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  1, new QStandardItem( "" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  2, new QStandardItem( "Nom" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  3, new QStandardItem( "Prénom" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  4, new QStandardItem( "Nb Email envoyé" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  5, new QStandardItem( "Jours de retard" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  6, new QStandardItem( "Amende" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  7, new QStandardItem( "Ville" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  8, new QStandardItem( "Email" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem(  9, new QStandardItem( "Tél. Fixe" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem( 10, new QStandardItem( "Tél. Mobile" ) ) ;
+   modeleTabRetard.setHorizontalHeaderItem( 11, new QStandardItem( "Jeux en retard" ) ) ;
+
+
+   // associer le tableau et le modèle d'affichage
+   ui->TbW_Retards->setModel( &modeleTabRetard ) ;
+
+   // Cacher le message d'erreur par défaut
+   ui->Lb_Erreur->setText("");
+
+   //Recupération du corps de l'email et des paramètre de connection
+   if( Requete.exec( "SELECT AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail FROM preferences WHERE IdPreferences=1" ) )
+   {
+      Requete.next() ;
+      ui->LE_Sujet->setText( Requete.record().value( 2 ).toString() ) ;
+      ui->TE_Corps->setPlainText( Requete.record().value( 3 ).toString() ) ;
+
+      ui->Bt_Enregistrer->setDisabled( true ) ;
+      ui->Bt_Annuler->setDisabled( true ) ;
+
+      //On crée l'objet Courriel qui permettra l'envoi des emails
+      pCourriel = new Courriel( Requete.record().value(0).toString() , Requete.record().value(1).toInt() , &this->ListeEMailAEnvoyer ) ;
+
+      //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
+      connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
+      connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
+      connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
+   }
+   else
+   {
+      qDebug() << "F_Retards::F_Retards : " << Requete.lastQuery() ;
+   }
 }
 
 /**
@@ -65,7 +104,9 @@ F_Retards::F_Retards(QWidget *parent) :
  */
 F_Retards::~F_Retards()
 {
-    delete ui;
+   delete ui;
+   if ( pCourriel)
+   delete pCourriel ;
 }
 
 /**
@@ -74,150 +115,147 @@ F_Retards::~F_Retards()
  */
 void F_Retards::MaJListe()
 {
-    int i ( 0 ) ;
-    QSqlQuery RequeteMembre ;
-    QSqlQuery RequeteJeux ;
-    QStandardItemModel * modele ;
-    QStandardItem * item ;
-    QString sListeJeux ;
+   int i ( 0 ) ;
+   QSqlQuery RequeteMembre ;
+   QSqlQuery RequeteJeux ;
+   QSqlQuery RequeteNbJoursRetardToleres ;
 
-    //Initialisation de l'objet permettant l'organisation du tableau
-    modele = new QStandardItemModel() ;
+   QStandardItem * item ;     // pour remplir le tableau
+   QString sListeJeux ;
+   QString RequeteAvecDate ;  //Le bind ne marche pas bien avec les dates qui doivent entre '...' => donc passer par une string
 
-    ui->TbW_Retards->setModel( modele ) ;
-    ui->TbW_Retards->setEditTriggers( QAbstractItemView::SelectedClicked ) ;
-    ui->TbW_Retards->setEditTriggers( 0 ) ;
+   QDate DateDeRetourPrevue ;
+   QDate DateDeRetourToleree;
+   DateDeRetourToleree=DateDeRetourToleree.currentDate();
 
+   if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
+   {
+      qDebug()<<"F_Retards::MaJListe()=> RequeteNbJoursRetardToleres=" <<RequeteNbJoursRetardToleres.lastQuery();
+   }
+   else
+   {
+      // Calculer la date de retour avec la tolérance du nombre de jours
+      RequeteNbJoursRetardToleres.next();
+      DateDeRetourToleree = DateDeRetourToleree.addDays( -(RequeteNbJoursRetardToleres.value(0).toInt()) ) ;
+      //qDebug()<<"F_Retards::MaJListe()=> DateDeRetourToleree=" << DateDeRetourToleree << "Nb jour retard de la BDD=" << RequeteNbJoursRetardToleres.value(0).toInt();
+   }
 
-    //Requete recuperant la liste des membres ayant des jeux en retards et des jeux correspondants
-    if( RequeteMembre.exec( "SELECT IdMembre, Nom, Prenom, CodeMembre, Email FROM emprunts, membres "
-                            "WHERE IdMembre=Membres_IdMembre AND DateRetourPrevu<CURRENT_DATE AND DateRetour IS NULL AND MailEnvoye!=1 GROUP BY IdMembre" ) )
-    {
-        /*Cration des caractristiques du tableau : -Nombre de colonnes
-                                                   -Nom des colonnes
-                                                   -Nombre de lignes*/
+   RequeteAvecDate="SELECT IdMembre,membres.Nom,Prenom,CodeMembre,membres.Email,membres.Ville,membres.Telephone,Mobile,NbrEMailsEnvoyes "
+                         "FROM preferences,emprunts,membres "
+                             "WHERE IdMembre=Membres_IdMembre "
+                             "AND DateRetourPrevu<='" + DateDeRetourToleree.toString("yyyy-MM-dd")+"' "
+                             "AND DateRetour IS NULL GROUP BY IdMembre" ;
 
-        //On vide le vecteur recuperant l'id des membres
-        this->VecteurIdMembre.clear() ;
+   //Requete récupérant la liste des membres ayant des jeux en retards et des jeux correspondants
+   if( !RequeteMembre.exec( RequeteAvecDate ) )
+   {
+      qDebug() << "F_Retards::MaJListe() : RequeteMembre :" << RequeteMembre.lastQuery() ;
+   }
+   else
+   {
+      //Création des caractéristiques du tableau : Nombre de lignes
+      modeleTabRetard.setRowCount( RequeteMembre.size() ) ;
 
-        //Mise en place du tableau
-        modele->setColumnCount( 6 ) ;
-        modele->setRowCount( RequeteMembre.size() ) ;
-        modele->setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
-        modele->setHorizontalHeaderItem( 1, new QStandardItem( "Nom" ) ) ;
-        modele->setHorizontalHeaderItem( 2, new QStandardItem( "Prenom" ) ) ;
-        modele->setHorizontalHeaderItem( 3, new QStandardItem( "Code" ) ) ;
-        modele->setHorizontalHeaderItem( 4, new QStandardItem( "Mail" ) ) ;
-        modele->setHorizontalHeaderItem( 5, new QStandardItem( "Jeux en retard" ) ) ;
+      //Remplissage du tableau avec les informations de la table emprunts, jeux et membres
+      while( RequeteMembre.next() )
+      {
+         RequeteAvecDate= "SELECT DateRetourPrevu,NomJeu FROM emprunts,jeux WHERE Membres_IdMembre="+RequeteMembre.record().value(0).toString()
+                         +" AND IdJeux=Jeux_IdJeux AND DateRetourPrevu<='"+DateDeRetourToleree.toString("yyyy-MM-dd")
+                         +"' AND DateRetour IS NULL" ;
 
-        ui->TbW_Retards->setColumnWidth( 0, 22 ) ;
-        ui->TbW_Retards->setColumnWidth( 3, 55 ) ;
-        ui->TbW_Retards->setColumnWidth( 4, 200 ) ;
-        ui->TbW_Retards->setColumnWidth( 5, 400 ) ;
+         //On récupère la liste des jeux d'un membre pour les mettre dans la même case du tableau
+         if( !RequeteJeux.exec(RequeteAvecDate) )
+         {
+            qDebug() << "F_Retards::MaJListe() : RequeteJeux :" << RequeteJeux.lastQuery() ;
+         }
+         else
+         {
+             sListeJeux.clear() ;
+             RequeteJeux.next() ;
+             DateDeRetourPrevue = RequeteJeux.record().value( 0 ).toDate() ;
+             sListeJeux = RequeteJeux.record().value( 1 ).toString() ;
+             while( RequeteJeux.next() )
+             {
+                 sListeJeux += ", " + RequeteJeux.record().value( 1 ).toString() ;
+             }
+         }
 
-
-        //Remplissage du tableau avec les informations de la table emprunts, jeux et membres
-        while( RequeteMembre.next() )
-        {
-            RequeteJeux.prepare( "SELECT  DateRetourPrevu, NomJeu FROM emprunts, jeux "
-                                 "WHERE Membres_IdMembre=:IdMembre AND IdJeux=Jeux_IdJeux AND DateRetourPrevu<CURRENT_DATE AND DateRetour IS NULL " ) ;
-            RequeteJeux.bindValue( ":IdMembre", RequeteMembre.record().value(0).toInt() ) ;
-
-            this->VecteurIdMembre.append( RequeteMembre.record().value(0).toInt() );
-
-            //On recupere la liste des jeux d'un membre pour les mettre dans la mÃªme case du tableau
-            if( RequeteJeux.exec() )
-            {
-                sListeJeux.clear() ;
-                RequeteJeux.next() ;
-                sListeJeux = RequeteJeux.record().value( 1 ).toString() ;
-                while( RequeteJeux.next() )
-                {
-                    sListeJeux += ", " + RequeteJeux.record().value( 1 ).toString() ;
-                }
-            }
-            else
-            {
-                qDebug() << "F_Retards::MaJListe() : RequeteJeux :" << RequeteJeux.lastQuery() ;
-            }
-
-            //Permet d'ajout un checkbox à  la 1ére case de la ligne
+         //Permet d'ajouter une checkbox à la ligne si un email est diponible pour le membre
+         if ( ! RequeteMembre.record().value( 4 ).toString().isEmpty() )
+         {
             item = new QStandardItem() ;
             item->setCheckable( true ) ;
             item->setCheckState( Qt::Unchecked);
-            modele->setItem( i, 0, item ) ;
+            modeleTabRetard.setItem( i, 1, item ) ;
+         }
 
-            //On remplie le tableau
-            modele->setItem( i, 1, new QStandardItem( RequeteMembre.record().value( 1 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteMembre.record().value( 2 ).toString() ) ) ;
-            modele->setItem( i, 3, new QStandardItem( RequeteMembre.record().value( 3 ).toString() ) ) ;
-            modele->setItem( i, 4, new QStandardItem( RequeteMembre.record().value( 4 ).toString() ) ) ;
-            modele->setItem( i, 5, new QStandardItem( sListeJeux ) ) ;
-            i++ ;
-        }
-    }
-    else //Sinon on affiche un message d'erreur et on retourne Faux
-    {
-        qDebug() << "F_Retards::MaJListe() : RequeteMembre :" << RequeteMembre.lastQuery() ;
-    }
+         //On remplit le tableau. Ordre des colonnes :
+         // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
+         // SELECT 0 IdMembre, 1 Nom, 2 Prenom, 3 CodeMembre, 4 Email, 5 Ville, 6 Telephone, 7 Mobile, 8 NbrEMailsEnvoyes
+         modeleTabRetard.setItem( i, 0, new QStandardItem( RequeteMembre.record().value( 0 ).toString() ) ) ; // IdMembre
+         modeleTabRetard.setItem( i, 2, new QStandardItem( RequeteMembre.record().value( 1 ).toString() ) ) ; // Nom
+         modeleTabRetard.setItem( i, 3, new QStandardItem( RequeteMembre.record().value( 2 ).toString() ) ) ; // Prénom
+         modeleTabRetard.setItem( i, 4, new QStandardItem( RequeteMembre.record().value( 8 ).toString() ) ) ; // Nb Emails envoyés
+         // CALCULS du nombre de jours de retard
+         qint64 nNbJoursDeRetard = DateDeRetourPrevue.daysTo( QDate::currentDate() ) ;
+         QString sNbJoursDeRetard ;
+         sNbJoursDeRetard.setNum(nNbJoursDeRetard) ;
+         modeleTabRetard.setItem( i, 5, new QStandardItem( sNbJoursDeRetard ) ) ;   // Nb de jours de retard
+         // TODO Calcul de l'amende
+         float Amende = 0.0 ;
+         //modeleTabRetard.setItem( i, 6, new QStandardItem( sNbJoursDeRetard ) ) ;   // Amende
+         modeleTabRetard.setItem( i, 7, new QStandardItem( RequeteMembre.record().value( 5 ).toString() ) ) ; // Ville
+         modeleTabRetard.setItem( i, 8, new QStandardItem( RequeteMembre.record().value( 4 ).toString() ) ) ; // Email
+         modeleTabRetard.setItem( i, 9, new QStandardItem( RequeteMembre.record().value( 6 ).toString() ) ) ; // Tél. Fixe
+         modeleTabRetard.setItem( i, 10, new QStandardItem( RequeteMembre.record().value( 7 ).toString() ) ) ; // Tél. Mobile
+         modeleTabRetard.setItem( i, 11, new QStandardItem( sListeJeux ) ) ;       // Jeux en retard
+
+         i++ ;
+      }
+      // Ajuster la largeur des colonnes au contenu
+      // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
+      ui->TbW_Retards->setColumnWidth(  0,   0 ) ;  // IdMembre à cacher
+      ui->TbW_Retards->setColumnWidth(  1,  22 ) ;  // case à cocher
+      ui->TbW_Retards->resizeColumnToContents(2) ;  // Nom
+      ui->TbW_Retards->resizeColumnToContents(3) ;  // Prenom
+      //ui->TbW_Retards->setColumnWidth(  4,  22 ) ;  // Nb Email envoyé
+      ui->TbW_Retards->resizeColumnToContents(4) ;  // Nb Email envoyé
+      ui->TbW_Retards->resizeColumnToContents(5) ;  // Nb de Jours de retard
+      ui->TbW_Retards->resizeColumnToContents(6) ;  // Amende
+      ui->TbW_Retards->resizeColumnToContents(7) ;  // Ville
+      ui->TbW_Retards->resizeColumnToContents(8) ;  // Email
+      ui->TbW_Retards->resizeColumnToContents(9) ;  // Telephone
+      ui->TbW_Retards->resizeColumnToContents(10) ; // Mobile
+      ui->TbW_Retards->resizeColumnToContents(11);  // liste des jeux en retard
+
+      // Affiche le nombre de membres ayant un retard
+      ui->Lb_Resultat->setNum(this->modeleTabRetard.rowCount());
+   }
 }
-
-/**
- * @brief Fait le lien entre l'id d'un membre et l'addresse de l'objet de type Courriel.
- *
- * @param pCourriel
- * @return int
- */
-int F_Retards::RetrouverIdMembre(Courriel * pCourriel)
-{
-    bool bBoucle ( true ) ;
-    int nBoucle ( 0 ) ;
-    int nRetourne ( 0 ) ;
-
-    //Recherche quand l'adresse de l'objet correspond à  une case du vecteur
-    while( this->VecteurIdMembreCourriel.size() > nBoucle && bBoucle == true )
-    {
-        if( this->VecteurIdMembreCourriel.at( nBoucle ).pCourriel == pCourriel )
-        {
-            nRetourne = this->VecteurIdMembreCourriel.at( nBoucle ).IdMembre ;
-            bBoucle = false ;
-        }
-        nBoucle ++ ;
-    }
-
-    //renvoie l'id correspondant à  la case du vecteur
-    return nRetourne ;
-}
-
 
 /**
  * @brief Permet de supprimer un objet dynamique de type Courriel une fois qu'il fait son travail
  *
  * @param pCourriel
  */
-void F_Retards::slot_FermerThreadCourriel( Courriel * pCourriel )
-{
-    //On vérifie que le pointeur n'est pas null puis on supprime l'objet.
-    if( pCourriel != NULL)
-    {
-        delete pCourriel ;
-    }
-    else
-    {
-        qDebug() << "Erreur : F_Retards::slot_FermerThreadCourriel : Pointeur retourné est NULL" ;
-    }
+void F_Retards::slot_FermerThreadCourriel( )
+{   
+   //On déverrouille la liste et ses boutons
+   ui->TbW_Retards->setEnabled( true ) ;
+   ui->Bt_Envoyer->setEnabled( true ) ;
+   ui->Bt_Selectionner->setEnabled( true ) ;
+   ui->Bt_Deselectionner->setEnabled( true ) ;
 
-    //On deverrouille la liste et ses boutons si tous les objets on été détruit
-    this->nNombreEmailEnCourDEnvoie++ ;
-
-    ui->BP_Mail->setValue(  this->nNombreEmailEnCourDEnvoie / this->nNombreEmailEnvoye *100 ) ;
-    if( this->nNombreEmailEnCourDEnvoie == this->nNombreEmailEnvoye )
-    {
-        ui->TbW_Retards->setEnabled( true ) ;
-        ui->PB_Envoyer->setEnabled( true ) ;
-        ui->PB_Selectionner->setEnabled( true ) ;
-        ui->PB_Deselectionner->setEnabled( true ) ;
-    }
+   //On vérifie que le thread est en route puis on arrête le thread d'envoi d'email.
+   if( this->pCourriel->isRunning() )
+   {
+      this->pCourriel->terminate();
+      this->pCourriel->wait();
+   }
+   else
+   {
+      qDebug() << "F_Retards::slot_FermerThreadCourriel : thread Courrier pas running" ;
+   }
 }
 
 /**
@@ -225,43 +263,46 @@ void F_Retards::slot_FermerThreadCourriel( Courriel * pCourriel )
  *
  * @param pCourriel
  */
-void F_Retards::slot_ConfirmerMailEnvoyer( Courriel * pCourriel )
+void F_Retards::slot_ConfirmerMailEnvoyer( uint IDMembre  )
 {
-    //On vérifie que le pointeur n'est pas null puis on supprime l'objet et on met à  jour la base de donnée pour dire que le mail a bien été envoyé
+    //On vérifie que le pointeur n'est pas null puis on supprime l'objet et on met à  jour la base de données
+    //pour dire que le mail a bien été envoyé
     if( pCourriel != NULL)
     {
+    /*
         QSqlQuery RequeteMail ;
 
-        RequeteMail.prepare("UPDATE emprunts SET MailEnvoye=true "
+        RequeteMail.prepare("UPDATE emprunts SET MailEnvoye"
                             "WHERE Membres_IdMembre=:IdMembre AND DateRetourPrevu<CURRENT_DATE AND DateRetour IS NULL ") ;
         RequeteMail.bindValue( ":IdMembre", this->RetrouverIdMembre( pCourriel ) ) ;
 
         if ( !RequeteMail.exec() )
         {
-            qDebug() << "Erreur RequeteMail : F_Retards::on_PB_Enregistrer_clicked() : " << RequeteMail.lastQuery() ;
+            qDebug() << "Erreur RequeteMail : F_Retards::on_Bt_Enregistrer_clicked() : " << RequeteMail.lastQuery() ;
         }
+    */
+       this->NbEmailsDejaEnvoyes++ ;
 
-
-        delete pCourriel ;
+       //On parcourt le tableau des retards et on vire la ligne correspondant de celui à qui a été envoyé un email
+       for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
+       {
+          //Si la checkbox est cochée, on enlève la ligne dans le tableau des retard pour cette personne qui a reçu un email
+          if ( ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,1), Qt::CheckStateRole).toBool() )
+          {
+             if ( ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,0) ).toUInt() == IDMembre  )
+             {
+                ui->TbW_Retards->model()->removeRow(i) ;
+             }
+          }
+       }
     }
     else
     {
-        qDebug() << "Erreur : F_Retards::slot_ConfirmerMailEnvoyer : Pointeur retourné est NULL" ;
+       qDebug() << "Erreur : F_Retards::slot_ConfirmerMailEnvoyer : Pointeur retourné est NULL" ;
     }
 
-
-    this->MaJListe() ;
-    //On deverrouille la liste et ses boutons si tous les objets on été détruit
-    this->nNombreEmailEnCourDEnvoie++ ;
-    ui->BP_Mail->setValue(  this->nNombreEmailEnCourDEnvoie / this->nNombreEmailEnvoye *100 ) ;
-
-    if( this->nNombreEmailEnCourDEnvoie == this->nNombreEmailEnvoye )
-    {
-        ui->TbW_Retards->setEnabled( true ) ;
-        ui->PB_Envoyer->setEnabled( true ) ;
-        ui->PB_Selectionner->setEnabled( true ) ;
-        ui->PB_Deselectionner->setEnabled( true ) ;
-    }
+    // Affiche le nombre de membres ayant un retard et devant recevoir un email
+    ui->Lb_Resultat->setNum(this->modeleTabRetard.rowCount());
 }
 
 /**
@@ -275,58 +316,46 @@ void F_Retards::slot_AfficherErreurMail( QString sErreur )
     ui->Lb_Erreur->setText( sErreur ) ;
 }
 
-/**
- * @brief Permet de selectionner toutes les lignes de la liste
- *
- */
-void F_Retards::on_PB_Selectionner_clicked()
-{
-    //Permet mettre toute les checkbox en état "Check"
-    for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
-    {
-        ui->TbW_Retards->model()->setData( ui->TbW_Retards->model()->index(i ,0), Qt::Checked, Qt::CheckStateRole) ;
-    }
-}
 
 /**
  * @brief Permet l'envoie des mails vers les membres selectionner dans la liste
  *
  */
-void F_Retards::on_PB_Envoyer_clicked()
+void F_Retards::on_Bt_Envoyer_clicked()
 {
     QSqlQuery RequeteConnexion ;
-    Courriel * pCourriel ;
-    IdMembreCourriel oIdMembreCourriel ;
+    EMail EMailProchainAEnvoyer ;
     QString sSujetEmail ;
     QString sCorpsEmail ;
 
     bool bSelection ( false ) ;
 
-    this->nNombreEmailEnvoye = 0 ;
-    this->nNombreEmailEnCourDEnvoie = 0 ;
+    // Remettre à zéro le nombre d'email à envoyer, sert d'index pour le vecteur ListeEMailAEnvoyer
+    this->NbEmailAEnvoyer = 0 ;
+    this->NbEmailsDejaEnvoyes = 0 ;
 
+    // effacer les messages d'erreur précédent
     ui->Lb_Erreur->clear() ;
 
-    ui->BP_Mail->setValue( 0 ) ;
-
-    // On recupere l'email de l'expediteur ,l'adresse du serveur SMPT, le port, le sujet du mail et le corps du mail dans la base de données
-    if ( RequeteConnexion.exec( "SELECT Email, AdresseServeurSMTP, PortSMTP, SujetEmail, CorpsEmail FROM preferences WHERE IdPreferences=1" ) )
+    // On récupère l'email de la ludo, l'adresse du serveur SMPT, le port, le sujet du mail et le corps du mail dans la base de données
+    if ( RequeteConnexion.exec( "SELECT Email,AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail FROM preferences WHERE IdPreferences=1" ) )
     {
         RequeteConnexion.next() ;
     }
     else
     {
-        qDebug() << "F_Retards : on_PB_Enregistrer_clicked() : " << RequeteConnexion.lastQuery() ;
+        qDebug() << "F_Retards : on_Bt_Enregistrer_clicked() : " << RequeteConnexion.lastQuery() ;
     }
 
-    //On vide le vecteur fesant un lien entre les ids des membes et les adresses des objets
-    this->VecteurIdMembreCourriel.clear() ;
+    //On vide le vecteur faisant un lien entre les ids des membres et les adresses des threads d'envoi d'email
+    this->ListeEMailAEnvoyer.clear() ;
 
-    //On parcour la liste
-    for (register int i (0) ; i < ui->TbW_Retards->model()->columnCount() ; i++ )
+
+    //On parcourt la liste pour savoir quel membre a été coché
+    for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
     {
         //Si le checkbox est "check" on prépare le mail et on l'envoie
-        if(ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,0), Qt::CheckStateRole).toBool() )
+        if(ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,1), Qt::CheckStateRole).toBool() )
         {
             bSelection = true ;
             //On met l'objet et le corps du mail recuperé dans la base de données dans des QString
@@ -334,17 +363,18 @@ void F_Retards::on_PB_Envoyer_clicked()
             sCorpsEmail = RequeteConnexion.record().value( 4 ).toString() ;
 
             //On remplace les sigles par les données définies.
-            sSujetEmail = sSujetEmail.replace("%nom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,1 ) ).toString()) ;
-            sCorpsEmail = sCorpsEmail.replace("%nom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,1 ) ).toString()) ;
+            // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
+            sSujetEmail = sSujetEmail.replace("%nom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,2 ) ).toString()) ;
+            sCorpsEmail = sCorpsEmail.replace("%nom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,2 ) ).toString()) ;
 
-            sSujetEmail = sSujetEmail.replace("%prenom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,2 ) ).toString()) ;
-            sCorpsEmail = sCorpsEmail.replace("%prenom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,2 ) ).toString()) ;
+            sSujetEmail = sSujetEmail.replace("%prenom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,3 ) ).toString()) ;
+            sCorpsEmail = sCorpsEmail.replace("%prenom", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,3 ) ).toString()) ;
 
-            sSujetEmail = sSujetEmail.replace("%jeux", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,5 ) ).toString()) ;
-            sCorpsEmail = sCorpsEmail.replace("%jeux", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,5 ) ).toString()) ;
+            sSujetEmail = sSujetEmail.replace("%jeux", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,11 ) ).toString()) ;
+            sCorpsEmail = sCorpsEmail.replace("%jeux", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,11 ) ).toString()) ;
 
-            sSujetEmail = sSujetEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,4 ) ).toString()) ;
-            sCorpsEmail = sCorpsEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,4 ) ).toString()) ;
+            sSujetEmail = sSujetEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8 ) ).toString()) ;
+            sCorpsEmail = sCorpsEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8 ) ).toString()) ;
 
             sSujetEmail = sSujetEmail.replace("%expediteur", RequeteConnexion.record().value(0).toString() ) ;
             sCorpsEmail = sCorpsEmail.replace("%expediteur", RequeteConnexion.record().value(0).toString() ) ;
@@ -352,53 +382,79 @@ void F_Retards::on_PB_Envoyer_clicked()
             sSujetEmail = sSujetEmail.replace("%date", QDate::currentDate().toString( "dd/MM/yyyy" ) ) ;
             sCorpsEmail = sCorpsEmail.replace("%date", QDate::currentDate().toString( "dd/MM/yyyy" ) ) ;
 
-            //On créer l'objet Courriel qui permettra l'envoie du mail
-            pCourriel = new Courriel( RequeteConnexion.record().value(1).toString(), RequeteConnexion.record().value(2).toInt() , RequeteConnexion.record().value(0).toString() ,ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,4)).toString() , sSujetEmail, sCorpsEmail ) ;
+            //On remplie le vecteur des EMails avec les données de ce membre actuel
+            EMailProchainAEnvoyer.sCorps = sCorpsEmail ;
+            EMailProchainAEnvoyer.sSujet = sSujetEmail ;
+            EMailProchainAEnvoyer.sFrom = RequeteConnexion.record().value(0).toString() ;
+            EMailProchainAEnvoyer.sTo = ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8)).toString() ;
+            EMailProchainAEnvoyer.IDMembre =  ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,0 )).toUInt() ;
 
-            //Connect
-            connect( pCourriel, SIGNAL( SignalFermerThread( Courriel * ) ), this, SLOT( slot_FermerThreadCourriel( Courriel * ) ) ) ;
-            connect( pCourriel, SIGNAL( SignalMailEnvoyer( Courriel * ) ), this, SLOT( slot_ConfirmerMailEnvoyer( Courriel * ) ) ) ;
-            connect( pCourriel, SIGNAL( SignalErreur( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
+            this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;
 
-            //On remplie les vecteur avec l'id du membre et l'adresse de l'objet
-            oIdMembreCourriel.IdMembre = this->VecteurIdMembre.at( i ) ;
-            oIdMembreCourriel.pCourriel = pCourriel ;
-            this->VecteurIdMembreCourriel.append( oIdMembreCourriel ) ;
-
-            //On l'incrémente pour connaitre le nombre de mail envoyé
-            this->nNombreEmailEnvoye++ ;
+            //On l'incrémente pour connaitre le nombre d'emails envoyés
+            this->NbEmailAEnvoyer++ ;            
         }
     }
-    //On met à  jour la liste
-    if ( bSelection == true )
+
+    // s'il y a des emails à envoyer
+    if ( NbEmailAEnvoyer > 0)
     {
-        this->MaJListe() ;
-        ui->TbW_Retards->setDisabled( true ) ;
-        ui->PB_Envoyer->setDisabled( true ) ;
-        ui->PB_Selectionner->setDisabled( true ) ;
-        ui->PB_Deselectionner->setDisabled( true ) ;
+       // démarre le thread d'envoi pour les email
+       pCourriel->start();
     }
 
+    //On met à jour la liste
+    if ( bSelection == true )
+    {
+        //this->MaJListe() ;
+        ui->TbW_Retards->setDisabled( true ) ;
+        ui->Bt_Envoyer->setDisabled( true ) ;
+        ui->Bt_Selectionner->setDisabled( true ) ;
+        ui->Bt_Deselectionner->setDisabled( true ) ;
+    }
 }
 
 /**
- * @brief Permet de deselectionner toutes les lignes de la liste
+ * @brief Permet de sélectionner toutes les lignes de la liste
  *
  */
-void F_Retards::on_PB_Deselectionner_clicked()
+void F_Retards::on_Bt_Selectionner_clicked()
 {
-    //Parcour la liste pour "decheck" toute toutes les checkbox
-    for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
-    {
-        ui->TbW_Retards->model()->setData( ui->TbW_Retards->model()->index(i ,0), Qt::Unchecked, Qt::CheckStateRole) ;
-    }
+   //Permet de cocher toutes les checkbox
+   for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
+   {
+      //0 IdMembre, 1 case à cocher, 2 CodeMembre, 3 Nom, 4 Prenom, 5 Ville, 6 Email, 7 Telephone, 8 Mobile, 9 DatePrévue, 10 liste des jeux en retard
+      //Permet d'ajouter une checkbox à la ligne si un email est diponible pour le membre
+      if ( ! ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,6)).toString().isEmpty() )
+       {
+        ui->TbW_Retards->model()->setData( ui->TbW_Retards->model()->index(i ,1), Qt::Checked, Qt::CheckStateRole) ;
+       }
+   }
+}
+
+/**
+ * @brief Permet de désélectionner toutes les lignes de la liste
+ *
+ */
+void F_Retards::on_Bt_Deselectionner_clicked()
+{
+   //Parcourt la liste pour décocher toutes les checkbox
+   for (register int i (0) ; i < ui->TbW_Retards->model()->rowCount() ; i++ )
+   {
+      //0 IdMembre, 1 case à cocher, 2 CodeMembre, 3 Nom, 4 Prenom, 5 Ville, 6 Email, 7 Telephone, 8 Mobile, 9 DatePrévue, 10 liste des jeux en retard
+      //Permet d'enlever la checkbox à la ligne si un email est diponible pour le membre
+      if ( ! ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,6)).toString().isEmpty() )
+      {
+         ui->TbW_Retards->model()->setData( ui->TbW_Retards->model()->index(i ,1), Qt::Unchecked, Qt::CheckStateRole) ;
+      }
+   }
 }
 
 /**
  * @brief Permet d'enregistrer le mail type
  *
  */
-void F_Retards::on_PB_Enregistrer_clicked()
+void F_Retards::on_Bt_Enregistrer_clicked()
 {
     QSqlQuery Requete ;
 
@@ -409,12 +465,12 @@ void F_Retards::on_PB_Enregistrer_clicked()
 
     if( Requete.exec() )
     {
-        ui->PB_Enregistrer->setDisabled( true ) ;
-        ui->PB_Annuler->setDisabled( true ) ;
+        ui->Bt_Enregistrer->setDisabled( true ) ;
+        ui->Bt_Annuler->setDisabled( true ) ;
     }
     else
     {
-        qDebug() << " Erreur : F_Retards::on_PB_Enregistrer_clicked() : " << Requete.lastQuery() ;
+        qDebug() << " Erreur : F_Retards::on_Bt_Enregistrer_clicked() : " << Requete.lastQuery() ;
     }
 }
 
@@ -422,7 +478,7 @@ void F_Retards::on_PB_Enregistrer_clicked()
  * @brief Permet d'annuler les edites sur le mail type
  *
  */
-void F_Retards::on_PB_Annuler_clicked()
+void F_Retards::on_Bt_Annuler_clicked()
 {
     QSqlQuery Requete ;
 
@@ -432,12 +488,12 @@ void F_Retards::on_PB_Annuler_clicked()
         ui->LE_Sujet->setText( Requete.record().value( 0 ).toString() ) ;
         ui->TE_Corps->setPlainText( Requete.record().value( 1 ).toString() ) ;
 
-        ui->PB_Enregistrer->setDisabled( true ) ;
-        ui->PB_Annuler->setDisabled( true ) ;
+        ui->Bt_Enregistrer->setDisabled( true ) ;
+        ui->Bt_Annuler->setDisabled( true ) ;
     }
     else
     {
-        qDebug() << " Erreur :F_Retards::on_PB_Annuler_clicked() : " << Requete.lastQuery() ;
+        qDebug() << " Erreur :F_Retards::on_Bt_Annuler_clicked() : " << Requete.lastQuery() ;
     }
 }
 
@@ -447,8 +503,8 @@ void F_Retards::on_PB_Annuler_clicked()
  */
 void F_Retards::on_TE_Corps_textChanged()
 {
-    ui->PB_Enregistrer->setEnabled( true ) ;
-    ui->PB_Annuler->setEnabled( true ) ;
+    ui->Bt_Enregistrer->setEnabled( true ) ;
+    ui->Bt_Annuler->setEnabled( true ) ;
 }
 
 /**
@@ -458,6 +514,11 @@ void F_Retards::on_TE_Corps_textChanged()
  */
 void F_Retards::on_LE_Sujet_textChanged(const QString &arg1)
 {
-    ui->PB_Enregistrer->setEnabled( true ) ;
-    ui->PB_Annuler->setEnabled( true ) ;
+    ui->Bt_Enregistrer->setEnabled( true ) ;
+    ui->Bt_Annuler->setEnabled( true ) ;
+}
+
+void F_Retards::on_TbW_Retards_doubleClicked(const QModelIndex &index)
+{
+    emit( this->Signal_DoubleClic_ListeMembres( ui->TbW_Retards->model()->data( this->modeleTabRetard.index( index.row() , 0 )).toUInt() )) ;
 }

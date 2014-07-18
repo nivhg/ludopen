@@ -39,7 +39,7 @@ class F_Preferences;
  *      - Informations de la ludothèque avec :
  *          - Lieux.
  */
-class F_Preferences : public QWidget
+class F_Preferences : public QDialog
 {
     Q_OBJECT
     

@@ -59,10 +59,11 @@ using namespace std;
  *  @see    AfficherAutresInformations()
  */
 F_Preferences::F_Preferences(QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::F_Preferences)
 {
     ui->setupUi(this);
+    // pour des problèmes de valeur qui n'arrive pas zéro quand on fait des calculs avec des flottants
     fesetround(FE_TOWARDZERO);
 
     this->pEtatJeuAjMod = new F_PopUpCLESTTEM(0);
@@ -244,10 +245,17 @@ void F_Preferences::AfficherAutresInformations()
     ui->CBx_LieuOrdi->setCurrentIndex(FichierDeConfig.value("Autres/IdLieux", "config").toInt() - 1);
 
 
-    RequeteDemarrage.exec("SELECT Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, "
-                          "JourAvantMail, JourRetard, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP, PrixAmende FROM preferences WHERE IdPreferences = 1");
+    RequeteDemarrage.exec("SELECT Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,Email,SiteWeb,"
+                          "JeuxAutorises,UniteLocation,JourAvantMail,JourRetard,CheminPhotosJeux,"
+                          "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende,NbReservationsMaxi,"
+                          "DelaiConfirmationReservationParEmail "
+                          "FROM preferences WHERE IdPreferences=1");
     RequeteDemarrage.next();
-
+    // ORDRE des champs dans la table préférences
+    // 0-Nom,1-Adresse,2-CodePostal,3-Ville,4-NumeroTel,5-NumeroFax,6-Email,7-SiteWeb,
+    // 8-JeuxAutorises,9-UniteLocation,10-JourAvantMail,11-JourRetard,12-CheminPhotosJeux,"
+    // 13-CheminReglesJeux,14-AdresseServeurSMTP,15-PortSMTP,16-PrixAmende,17-NbReservationsMaxi,
+    // 18-DelaiConfirmationReservationParEmail
     ui->LE_Nom->setText(RequeteDemarrage.value(0).toString());
     ui->LE_Adresse->setText(RequeteDemarrage.value(1).toString());
     ui->LE_CodePostal->setText(RequeteDemarrage.value(2).toString());
@@ -260,7 +268,7 @@ void F_Preferences::AfficherAutresInformations()
     ui->DSBx_UniteLocation->setValue(RequeteDemarrage.value(9).toFloat());
     ui->SBx_JourEmail->setValue(RequeteDemarrage.value(10).toInt());
     ui->SBx_JourRetard->setValue(RequeteDemarrage.value(11).toInt());
-    ui->LE_CheminImage->setText(RequeteDemarrage.value(12).toString());
+    ui->LE_CheminPhotosJeux->setText(RequeteDemarrage.value(12).toString());
     ui->LE_CheminRegle->setText(RequeteDemarrage.value(13).toString());
     ui->LE_AdresseSMTP->setText(RequeteDemarrage.value(14).toString());
     ui->LE_PortSMTP->setText(RequeteDemarrage.value(15).toString());
@@ -460,8 +468,12 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
 
     if(nIdPreferences == 0)
     {
-        RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences, Nom, Adresse, CodePostal, Ville, NumeroTel, NumeroFax, Email, SiteWeb, JeuxAutorises, UniteLocation, JourRetard, JourAvantMail, CheminImage, CheminRegle, AdresseServeurSMTP, PortSMTP, PrixAmende)"
-                                   "VALUES (:IdPreferences, :Nom, :Adresse, :CodePostal, :Ville, :NumeroTel, :NumeroFax, :Email, :SiteWeb, :JeuxAutorises, :UniteLocation, :JourRetard, :JourAvantMail, :CheminImage, :CheminRegle, :AdresseServeurSMTP, :PortSMTP, :PrixAmende)");
+        RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences,Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,"
+                                   "Email,SiteWeb,JeuxAutorises,UniteLocation,JourRetard,JourAvantMail,CheminPhotosJeux,"
+                                   "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende) "
+                                   "VALUES (:IdPreferences,:Nom,:Adresse,:CodePostal,:Ville,:NumeroTel,:NumeroFax,:Email,:SiteWeb,"
+                                   ":JeuxAutorises,:UniteLocation,:JourRetard,:JourAvantMail,:CheminPhotosJeux,:CheminReglesJeux,"
+                                   ":AdresseServeurSMTP,:PortSMTP,:PrixAmende)");
         RequeteEnregistrer.bindValue("IdPreferences", 1);
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
@@ -475,17 +487,20 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":UniteLocation", ui->DSBx_UniteLocation->value());
         RequeteEnregistrer.bindValue(":JourRetard", ui->SBx_JourRetard->value());
         RequeteEnregistrer.bindValue(":JourAvantMail", ui->SBx_JourEmail->value());
-        RequeteEnregistrer.bindValue(":CheminImage", ui->LE_CheminImage->text());
-        RequeteEnregistrer.bindValue(":CheminRegle", ui->LE_CheminRegle->text());
+        RequeteEnregistrer.bindValue(":CheminPhotosJeux", ui->LE_CheminPhotosJeux->text());
+        RequeteEnregistrer.bindValue(":CheminReglesJeux", ui->LE_CheminRegle->text());
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
         RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
-        RequeteEnregistrer.exec();        
+        if ( ! RequeteEnregistrer.exec() )
+        {
+           qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
+        }
     }
     else
     {
         RequeteEnregistrer.prepare("UPDATE preferences SET Nom=:Nom, Adresse=:Adresse, CodePostal=:CodePostal, Ville=:Ville, NumeroTel=:NumeroTel, NumeroFax=:NumeroFax, Email=:Email, SiteWeb=:SiteWeb, JeuxAutorises=:JeuxAutorises,"
-                                   "UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail, JourRetard=:JourRetard, CheminImage=:CheminImage, CheminRegle=:CheminRegle, AdresseServeurSMTP=:AdresseServeurSMTP, PortSMTP=:PortSMTP, PrixAmende=:PrixAmende WHERE IdPreferences = 1");
+                                   "UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail, JourRetard=:JourRetard, CheminPhotosJeux=:CheminPhotosJeux, CheminReglesJeux=:CheminReglesJeux, AdresseServeurSMTP=:AdresseServeurSMTP, PortSMTP=:PortSMTP, PrixAmende=:PrixAmende WHERE IdPreferences = 1");
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
         RequeteEnregistrer.bindValue(":CodePostal", ui->LE_CodePostal->text().toInt());
@@ -498,12 +513,15 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":UniteLocation", ui->DSBx_UniteLocation->value());
         RequeteEnregistrer.bindValue(":JourRetard", ui->SBx_JourRetard->value());
         RequeteEnregistrer.bindValue(":JourAvantMail", ui->SBx_JourEmail->value());
-        RequeteEnregistrer.bindValue(":CheminImage", ui->LE_CheminImage->text());
-        RequeteEnregistrer.bindValue(":CheminRegle", ui->LE_CheminRegle->text());
+        RequeteEnregistrer.bindValue(":CheminPhotosJeux", ui->LE_CheminPhotosJeux->text());
+        RequeteEnregistrer.bindValue(":CheminReglesJeux", ui->LE_CheminRegle->text());
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
         RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
-        RequeteEnregistrer.exec();
+        if ( ! RequeteEnregistrer.exec() )
+        {
+           qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
+        }
     }
     // écriture de certaines données dans le fichier de configuration config.ini
     RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
@@ -1053,7 +1071,7 @@ void F_Preferences::on_Bt_ParcourirImage_clicked()
 
     NomCheminImage = QFileDialog::getExistingDirectory(this, tr("Ouvrir le répertoire ..."), QDir::currentPath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 
-    ui->LE_CheminImage->setText(NomCheminImage);
+    ui->LE_CheminPhotosJeux->setText(NomCheminImage);
 }
 
 // Onglet Information Ludo. -------------------------------------------------

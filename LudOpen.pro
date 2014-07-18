@@ -3,11 +3,15 @@
 # Project created by QtCreator 2012-05-04T12:10:40
 #
 #-------------------------------------------------
-
+#DEFINES   = QT_NO_DEBUG_OUTPUT\
+#            QT_NO_WARNING_OUTPUT
 QT        = widgets sql network core printsupport
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
+# Si je veux que l'application démarre dans une fenêtre de shell
+# pour avoir les messages d'erreur
+#CONFIG   += CONSOLE
 
 SOURCES += \
     main.cpp \
@@ -75,7 +79,8 @@ HEADERS  += \
     f_clesttem.h \
     f_imprimerfichecompletejeu.h \
     f_imprimeretiquettejeu.h \
-    f_listereservations.h
+    f_listereservations.h \
+    acces_photos_http.h
 
 FORMS    += \
     f_statistiques.ui \

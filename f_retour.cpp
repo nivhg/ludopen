@@ -118,8 +118,8 @@ F_Retour::F_Retour(QWidget *parent) :
    this->ModelJeuEmpruntes->setColumnCount(4);
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Code"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date retour"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
    ui->TbV_JeuxEmprunte->setColumnWidth(0,40);
    ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
 
@@ -132,7 +132,7 @@ F_Retour::F_Retour(QWidget *parent) :
    // Autorise le tri pour ce tableau
    ui->TbV_JeuxReserve->setSortingEnabled(true);
 
-   //Initialise les colonnes du TableView des nouveaux emprunts
+   //Initialise les colonnes du TableView des jeux réservés
    this->ModelJeuReserves->setColumnCount(5);
    this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Code"));
    this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
@@ -585,7 +585,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
             // Calculer l'amende à payer
             NbDeSemainesDeRetard = DateDeRetourPrevue.daysTo( QDate::currentDate() ) / RequeteNbJoursRetardToleres.value(0).toInt() ;
             this->Amende=this->Amende+RequeteAmende.value(0).toFloat() * NbDeSemainesDeRetard ;
-            qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
+            //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
          }
          NumeroLigne++;
          // Affichage du nombre de jeux à rendre
@@ -1231,15 +1231,10 @@ void F_Retour::on_Bt_RendreJeu_clicked()
             }
         }
 
-        //
-        // TO DO Gérer les amandes en cas de retard
-        //
-
-        //Rechercher de l'id du statut
+        //Rechercher de l'id du statut du jeu
         QSqlQuery RequeteStatut;
-        RequeteStatut.prepare("SELECT IdStatutJeux FROM statutjeux WHERE StatutJeu=':StatutDuJeu'");
+        RequeteStatut.prepare("SELECT IdStatutJeux FROM statutjeux WHERE StatutJeu=:StatutDuJeu");
         RequeteStatut.bindValue(":StatutDuJeu",ui->CBx_Statut->currentText());
-
         if (!RequeteStatut.exec())
         {
            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteStatut "<<RequeteStatut.lastQuery();
@@ -1257,14 +1252,14 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         RequeteEtat.next();
 
         // Mise à jour de la table emprunt
-        RequeteRetour.prepare("UPDATE emprunts,jeux"
-                              " SET DateRetour=:DateRetour,StatutJeux_IdStatutJeux=:StatutDuJeu,EtatsJeu_IdEtatsJeu=:EtatDuJeu"
-                              " WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
+        RequeteRetour.prepare("UPDATE emprunts,jeux "
+                              "SET DateRetour=:DateRetour,StatutJeux_IdStatutJeux=:StatutDuJeu,EtatsJeu_IdEtatsJeu=:EtatDuJeu "
+                              "WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
 
         RequeteRetour.bindValue(":DateRetour",DateDeRetourToleree);
         RequeteRetour.bindValue(":CodeDuJeu",this->JeuActif);
-        RequeteRetour.bindValue(":StatutDuJeu",RequeteStatut.value(0).toString());
-        RequeteRetour.bindValue(":EtatDuJeu",RequeteEtat.value(0).toString());
+        RequeteRetour.bindValue(":StatutDuJeu",RequeteStatut.value(0));
+        RequeteRetour.bindValue(":EtatDuJeu",RequeteEtat.value(0));
         if(!RequeteRetour.exec())
         {
             qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastQuery();

@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>F_Preferences</class>
  <widget class="QWidget" name="F_Preferences">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +26,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Préférences</string>
+   <string>Préférences de LudOpen</string>
   </property>
   <property name="windowIcon">
    <iconset resource="ImagesIcones.qrc">
@@ -48,7 +51,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>3</number>
+      <number>2</number>
      </property>
      <property name="iconSize">
       <size>
@@ -66,7 +69,7 @@
        <string>Préférences Générales</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="1" column="0">
+       <item row="2" column="0">
         <spacer name="VS_6">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -90,29 +93,6 @@
             <string>MDP ok ou pas ?</string>
            </property>
           </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="Lb_ConfirmerCode">
-           <property name="text">
-            <string>Confirmer nouveau ce mot de passe :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="4">
-          <spacer name="VS_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item row="7" column="3" rowspan="4">
           <spacer name="HS_5">
@@ -173,19 +153,6 @@
           <widget class="QLabel" name="Lb_NouveauCode">
            <property name="text">
             <string>Mot de passe  :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Mot de passe administrateur :</string>
            </property>
           </widget>
          </item>
@@ -262,6 +229,65 @@
           <widget class="QLabel" name="Lb_JourEmail">
            <property name="text">
             <string>Nombre de jours avant envoi d'un email :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Mot de passe administrateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="4">
+          <spacer name="VS_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="Lb_ConfirmerCode">
+           <property name="text">
+            <string>Confirmer nouveau ce mot de passe :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="12" column="1">
+          <widget class="QLineEdit" name="LE_CheminPhotosJeux"/>
+         </item>
+         <item row="12" column="0">
+          <widget class="QLabel" name="lb_CheminPhotosJeux">
+           <property name="text">
+            <string>Chemin ou URL des images des jeux :</string>
            </property>
           </widget>
          </item>
@@ -1364,7 +1390,7 @@
          <item row="13" column="0">
           <widget class="QLabel" name="Lb_Mail">
            <property name="text">
-            <string>Adresse mail :</string>
+            <string>Adresse email :</string>
            </property>
           </widget>
          </item>
