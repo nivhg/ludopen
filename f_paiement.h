@@ -2,8 +2,8 @@
 #ifndef F_PAIEMENT_H
 #define F_PAIEMENT_H
 
-#include <QtWidgets\QDialog>
-#include <QtWidgets\QAbstractButton>
+#include <QDialog>
+#include <QAbstractButton>
 #include <QtWidgets>
 
 namespace Ui

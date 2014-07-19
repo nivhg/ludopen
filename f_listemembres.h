@@ -5,9 +5,9 @@
 #include <QtSql/QtSql>  //Nécessaire pour la base de données
 
 #include <QtWidgets>
-#include <QtWidgets\QTableView>
-#include <QtWidgets\QPushButton>
-#include <QtWidgets\QLabel>
+#include <QTableView>
+#include <QPushButton>
+#include <QLabel>
 #include <QStandardItem>
 #include "TitreType.h"
 

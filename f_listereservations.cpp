@@ -19,7 +19,7 @@
 
 #include <QtDebug>
 #include <QStandardItem>
-#include <QtWidgets\QDialog>
+#include <QDialog>
 #include <QFileDialog>
 #include <QTableView>
 #include <QLabel>
