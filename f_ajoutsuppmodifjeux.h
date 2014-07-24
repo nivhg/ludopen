@@ -12,6 +12,7 @@ class F_AjoutSuppModifJeux;
 #include "f_ajouterfournisseur.h"
 #include "f_ajouterediteur.h"
 #include "f_popupclesttem.h"
+#include "lb_image.h"
 
 namespace Ui {
     class F_AjoutSuppModifJeux;
@@ -164,9 +165,9 @@ private slots:
      */
     void on_TxE_Description_textChanged();
     
-    /** @brief Appelé lorsque l'on clic sur une case du tableau
+    /** @brief Appelé lorsque l'on sélectionne sur une case du tableau
      */
-    void on_TbV_Recherche_clicked(const QModelIndex &index);
+    void on_TbV_Recherche_selectionChanged(const QModelIndex &index);
     
     /** @brief Appelé lorsque l'on clic sur le bouton Valider
      */
@@ -200,11 +201,16 @@ private slots:
      */
     void on_RBt_Occasion_toggled(bool checked);
 
-    void on_Bt_ChargerImage_clicked();
 
     /** @brief Appelé lorsque le contenu du Cbx_Emplacement change
      */
     void on_CBx_Emplacement_activated(int index);
+
+    void on_Bt_Gauche_clicked();
+
+    void on_Bt_Droite_clicked();
+
+    void on_Lb_Image_clicked();
 
 private:
     // ATTRIBUTs ----------------------------------------------------------------
@@ -270,8 +276,11 @@ private:
      */
     bool AjoutOuModif ;
 
-    // A voir si c'est utile ???
+    // A voir si nécessité de garder les champs CheminPhoto et CheminRègles dans BD (VV: pour moi non)
     QString CheminPhoto ;
+
+    //! Label Image
+    lb_image* Lb_Image;
 
 };
 

@@ -15,19 +15,22 @@
   * @todo Afficher les photos des jeux
   *
 */
-#include <QtSql>
-#include <QDesktopServices>
 
-// EN-TETES UNIQUEMENT UTILISÉS DANS CE FICHIER
+// En-tête propre à  l'application ----------------------------------------------
 #include "f_jeux.h"
 #include "ui_f_jeux.h"
 #include "f_reservation.h"
+#include "d_image.h"
+#include "lb_image.h"
+
+// En-têtes standards -----------------------------------------------------------
+#include <QtSql>
+#include <QDesktopServices>
 #include <QStandardItemModel>
 #include <QProcess>
 #include <QPixmap>
 #include <QDir>
 #include <QMessageBox>
-#include "acces_photos_http.h"
 
 /**
  * @brief Constructeur de la classe f_jeux
@@ -64,6 +67,16 @@ F_Jeux::F_Jeux(QWidget *parent) :
     ui->TbV_NomJeux->verticalHeader()->setVisible(false);
     // Faire défiler le tableau des jeux avec les flêches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
+    //Création de l'objet QLabel pour l'affichage des images
+    Lb_Image = new lb_image(this);
+    //Gestion de l'évenement MousePress
+    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    Lb_Image->setAlignment(Qt::AlignCenter);
+    //Crée un curseur loupe et l'assigne à l'image
+    //Initialisation des variables liées à l'affichage des images
+    QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
+    Lb_Image->setCursor(Souris);
+    ui->gridLayout_11->addWidget(Lb_Image,0,3);
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Destructeur /////////////////////////////
@@ -172,6 +185,7 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->TxE_description->setReadOnly(false);
     ui->TxE_emplacement->setReadOnly(false);
     ui->TxE_remarques->setReadOnly(false);
+
     ///////////////////////////////////////////////////
     ////////////// Recherche par code ////////////////
     /////////////////////////////////////////////////
@@ -338,196 +352,11 @@ void F_Jeux::on_Bt_ok_clicked()
     ui->LE_NumClassification->setCursorPosition(0);
     
     ////////////////////////////////////////////////////////
-    ////////////// Chargement Photo n°1 //////////////////////////////////
+    ////////////// Chargement Photo //////////////////////////////////
     //////////////////////////////////////////////////////
 
-    QPixmap Image;
-    QString TypeImage;
+    ui->Lb_ImageName->setText(Lb_Image->LoadImages(QSize(200,200),ui->Le_code->text()));
 
-    QSqlQuery RequeteCheminPhotosJeux;
-    RequeteCheminPhotosJeux.exec("SELECT CheminPhotosJeux FROM preferences WHERE IdPreferences = 1");
-    // si on a un chemin pour le répertoire des photos des jeux
-    if ( RequeteCheminPhotosJeux.next() )
-    {
-       QString sCheminImagePref = RequeteCheminPhotosJeux.value(0).toString();
-       QString sCheminImage;
-
-       QString filename;
-       sCheminImage= sCheminImagePref + "\\" + ui->Le_code->text();
-
-       AccesPhotosParHTTP manager;
-
-       if( ! manager.FileOrURLExists( &filename, sCheminImage, "jpg", &TypeImage ) )
-       {
-          if( ! manager.FileOrURLExists( &filename, sCheminImage, "jpeg", &TypeImage ) )
-          {
-             if( ! manager.FileOrURLExists( &filename, sCheminImage, "png", &TypeImage ) )
-             {
-                if( ! manager.FileOrURLExists( &filename, sCheminImage, "bmp", &TypeImage ) )
-                {
-                   manager.FileOrURLExists( &filename, sCheminImage, "gif", &TypeImage );
-                }
-             }
-          }
-       }
-       // S'il s'agit d'une URL
-       if( sCheminImage.indexOf("http://",0,Qt::CaseInsensitive) != -1)
-       {
-          sCheminImage=filename;
-       }
-
-       QDir CheminFichierImage( sCheminImage );
-       // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
-       if ( Image.load(CheminFichierImage.absolutePath(),TypeImage.toLocal8Bit().data()) )
-       {
-          ui->Lb_Image->setPixmap( Image ) ;
-          //Met l'image à l'échelle du cadre
-          ui->Lb_Image->setScaledContents( true ) ;
-          qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  CheminFichierImage.absolutePath() << "TypeImage" << TypeImage.toLocal8Bit().data();
-       }
-       else   // pas de photo à afficher
-       {
-          ui->Lb_Image->setText("Photo n°1\nindisponible");
-       }
-    }
-    else   // pas de photo à afficher
-    {
-       ui->Lb_Image->setText("Photo n°1\nindisponible");
-    }
-
-    /////////////////////////////////////////////
-    // action particulière pour certains champs
-    /////////////////////////////////////////////
-    /*
-    if(ui->Le_agemax->text() == "" || ui->Le_agemax->text() == "0")
-    {
-        ui->Le_agemax->setText("Non renseigné");
-        ui->Le_agemax->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_agemax->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_agemin->text() == "")
-    {
-        ui->Le_agemin->setText("Non renseigné");
-        ui->Le_agemin->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_agemin->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_classification->text() == "")
-    {
-        ui->Le_classification->setText("Non renseigné");
-        ui->Le_classification->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_classification->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_createur->text() == "")
-    {
-        ui->Le_createur->setText("Non renseigné");
-        ui->Le_createur->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_createur->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_editeur->text() == "")
-    {
-        ui->Le_editeur->setText("Non renseigné");
-        ui->Le_editeur->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_editeur->setStyleSheet("color: black");
-    }
-    //------------------------------------------
-    if(ui->Le_etat->text() == "")
-    {
-        ui->Le_etat->setText("Non renseigné");
-        ui->Le_etat->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_etat->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_nbrejoueursmax->text() == "" || ui->Le_nbrejoueursmax->text() == "0")
-    {
-        ui->Le_nbrejoueursmax->setText("Non renseigné");
-        ui->Le_nbrejoueursmax->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_nbrejoueursmax->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->Le_nbrejoueursmin->text() == "")
-    {
-        ui->Le_nbrejoueursmin->setText("Non renseigné");
-        ui->Le_nbrejoueursmin->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->Le_nbrejoueursmin->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->LE_NumClassification->text() == "")
-    {
-        ui->Le_nbrejoueursmin->setStyleSheet("background-color: red");
-    }
-    else
-    {
-        ui->Le_nbrejoueursmin->setStyleSheet("background-color: white");
-    }
-    //-------------------------------------------
-    if(ui->TxE_contenu->toPlainText() == "")
-    {
-        ui->TxE_contenu->setText("Non renseigné");
-        ui->TxE_contenu->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->TxE_contenu->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->TxE_description->toPlainText() == "")
-    {
-        ui->TxE_description->setText("Non renseigné");
-        ui->TxE_description->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->TxE_description->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->TxE_emplacement->toPlainText() == "")
-    {
-        ui->TxE_emplacement->setText("Non renseigné");
-        ui->TxE_emplacement->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->TxE_emplacement->setStyleSheet("color: black");
-    }
-    //-------------------------------------------
-    if(ui->TxE_remarques->toPlainText() == "")
-    {
-        ui->TxE_remarques->setText("Non renseigné");
-        ui->TxE_remarques->setStyleSheet("color: red");
-    }
-    else
-    {
-        ui->TxE_remarques->setStyleSheet("color: black");
-    }
-    */
 }
 
 ////////////////////////////////////////////////////////////
@@ -938,4 +767,23 @@ void F_Jeux::on_Le_nom_textChanged(const QString &arg1)
       ui->Bt_DeclarerIntervention->setEnabled(true);
       ui->Bt_Reserver->setEnabled(true);
    }
+}
+
+void F_Jeux::on_Bt_Gauche_clicked()
+{
+    ui->Lb_ImageName->setText(Lb_Image->DisplayPreviousImage());
+}
+
+void F_Jeux::on_Bt_Droite_clicked()
+{
+    ui->Lb_ImageName->setText(Lb_Image->DisplayNextImage());
+}
+
+void F_Jeux::on_Lb_Image_clicked()
+{
+    disconnect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    QDialog *D_Image = new d_image(this,Lb_Image);
+    D_Image->exec();
+    ui->gridLayout_11->addWidget(Lb_Image,0,3);
+    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
 }

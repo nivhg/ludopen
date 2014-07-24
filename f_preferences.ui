@@ -84,6 +84,121 @@
        </item>
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_4">
+         <item row="2" column="2">
+          <widget class="QDoubleSpinBox" name="DSBx_UniteLocation">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QDoubleSpinBox" name="DSBx_PrixAmende">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QSpinBox" name="SBx_JourRetard">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="2">
+          <widget class="QSpinBox" name="SBx_JourEmail">
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="Lb_PrixAmende">
+           <property name="text">
+            <string>Prix de l'amende par jeu en retard :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="Lb_UniteLocation">
+           <property name="text">
+            <string>Prix d'une unité de location :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="Lb_JourRetard">
+           <property name="text">
+            <string>Nombre de jours de retard tolérés :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLabel" name="Lb_JourEmail">
+           <property name="text">
+            <string>Nombre de jours avant envoi d'un email :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="Lb_ConfirmerCode">
+           <property name="text">
+            <string>Confirmer nouveau ce mot de passe :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QLabel" name="label_4">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Mot de passe administrateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="4">
+          <spacer name="VS_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="11" column="1">
+          <spacer name="verticalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="Lb_JeuxAutorises">
+           <property name="text">
+            <string>Nombre de jeux autorisés :</string>
+           </property>
+          </widget>
+         </item>
          <item row="10" column="1" colspan="2">
           <widget class="QLabel" name="Lb_VerifCode">
            <property name="layoutDirection">
@@ -163,131 +278,6 @@
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QDoubleSpinBox" name="DSBx_UniteLocation">
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-           <property name="singleStep">
-            <double>0.100000000000000</double>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="2">
-          <widget class="QDoubleSpinBox" name="DSBx_PrixAmende">
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QSpinBox" name="SBx_JourRetard">
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="2">
-          <widget class="QSpinBox" name="SBx_JourEmail">
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="Lb_JeuxAutorises">
-           <property name="text">
-            <string>Nombre de jeux autorisés :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLabel" name="Lb_UniteLocation">
-           <property name="text">
-            <string>Prix d'une unité de location :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QLabel" name="Lb_PrixAmende">
-           <property name="text">
-            <string>Prix de l'amende par jeu en retard :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1">
-          <widget class="QLabel" name="Lb_JourRetard">
-           <property name="text">
-            <string>Nombre de jours de retard tolérés :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLabel" name="Lb_JourEmail">
-           <property name="text">
-            <string>Nombre de jours avant envoi d'un email :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="0">
-          <widget class="QLabel" name="label_4">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Mot de passe administrateur :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="4">
-          <spacer name="VS_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="Lb_ConfirmerCode">
-           <property name="text">
-            <string>Confirmer nouveau ce mot de passe :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="1">
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="12" column="1">
-          <widget class="QLineEdit" name="LE_CheminPhotosJeux"/>
-         </item>
-         <item row="12" column="0">
-          <widget class="QLabel" name="lb_CheminPhotosJeux">
-           <property name="text">
-            <string>Chemin ou URL des images des jeux :</string>
            </property>
           </widget>
          </item>
@@ -838,14 +828,14 @@
          <item row="10" column="0">
           <widget class="QLabel" name="Lb_CheminRegle">
            <property name="text">
-            <string>Chemin des règles des jeux :</string>
+            <string>Chemin ou URL des règles des jeux :</string>
            </property>
           </widget>
          </item>
          <item row="11" column="0">
           <widget class="QLabel" name="Lb_CheminImage">
            <property name="text">
-            <string>Chemin des images des jeux :</string>
+            <string>Chemin ou URL des images des jeux :</string>
            </property>
           </widget>
          </item>
@@ -921,7 +911,7 @@
           </widget>
          </item>
          <item row="11" column="1" colspan="3">
-          <widget class="QLineEdit" name="LE_CheminImage"/>
+          <widget class="QLineEdit" name="LE_CheminPhotosJeux"/>
          </item>
          <item row="4" column="0" colspan="5">
           <spacer name="VS_3">

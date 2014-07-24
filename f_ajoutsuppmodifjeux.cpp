@@ -23,6 +23,8 @@
 #include <QMessageBox>
 
 // En-tête propre à l'application ----------------------------------------------
+#include "d_image.h"
+#include "lb_image.h"
 #include "f_ajoutsuppmodifjeux.h"
 #include "ui_f_ajoutsuppmodifjeux.h"
 
@@ -65,14 +67,25 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->TbV_Recherche->verticalHeader()->setVisible(false);
 
     // Faire défiler le tableau des jeux avec les flêches du clavier
-    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_selectionChanged(QModelIndex)));
 
     ui->LE_CodeClassification->setReadOnly(true);
     //Affiche la date du jour
     QDate DateDefaut ;
     DateDefaut = DateDefaut.currentDate() ;
     ui->DtE_Achat->setDate(DateDefaut) ;
-    
+
+    //Création de l'objet QLabel pour l'affichage des images
+    Lb_Image = new lb_image(this);
+    //Gestion de l'évenement MousePress
+    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    Lb_Image->setAlignment(Qt::AlignCenter);
+    //Crée un curseur loupe et l'assigne à l'image
+    //Initialisation des variables liées à l'affichage des images
+    QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
+    Lb_Image->setCursor(Souris);
+    ui->gridLayout_11->addWidget(Lb_Image,0,1);
+
     //////////////////////////////////////////////
     //////////// Remplir les COMBO BOX //////////
     ////////////////////////////////////////////
@@ -165,9 +178,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->TxE_Remarques->setDisabled(true);
     ui->RBt_Neuf->setDisabled(true);
     ui->RBt_Occasion->setDisabled(true);
-    ui->Bt_ChargerImage->setDisabled(true);
-    // Virer ce bouton car pour l'instant image chargée automatiquement en fonction du code du jeu
-    ui->Bt_ChargerImage->hide();
+
 }
 //###################################################################
 /**
@@ -287,15 +298,15 @@ void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
 }
 //###################################################################
 /**
- * @brief Méthode qui récupère le code du jeu sur lequel on a cliqué dans le tableau
+ * @brief Méthode qui récupère le code du jeu sur lequel on a sélectionné dans le tableau
  *
  * @param index
  */
-void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
+void F_AjoutSuppModifJeux::on_TbV_Recherche_selectionChanged(const QModelIndex &index)
 {
     // Remplir le code du jeu recherché avec le jeu cliqué dans le tableau
     ui->LE_RechercheCode->setText(this->ModelJeu->index(index.row(), 0).data().toString());
-    on_Bt_OK_clicked() ;
+    on_Bt_OK_clicked();
     // Griser Valider et Annuler/ Autoriser Ajout et suppression
     ui->Bt_Valider->setEnabled(false);
     ui->Bt_Annuler->setEnabled(false);
@@ -1254,7 +1265,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
     ui->LE_Code->clear();
     ui->Bt_Valider->setDisabled(true);
     ui->Bt_Annuler->setDisabled(true);
-    ui->Bt_ChargerImage->setDisabled(true);
 }
 //###################################################################
 /**
@@ -1717,7 +1727,6 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         ui->LE_Code->clear();
         ui->Bt_Valider->setDisabled(true);
         ui->Bt_Annuler->setDisabled(true);
-        ui->Bt_ChargerImage->setDisabled(true);
     }
     // Rendre utilisable la création et la suppression d'un jeu en cas
     // d'annulation du jeu courant
@@ -1725,44 +1734,6 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
     ui->Bt_Ajouter->setEnabled(true);
 }
 
-//###################################################################
-void F_AjoutSuppModifJeux::on_Bt_ChargerImage_clicked()
-{
-    QString sCheminImage ;
-    sCheminImage = QFileDialog::getOpenFileName( this,tr( "Ouvrir une image." ), "/home", "Image Files (*.png *.jpg *.bmp *.jpeg *.gif)" ) ;
-
-    this->AjouterImage( sCheminImage, ui->LE_Code->text() );
-
-    sCheminImage.clear() ;
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg"  ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ;
-    }
-
-    if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".gif" ) )
-    {
-        sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".gif" ;
-    }
-
-    QPixmap Image( sCheminImage ) ;
-    ui->Lb_Photo1->setPixmap( Image ) ;
-}
 //###################################################################
 /**
  * @brief Méthode qui permet de vider les champs ainsi que de passe en mode ajout (modif booléen)
@@ -1797,7 +1768,6 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
     ui->TxE_Remarques->setEnabled(true);
     ui->RBt_Neuf->setEnabled(true);
     ui->RBt_Occasion->setEnabled(true);
-    ui->Bt_ChargerImage->setEnabled(true);
 
     // Vide tous les champs avant l'ajout
     ui->LE_Code->clear();
@@ -2027,7 +1997,6 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
     ui->TxE_Remarques->setEnabled(true);
     ui->RBt_Neuf->setEnabled(true);
     ui->RBt_Occasion->setEnabled(true);
-    ui->Bt_ChargerImage->setEnabled(true);
 
     // Vérifie si un jeu n'est pas en cours de modification
     // Evite de perdre des modif avant de passer à un autre jeu
@@ -2287,39 +2256,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
             }
         }
         //----------Affichage photo----------------------------------------------------------------------------
-        QString sCheminImage ;
-
-        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg"  ) )
-        {
-            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpg" ;
-        }
-        else
-        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ) )
-        {
-            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".jpeg" ;
-        }
-        else
-        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ) )
-        {
-            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".png" ;
-        }
-        else
-        if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ) )
-        {
-            sCheminImage = QApplication::applicationDirPath() + "/photos/" + ui->LE_Code->text() + ".bmp" ;
-        }
-
-        if ( sCheminImage.isEmpty() )
-        {
-           ui->Lb_Photo1->setText("Photo n°1\nindisponible");
-        }
-        else
-        {
-           QPixmap Image( sCheminImage ) ;
-           ui->Lb_Photo1->setPixmap( Image ) ;
-           //Met l'image à l'échelle du cadre
-           ui->Lb_Photo1->setScaledContents( true ) ;
-        }
+        ui->Lb_ImageName->setText(Lb_Image->LoadImages(QSize(200,160),ui->LE_RechercheCode->text()));
 
         //Grisee les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
@@ -2526,78 +2463,21 @@ void F_AjoutSuppModifJeux::CacherBoutons()
     ui->Bt_Ajouter->setEnabled(false);
 }
 
-/**
- *  Permet l'ajout d une nouvelle image pour un jeu
- *  @param sCheminImage donne le chemin de l'image à récuperer
- */
-void F_AjoutSuppModifJeux::AjouterImage(QString sCheminImage, QString sCodeJeux )
+void F_AjoutSuppModifJeux::on_Bt_Gauche_clicked()
 {
-    QDir DirDossierImages ;
+    ui->Lb_ImageName->setText(Lb_Image->DisplayPreviousImage());
+}
 
-    if( sCheminImage != "" )
-    {
-        DirDossierImages.setPath( QApplication::applicationDirPath() + "/photos" ) ;
-        if( !DirDossierImages.exists() )
-        {
-            DirDossierImages.cd("..") ;
-            if( DirDossierImages.mkdir( "photos" ) )
-            {
-                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg"  ) )
-                {
-                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg" ) ;
-                }
+void F_AjoutSuppModifJeux::on_Bt_Droite_clicked()
+{
+    ui->Lb_ImageName->setText(Lb_Image->DisplayNextImage());
+}
 
-                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) )
-                {
-                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) ;
-                }
-
-                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) )
-                {
-                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) ;
-                }
-
-                if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) )
-                {
-                    QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) ;
-                }
-
-                if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
-                {
-                    qDebug() << "Impossible de copier l'image.0"  ;
-                }
-            }
-            else
-            {
-                qDebug() << "Impossible de créer le dossier Image.1"  ;
-            }
-        }
-        else
-        {
-            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg"  ) )
-            {
-                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpg" ) ;
-            }
-
-            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) )
-            {
-                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".jpeg" ) ;
-            }
-
-            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) )
-            {
-                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".png" ) ;
-            }
-
-            if( QFile::exists( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) )
-            {
-                QFile::remove( QApplication::applicationDirPath() + "/photos/" + sCodeJeux + ".bmp" ) ;
-            }
-
-            if( !QFile::copy( sCheminImage, QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.right( sCheminImage.size() - sCheminImage.lastIndexOf( "." ) ) ) )
-            {
-                qDebug() << "Impossible de copier l'image.2  " << QApplication::applicationDirPath() + "/photos/" + sCodeJeux + sCheminImage.left( sCheminImage.size() -sCheminImage.lastIndexOf( '.' ) ) << "    " << sCheminImage.size() -sCheminImage.lastIndexOf( '.') ;
-            }
-        }
-    }
+void F_AjoutSuppModifJeux::on_Lb_Image_clicked()
+{
+    disconnect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    QDialog *D_Image = new d_image(this,Lb_Image);
+    D_Image->exec();
+    ui->gridLayout_11->addWidget(Lb_Image,0,1);
+    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
 }

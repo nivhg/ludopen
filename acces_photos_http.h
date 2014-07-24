@@ -1,67 +1,44 @@
+//acces_photo_http.h	0.1	<Vincent VICTORIN>
 #ifndef ACCESPHOTOSPARHTTP_H
 #define ACCESPHOTOSPARHTTP_H
 
+// En-têtes standards necessaires dans ce fichier en-tete seulement ------------
 #include<QtCore>
 #include<QtNetwork>
 #include<QtWidgets>
+#include<QFile>
+#include<QDebug>
 
+/**
+ *  @brief AccesPhotosParHTTP permet la gestion des images stockées sur un serveur HTTP
+ */
 class AccesPhotosParHTTP:public QNetworkAccessManager
 {
   Q_OBJECT
 public:
-    bool FileOrURLExists(QString* filename, QString url, QString ext, QString* TypeImage)
-    {
-        // On suppose que l'argument ext est toujours mis en minuscule,
-        // et on rappele la fonction avec ext en majuscule
-        if(ext!=ext.toUpper()) {
-            if(FileOrURLExists(filename,url,ext.toUpper(),TypeImage))
-            {
-                return true;
-            }
-            ext=ext.toLower();
-        }
-        url+="."+ext;
-        *TypeImage=ext.toUpper();
-        // Si le chemin des images est une URL
-        if( url.indexOf("http://",0,Qt::CaseInsensitive) != -1)
-        {
-            QNetworkAccessManager m_NetworkMngr;
-            QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(url));
-            QEventLoop loop;
-            QObject::connect(reply, SIGNAL(finished()),&loop, SLOT(quit()));
-            loop.exec();
+    /**
+     *  @brief Vérifie l'existence d'une image sur un système de fichier ou en HTTP
+     *
+     *  @param url :
+     *          en entrée : chemin ou URL de l'image à rechercher
+     *          en sortie : chemin du fichier trouvé. Dans le cas d'une image HTTP :
+     *              chemin et nom du fichier temporaire où a été téléchargé l'image
+     *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
+     */
+    bool ImageOrURLExists( QString *returnfile, QString URLorPath, QString file, QString* TypeImage);
 
-            QTemporaryFile tempfile;
-            tempfile.open();
-            tempfile.setAutoRemove(false);
-            tempfile.write(reply->readAll());
-            tempfile.close();
-            *filename=tempfile.fileName();
-
-            switch (reply->error())
-              {
-                case QNetworkReply::NoError:
-                  // No error
-                  delete reply;
-                  return true;
-                case QNetworkReply::ContentNotFoundError:
-                  // 404 Not found
-                  /*int httpStatus = reply->attribute(
-                    QNetworkRequest::HttpStatusCodeAttribute).toInt();
-                  QByteArray httpStatusMessage = reply->attribute(
-                    QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();*/
-                  delete reply;
-                  tempfile.remove();
-                  return false;
-                  break;
-                }
-        }
-        else
-        {
-            return QFile::exists(url);
-        }
-
-    }
+    /**
+     *  @brief Vérifie l'existence d'un fichier en fonction de l'extention sur un système de fichier ou en HTTP
+     *          La fonction va rechercher si le fichier existe avec l'extention en minuscule et majuscule
+     *
+     *  @param url :
+     *          en entrée : chemin ou URL de l'image à rechercher
+     *          en sortie : chemin du fichier trouvé. Dans le cas d'une image HTTP :
+     *              chemin et nom du fichier temporaire où a été téléchargé l'image
+     *  @param ext : Extention du fichier à rechercher.
+     *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
+     */
+    bool FileOrURLExists( QString *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage);
 
 };
 

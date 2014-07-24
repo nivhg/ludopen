@@ -31,5 +31,7 @@
         <file>Statistiques.png</file>
         <file>Panier.png</file>
         <file>Fournisseurs.png</file>
+        <file>Fleche_droite.png</file>
+        <file>Fleche_gauche.png</file>
     </qresource>
 </RCC>

@@ -1,4 +1,4 @@
-// MaClasse.h	0.1	01/2012 PADIOU Nicolas
+// f_recherchemembres.h	0.1	01/2012 PADIOU Nicolas
 
 #ifndef F_RECHERCHEMEMBRES_H
 #define F_RECHERCHEMEMBRES_H

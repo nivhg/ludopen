@@ -7,6 +7,7 @@
 #include <QStandardItemModel>
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
+#include "lb_image.h"
 #include "f_declarerintervention.h"
 #include "f_detailsjeux.h"
 #include "f_reservation.h"
@@ -41,7 +42,8 @@ public:
     /** @brief Permet de fixer le code du jeu en consultation
      */
     void set_JeuEnConsultation(QString CodeJeuChoisi);
-    
+
+
 private slots:
     // METHODES---------------------------------------------------
     /** @brief Appeler lorsque l'on clic sur le bouton OK
@@ -137,6 +139,12 @@ private slots:
 
     void on_Le_nom_textChanged(const QString &arg1);
 
+    void on_Bt_Gauche_clicked();
+
+    void on_Bt_Droite_clicked();
+
+    void on_Lb_Image_clicked();
+
 private:
     //ATTRIBUTS--------------------------------------------------
     Ui::F_Jeux *ui;
@@ -152,9 +160,12 @@ private:
     
     //! Code du jeu actif sur la fenêtre
     QString JeuEnConsultation ;
-    
+
     //! Model du TableView des jeux
     QStandardItemModel * ModelJeu;
+
+    //! Label Image
+    lb_image* Lb_Image;
 };
 
 //-----------------------------------------------------------------

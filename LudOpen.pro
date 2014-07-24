@@ -45,7 +45,10 @@ SOURCES += \
     f_clesttem.cpp \
     f_imprimerfichecompletejeu.cpp \
     f_imprimeretiquettejeu.cpp \
-    f_listereservations.cpp
+    f_listereservations.cpp \
+    d_image.cpp \
+    lb_image.cpp \
+    acces_photos_http.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -80,7 +83,9 @@ HEADERS  += \
     f_imprimerfichecompletejeu.h \
     f_imprimeretiquettejeu.h \
     f_listereservations.h \
-    acces_photos_http.h
+    acces_photos_http.h \
+    d_image.h \
+    lb_image.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -112,4 +117,5 @@ FORMS    += \
     f_clesttem.ui \
     f_imprimerfichecompletejeu.ui \
     f_imprimeretiquettejeu.ui \
-    f_listereservations.ui
+    f_listereservations.ui \
+    d_image.ui
