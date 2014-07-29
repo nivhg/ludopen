@@ -477,7 +477,6 @@ void F_Jeux::on_Bt_ValiderDescription_clicked()
     //Grise les boutons de modification de la description
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
-    ui->TxE_description->setReadOnly(true);
 }
 ////////////////////////////////////////////////////////////
 ///////// Clique sur le bouton Annuler description ////////
@@ -536,7 +535,6 @@ void F_Jeux::on_Bt_ValiderContenu_clicked()
     //Grise les boutons de modification du contenu
     ui->Bt_ValiderContenu->setEnabled(false);
     ui->Bt_AnnulerContenu->setEnabled(false);
-    ui->TxE_contenu->setReadOnly(true);
 }
 ////////////////////////////////////////////////////////////
 ///////// Clique sur le bouton Annuler contenu ////////////

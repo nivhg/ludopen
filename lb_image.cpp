@@ -68,16 +68,11 @@ void lb_image::mousePressEvent ( QMouseEvent * event )
  */
 void lb_image::resizeEvent ( QResizeEvent * ev )
 {
-    qDebug()<<"Size before:";
-    qDebug()<<geometry();
     DisplayImage(ev->size());
-    qDebug()<<"Size after:";
-    qDebug()<<geometry();
 }
 
 QString lb_image::LoadImages(QSize size,QString code_jeu)
 {
-    qDebug()<<sCheminImagePref;
     // Suppression des fichiers temporaires du précédent affichage des images HTTP
     if( sCheminImagePref.indexOf("http://",0,Qt::CaseInsensitive) != -1)
     {
@@ -139,7 +134,7 @@ void lb_image::DisplayImage(QSize size)
     {
          //Met l'image à l'échelle du cadre
         setPixmap( Image.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation) ) ;
-        qDebug()<< "F_Jeux::on_Bt_ok_clicked() =>  sCheminImage=" <<  sCheminImage[iImage];
+        qDebug()<< "lb_image::DisplayImage() =>  sCheminImage=" <<  sCheminImage[iImage];
     }
     else   // pas de photo à afficher
     {
