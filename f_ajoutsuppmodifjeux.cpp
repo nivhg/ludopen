@@ -179,6 +179,9 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->RBt_Neuf->setDisabled(true);
     ui->RBt_Occasion->setDisabled(true);
 
+    // Connecte l'évenement textEdited à la fonction toUpper
+    connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
+
 }
 //###################################################################
 /**
@@ -2433,7 +2436,7 @@ void F_AjoutSuppModifJeux::ActualiserCBx_MotCle()
 
     QSqlQuery RequeteMotCle ;
 
-    RequeteMotCle.exec("SELECT DISTINCT MotCle FROM motscles") ;
+    RequeteMotCle.exec("SELECT DISTINCT MotCle FROM motscles ORDER BY MotCle") ;
 
     ui->CBx_MotCle1->addItem("Mot clé 1");
     ui->CBx_MotCle2->addItem("Mot clé 2");
@@ -2480,4 +2483,19 @@ void F_AjoutSuppModifJeux::on_Lb_Image_clicked()
     D_Image->exec();
     ui->gridLayout_11->addWidget(Lb_Image,0,1);
     connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+}
+
+
+/**
+ *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+ *
+ *  @param text
+ */
+
+void F_AjoutSuppModifJeux::toUpper(const QString &text)
+{
+    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
+    if (!le)
+    return;
+    le->setText(text.toUpper());
 }

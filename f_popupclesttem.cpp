@@ -52,6 +52,8 @@ F_PopUpCLESTTEM::F_PopUpCLESTTEM(int nCLESTTEM, QWidget *parent) :
     this->nCLESTTEM = nCLESTTEM;
 }
 
+
+
 /**
  *  @brief Destructeur de la classe.
  *
@@ -102,6 +104,8 @@ void F_PopUpCLESTTEM::Ajouter()
             ui->Lb_Autres->setText("Classification :");
             ui->LE_Autres->show();
             ui->LE_Autres->clear();
+            // Connecte l'évenement textEdited à la fonction toUpper
+            connect(ui->LE_CLESTTEM, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
         break;
 
         case 4: // Mot clé Jeu.
@@ -110,6 +114,8 @@ void F_PopUpCLESTTEM::Ajouter()
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
+            // Connecte l'évenement textEdited à la fonction toUpper
+            connect(ui->LE_CLESTTEM, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
         break;
 
         case 5: // Type Membre.
@@ -614,4 +620,17 @@ void F_PopUpCLESTTEM::on_LE_Autres_textEdited(const QString &arg1)
     {
         ui->Bt_Valider->setEnabled(true);
     }
+}
+
+/**
+ *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+ *
+ *  @param text
+ */
+void F_PopUpCLESTTEM::toUpper(const QString &text)
+{
+    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
+    if (!le)
+    return;
+    le->setText(text.toUpper());
 }

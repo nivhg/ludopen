@@ -69,15 +69,18 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
         }
 
 
-        ui->LE_CodePostal->setDisabled(true);
-        ui->LE_Contact->setDisabled(true);
-        ui->LE_Email->setDisabled(true);
-        ui->LE_Fax->setDisabled(true);
-        ui->LE_Nom->setDisabled(true);
-        ui->LE_Pays->setDisabled(true);
-        ui->LE_Rue->setDisabled(true);
-        ui->LE_Ville->setDisabled(true);
-        ui->LE_Telephone->setDisabled(true);
+    ui->LE_CodePostal->setDisabled(true);
+    ui->LE_Contact->setDisabled(true);
+    ui->LE_Email->setDisabled(true);
+    ui->LE_Fax->setDisabled(true);
+    ui->LE_Nom->setDisabled(true);
+    ui->LE_Pays->setDisabled(true);
+    ui->LE_Rue->setDisabled(true);
+    ui->LE_Ville->setDisabled(true);
+    ui->LE_Telephone->setDisabled(true);
+
+    // Connecte l'évenement textEdited à la fonction toUpper
+    connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
 }
 
 /**
@@ -503,4 +506,17 @@ void F_AjoutSuppModifFournisseursEditeurs::on_LE_Nom_textChanged(const QString &
     ui->Bt_Annuler->setEnabled(true);
     ui->Bt_Valider->setEnabled(true);
     ui->Bt_Supprimer->setEnabled(true);
+}
+
+/**
+ *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+ *
+ *  @param text
+ */
+void F_AjoutSuppModifFournisseursEditeurs::toUpper(const QString &text)
+{
+    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
+    if (!le)
+    return;
+    le->setText(text.toUpper());
 }

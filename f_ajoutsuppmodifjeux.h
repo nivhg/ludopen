@@ -212,6 +212,8 @@ private slots:
 
     void on_Lb_Image_clicked();
 
+    void toUpper(const QString &text);
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
 

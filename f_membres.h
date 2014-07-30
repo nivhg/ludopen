@@ -176,6 +176,8 @@ private slots:
 
     void on_LW_Abonnements_doubleClicked(const QModelIndex &index);
 
+    void toUpper(const QString &text);
+
 private:
     Ui::F_Membres * ui;
 

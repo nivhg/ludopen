@@ -101,6 +101,8 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( slot_ActualiserAbonnements() ) ) ;
     connect( this->Bt_ValiderVille, SIGNAL( clicked() ), this, SLOT( slot_ValiderAjoutVille() ) ) ;
     connect( this->Bt_AnnuerVille, SIGNAL( clicked() ), this, SLOT(slot_AnnulerAjoutVille()) ) ;
+    // Connecte l'évenement textEdited à la fonction toUpper
+    connect(ui->Le_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
 
     //Initialisation de la liste de titres et de types
     this->MaJTitre() ;
@@ -1556,4 +1558,18 @@ void F_Membres::on_Bt_SupprimerAbonnement_clicked()
            ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
         }
     }
+}
+
+/**
+ *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+ *
+ *  @param text
+ */
+
+void F_Membres::toUpper(const QString &text)
+{
+    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
+    if (!le)
+    return;
+    le->setText(text.toUpper());
 }

@@ -83,6 +83,8 @@ private slots:
      */
     void on_LE_Nom_textChanged(const QString &arg1);
 
+    void toUpper(const QString &text);
+
 private:
     Ui::F_AjoutSuppModifFournisseursEditeurs *ui;
 

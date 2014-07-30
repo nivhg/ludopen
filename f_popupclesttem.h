@@ -96,6 +96,8 @@ private slots:
      */
     void on_LE_Autres_textEdited(const QString &arg1);
 
+    void toUpper(const QString &text);
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
