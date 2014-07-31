@@ -343,12 +343,22 @@
             <height>16777215</height>
            </size>
           </property>
+          <property name="contextMenuPolicy">
+           <enum>Qt::ActionsContextMenu</enum>
+          </property>
           <property name="text">
            <string>Exporter cette liste</string>
           </property>
           <property name="icon">
            <iconset resource="ImagesIcones.qrc">
             <normaloff>:/CSV.png</normaloff>:/CSV.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="CBx_Exporter">
+          <property name="contextMenuPolicy">
+           <enum>Qt::ActionsContextMenu</enum>
           </property>
          </widget>
         </item>
@@ -466,6 +476,22 @@
     </widget>
    </item>
   </layout>
+  <action name="actionTest">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>test</string>
+   </property>
+  </action>
+  <action name="actionTest2">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>test2</string>
+   </property>
+  </action>
  </widget>
  <resources>
   <include location="ImagesIcones.qrc"/>

@@ -38,8 +38,8 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     //Mettre un nom pour toutes les colonnes
     ModeleMembres.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 1, new QStandardItem( "" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 2, new QStandardItem( "Type" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 3, new QStandardItem( "Titre" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 2, new QStandardItem( "Titre" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 3, new QStandardItem( "Type" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 4, new QStandardItem( "Nom" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 5, new QStandardItem( "Prénom" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 6, new QStandardItem( "Ville" ) ) ;
@@ -116,6 +116,29 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     this->pBt_FermerAbonnements->setGeometry( 100 , 375, 100, 25 ) ;
     this->pBt_FermerAbonnements->show() ;
     ui->ChBx_Abonnements->setHidden( true ) ;
+
+    QStandardItemModel *Model = new QStandardItemModel(2, 1);
+
+    QString* sChamps = new QString[13] { "Titre", "Type", "Nom", "Prénom","Ville",
+            "Code Membre","Téléphone","Mobile","Courriel","Retards","Fin cotisation",
+            "Crédits","Inscription"};
+    for (int r = 0; r < 13; ++r)
+        {
+            QStandardItem* item;
+            item = new QStandardItem(sChamps[r]);
+
+            item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+            item->setData(Qt::Unchecked, Qt::CheckStateRole);
+            item->setCheckState(Qt::Checked);
+
+            Model->setItem(r, 0, item);
+            this->Items.push_back(item);
+    }
+
+    ui->CBx_Exporter->setModel(Model);
+    ui->CBx_Exporter->setStyle(new QCommonStyle);
+    ui->CBx_Exporter->setStyleSheet("border-style: outset;");
+    ui->CBx_Exporter->setCurrentText("Champs à exporter");
 }
 
 F_ListeMembres::~F_ListeMembres()
@@ -626,6 +649,7 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
 void F_ListeMembres::on_Bt_Exporter_clicked()
 {
+//    trayIcon->contextMenu()->popup(QCursor::pos());
     int nNombreColonne (0);
     int nNombreLigne (0);
 
@@ -635,19 +659,39 @@ void F_ListeMembres::on_Bt_Exporter_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
-    ecrire << "Nom;Prenom;Ville;Code Membre;Telephone;Email;Nombre de retard\r\n" ;
+    QString titre;
+    for (int i = 0; i < this->Items.size(); ++i) {
+        QStandardItem * item = this->Items[i];
+        if(item->checkState() == Qt::Checked)
+        {
+            if(titre.size()==0)
+            {
+                titre+=item->text();
+            }
+            else
+            {
+                titre+=";"+item->text();
+            }
+        }
+    }
+    ecrire << titre + "\r\n";
     for(nNombreLigne = 0; nNombreLigne<ui->TbW_ListeMembre->model()->rowCount(); nNombreLigne++)
     {
-        for(nNombreColonne = 1; nNombreColonne<ui->TbW_ListeMembre->model()->columnCount(); nNombreColonne++)
+        for(nNombreColonne = 2; nNombreColonne<ui->TbW_ListeMembre->model()->columnCount(); nNombreColonne++)
         {
-            sCaractere = ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
-            // On rejete les valeurs à caractère unique et on le remplace par un champs vide
-            sCaractere.replace(" ", "\ ") ;
-            if(sCaractere == "-" || sCaractere == "_" || sCaractere == ".")
+            QStandardItem * item = this->Items[nNombreColonne-2];
+            if(item->checkState() == Qt::Checked)
             {
-                sCaractere = "";
+                titre=ui->TbW_ListeMembre->model()->headerData(nNombreColonne,Qt::Horizontal,Qt::DisplayRole).toString();
+                sCaractere = ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
+                // On rejete les valeurs à caractère unique et on le remplace par un champs vide
+                sCaractere.replace(" ", "\ ") ;
+                if(sCaractere == "-" || sCaractere == "_" || sCaractere == ".")
+                {
+                    sCaractere = "";
+                }
+                ecrire << "\"" << sCaractere << "\";";
             }
-            ecrire << "\"" << sCaractere << "\";";
         }
         ecrire << "\r\n";
         nNombreColonne = 0;
@@ -710,13 +754,6 @@ void F_ListeMembres::on_ChBx_NbreRetard_clicked()
     this->AffichageListe() ;
 }
 
-/*
- * A virer car pas de Chexbox de ce nom
-void F_ListeMembres::on_ChBx_Retard_clicked()
-{
-    this->AffichageListe() ;
-}
-*/
 void F_ListeMembres::on_ChBx_Cotisation_clicked()
 {
     this->AffichageListe() ;

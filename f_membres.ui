@@ -797,6 +797,14 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Serif</family>
+            <weight>75</weight>
+            <italic>false</italic>
+            <bold>true</bold>
+           </font>
+          </property>
           <property name="title">
            <string>Nom :</string>
           </property>
@@ -814,6 +822,13 @@
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Serif</family>
+            <weight>75</weight>
+            <bold>true</bold>
+           </font>
           </property>
           <property name="title">
            <string>Prénom :</string>
@@ -1087,7 +1102,10 @@
             </font>
            </property>
            <property name="text">
-            <string>N° Fixe :</string>
+            <string>&lt;b&gt;N° Fixe&lt;/b&gt; :</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::RichText</enum>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1140,7 +1158,10 @@
             </palette>
            </property>
            <property name="text">
-            <string>N° Mobile :</string>
+            <string>&lt;b&gt;N° Mobile&lt;/b&gt; :</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::RichText</enum>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -1383,7 +1404,10 @@
             </font>
            </property>
            <property name="text">
-            <string>eMail :</string>
+            <string>&lt;b&gt;Courriel&lt;/b&gt; :</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::RichText</enum>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

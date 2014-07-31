@@ -108,11 +108,13 @@ private slots:
 
     void on_Bt_SupprimerListe_clicked();
 
-    void on_Bt_Exporter_clicked();
+    //void on_Bt_Exporter_clicked();
 
     void on_TbW_ListeMembre_clicked(const QModelIndex &index);
 
     void on_TbW_ListeMembre_doubleClicked(const QModelIndex &index);
+
+    void on_Bt_Exporter_clicked();
 
 private:
     Ui::F_ListeMembres *ui;
@@ -128,7 +130,7 @@ private:
     QTableView * pListeAbonnements ;        //! l
     QLabel * pLb_Abonnements ;                   //! LigneEdit permettant
     QPushButton * pBt_FermerAbonnements ;          //! Bouton
-
+    std::vector<QStandardItem*> Items;
 };
 
 #endif // F_LISTEMEMBRES_H
