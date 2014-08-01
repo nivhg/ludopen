@@ -27,6 +27,7 @@
 #include "lb_image.h"
 #include "f_ajoutsuppmodifjeux.h"
 #include "ui_f_ajoutsuppmodifjeux.h"
+#include "f_ajoutsuppmodiffournisseursediteurs.h"
 
 //###################################################################
 /**
@@ -44,16 +45,11 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->setupUi(this);
 
     // Création des fenêtres de création de nouveaux éléments
-    this->pAjoutFournisseur= new F_AjouterFournisseur(this) ;
-    this->pAjoutEditeur= new F_AjouterEditeur(this) ;
     this->pEtatAjMod = new F_PopUpCLESTTEM(0);
     this->pStatutAjMod = new F_PopUpCLESTTEM(1);
     this->pEmplacementAjMod = new F_PopUpCLESTTEM(2);
     this->pClassificationAjMod = new F_PopUpCLESTTEM(3);
     this->pMotCleAjMod = new F_PopUpCLESTTEM(4);
-    
-    // sert à quoi ??
-    //JeuEnConsultation = "";
     
     //Création d'un modèle pour le TableView des jeux
     this->ModelJeu = new QStandardItemModel() ;
@@ -111,14 +107,11 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     //////////////////////////////////////
     this->ActualiserCBx_Fournisseur() ;
     //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
-    this->pAjoutFournisseur->hide();
 
     /////////////////////////////////////////
     /////////// Editeurs ///////////////////
     ///////////////////////////////////////
     this->ActualiserCBx_Editeur() ;
-    //Cache la fenêtre lors du démarrage : après que le CBx ait été actualisé
-    this->pAjoutEditeur->hide();
 
     ////////////////////////////////////////////
     ///////// Classification //////////////////
@@ -569,9 +562,11 @@ void F_AjoutSuppModifJeux::on_CBx_Fournisseur_activated(int index)
     //Si l'élément séléctionné est le dernier : afficher la fenêtre pour ajouter un fournisseur
     if(index == ui->CBx_Fournisseur->count() -1)
     {
+        if(!this->pAjoutFournisseur)
+        {
+            this->pAjoutFournisseur= new D_AjoutSuppModifFournisseursEditeurs(this,MODE_FOURNISSEUR);
+        }
         this->pAjoutFournisseur->show();
-        // En cas d'ajout, remettre à jour le ComboBox
-        //this->ActualiserCBx_Fournisseur();
     }
     else
     {   // Afficher ou non les boutons Valider/Annuler
@@ -592,9 +587,11 @@ void F_AjoutSuppModifJeux::on_CBx_Editeur_activated(int index)
     //Si l'élément séléctionné est le dernier : afficher la fenêter pour ajouter un éditeur
     if(index == ui->CBx_Editeur->count() -1)
     {
+        if(!this->pAjoutEditeur)
+        {
+            this->pAjoutEditeur= new D_AjoutSuppModifFournisseursEditeurs(this,MODE_EDITEUR);
+        }
         this->pAjoutEditeur->show();
-        // En cas d'ajout, remettre à jour le ComboBox
-        //this->ActualiserCBx_Editeur();
     }
     else
     {   // Afficher ou non les boutons Valider/Annuler
@@ -2478,10 +2475,13 @@ void F_AjoutSuppModifJeux::on_Bt_Droite_clicked()
 
 void F_AjoutSuppModifJeux::on_Lb_Image_clicked()
 {
+    // Deconnecte le signal de clic pour zoom pour éviter qu'il soit appelé dans la QDialog
     disconnect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
     QDialog *D_Image = new d_image(this,Lb_Image);
     D_Image->exec();
+    // Remet Lb_Image dans la fenêtre principale Jeux
     ui->gridLayout_11->addWidget(Lb_Image,0,1);
+    // Reconnecte le signal de clic pour zoom
     connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
 }
 

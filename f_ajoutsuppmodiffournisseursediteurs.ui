@@ -130,8 +130,8 @@
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_11">
         <item>
          <widget class="QLabel" name="Lb_Nom">
@@ -145,7 +145,7 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
          <widget class="QLabel" name="Lb_Rue">
@@ -159,7 +159,7 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_9">
         <item>
          <widget class="QLabel" name="Lb_CodePostal">
@@ -173,7 +173,7 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
          <widget class="QLabel" name="Lb_Ville">
@@ -187,7 +187,7 @@
         </item>
        </layout>
       </item>
-      <item row="4" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
          <widget class="QLabel" name="Lb_Pays">
@@ -201,7 +201,7 @@
         </item>
        </layout>
       </item>
-      <item row="5" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
          <widget class="QLabel" name="Lb_Contact">
@@ -215,7 +215,7 @@
         </item>
        </layout>
       </item>
-      <item row="6" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QLabel" name="Lb_Telephone">
@@ -229,7 +229,7 @@
         </item>
        </layout>
       </item>
-      <item row="7" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="Lb_Fax">
@@ -243,7 +243,7 @@
         </item>
        </layout>
       </item>
-      <item row="8" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="Lb_Email">
@@ -257,7 +257,24 @@
         </item>
        </layout>
       </item>
-      <item row="9" column="0">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="sizeConstraint">
+         <enum>QLayout::SetMaximumSize</enum>
+        </property>
+        <item>
+         <widget class="QLabel" name="Lb_SiteWeb">
+          <property name="text">
+           <string>Site Web :</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="LE_SiteWeb"/>
+        </item>
+       </layout>
+      </item>
+      <item>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
@@ -275,16 +292,16 @@
         </item>
        </layout>
       </item>
-      <item row="10" column="0">
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QCommandLinkButton" name="Bt_Supprimer">
+         <widget class="QCommandLinkButton" name="Bt_Valider">
           <property name="text">
-           <string>Supprimer ce fournisseur</string>
+           <string>Valider</string>
           </property>
           <property name="icon">
            <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+            <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -295,44 +312,40 @@
          </widget>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QCommandLinkButton" name="Bt_Valider">
-            <property name="text">
-             <string>Valider</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCommandLinkButton" name="Bt_Annuler">
-            <property name="text">
-             <string>Annuler </string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-         </layout>
+         <widget class="QCommandLinkButton" name="Bt_Annuler">
+          <property name="text">
+           <string>Annuler </string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>30</width>
+            <height>30</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
+      </item>
+      <item>
+       <widget class="QCommandLinkButton" name="Bt_Supprimer">
+        <property name="text">
+         <string>Supprimer ce fournisseur</string>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

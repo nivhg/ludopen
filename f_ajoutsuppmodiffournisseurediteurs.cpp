@@ -32,7 +32,7 @@
  *
  * @param parent
  */
-F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidget *parent) :
+F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidget *parent, char Mode) :
     QWidget(parent),
     ui(new Ui::F_AjoutSuppModifFournisseursEditeurs)
 {
@@ -81,6 +81,8 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
 
     // Connecte l'évenement textEdited à la fonction toUpper
     connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
+    this->Mode=Mode;
+    this->Parent=parent;
 }
 
 /**
@@ -186,7 +188,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
 
 
         QSqlQuery RequeteInfoFournisseur ;
-        RequeteInfoFournisseur.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Remarque FROM fournisseursediteur WHERE NomFournisseur =:NomDuFournisseur") ;
+        RequeteInfoFournisseur.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Remarque, SiteWeb FROM fournisseursediteur WHERE NomFournisseur =:NomDuFournisseur") ;
         RequeteInfoFournisseur.bindValue(":NomDuFournisseur", this->Selection);
         if(!RequeteInfoFournisseur.exec())
         {
@@ -203,6 +205,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
         QString Email = RequeteInfoFournisseur.value(6).toString() ;
         QString Fax = RequeteInfoFournisseur.value(7).toString() ;
         QString Remarque = RequeteInfoFournisseur.value(8).toString() ;
+        QString SiteWeb = RequeteInfoFournisseur.value(9).toString() ;
 
         ui->LE_Contact->setText(Contact);
         ui->LE_Email->setText(Email);
@@ -213,6 +216,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
         ui->LE_CodePostal->setText(CP);
         ui->LE_Rue->setText(Adresse);
         ui->TxE_Remarques->setText(Remarque);
+        ui->LE_SiteWeb->setText(SiteWeb);
 }
 /**
  * @brief Méthode qui permet de passe le booléen AjoutOuModif à true pour dire que l'on se trouve désormais en mode ajout
@@ -274,6 +278,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
 {
+    // Mode ajout
     if(AjoutOuModif == true)
     {
         if(ui->LE_Nom->text() == "")
@@ -282,8 +287,35 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
         }
         else
         {
+            QSqlQuery RequeteRechercheEditeurFournisseur ;
+            RequeteRechercheEditeurFournisseur.prepare("SELECT COUNT(*) FROM fournisseursediteur WHERE NomFournisseur LIKE (:NomFournisseur)");
+            RequeteRechercheEditeurFournisseur.bindValue(":NomFournisseur",ui->LE_Nom->text());
+            RequeteRechercheEditeurFournisseur.exec();
+            RequeteRechercheEditeurFournisseur.next();
+            if (RequeteRechercheEditeurFournisseur.value(0).toInt() > 0)
+            {
+               QString type;
+               switch(this->Mode)
+               {
+                   case MODE_INDEFINI: {
+                           type = "de fournisseur ou d'éditeur";
+                           break;
+                   }
+                   case MODE_FOURNISSEUR: {
+                           type = "de fournisseur";
+                           break;
+                   }
+                   case MODE_EDITEUR: {
+                           type = "d'éditeur";
+                           break;
+                   }
+               }
+                QMessageBox::critical(this, "Nom " + type + " existant déjà", "Un nom " + type + " existe déjà dans la base de donnée. Veuillez modifier l'enregistrement existant.");
+                return;
+            }
+
             QSqlQuery RequeteAjoutFournEdit ;
-            RequeteAjoutFournEdit.prepare("INSERT INTO fournisseursediteur(NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Fournisseur, Editeur, Remarque) VALUES (:LeNom, :LaAdresse, :LeCP, :LaVille, :LeContact, :LeTel, :LeEmail, :LeFax, :LePays, :LeFournisseur, :LeEditeur, :LaRemarque)") ;
+            RequeteAjoutFournEdit.prepare("INSERT INTO fournisseursediteur(NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Fournisseur, Editeur, Remarque, SiteWeb) VALUES (:LeNom, :LaAdresse, :LeCP, :LaVille, :LeContact, :LeTel, :LeEmail, :LeFax, :LePays, :LeFournisseur, :LeEditeur, :LaRemarque, :LeSiteWeb)") ;
             RequeteAjoutFournEdit.bindValue(":LeNom", ui->LE_Nom->text());
             RequeteAjoutFournEdit.bindValue(":LaAdresse", ui->LE_Rue->text());
             RequeteAjoutFournEdit.bindValue(":LeCP", ui->LE_CodePostal->text());
@@ -293,7 +325,17 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             RequeteAjoutFournEdit.bindValue(":LeEmail", ui->LE_Email->text());
             RequeteAjoutFournEdit.bindValue(":LeFax", ui->LE_Fax->text());
             RequeteAjoutFournEdit.bindValue(":LePays", ui->LE_Pays->text());
-            switch(QMessageBox::information(this, "Qu'est ce ?", "Cet ajout est-il un fournisseur ou un éditeur ?", "Fournisseur", "Editeur","Les deux") )
+            RequeteAjoutFournEdit.bindValue(":LeSiteWeb", ui->LE_SiteWeb->text());
+            char choix;
+            if( this->Mode == MODE_INDEFINI)
+            {
+                choix = QMessageBox::information(this, "Qu'est ce ?", "Cet ajout est-il un fournisseur ou un éditeur ?", "Fournisseur", "Editeur","Les deux");
+            }
+            else
+            {
+                choix = Mode-1;
+            }
+            switch( choix )
             {
                 case 0 : RequeteAjoutFournEdit.bindValue(":LeFournisseur", 1);
                          RequeteAjoutFournEdit.bindValue(":LeEditeur", 0);
@@ -316,14 +358,31 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             this->AjoutOuModif = false ;
             // réactualiser la liste des fournisseurs
             this->on_LE_Recherche_textChanged("") ;
+            // Si on est appelé par D_AjoutSuppModifFournisseursEditeurs donc on doit fermer la fenêtre
+            if( this->parent()->objectName() == "D_AjoutSuppModifFournisseursEditeurs")
+            {
+                this->AjoutOuModif = true ;
+                this->Parent->hide();
+                D_AjoutSuppModifFournisseursEditeurs * pAjoutSuppModifFournisseursEditeurs = (D_AjoutSuppModifFournisseursEditeurs *) this->Parent;
+                if( this->Mode == MODE_FOURNISSEUR)
+                {
+                    // En cas d'ajout, remettre à jour le ComboBox Fournisseur
+                    pAjoutSuppModifFournisseursEditeurs->Parent->ActualiserCBx_Fournisseur();
+                }
+                else
+                {
+                    // En cas d'ajout, remettre à jour le ComboBox Editeur
+                    pAjoutSuppModifFournisseursEditeurs->Parent->ActualiserCBx_Editeur();
+                }
+            }
         }
     }
-    else   // Création d'un nouveau fournisseur/éditeur
+    else   // Modification d'un nouveau fournisseur/éditeur
     {
 
         QSqlQuery RequeteModifFournOuEdit ;
 
-        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET AdresseFournisseur =:LaAdresse, CPFournisseur =:LeCP, VilleFournisseur =:LaVille, PersonneContacte =:LeContact, NumTelephone =:LeNum, Email =:LeEmail, NumFax =:LeFax, Pays =:LePays, Remarque =:LaRemarque WHERE NomFournisseur =:LeNom") ;
+        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET AdresseFournisseur =:LaAdresse, CPFournisseur =:LeCP, VilleFournisseur =:LaVille, PersonneContacte =:LeContact, NumTelephone =:LeNum, Email =:LeEmail, NumFax =:LeFax, Pays =:LePays, Remarque =:LaRemarque, SiteWeb =:LeSiteWeb WHERE NomFournisseur =:LeNom") ;
         RequeteModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
         RequeteModifFournOuEdit.bindValue(":LaAdresse", ui->LE_Rue->text());
         RequeteModifFournOuEdit.bindValue(":LeCP", ui->LE_CodePostal->text());
@@ -334,13 +393,14 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
         RequeteModifFournOuEdit.bindValue(":LeFax", ui->LE_Fax->text());
         RequeteModifFournOuEdit.bindValue(":LePays", ui->LE_Pays->text());
         RequeteModifFournOuEdit.bindValue(":LaRemarque", ui->TxE_Remarques->toPlainText());
+        RequeteModifFournOuEdit.bindValue(":LeSiteWeb", ui->LE_SiteWeb->text());
 
         if(!RequeteModifFournOuEdit.exec())
         {
             qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteModifFournOuEdit.lastQuery();
         }
         RequeteModifFournOuEdit.next() ;
-        QMessageBox::information(this, "Confirmation", "Nouveau fournisseur/éditeur ajouter avec succès", "OK") ;
+        QMessageBox::information(this, "Succès", "Nouveau fournisseur/éditeur modifié avec succès", "OK") ;
         ViderChamps();
         // réactualiser la liste des fournisseurs
         this->on_LE_Recherche_textChanged("") ;
@@ -356,7 +416,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()
 {
     QSqlQuery RequeteAnnulModifFournOuEdit ;
 
-    RequeteAnnulModifFournOuEdit.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Remarque FROM fournisseursediteur WHERE NomFournisseur =:LeNom") ;
+    RequeteAnnulModifFournOuEdit.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Remarque, SiteWeb FROM fournisseursediteur WHERE NomFournisseur =:LeNom") ;
     RequeteAnnulModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
     if(!RequeteAnnulModifFournOuEdit.exec())
     {
@@ -374,6 +434,12 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()
     ui->LE_Fax->setText(RequeteAnnulModifFournOuEdit.value(7).toString());
     ui->LE_Pays->setText(RequeteAnnulModifFournOuEdit.value(8).toString());
     ui->TxE_Remarques->setText(RequeteAnnulModifFournOuEdit.value(9).toString());
+    ui->LE_SiteWeb->setText(RequeteAnnulModifFournOuEdit.value(10).toString());
+    // Si on est appelé par D_AjoutSuppModifFournisseursEditeurs donc on doit fermer la fenêtre
+    if( this->parent()->objectName() == "D_AjoutSuppModifFournisseursEditeurs")
+    {
+        this->Parent->close();
+    }
 }
 /**
  * @brief Méthode qui permet de faire une recherche seulement parmi les fournisseurs ou d'affiche la liste de tout les fournisseurs
@@ -493,8 +559,10 @@ void F_AjoutSuppModifFournisseursEditeurs::ViderChamps()
     ui->LE_Rue->clear();
     ui->LE_Telephone->clear();
     ui->LE_Ville->clear();
+    ui->LE_Pays->clear();
     ui->TxE_Remarques->clear();
     ui->LE_Recherche->clear();
+    ui->LE_SiteWeb->clear();
 }
 /**
  * @brief Méthode qui lorsque la case Nom change d'état, active certains boutons
@@ -519,4 +587,11 @@ void F_AjoutSuppModifFournisseursEditeurs::toUpper(const QString &text)
     if (!le)
     return;
     le->setText(text.toUpper());
+}
+
+void F_AjoutSuppModifFournisseursEditeurs::AjoutFournisseursEditeursSeulement()
+{
+    ui->frame->hide();
+    ui->Bt_Supprimer->hide();
+    on_Bt_Ajouter_clicked();
 }

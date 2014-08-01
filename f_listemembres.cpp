@@ -119,9 +119,11 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
 
     QStandardItemModel *Model = new QStandardItemModel(2, 1);
 
+    // Liste des champs de la combobox d'export
     QString* sChamps = new QString[13] { "Titre", "Type", "Nom", "Prénom","Ville",
             "Code Membre","Téléphone","Mobile","Courriel","Retards","Fin cotisation",
             "Crédits","Inscription"};
+    // Ajout des checkboxes dans la combobox d'export
     for (int r = 0; r < 13; ++r)
         {
             QStandardItem* item;
@@ -136,6 +138,7 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     }
 
     ui->CBx_Exporter->setModel(Model);
+    // Nécessaire pour l'affichage des combobox sous Linux (Bug ?)
     ui->CBx_Exporter->setStyle(new QCommonStyle);
     ui->CBx_Exporter->setStyleSheet("border-style: outset;");
     ui->CBx_Exporter->setCurrentText("Champs à exporter");
@@ -659,6 +662,7 @@ void F_ListeMembres::on_Bt_Exporter_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
+    // Récupération des titres de colonnes et concaténation dans la variable titre si les checkboxes sont cochées
     QString titre;
     for (int i = 0; i < this->Items.size(); ++i) {
         QStandardItem * item = this->Items[i];
@@ -674,7 +678,9 @@ void F_ListeMembres::on_Bt_Exporter_clicked()
             }
         }
     }
+
     ecrire << titre + "\r\n";
+
     for(nNombreLigne = 0; nNombreLigne<ui->TbW_ListeMembre->model()->rowCount(); nNombreLigne++)
     {
         for(nNombreColonne = 2; nNombreColonne<ui->TbW_ListeMembre->model()->columnCount(); nNombreColonne++)

@@ -19,7 +19,7 @@ class d_image : public QDialog
 public:
     //! Constructeur
     explicit d_image(QWidget *parent = 0, lb_image* Lb_Image=0);
-    //! Déstructeur
+    //! Destructeur
     ~d_image();
 
 private slots:

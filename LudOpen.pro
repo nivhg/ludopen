@@ -33,8 +33,6 @@ SOURCES += \
     f_ajoutsuppmodiffournisseurediteurs.cpp \
     f_ajoutercoticarte.cpp \
     f_abonnements.cpp \
-    f_ajouterfournisseur.cpp \
-    f_ajouterediteur.cpp \
     f_preferences.cpp \
     f_retards.cpp \
     Courriel.cpp \
@@ -48,7 +46,8 @@ SOURCES += \
     f_listereservations.cpp \
     d_image.cpp \
     lb_image.cpp \
-    acces_photos_http.cpp
+    acces_photos_http.cpp \
+    d_ajoutsuppmodiffournisseursediteurs.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -70,8 +69,6 @@ HEADERS  += \
     f_ajoutercoticarte.h \
     f_abonnements.h \
     TitreType.h \
-    f_ajouterfournisseur.h \
-    f_ajouterediteur.h \
     f_preferences.h \
     f_retards.h \
     Courriel.h \
@@ -85,7 +82,8 @@ HEADERS  += \
     f_listereservations.h \
     acces_photos_http.h \
     d_image.h \
-    lb_image.h
+    lb_image.h \
+    d_ajoutsuppmodiffournisseursediteurs.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -106,8 +104,6 @@ FORMS    += \
     f_ajoutsuppmodiffournisseursediteurs.ui \
     f_ajoutercoticarte.ui \
     f_abonnements.ui \
-    f_ajouterfournisseur.ui \
-    f_ajouterediteur.ui \
     f_preferences.ui \
     f_retards.ui \
     f_listemembres.ui \
@@ -118,4 +114,5 @@ FORMS    += \
     f_imprimerfichecompletejeu.ui \
     f_imprimeretiquettejeu.ui \
     f_listereservations.ui \
-    d_image.ui
+    d_image.ui \
+    d_ajoutsuppmodiffournisseursediteurs.ui

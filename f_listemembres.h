@@ -130,7 +130,7 @@ private:
     QTableView * pListeAbonnements ;        //! l
     QLabel * pLb_Abonnements ;                   //! LigneEdit permettant
     QPushButton * pBt_FermerAbonnements ;          //! Bouton
-    std::vector<QStandardItem*> Items;
+    std::vector<QStandardItem*> Items;      //! Liste des checkboxes dans la combobox d'export
 };
 
 #endif // F_LISTEMEMBRES_H

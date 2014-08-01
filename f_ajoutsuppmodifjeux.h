@@ -9,10 +9,11 @@ class F_AjoutSuppModifJeux;
 #include <QStandardItemModel>
 
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
-#include "f_ajouterfournisseur.h"
-#include "f_ajouterediteur.h"
+#include "d_ajoutsuppmodiffournisseursediteurs.h"
 #include "f_popupclesttem.h"
 #include "lb_image.h"
+
+class D_AjoutSuppModifFournisseursEditeurs;
 
 namespace Ui {
     class F_AjoutSuppModifJeux;
@@ -248,13 +249,13 @@ private:
      */
     F_PopUpCLESTTEM * pMotCleAjMod;
 
-    /** @brief Pointeur qui fait le lien entre la classe F_AjouterFournisseur et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe D_AjoutSuppModifFournisseursEditeurs coté fournisseur et celle-ci
      */
-    F_AjouterFournisseur * pAjoutFournisseur;
+    D_AjoutSuppModifFournisseursEditeurs * pAjoutFournisseur;
 
-    /** @brief Pointeur qui fait le lien entre la classe F_AjouterEditeur et celle-ci
+    /** @brief Pointeur qui fait le lien entre la classe D_AjoutSuppModifFournisseursEditeurs coté éditeur et celle-ci
      */
-    F_AjouterEditeur * pAjoutEditeur;
+    D_AjoutSuppModifFournisseursEditeurs * pAjoutEditeur;
 
     /** @brief Pour gérer le jeu de cache cache des boutons Valider/Annuler/Ajouter/Supprimer
      */

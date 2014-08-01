@@ -2,9 +2,17 @@
 #ifndef F_AJOUTSUPPMODIFFOURNISSEURSEDITEURS_H
 #define F_AJOUTSUPPMODIFFOURNISSEURSEDITEURS_H
 
+#define MODE_INDEFINI 0
+#define MODE_FOURNISSEUR 1
+#define MODE_EDITEUR 2
+#define MODE_EDITEUR_FOURNISSEUR 3
+
+#include "f_ajoutsuppmodifjeux.h"
+
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
 #include <QtWidgets>
 #include <QStandardItemModel>
+
 
 namespace Ui {
     class F_AjoutSuppModifFournisseursEditeurs;
@@ -22,8 +30,9 @@ class F_AjoutSuppModifFournisseursEditeurs : public QWidget
     Q_OBJECT
 
 public:
-    explicit F_AjoutSuppModifFournisseursEditeurs(QWidget *parent = 0);
+    explicit F_AjoutSuppModifFournisseursEditeurs(QWidget *parent = 0, char Mode=MODE_INDEFINI);
     ~F_AjoutSuppModifFournisseursEditeurs();
+    void AjoutFournisseursEditeursSeulement();
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -93,6 +102,8 @@ private:
     //! Model du TableView des fournisseurs
     QStandardItemModel * ModelFournisseur;
 
+    QWidget * Parent;
+
     /** @brief QString pour récuper le nom du fournisseur sur lequel on a cliqué dans le tableau
      *
      */
@@ -106,6 +117,9 @@ private:
       * false = modif
     ******************/
     bool AjoutOuModif ;
+
+    // Definit le mode de la classe : editeur, fournisseur ou les 2
+    char Mode ;
 };
 
 //------------------------------------------------------------------------------
