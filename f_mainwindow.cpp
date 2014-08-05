@@ -33,10 +33,8 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pRetour=new F_Retour (this->ui->Retour);
     qDebug()<<"Création F_ListeJeux";
     this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
-    qDebug()<<"Création F_RechercheMembres";
-    this->pRechercheMembres = new F_RechercheMembres (this->ui->Membre) ;
     qDebug()<<"Création F_Membres";
-    this->pMembres=new F_Membres (this->pRechercheMembres, false, this->ui->Membre);
+    this->pMembres=new F_Membres (this, false, this->ui->Membre);
     qDebug()<<"Création F_ListeMembres";
     this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
     qDebug()<<"Création F_Retards";
@@ -55,10 +53,8 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
     ////Membre/////////////
     qDebug()<<"Création ADMIN-F_RechercheMembres";
-    this->pRechercheMembresAdmin = new F_RechercheMembres (this->ui->admin) ;
-    this->pAdministrerMembres=new F_Membres (this->pRechercheMembresAdmin, true,this->ui->admin);
+    this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
     this->pAdministrerMembres->setVisible(false);
-    this->ui->Lay_Admin->addWidget(this->pRechercheMembresAdmin);
     this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
     this->pAdministrerMembres->setVisible(true);
 
@@ -93,7 +89,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     /*****************************************************************************/
 
     //Membres
-    this->ui->Lay_Membres->addWidget(this->pRechercheMembres);
     this->ui->Lay_Membres->addWidget(this->pMembres);
 
     //Liste Membres
@@ -223,7 +218,6 @@ void F_MainWindow::on_Bt_Membre_clicked()
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     this->pAbonnements->setVisible(false);
     this->pStatistiques->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(true);
     this->pAdministrerMembres->setVisible(true);
 }
 
@@ -234,7 +228,6 @@ void F_MainWindow::on_Bt_Jeux_clicked()
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     this->pAbonnements->setVisible(false);
     this->pStatistiques->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
     this->pAjoutSuppModifJeux->setVisible(true);
 }
 
@@ -245,7 +238,6 @@ void F_MainWindow::on_Bt_FournisseurEditeur_clicked()
     this->pAjoutSuppModifJeux->setVisible(false);
     this->pAbonnements->setVisible(false);
     this->pStatistiques->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(true);
 }
 
@@ -256,7 +248,6 @@ void F_MainWindow::on_Bt_Abonnements_clicked()
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     this->pAjoutSuppModifJeux->setVisible(false);
     this->pStatistiques->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
     this->pAbonnements->setVisible(true);
 }
 
@@ -267,7 +258,6 @@ void F_MainWindow::on_Bt_Statistiques_clicked()
     this->pAjoutSuppModifJeux->setVisible(false);
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     this->pAbonnements->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
     this->pStatistiques->setVisible(true);
 }
 
@@ -277,7 +267,6 @@ void F_MainWindow::on_Bt_ListeMembres_clicked()
     this->pAjoutSuppModifJeux->setVisible(false);
     this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     this->pAbonnements->setVisible(false);
-    this->pRechercheMembresAdmin->setVisible(false);
     this->pStatistiques->setVisible(false) ;
     this->pListeMembresAdmin->setVisible( true ) ;
 }
@@ -289,8 +278,8 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     {
     case 0 : //Membre
         ui->menuImprimer->setEnabled(false);
-        this->pRechercheMembres->MaJListeMembres() ;
-        this->pRechercheMembres->AfficherListe() ;
+        this->pMembres->MaJListeMembres() ;
+        this->pMembres->AfficherListe() ;
         this->pMembres->MaJTitre() ;
         this->pMembres->MaJType() ;
         this->pMembres->AfficherMembre() ;
@@ -338,8 +327,8 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     case 8 : //Administration
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
         ui->menuImprimer->setEnabled(false);
-        this->pRechercheMembresAdmin->MaJListeMembres() ;
-        this->pRechercheMembresAdmin->AfficherListe() ;
+        this->pAdministrerMembres->MaJListeMembres() ;
+        this->pAdministrerMembres->AfficherListe() ;
         this->pListeMembresAdmin->AffichageListe() ;
         this->pAdministrerMembres->MaJTitre() ;
         this->pAdministrerMembres->MaJType() ;

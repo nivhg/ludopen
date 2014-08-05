@@ -13,12 +13,15 @@ class D_AjoutSuppModifFournisseursEditeurs;
 namespace Ui {
 class D_AjoutSuppModifFournisseursEditeurs;
 }
-
+/** @brief Classe qui l'affichage de l'interface d'administration des fournisseurs/éditeurs
+ *
+ */
 class D_AjoutSuppModifFournisseursEditeurs : public QDialog
 {
     Q_OBJECT
 
 public:
+
     explicit D_AjoutSuppModifFournisseursEditeurs( F_AjoutSuppModifJeux *parent = 0, char Mode=MODE_INDEFINI);
     ~D_AjoutSuppModifFournisseursEditeurs();
     F_AjoutSuppModifJeux *Parent;

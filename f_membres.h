@@ -1,7 +1,6 @@
 #ifndef F_MEMBRES_H
 #define F_MEMBRES_H
 
-#include "f_recherchemembres.h"
 #include "f_historiquejeux.h"
 #include "f_ajoutercoticarte.h"
 #include "f_popupclesttem.h"
@@ -9,8 +8,27 @@
 
 #include <QtSql>
 #include <QtWidgets>
+#include <QStandardItem>
+#include <QtDebug>
+#include <QVector>
+
+using namespace std;
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
+
+/** @struct Membre
+ *  @brief Structure permettant la sauvegarde de quelques informations sur un membre
+ *
+ *  int + QString x 4
+ */
+typedef struct
+{
+    unsigned int id ; ///< ID du membre
+    QString sNom ; ///< Nom du membre
+    QString sPrenom ; ///< Prenom du membre
+    QString sVille ; ///< Ville du membre
+    QString sCodeMembre ; ///< Code personnel du membre
+} Membre ;
 
 namespace Ui {
 class F_Membres;
@@ -31,7 +49,7 @@ public:
      *  @param  pRechercheMembres : point sur un F_RechercheMembres, bAdmin : Indique si c'est une fenêtre administration
      *  @test   Voir la procédure dans le fichier associé.
      */
-    explicit F_Membres(F_RechercheMembres * pRechercheMembres = NULL, bool bAdmin = false, QWidget *parent = 0) ;
+    explicit F_Membres(QWidget * pRechercheMembres = NULL, bool bAdmin = false, QWidget *parent = 0) ;
     ~F_Membres() ;
 
 
@@ -93,6 +111,25 @@ public:
     //! Affiche les ville dans le combobox et selectionne la ville passé en paramétre
     void AfficherVilles( QString VilleSelectionne = "" ) ;
 
+    //! Mise à jour de la liste des membres
+    bool MaJListeMembres ();
+
+    //! Affichage de la liste des membres
+    void AfficherListe() ;//Liste par défaut(this->VecteurMembres)
+    void AfficherListe(QVector<Membre> VecteurMembres ) ;//Liste donnée
+
+    //! Recherche soit avec le nom, soit avec le numéro ou avec les 2
+    void RechercherParNomEtNumero () ;
+
+    //! Renvoie le premier code non utilisé
+    int RecupererProchainCodeNonUtilise () ;
+
+    //! Retourne le membre Selectionné dans le TableView
+    int RecupererMembreSelectionne () ;
+
+    //! Récupère la liste des activités et la mets dans une combobox
+    static void ChargerActivites(QComboBox * scombobox);
+
 public slots:
 
     //! Permet l'ajout d'un type
@@ -114,6 +151,16 @@ public slots:
     void slot_AnnulerAjoutVille() ;
     
 private slots:
+
+    //! Selectionne un membre avec un double click
+    void on_TbW_Recherche_doubleClicked(const QModelIndex &index);
+
+    //! Selectionne un membre avec un click
+    void on_TbW_Recherche_clicked(const QModelIndex &index);
+
+    //! Recherche les membres correspondant au champs à  chaque fois que le champs est modifiée
+    void on_LE_Nom_textEdited(const QString &arg1);
+
     //! Permet l'ajout d'un membre
     void on_Bt_AjouterMembre_clicked() ;
 
@@ -178,10 +225,25 @@ private slots:
 
     void toUpper(const QString &text);
 
+    void AfficherActivites( unsigned int nIdMembre );
+
+    void on_Bt_AjouterActivite_clicked();
+
+    void on_ChBx_Activites_clicked();
+
+    void on_Bt_SupprimerActivite_clicked();
+
 private:
+
+    // ATTRIBUTs ----------------------------------------------------------------
+
     Ui::F_Membres * ui;
 
-    F_RechercheMembres * pRechercheMembres ; //! Pointeur sur la classe F_RechercheMembres
+    QVector<Membre> VecteurMembres ;///< Vecteur contenant la liste des membres
+    QVector<Membre> VecteurRechercheMembres ; ///< Vecteur contenant la liste des membres correspondant à  la recherche
+    QStandardItemModel ModeleRechercheMembre;
+
+    QWidget * pRechercheMembres ; //! Pointeur sur la classe F_RechercheMembres
     F_HistoriqueJeux *   pHistoriqueJeux ;   //! Pointeur sur la classe F_HistoriqueJeux
     F_AjouterCotiCarte * pAjouterCotiCarte ; //! Pointeur sur la classe F_AjouterCoticarte
 
@@ -197,14 +259,13 @@ private:
 
     bool bAdmin ;                            //! Indique les droits d'adminstration (vrai = admin, faux = simple bénévole)
 
-
-
     /////////////Fenêtre d'ajout d'une ville///////////////
     QDialog     * oFenetreAjoutVille ;       //! Fenêtre pour l'ajout d'une ville
     QLineEdit   * LE_AjoutVille ;            //! LigneEdit permettant d'indiquer la ville
     QPushButton * Bt_ValiderVille ;          //! Bouton Valider pour la fenêtre d'ajout d'une ville
     QPushButton * Bt_AnnuerVille ;           //! Bouton Annuler pour la fenêtre d'ajout d'une ville
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville
+
 };
 
 #endif // F_MEMBRES_H

@@ -38,6 +38,83 @@
    <property name="spacing">
     <number>2</number>
    </property>
+   <item row="4" column="4">
+    <widget class="QCommandLinkButton" name="Bt_SupprimerListe">
+     <property name="text">
+      <string>Supprimer ces membres sélectionnés</string>
+     </property>
+     <property name="icon">
+      <iconset resource="ImagesIcones.qrc">
+       <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="Lb_Resultat">
+     <property name="minimumSize">
+      <size>
+       <width>50</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>50</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
+    <widget class="QPushButton" name="Bt_DeselectionListe">
+     <property name="text">
+      <string>Tout désélectionner</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="5">
+    <widget class="QTableView" name="TbW_ListeMembre">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>300</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS Shell Dlg 2</family>
+      </font>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="Bt_SelectionListe">
+     <property name="text">
+      <string>Tout sélectionner</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="5">
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
@@ -53,6 +130,107 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout_6">
+      <item row="0" column="3">
+       <widget class="Line" name="Line2">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <layout class="QGridLayout" name="GLay3">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="ChBx_Titre">
+          <property name="text">
+           <string>Titre</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="ChBx_Activite">
+          <property name="text">
+           <string>Activité</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="ChBx_NbreRetard">
+          <property name="text">
+           <string>Nombre de Retard</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="ChBx_Retard">
+          <property name="text">
+           <string>Adhérents ayant 1 emprunt</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QSpinBox" name="SBx_NbreRetard"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="CBx_Retards">
+          <item>
+           <property name="text">
+            <string>&lt;</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>&gt;</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>=</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>&lt;=</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>&gt;=</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="ChBx_AncienMembre">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="text">
+           <string>Inclure Ancien Membre</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_Activites"/>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_Titre"/>
+        </item>
+        <item row="4" column="1" colspan="2">
+         <widget class="QCheckBox" name="ChBx_Abonnements">
+          <property name="text">
+           <string>Aucun abonnement</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0" colspan="5">
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <layout class="QGridLayout" name="GLay2">
         <item row="0" column="0">
@@ -107,88 +285,12 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="2">
-       <layout class="QGridLayout" name="GLay3">
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="ChBx_NbreRetard">
-          <property name="text">
-           <string>Nombre de Retard</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QSpinBox" name="SBx_NbreRetard"/>
-        </item>
-        <item row="4" column="0">
-         <widget class="QCheckBox" name="ChBx_Abonnements">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Aucun abonnement</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QCheckBox" name="ChBx_AncienMembre">
-          <property name="layoutDirection">
-           <enum>Qt::LeftToRight</enum>
-          </property>
-          <property name="text">
-           <string>Inclure Ancien Membre</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_Titre">
-          <property name="text">
-           <string>Titre</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="ChBx_Retard">
-          <property name="text">
-           <string>Adhérents ayant 1 emprunt</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="CBx_Retards">
-          <item>
-           <property name="text">
-            <string>&lt;</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&gt;</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>=</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&lt;=</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&gt;=</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Titre"/>
-        </item>
-       </layout>
+      <item row="0" column="1">
+       <widget class="Line" name="Line">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
       </item>
       <item row="0" column="4">
        <layout class="QGridLayout" name="GLay">
@@ -364,107 +466,21 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="1">
-       <widget class="Line" name="Line">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="Line" name="Line2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0" colspan="5">
-       <widget class="Line" name="line_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0" colspan="5">
-    <widget class="QTableView" name="TbW_ListeMembre">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <family>MS Shell Dlg 2</family>
-      </font>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <attribute name="horizontalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderHighlightSections">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-    </widget>
-   </item>
-   <item row="3" column="3">
-    <widget class="QPushButton" name="Bt_DeselectionListe">
-     <property name="text">
-      <string>Tous désélectionner</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="4">
-    <widget class="QCommandLinkButton" name="Bt_SupprimerListe">
-     <property name="text">
-      <string>Supprimer ces membres sélectionnés</string>
-     </property>
-     <property name="icon">
-      <iconset resource="ImagesIcones.qrc">
-       <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="Lb_Resultat">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="QPushButton" name="Bt_SelectionListe">
-     <property name="text">
-      <string>Sélectionner tous ces membres</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
+   <item row="4" column="0">
     <widget class="QLabel" name="Lb_NombreResultat">
      <property name="minimumSize">
       <size>
-       <width>230</width>
-       <height>0</height>
+       <width>350</width>
+       <height>20</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>130</width>
-       <height>16777215</height>
+       <width>350</width>
+       <height>20</height>
       </size>
      </property>
      <property name="text">
@@ -474,6 +490,9 @@
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
+   </item>
+   <item row="3" column="0" colspan="5">
+    <widget class="QLineEdit" name="LE_sql"/>
    </item>
   </layout>
   <action name="actionTest">

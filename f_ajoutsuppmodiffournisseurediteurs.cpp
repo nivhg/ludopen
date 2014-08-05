@@ -5,8 +5,8 @@
  *  @author       Florian MARY
  *  @author       STS IRIS, Lycée Nicolas APPERT, ORVAULT (FRANCE)
  *  @since        01/01/2012
- *  @version      0.1
- *  @date         23/02/2013 William
+ *  @version      0.2
+ *  @date         05/08/2014 Vincent
  *
  *  Il permet à partir de l'onglet administration et le widget fournisseurs-éditeurs,
  *  d'ajouter, de supprimer, ou de modifier une fiche de fournisseur ou éditeur.
@@ -268,8 +268,6 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
         }
     }
     on_Rb_Les2_clicked();
-
-
 }
 
 /**
@@ -292,9 +290,11 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             RequeteRechercheEditeurFournisseur.bindValue(":NomFournisseur",ui->LE_Nom->text());
             RequeteRechercheEditeurFournisseur.exec();
             RequeteRechercheEditeurFournisseur.next();
+            // Si le nom du fournisseur/éditeur existe déjà
             if (RequeteRechercheEditeurFournisseur.value(0).toInt() > 0)
             {
                QString type;
+               // Personnalise le message suivant le mode
                switch(this->Mode)
                {
                    case MODE_INDEFINI: {
@@ -309,8 +309,12 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
                            type = "d'éditeur";
                            break;
                    }
+                   case MODE_EDITEUR_FOURNISSEUR: {
+                           type = "de fournisseur ou d'éditeur";
+                           break;
+                   }
                }
-                QMessageBox::critical(this, "Nom " + type + " existant déjà", "Un nom " + type + " existe déjà dans la base de donnée. Veuillez modifier l'enregistrement existant.");
+                QMessageBox::critical(this, "Nom " + type + " existant déjà", "Un nom " + type + " existe déjà dans la base de donnée.\nVeuillez modifier l'enregistrement existant.");
                 return;
             }
 
@@ -362,6 +366,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             if( this->parent()->objectName() == "D_AjoutSuppModifFournisseursEditeurs")
             {
                 this->AjoutOuModif = true ;
+                // Cache la fenêtre
                 this->Parent->hide();
                 D_AjoutSuppModifFournisseursEditeurs * pAjoutSuppModifFournisseursEditeurs = (D_AjoutSuppModifFournisseursEditeurs *) this->Parent;
                 if( this->Mode == MODE_FOURNISSEUR)
@@ -589,6 +594,9 @@ void F_AjoutSuppModifFournisseursEditeurs::toUpper(const QString &text)
     le->setText(text.toUpper());
 }
 
+/**
+ *  @brief Cache la partie recherche de la fenêtre et active les champs fournisseur/editeur
+ */
 void F_AjoutSuppModifFournisseursEditeurs::AjoutFournisseursEditeursSeulement()
 {
     ui->frame->hide();

@@ -37,6 +37,7 @@ public:
     //! Met à jour la liste des Types depuis la base de données
     void MaJType () ;
 
+    //! Affiche le résultat du filtrage
     bool AffichageListe () ;
 
     //! Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractéres dans un string
@@ -108,13 +109,15 @@ private slots:
 
     void on_Bt_SupprimerListe_clicked();
 
-    //void on_Bt_Exporter_clicked();
-
     void on_TbW_ListeMembre_clicked(const QModelIndex &index);
 
     void on_TbW_ListeMembre_doubleClicked(const QModelIndex &index);
 
     void on_Bt_Exporter_clicked();
+
+    void on_ChBx_Activite_clicked();
+
+    void on_CBx_Activites_currentIndexChanged(int index);
 
 private:
     Ui::F_ListeMembres *ui;

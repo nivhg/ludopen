@@ -32,6 +32,9 @@ class F_AjoutSuppModifFournisseursEditeurs : public QWidget
 public:
     explicit F_AjoutSuppModifFournisseursEditeurs(QWidget *parent = 0, char Mode=MODE_INDEFINI);
     ~F_AjoutSuppModifFournisseursEditeurs();
+    /**
+     *  @brief Cache la partie recherche de la fenêtre et active les champs fournisseur/editeur
+     */
     void AjoutFournisseursEditeursSeulement();
 
 private slots:
@@ -92,6 +95,9 @@ private slots:
      */
     void on_LE_Nom_textChanged(const QString &arg1);
 
+    /**
+     *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+     */
     void toUpper(const QString &text);
 
 private:

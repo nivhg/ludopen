@@ -24,7 +24,7 @@
  *  @param  F_RechercheMembres * pRechercheMembres
  *
  */
-F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidget *parent ):
+F_Membres::F_Membres( QWidget * pRechercheMembres, bool bAdmin, QWidget *parent ):
     QWidget( parent ),
     ui( new Ui::F_Membres )
 {
@@ -57,19 +57,6 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     this->pTitreAjMod = new F_PopUpCLESTTEM(6);
     this->pTitreAjMod->setWindowModality(Qt::ApplicationModal);
 
-    //Initialisation des tableaux, des boutons et des champs
-    this->VerrouillerInfosPerso( true ) ;
-
-    this->AfficherAjouterModifierMembre( true ) ;
-
-    ui->Bt_ModifierMembre->setDisabled( true ) ;
-
-    this->AfficherValiderAnnuler( false ) ;
-
-    this->VerrouillerJeux( true ) ;
-
-    this->VerrouillerAbonnements( true ) ;
-
     this->EffacerTousLesChamps() ;
 
     /////////////Fenêtre d'ajout d'une ville///////////////
@@ -95,7 +82,6 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     this->Lb_NomVille->setGeometry( 10, 0, 200, this->Lb_NomVille->height() ) ;
 
     //Connect--------------------------------------------------------------------------------------------------
-    connect( this->pRechercheMembres, SIGNAL( SignalRenvoieIdMembre( uint ) ), this, SLOT( slot_AfficherMembre( uint ) ) ) ;
     connect( this->pTitreAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauTitre() ) ) ;
     connect( this->pTypeAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauType() ) ) ;
     connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( slot_ActualiserAbonnements() ) ) ;
@@ -114,7 +100,33 @@ F_Membres::F_Membres( F_RechercheMembres * pRechercheMembres, bool bAdmin, QWidg
     //ui->LW_JeuxEmpruntes->setSortingEnabled(true);
     // TODO tri pas possible car choix gérer par le vecteur !!!
     // donc clic pas possible si on modifie l'ordre dans les colonnes car on ne tombe pas sur le bon item
+    // Autorise le tri des colonnes pour ce tableau
+    //ui->TbW_Recherche->setSortingEnabled(true);
+    // TO DO pour trier le tableau, il faudrait que l'on retrouve le membre dans le vecteur
+    // ou virer le vecteur en stockant toutes les infos dans le tableau sans afficher les colonnes qu'on ne veut pas
+
+    this->MaJListeMembres() ;
+    this->VecteurRechercheMembres = this->VecteurMembres ;
+    this->AfficherListe(this->VecteurRechercheMembres) ;
+
+    ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
+    ui->TbW_Recherche->setEditTriggers(0);
+
+    // Faire défiler le tableau des membres avec les flêches du clavier
+    connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
+
+
+    slot_AfficherMembre(this->VecteurRechercheMembres[0].id);
+
+    ui->Tw_activites->setColumnCount(2);
+    ui->Tw_activites->verticalHeader()->setVisible(false);
+    QStringList m_TableHeader;
+    m_TableHeader<<"Activité"<<"NewsLetter";
+    ui->Tw_activites->setHorizontalHeaderLabels(m_TableHeader);
+    ui->Tw_activites->setColumnWidth( 0, 150 ) ;  // Jeux
+    ChargerActivites(ui->CBx_Activites);
 }
+
 //==========================================================================================================
 /** Détruit les objets crées
  *  @test
@@ -138,6 +150,249 @@ F_Membres::~F_Membres()
 
     delete ui ;
 }
+
+//---------------------------------------------------------------------------
+// METHODEs PUBLIQUEs
+//-------------------------------------------------------------------------
+
+/**  Récupère la liste des activités et la mets dans une combobox
+ *  @pre    Accès à  la base de données
+ */
+void F_Membres::ChargerActivites(QComboBox * combobox)
+{
+    QSqlQuery RequeteActivites;
+
+    // Récupère toutes les activités
+    RequeteActivites.prepare(
+                "SELECT IdActivite, Activite FROM activite " ) ;
+
+    //Exectution de la requête
+    if( !RequeteActivites.exec() )
+    {
+        qDebug()<< "F_Membres::ChargerActivites : " << RequeteActivites.lastQuery() ;
+    }
+    else
+    {
+        QString Activite;
+        int IdActivite;
+        int i = 0;
+        while( RequeteActivites.next() )
+        {
+            // Récupère la valeurs des champs
+            Activite = RequeteActivites.record().value( RequeteActivites.record().indexOf("Activite") ).toString();
+            IdActivite = RequeteActivites.record().value( RequeteActivites.record().indexOf("IdActivite") ).toInt();
+            // Ajoute une activité et son ID dans la partie DATA
+            combobox->addItem(Activite);
+            combobox->setItemData(i,IdActivite,Qt::UserRole);
+            // Mets le prêt de jeux en choix par défaut
+            if(Activite=="Prêt de jeux")
+            {
+                combobox->setCurrentIndex(i);
+            }
+            i++;
+        }
+    }
+}
+
+/**   Mise  jour de la liste des membres
+ *  @pre    Accès à  la base de données
+ *  @retval bool
+ *  @return True si tous c'est passé correctement et false si il y a une erreur
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+bool F_Membres::MaJListeMembres()
+{
+    QSqlQuery query ;
+    Membre Membres ;
+    bool bRetourner = true ;
+
+    //Vidange du vecteur
+    this->VecteurMembres.clear() ;
+
+    //Execute une requète sql qui retourne la liste des membres
+    //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
+    if(query.exec("SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres ORDER BY Nom ASC"))
+    {
+        while(query.next())
+        {
+            Membres.id = query.value(0).toInt() ;
+            Membres.sNom = query.value(1).toString() ;
+            Membres.sPrenom = query.value(2).toString() ;
+            Membres.sVille = query.value(3).toString() ;
+            Membres.sCodeMembre = query.value(4).toString() ;
+            this->VecteurMembres.push_back(Membres) ;
+        }
+    }
+    else //Sinon on affiche un message d'erreur et on retourne Faux
+    {
+        qDebug()<< "RechercheMembre::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
+        bRetourner = false ;
+    }
+    this->VecteurRechercheMembres = VecteurMembres ;
+    ui->LE_Nom->clear() ;
+    return bRetourner ;
+}
+
+/**  Affichage de la liste des membres
+ *  @test   Voir la procédure dans le fichier associé.
+*/
+void F_Membres::AfficherListe()
+{
+    this->AfficherListe(this->VecteurMembres);
+}
+
+/** Affichage de la liste des membres
+ *  @pre    Accés à  la base de données
+ *  @param  QVector<Membre> VecteurMembre
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::AfficherListe(QVector<Membre> VecteurMembres)
+{
+    int i (0) ;
+
+    //Remise à  zero de la table recherche
+    ui->TbW_Recherche->clearSpans() ;
+
+    //Vérifie que la liste n'est pas vide
+    //Si la variable VecteurMembres contient des membres alors on affiche la liste
+    //Sinon on affiche rien
+    if(VecteurMembres.empty() == false)
+    {
+        //Création des caractéristiques du tableau : -Nombre de colonnes
+        //                                           -Nom des colonnes
+        //                                           -Nombre de lignes
+        ModeleRechercheMembre.setColumnCount(4);
+        ModeleRechercheMembre.setRowCount(VecteurMembres.size());
+        ModeleRechercheMembre.setHorizontalHeaderItem(0, new QStandardItem("Nom"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(1, new QStandardItem("Prénom"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(2, new QStandardItem("Ville"));
+        ModeleRechercheMembre.setHorizontalHeaderItem(3, new QStandardItem("Code Membre"));
+
+        //Remplissage du tableau avec les informations contenu dans VecteurMembres
+        for(i = 0 ; i < VecteurMembres.size() ; i++)
+        {
+             ModeleRechercheMembre.setItem(i, 0, new QStandardItem( VecteurMembres[i].sNom ));
+             ModeleRechercheMembre.setItem(i, 1, new QStandardItem( VecteurMembres[i].sPrenom ));
+             ModeleRechercheMembre.setItem(i, 2, new QStandardItem( VecteurMembres[i].sVille ));
+             ModeleRechercheMembre.setItem(i, 3, new QStandardItem( VecteurMembres[i].sCodeMembre));
+        }
+    }
+}
+
+/** Recherche soit avec le nom, soit avec le numéro ou avec les 2
+ *  @pre    Accés à  la base de données
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::RechercherParNomEtNumero()
+{
+    unsigned int i (0) ;
+
+    //Remize à  zéro de du Vecteur VecteurRechercheMembres
+    this->VecteurRechercheMembres.clear();
+
+    //Vérification que les champs sont bien remplis
+    //S'ils ne sont pas, remplis le Vecteur VecteurRechercheMembres avec le Vecteur VecteurMembre
+    if(ui->LE_Nom->text() == "")
+    {
+        this->VecteurRechercheMembres = this->VecteurMembres ;
+    }
+    else// Sinon on remplis le Vecteur VecteurRechercheMembre
+    {
+        for(i = 0 ; i < this->VecteurMembres.size() ; i++)
+        {
+            //On vérifie que la suite de lettres entrées dans LE_Nom correpondent aux Noms du vecteur VecteurMembre
+            //ou que la suite de chiffre entrées dans LE_Code correspondent aux CodeMembres du Vecteur VecteurMembres
+            //Si le Nom, le code ou les 2 correspondent, on l'ajoute dans le vecteur VecteurRechercheMembres
+            bool numeric;
+            ui->LE_Nom->text().toInt(&numeric);
+            if( numeric )
+            {
+                if( this->VecteurMembres[i].sCodeMembre.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                {
+                    this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
+                }
+            }
+            else
+            {
+                if( this->VecteurMembres[i].sNom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                {
+                    this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
+                }
+                if( this->VecteurMembres[i].sPrenom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                {
+                    this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
+                }
+            }
+        }
+    }
+    this->AfficherListe(this->VecteurRechercheMembres);
+}
+
+/** Renvoie le premier code non utilisé
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+int F_Membres::RecupererProchainCodeNonUtilise ()
+{
+    int nCode ( 1 ) ;
+    int     i ( 0 ) ;
+
+    while( i < this->VecteurMembres.size() )
+    {
+        if( this->VecteurMembres[i].sCodeMembre.toInt() == nCode )
+        {
+            nCode ++ ;
+            i = 0 ;
+        }
+        i++ ;
+    }
+    return nCode ;
+}
+
+/** Retourne le membre Selectionné dans le TableView
+ *  @retval int
+ *  @return Retourne la ligne de la selction
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+ int F_Membres::RecupererMembreSelectionne()
+ {
+     return ui->TbW_Recherche->currentIndex().row() ;
+ }
+
+
+ //---------------------------------------------------------------------------
+ // SLOTS PRIVEES
+ //---------------------------------------------------------------------------
+ /** Sélectionne un membre avec un double click
+  *  @pre    Double clique sur un membre
+  *  @param  const QModelIndex &index
+  *  @test   Voir la procédure dans le fichier associé.
+  */
+ void F_Membres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
+ {
+     on_TbW_Recherche_clicked(index);
+ }
+
+ /** Sélectionne un membre avec un click
+  *  @param  const QModelIndex &index
+  *  @test   Voir la procédure dans le fichier associé.
+  */
+void F_Membres::on_TbW_Recherche_clicked(const QModelIndex &index)
+{
+    slot_AfficherMembre(this->VecteurRechercheMembres[index.row()].id);
+}
+
+/** Recherche les membres correspondant au champs chaque fois que le champs est modifié
+ *  @param  const QString &arg1
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_LE_Nom_textEdited(const QString &arg1)
+{
+    // Effectue la recherche
+    this->RechercherParNomEtNumero() ;
+    // Sélectionne le premier résultat
+    ui->TbW_Recherche->selectRow( 0 ) ;
+}
+
 //==========================================================================================================
 /** Met   jour la liste des Titres depuis la base de données
  *  @pre    Accés à la base de données
@@ -314,6 +569,61 @@ QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
     }
     return sNumero ;
 }
+
+//==========================================================================================================
+/** Affiche les activités d'un membre
+  *  @pre    Accés ? la base de données
+  *  @param  unsigned int nIdMembre
+  */
+void F_Membres::AfficherActivites( unsigned int nIdMembre )
+{
+    qDebug()<< "F_Membres::AfficherActivite";
+
+    QSqlQuery RequeteActivites;
+
+    //requête permettant d'avoir les jeux empruntés correspondant à l'id du membre
+    RequeteActivites.prepare(
+                "SELECT IdActivite, Activite, Newsletter FROM activite "
+                "INNER JOIN activitemembre ON Activite_IdActivite = IdActivite "
+                "INNER JOIN membres ON Membres_IdMembre = IdMembre "
+                "WHERE Membres_IdMembre=:nIdMembre" ) ;
+    RequeteActivites.bindValue( ":nIdMembre", nIdMembre );
+
+    //Exectution de la requête
+    if( !RequeteActivites.exec() )
+    {
+        qDebug()<< "F_Membres::AfficherActivite : RequeteActivite " << RequeteActivites.lastQuery() ;
+    }
+    else
+    {
+        ui->Tw_activites->setRowCount( RequeteActivites.size() ) ;
+        QString Activite;
+        int i=0;
+        //Remplissage du tableau avec les informations de la table emprunts
+        while( RequeteActivites.next() )
+        {
+            bool newsletter = RequeteActivites.record().value( RequeteActivites.record().indexOf("newsletter") ).toBool();
+            QWidget *pWidget = new QWidget();
+            QCheckBox *pCheckBox = new QCheckBox();
+            pCheckBox->setChecked(newsletter);
+            QString IdActivite = RequeteActivites.record().value( RequeteActivites.record().indexOf("IdActivite") ).toString();
+            pCheckBox->setProperty("IdActivite",IdActivite);
+            connect( pCheckBox, SIGNAL( clicked() ), this, SLOT( on_ChBx_Activites_clicked() ) ) ;
+            QHBoxLayout *pLayout = new QHBoxLayout(pWidget);
+            pLayout->addWidget(pCheckBox);
+            pLayout->setAlignment(Qt::AlignCenter);
+            pLayout->setContentsMargins(0,0,0,0);
+            pWidget->setLayout(pLayout);
+            ui->Tw_activites->setCellWidget(i,1,pWidget);
+
+            Activite = RequeteActivites.record().value( RequeteActivites.record().indexOf("Activite") ).toString();
+            ui->Tw_activites->setProperty(Activite.toUtf8().constData(),IdActivite);
+            ui->Tw_activites->setItem(i, 0, new QTableWidgetItem(Activite));
+            i++;
+        }
+    }
+}
+
 //==========================================================================================================
 /** Affiche les jeux empruntés dans le tableau TbW_Emprunt
   *  @pre    Accés à  la base de données
@@ -321,7 +631,7 @@ QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
   */
 void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
 {
-   qDebug()<< "F_Membres::AfficherJeuxEmpruntes";
+    qDebug()<< "F_Membres::AfficherJeuxEmpruntes";
 
     QSqlQuery RequeteEmprunt ;
     QSqlQuery RequeteJeux    ;
@@ -404,6 +714,7 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
         qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteEmprunt " << RequeteEmprunt.lastQuery() ;
     }
 }
+
 //==========================================================================================================
 /** Affiche les informations d'un membre
   *  @pre    Accés à la base de données
@@ -415,7 +726,7 @@ void F_Membres::AfficherMembre()
 }
 //==========================================================================================================
 /** Affiche les informations d'un membre
-  *  @pre    Accés ? la base de données
+  *  @pre    Accés à la base de données
   *  @param  unsigned int nIdMembre
   */
 void F_Membres::AfficherMembre( unsigned int nIdMembre )
@@ -434,7 +745,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
     ui->Bt_ModifierAbonnement->setDisabled( true ) ;
     ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
 
-    //Si l'id du membre est diffêrent de 0
+    //Si l'id du membre est différent de 0
     if( nIdMembre != 0 )
     {
         //requête permettant de récuperer tous les informations d'un membre grâce à son Id
@@ -490,6 +801,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                 {
                     ui->Lb_MembreEcarte->setHidden( true ) ;
                     ui->ChBx_MembreEcarte->setChecked( false ) ;
+                    ui->ChBx_MembreEcarte->setHidden(true);
 
                     font.setBold( false ) ;
                     ui->Lb_MembreEcarte->setFont( font ) ;
@@ -508,28 +820,24 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 this->AfficherJeuxEmpruntes( nIdMembre ) ;
 
-                ui->Bt_ModifierMembre->setEnabled( true ) ;
                 ui->Bt_SupprimerMembre->setEnabled( true ) ;
 
                 this->AfficherAbonnements( nIdMembre ) ;
+
+                this->AfficherActivites( nIdMembre ) ;
             }
 
         }
         else //Sinon on affiche un message d'erreur et on retourne Faux
         {
             qDebug()<< "F_Membres::AfficherMembre :RequeteMembre " << RequeteMembre.lastQuery() <<  endl ;
-            ui->Bt_ModifierMembre->setDisabled( true ) ;
         }
-    }
-    else
-    {
-        ui->Bt_ModifierMembre->setDisabled( true ) ;
     }
 
 }
 //==========================================================================================================
 /** Permet d'ajouter un membre
-  *  @pre    Accês à la base de données
+  *  @pre    Accès à la base de données
   *  @retval bool
   *  @return True si tous c'est bien passé et false en cas d'erreur
   */
@@ -832,8 +1140,8 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
         QMessageBox::information( this, "Suppression Membre","Impossible de supprimer ce membre.\nIl a des jeux encore en cours d'emprunts.",  "Ok" ) ;
     }
 
-    this->pRechercheMembres->MaJListeMembres() ;
-    this->pRechercheMembres->AfficherListe() ;
+    this->MaJListeMembres() ;
+    this->AfficherListe() ;
 
     return bRetourne ;
 }
@@ -890,6 +1198,7 @@ void F_Membres::EffacerTousLesChamps ()
     ui->DtE_Naissance->clear() ;
     ui->TE_Remarque->clear() ;
     ui->LW_JeuxEmpruntes->clearSpans() ;
+    ui->Tw_activites->clearSpans();
     ui->SBx_JeuxAutorises->clear() ;
 
     ui->Lb_MembreEcarte->setHidden( true ) ;
@@ -900,7 +1209,6 @@ void F_Membres::EffacerTousLesChamps ()
 void F_Membres::AfficherAjouterModifierMembre ( bool bAffiche )
 {
     ui->Bt_AjouterMembre->setVisible( bAffiche ) ;
-    ui->Bt_ModifierMembre->setVisible( bAffiche ) ;
     if ( bAdmin == true )
     {
         ui->Bt_SupprimerMembre->setVisible( bAffiche ) ;
@@ -1112,17 +1420,6 @@ void F_Membres::slot_ChoisirNouveauTitre ()
     ui->CBx_Titre->setCurrentIndex( this->VectorTitre.size()- 2 ) ;
 }
 //==========================================================================================================
-/** Récupère l'id d'un membre pour l'afficher
- *  @pre    Recevoir un signal avec l'id d'un membre
- *  @param  unsigned int nIdMembre
- */
-void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
-{
-    this->VerrouillerAbonnements( false ) ;
-    this->VerrouillerJeux( false ) ;
-    this->AfficherMembre( nIdMembre ) ;
-}
-//==========================================================================================================
 /** Acualise les abonnements du membre sélectionné
  *  @pre    Recevoir un signal avec l'id d'un membre
  *  @param  unsigned int nIdMembre
@@ -1185,7 +1482,7 @@ void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
     }
 }
 //==========================================================================================================
-/**  Permet de supprimer un abonnement
+/**  Permet de modifier un abonnement
  *  @param index : numéro de la ligne qui a été sélectionnée
  */
 void F_Membres::on_LW_Abonnements_doubleClicked(const QModelIndex &index)
@@ -1359,30 +1656,7 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
  */
 void F_Membres::on_Bt_AnnulerMembre_clicked()
 {
-    this->pRechercheMembres->setDisabled( false ) ;
-    ui->LW_JeuxEmpruntes->setDisabled( true ) ;
-    ui->Bt_Historique->setDisabled( true ) ;
-
-    this->AfficherAjouterModifierMembre( true ) ;
-
-    this->AfficherValiderAnnuler( false ) ;
-
-    this->EffacerTousLesChamps() ;
-
-    this->VerrouillerInfosPerso( true ) ;
-
-    this->VerrouillerAbonnements( true ) ;
-
-    this->VerrouillerJeux( true ) ;
-
-    ui->Bt_ModifierMembre->setDisabled( true ) ;
-
     this->AfficherMembre( this->nIdMembreSelectionne ) ;
-
-    ui->Bt_ValiderMembre->setEnabled( true ) ;
-
-    ui->LW_Abonnements->setModel( NULL ) ;
-    ui->LW_JeuxEmpruntes->setModel( NULL ) ;
 }
 //==========================================================================================================
 /** Valide la modification ou l'ajout d'un membre
@@ -1390,6 +1664,11 @@ void F_Membres::on_Bt_AnnulerMembre_clicked()
  */
 void F_Membres::on_Bt_ValiderMembre_clicked()
 {
+    if( ui->Tw_activites->rowCount() == 0)
+    {
+        QMessageBox::information( this, "Manque activité","Vous devez choisir au moins une activité.",  "Ok" ) ;
+        return;
+    }
    qDebug()<< "F_Membres::on_Bt_ValiderMembre_clicked";
 
     QSqlQuery RequeteCodeMembre ;
@@ -1407,15 +1686,14 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
             {
                 if ( this->AjouterMembre() )
                 {
-                    this->pRechercheMembres->MaJListeMembres() ;
-                    this->pRechercheMembres->AfficherListe() ;
+                    this->MaJListeMembres() ;
+                    this->AfficherListe() ;
                     this->pRechercheMembres->setEnabled( true ) ;
                     this->VerrouillerAbonnements( false ) ;
                     this->VerrouillerJeux( false ) ;
-                    this->VerrouillerInfosPerso( true ) ;
-                    this->AfficherValiderAnnuler( false ) ;
+                    //this->VerrouillerInfosPerso( true ) ;
+                    //this->AfficherValiderAnnuler( false ) ;
                     this->AfficherAjouterModifierMembre( true ) ;
-                    ui->Bt_ModifierMembre->setEnabled( true ) ;
                     this->AfficherMembre( this->nIdMembreSelectionne ) ;
                 }
             }
@@ -1430,12 +1708,8 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
             {
 
                 this->ModifierMembre( this->nIdMembreSelectionne ) ;
-                this->pRechercheMembres->MaJListeMembres() ;
-                this->pRechercheMembres->AfficherListe() ;
-                this->pRechercheMembres->setEnabled( true ) ;
-                this->VerrouillerInfosPerso( true ) ;
-                this->AfficherValiderAnnuler( false ) ;
-                this->AfficherAjouterModifierMembre( true ) ;
+                this->MaJListeMembres() ;
+                this->AfficherListe() ;
                 this->AfficherMembre( this->nIdMembreSelectionne ) ;
             }
             else
@@ -1443,12 +1717,8 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
                 if( RequeteCodeMembre.record().value(0).toUInt() == this->nIdMembreSelectionne )
                 {
                     this->ModifierMembre( this->nIdMembreSelectionne ) ;
-                    this->pRechercheMembres->MaJListeMembres() ;
-                    this->pRechercheMembres->AfficherListe() ;
-                    this->pRechercheMembres->setEnabled( true ) ;
-                    this->VerrouillerInfosPerso( true ) ;
-                    this->AfficherValiderAnnuler( false ) ;
-                    this->AfficherAjouterModifierMembre( true ) ;
+                    this->MaJListeMembres() ;
+                    this->AfficherListe() ;
                     this->AfficherMembre( this->nIdMembreSelectionne ) ;
                 }
                 else
@@ -1495,8 +1765,8 @@ void F_Membres::on_Bt_SupprimerMembre_clicked()
 
     if( this->SupprimerMembre( this->nIdMembreSelectionne ) )
     {
-        this->pRechercheMembres->MaJListeMembres() ;
-        this->pRechercheMembres->AfficherListe() ;
+        this->MaJListeMembres() ;
+        this->AfficherListe() ;
         this->AfficherMembre( 0 ) ;
         ui->Bt_SupprimerMembre->setDisabled( true ) ;
         ui->LW_Abonnements->clearSpans() ;
@@ -1572,4 +1842,111 @@ void F_Membres::toUpper(const QString &text)
     if (!le)
     return;
     le->setText(text.toUpper());
+}
+
+//==========================================================================================================
+/** Récupère l'id d'un membre pour l'afficher
+ *  @pre    Recevoir un signal avec l'id d'un membre
+ *  @param  unsigned int nIdMembre
+ */
+void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
+{
+    this->VerrouillerAbonnements( false ) ;
+    this->VerrouillerJeux( false ) ;
+    this->AfficherMembre( nIdMembre ) ;
+}
+
+//==========================================================================================================
+/** Permet d'ajouter une activité
+ *
+ */
+void F_Membres::on_Bt_AjouterActivite_clicked()
+{
+    // Retrouve l'id d'une activité stockée dans l'objet combobox
+    int index = ui->CBx_Activites->currentIndex();
+    int nIdActivite = ui->CBx_Activites->itemData(index,Qt::UserRole).toInt();
+
+    // Vérifie si l'activité n'est pas déjà présente dans la tablewidget
+    if(ui->Tw_activites->findItems(ui->CBx_Activites->currentText(),Qt::MatchExactly).size() != 0)
+    {
+        QMessageBox::information( this, "Activité déjà existante","Ce membre possède déjà cette activité");
+        return;
+    }
+
+    QSqlQuery RequeteActivites;
+
+    RequeteActivites.prepare(
+                "INSERT INTO activitemembre (Activite_IdActivite, Membres_IdMembre) "
+                "VALUES (:nIdActivite, :nIdMembre)" ) ;
+    RequeteActivites.bindValue( ":nIdMembre", this->nIdMembreSelectionne );
+    RequeteActivites.bindValue( ":nIdActivite", nIdActivite );
+
+    //Exectution de la requête
+    if( !RequeteActivites.exec() )
+    {
+        qDebug()<< "F_Membres::AfficherActivite : RequeteActivite " << RequeteActivites.lastQuery() ;
+    }
+    else
+    {
+        AfficherActivites(this->nIdMembreSelectionne);
+    }
+}
+
+//==========================================================================================================
+/** Active la newsletter d'une des activités
+ *
+ */
+void F_Membres::on_ChBx_Activites_clicked()
+{
+    QSqlQuery RequeteActivites;
+    QCheckBox * checkbox = (QCheckBox *) QObject::sender();
+    QString nIdActivite=checkbox->property("IdActivite").toString();
+
+    // Ajoute une nouvelle entrée ou mets à jour l'entrée existante si elle existe déjà avec ou sans la newsletter d'actif
+    RequeteActivites.prepare(
+                "INSERT INTO activitemembre (Activite_IdActivite, Membres_IdMembre, NewsLetter) "
+                "VALUES (:nIdActivite, :nIdMembre, :Newsletter) ON DUPLICATE KEY UPDATE NewsLetter=:Newsletter" );
+    RequeteActivites.bindValue( ":nIdMembre", this->nIdMembreSelectionne );
+    RequeteActivites.bindValue( ":nIdActivite", nIdActivite );
+    RequeteActivites.bindValue( ":Newsletter", (checkbox->checkState() == Qt::Checked) );
+
+    //Exectution de la requête
+    if( !RequeteActivites.exec() )
+    {
+        qDebug()<< "F_Membres::on_ChBx_Activites_clicked : RequeteActivite " << RequeteActivites.lastQuery() ;
+    }
+}
+
+//==========================================================================================================
+/** Permet de supprimer une activité
+ *
+ */
+void F_Membres::on_Bt_SupprimerActivite_clicked()
+{
+    // Vérifie si une activité a été sélectionnée dans la tablewidget
+    if( ui->Tw_activites->selectedItems().size() == 0)
+    {
+        QMessageBox::information( this, "Aucune activité de sélectionnée",
+                                  "Vous devez sélectionner une activité pour pouvoir la supprimer.", "Ok" );
+        return;
+    }
+
+    QSqlQuery RequeteActivites;
+
+    // Récupére l'ID d'une activité
+    QString Activite = ui->Tw_activites->selectedItems()[0]->text();
+    int nIdActivite = ui->Tw_activites->property(Activite.toUtf8().constData()).toInt();
+
+    // Supprime une activité
+    RequeteActivites.prepare("DELETE FROM activitemembre WHERE Activite_IdActivite=:nIdActivite AND "
+                "Membres_IdMembre=:nIdMembre" );
+    RequeteActivites.bindValue( ":nIdMembre", this->nIdMembreSelectionne );
+    RequeteActivites.bindValue( ":nIdActivite", nIdActivite );
+
+    //Exectution de la requête
+    if( !RequeteActivites.exec() )
+    {
+        qDebug()<< "F_Membres::on_ChBx_Activites_clicked : RequeteActivite " << RequeteActivites.lastQuery() ;
+    }
+    AfficherActivites(this->nIdMembreSelectionne);
 }

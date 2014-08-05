@@ -15,6 +15,7 @@
 //------------------------------------------------------------------------------
 
 #include "f_listemembres.h"
+#include "f_membres.h"
 #include "ui_f_listemembres.h"
 
 #include <QtDebug>
@@ -142,6 +143,8 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ui->CBx_Exporter->setStyle(new QCommonStyle);
     ui->CBx_Exporter->setStyleSheet("border-style: outset;");
     ui->CBx_Exporter->setCurrentText("Champs à exporter");
+    //qDebug() << ui->ChBx_Abonnements->;
+    F_Membres::ChargerActivites(ui->CBx_Activites);
 }
 
 F_ListeMembres::~F_ListeMembres()
@@ -299,6 +302,10 @@ void F_ListeMembres::MaJTitre ()
     }
 }
 
+/** Affiche le résultat du filtrage
+ *  @pre    Accés à  la base de données
+ *  @test   Voir la procédure dans le fichier associé.
+ */
 bool F_ListeMembres::AffichageListe()
 {
     QString sRequeteSELECTFROM ;
@@ -311,7 +318,9 @@ bool F_ListeMembres::AffichageListe()
     QDate DateCotisation ;
     QStandardItem * item ;
 
-    sRequeteSELECTFROM = "SELECT IdMembre,NomTitre,TypeMembre,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant)FROM membres,typemembres,titremembre,abonnements " ;
+    sRequeteSELECTFROM = "SELECT IdMembre,NomTitre,TypeMembre,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,"
+            "Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant FROM membres,typemembres,"
+            "titremembre,abonnements,activitemembre " ;
     sRequeteWHERE = "WHERE" ;
 
     if ( ui->ChBx_Type->isChecked() )
@@ -373,6 +382,13 @@ bool F_ListeMembres::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " DateNaissance<='" + ui->DtE_DN_Fin->dateTime().toString("yyyy-MM-dd") + "' AND" ;
     }
 
+    if( ui->ChBx_Activite->isChecked() )
+    {
+        int index = ui->CBx_Activites->currentIndex();
+        QString sIdActivite = ui->CBx_Activites->itemData(index,Qt::UserRole).toString();
+        sRequeteWHERE = sRequeteWHERE + " Activite_IdActivite = " + sIdActivite
+                + " AND IdMembre = activitemembre.Membres_IdMembre AND";
+    }
     if( ui->ChBx_Cotisation->isChecked() )
     {
         switch( ui->CBx_Cotisation->currentIndex() )
@@ -407,7 +423,8 @@ bool F_ListeMembres::AffichageListe()
     sRequeteWHERE += " CartesPrepayees_IdCarte IS NULL AND IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
     sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre " ;
 
-    //qDebug() << sRequete ;
+    qDebug() << "F_listemembre::AffichageListe() :" << sRequete ;
+    ui->LE_sql->setText(sRequete);
 
     //Exécution de la requête
     if( RequeteListemembres.exec(sRequete) )
@@ -418,8 +435,10 @@ bool F_ListeMembres::AffichageListe()
         //Remplissage du tableau avec les informations de la table membre
         while( RequeteListemembres.next() )
         {
+
             // mettre l'ID du membre dans le tableau pour le retrouver + facilement
-            ModeleMembres.setItem( i, 0, new QStandardItem( RequeteListemembres.record().value( 0 ).toString() ) ) ;
+            ModeleMembres.setItem( i, 0, new QStandardItem(
+                RequeteListemembres.record().value( RequeteListemembres.record().indexOf("IdMembre") ).toString() ) ) ;
 
             if ( this->bAdmin == true )
             {
@@ -428,18 +447,18 @@ bool F_ListeMembres::AffichageListe()
                 ModeleMembres.setItem( i, 1, item ) ;
             }
 
-            ModeleMembres.setItem( i, 2, new QStandardItem( RequeteListemembres.record().value( 1 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 3, new QStandardItem( RequeteListemembres.record().value( 2 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 4, new QStandardItem( RequeteListemembres.record().value( 3 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 5, new QStandardItem( RequeteListemembres.record().value( 4 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 6, new QStandardItem( RequeteListemembres.record().value( 5 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 7, new QStandardItem( RequeteListemembres.record().value( 6 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( 7 ).toString() ) ) ) ;
-            ModeleMembres.setItem( i, 9, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( 8 ).toString() ) ) ) ;
-            ModeleMembres.setItem( i, 10, new QStandardItem( RequeteListemembres.record().value( 9 ).toString() ) ) ;
-            ModeleMembres.setItem( i, 11, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 10 ).toInt() ) ) ) ;
+            ModeleMembres.setItem( i, 2, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("NomTitre") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 3, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("TypeMembre") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 4, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Nom") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 5, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Prenom") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 6, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Ville") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 7, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("CodeMembre") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 8, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Telephone") ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 9, new QStandardItem( this->ModifierSyntaxeNumTelephone( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Mobile") ).toString() ) ) ) ;
+            ModeleMembres.setItem( i, 10, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("Email") ).toString() ) ) ;
+            ModeleMembres.setItem( i, 11, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("NbreRetard") ).toInt() ) ) ) ;
 
-            DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
+            DateCotisation = RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() ;
             ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
             if ( DateCotisation < QDate::currentDate() )
             {
@@ -457,9 +476,9 @@ bool F_ListeMembres::AffichageListe()
                 }
             }
 
-            if( DateCotisation > RequeteListemembres.record().value( 12 ).toDate() )
+            if( DateCotisation > RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() )
             {
-                DateCotisation = RequeteListemembres.record().value( 12 ).toDate() ;
+                DateCotisation = RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() ;
                 ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
                 if ( DateCotisation < QDate::currentDate() )
                 {
@@ -477,8 +496,9 @@ bool F_ListeMembres::AffichageListe()
                     }
                 }
             }
-            ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( 13 ).toInt() ) ) ) ;
-            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( 11 ).toDate().toString( "yyyy-MM-dd" ) ) ) ;
+            //",NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant
+            ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("CreditRestant") ).toInt() ) ) ) ;
+            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateInscription") ).toDate().toString( "yyyy-MM-dd" ) ) ) ;
 
             i++ ;
         }
@@ -837,4 +857,14 @@ void F_ListeMembres::on_TbW_ListeMembre_clicked(const QModelIndex &index)
 void F_ListeMembres::on_TbW_ListeMembre_doubleClicked(const QModelIndex &index)
 {
     emit( this->Signal_DoubleClic_ListeMembres( this->ModeleMembres.data( this->ModeleMembres.index( index.row(), 0 )).toInt() ) ) ;
+}
+
+void F_ListeMembres::on_ChBx_Activite_clicked()
+{
+    this->AffichageListe() ;
+}
+
+void F_ListeMembres::on_CBx_Activites_currentIndexChanged(int index)
+{
+    this->AffichageListe() ;
 }

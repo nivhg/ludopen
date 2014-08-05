@@ -12,7 +12,6 @@
 #include "f_statistiques.h"
 #include "f_ajoutsuppmodifjeux.h"
 #include "f_abonnements.h"
-#include "f_recherchemembres.h"
 #include "f_paiement.h"
 #include "f_preferences.h"
 #include "f_retards.h"
@@ -67,8 +66,6 @@ private:
     F_Statistiques * pStatistiques;
     F_AjoutSuppModifJeux * pAjoutSuppModifJeux;
     F_Abonnements * pAbonnements;
-    F_RechercheMembres * pRechercheMembres ;
-    F_RechercheMembres * pRechercheMembresAdmin ;
     F_ListeMembres * pListeMembres ;
     F_ListeMembres * pListeMembresAdmin ;
     F_Membres * pAdministrerMembres;

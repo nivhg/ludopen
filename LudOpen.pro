@@ -18,7 +18,6 @@ SOURCES += \
     f_statistiques.cpp \
     f_retour.cpp \
     f_reservation.cpp \
-    f_recherchemembres.cpp \
     f_plusdestatistiques.cpp \
     f_paiement.cpp \
     f_membres.cpp \
@@ -53,7 +52,6 @@ HEADERS  += \
     f_statistiques.h \
     f_retour.h \
     f_reservation.h \
-    f_recherchemembres.h \
     f_plusdestatistiques.h \
     f_paiement.h \
     f_membres.h \
@@ -89,7 +87,6 @@ FORMS    += \
     f_statistiques.ui \
     f_retour.ui \
     f_reservation.ui \
-    f_recherchemembres.ui \
     f_plusdestatistiques.ui \
     f_paiement.ui \
     f_membres.ui \
