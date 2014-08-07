@@ -2256,7 +2256,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
             }
         }
         //----------Affichage photo----------------------------------------------------------------------------
-        ui->Lb_ImageName->setText(Lb_Image->LoadImages(QSize(200,160),ui->LE_RechercheCode->text()));
+        ui->Lb_ImageName->setText(Lb_Image->ChargerImage(QSize(200,160),ui->LE_RechercheCode->text()));
 
         //Grisee les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
@@ -2465,12 +2465,12 @@ void F_AjoutSuppModifJeux::CacherBoutons()
 
 void F_AjoutSuppModifJeux::on_Bt_Gauche_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->DisplayPreviousImage());
+    ui->Lb_ImageName->setText(Lb_Image->AfficherImagePrecedente());
 }
 
 void F_AjoutSuppModifJeux::on_Bt_Droite_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->DisplayNextImage());
+    ui->Lb_ImageName->setText(Lb_Image->AfficherImageSuivante());
 }
 
 void F_AjoutSuppModifJeux::on_Lb_Image_clicked()

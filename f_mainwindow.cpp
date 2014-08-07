@@ -294,8 +294,8 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
     {
         ui->menuImprimer->setEnabled(true);
+        this->pJeux->ActualiserJeux();
     }
-        //this->pJeux->ActualiserJeux();
         break;
     case 3 : //Liste jeux
         ui->menuImprimer->setEnabled(false);

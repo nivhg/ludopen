@@ -2598,22 +2598,6 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_16">
-     <item row="4" column="0" colspan="3">
-      <widget class="QTableView" name="TbW_Recherche">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <attribute name="verticalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
-     </item>
      <item row="2" column="0">
       <widget class="QCommandLinkButton" name="Bt_AjouterMembre">
        <property name="text">
@@ -2631,16 +2615,6 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="Lb_RechercheNom">
-       <property name="text">
-        <string>Saisir Nom, prénom ou code :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="LE_Nom"/>
-     </item>
      <item row="2" column="1">
       <widget class="QCommandLinkButton" name="Bt_SupprimerMembre">
        <property name="text">
@@ -2655,6 +2629,32 @@
          <width>30</width>
          <height>30</height>
         </size>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="3">
+      <widget class="QTableView" name="TbW_Recherche">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <attribute name="verticalHeaderVisible">
+        <bool>false</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLineEdit" name="LE_Nom"/>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QLabel" name="Lb_RechercheNom">
+       <property name="text">
+        <string>Saisir le nom ou le prénom ou le code du membre :</string>
        </property>
       </widget>
      </item>

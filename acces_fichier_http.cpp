@@ -1,6 +1,6 @@
 //acces_photo_http.cpp	0.1	<Vincent VICTORIN>
 
-#include "acces_photos_http.h"
+#include "acces_fichier_http.h"
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
 #include<QtCore>
@@ -10,22 +10,29 @@
 #include<QDebug>
 
 
-    bool AccesPhotosParHTTP::ImageOrURLExists( QString *returnfile, QString URLorPath, QString file, QString* TypeImage)
+/**
+ *  @brief Vérifie l'existence d'un fichier à partir d'une liste d'extension sur un système de fichier ou en HTTP
+ *
+ *  @param url :
+ *          en entrée : chemin ou URL de l'image à rechercher
+ *          en sortie : chemin du fichier trouvé. Dans le cas d'une image HTTP :
+ *              chemin et nom du fichier temporaire où a été téléchargé l'image
+ *  @param ext : Extention du fichier à rechercher.
+ *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
+ *  @param extlist : Liste des extensions à vérifier
+ *
+ */
+    bool AccesFichierParHTTP::FichierEtExtensionsExiste( QString *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist)
     {
-        if( ! FileOrURLExists( returnfile, URLorPath,file, "jpg", TypeImage ) )
+        bool ret;
+        foreach (QString ext, extlist)
         {
-           if( ! FileOrURLExists( returnfile, URLorPath,file, "jpeg", TypeImage ) )
-           {
-              if( ! FileOrURLExists( returnfile, URLorPath,file, "png", TypeImage ) )
-              {
-                 if( ! FileOrURLExists( returnfile, URLorPath,file, "bmp", TypeImage ) )
-                 {
-                    return FileOrURLExists( returnfile, URLorPath,file, "gif", TypeImage );
-                 }
-              }
-           }
+            if(FichierExiste( returnfile, URLorPath,file, ext, TypeImage ))
+            {
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -39,12 +46,12 @@
      *  @param ext : Extention du fichier à rechercher.
      *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
      */
-    bool AccesPhotosParHTTP::FileOrURLExists( QString *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage)
+    bool AccesFichierParHTTP::FichierExiste( QString *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage)
     {
         // On suppose que l'argument ext est toujours mis en minuscule,
         // et on rappele la fonction avec ext en majuscule
         if(ext!=ext.toUpper()) {
-            if(FileOrURLExists(returnfile,URLorPath,file,ext.toUpper(),TypeImage))
+            if(FichierExiste(returnfile,URLorPath,file,ext.toUpper(),TypeImage))
             {
                 return true;
             }

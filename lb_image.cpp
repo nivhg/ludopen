@@ -22,7 +22,7 @@
 #include <QResizeEvent>
 #include <QSize>
 // En-tête propre à  l'application ----------------------------------------------
-#include "acces_photos_http.h"
+#include "acces_fichier_http.h"
 #include "lb_image.h"
 #include "d_image.h"
 
@@ -68,10 +68,16 @@ void lb_image::mousePressEvent ( QMouseEvent * event )
  */
 void lb_image::resizeEvent ( QResizeEvent * ev )
 {
-    DisplayImage(ev->size());
+    AfficherImage(ev->size());
 }
 
-QString lb_image::LoadImages(QSize size,QString code_jeu)
+/** @brief Charge les images d'un jeu
+ *
+ *  @param size : nouvelle taille à donner à l'image
+ *  @param code_jeu: code du jeu correspodant à l'image
+ *
+ */
+QString lb_image::ChargerImage(QSize size,QString code_jeu)
 {
     // Suppression des fichiers temporaires du précédent affichage des images HTTP
     if( sCheminImagePref.indexOf("http://",0,Qt::CaseInsensitive) != -1)
@@ -87,33 +93,36 @@ QString lb_image::LoadImages(QSize size,QString code_jeu)
 
     QString TypeImage;
 
-    AccesPhotosParHTTP manager;
+    AccesFichierParHTTP manager;
 
     int i=0;
-    QString filename;
-    if(manager.ImageOrURLExists( &sCheminImage[0], sCheminImagePref, code_jeu , &TypeImage))
+    QString NomFichier;
+    QStringList ListeExtension;
+    ListeExtension<<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
+    if(manager.FichierEtExtensionsExiste( &sCheminImage[0], sCheminImagePref, code_jeu , &TypeImage,ListeExtension))
     {
         i++;
     }
-    if(manager.ImageOrURLExists( &sCheminImage[1], sCheminImagePref, code_jeu + "-" + QString::number(i-1) , &TypeImage ))
+    if(manager.FichierEtExtensionsExiste( &sCheminImage[1], sCheminImagePref, code_jeu + "-" + QString::number(i-1)
+                                 , &TypeImage, ListeExtension ))
     {
         i++;
     }
     // Si XXXX.XXX ou XXXX-2.XXX existe, on cherche les autres images
     if(i>0)
     {
-        filename = code_jeu + "-" + QString::number(i+1);
+        NomFichier = code_jeu + "-" + QString::number(i+1);
         // Tant qu'il existe des images avec le même code jeu
-        while( manager.ImageOrURLExists( &sCheminImage[i], sCheminImagePref, filename , &TypeImage ))
+        while( manager.FichierEtExtensionsExiste( &sCheminImage[i],sCheminImagePref,NomFichier,&TypeImage,ListeExtension))
         {
            i++;
-           // Nom du prochaine fichier à chercher
-           filename = code_jeu + "-" + QString::number(i+1);
+           // Nom du prochain fichier à chercher
+           NomFichier = code_jeu + "-" + QString::number(i+1);
         }
         iNbImage=i;
-        DisplayImage(QSize(width(),height()));
-        QDir* filepath=new QDir(sCheminImage[iImage]);
-        return filepath->dirName();
+        AfficherImage(QSize(width(),height()));
+        QDir* CheminFichier=new QDir(sCheminImage[iImage]);
+        return CheminFichier->dirName();
     }
     else
     {
@@ -126,7 +135,7 @@ QString lb_image::LoadImages(QSize size,QString code_jeu)
  *
  *  @param size : nouvelle taille à donner à l'image
  */
-void lb_image::DisplayImage(QSize size)
+void lb_image::AfficherImage(QSize size)
 {
     QPixmap Image;
     // si le chemin est faux ou l'image n'existe pas, efface l'image d'avant automatiquement
@@ -142,7 +151,7 @@ void lb_image::DisplayImage(QSize size)
     }
 }
 
-QString lb_image::DisplayPreviousImage()
+QString lb_image::AfficherImagePrecedente()
 {
     if(iNbImage==0)
     {
@@ -157,12 +166,12 @@ QString lb_image::DisplayPreviousImage()
     {
         iImage=iNbImage-1;
     }
-    DisplayImage(QSize(width(),height()));
+    AfficherImage(QSize(width(),height()));
     QDir* filepath=new QDir(sCheminImage[iImage]);
     return filepath->dirName();
 }
 
-QString lb_image::DisplayNextImage()
+QString lb_image::AfficherImageSuivante()
 {
     if(iNbImage==0)
     {
@@ -177,7 +186,7 @@ QString lb_image::DisplayNextImage()
     {
         iImage++;
     }
-    DisplayImage(QSize(width(),height()));
+    AfficherImage(QSize(width(),height()));
     QDir* filepath=new QDir(sCheminImage[iImage]);
     return filepath->dirName();
 }

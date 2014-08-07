@@ -13,17 +13,17 @@ public:
     explicit lb_image( QWidget * parent = 0 );
     /** @brief Affiche et redimensionne l'image en fonction de size
      */
-    void DisplayImage(QSize size);
+    void AfficherImage(QSize size);
     /** @brief Affiche l'image précédente
      */
-    QString DisplayPreviousImage();
+    QString AfficherImagePrecedente();
     /** @brief Affiche l'image suivante
      */
-    QString DisplayNextImage();
+    QString AfficherImageSuivante();
 
     /** @brief Charge les images d'un jeu
      */
-    QString LoadImages(QSize size,QString code_jeu);
+    QString ChargerImage(QSize size,QString code_jeu);
 
 signals:
     /** @brief Signal gérant le clic de souris

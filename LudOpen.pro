@@ -45,8 +45,8 @@ SOURCES += \
     f_listereservations.cpp \
     d_image.cpp \
     lb_image.cpp \
-    acces_photos_http.cpp \
-    d_ajoutsuppmodiffournisseursediteurs.cpp
+    d_ajoutsuppmodiffournisseursediteurs.cpp \
+    acces_fichier_http.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -78,10 +78,10 @@ HEADERS  += \
     f_imprimerfichecompletejeu.h \
     f_imprimeretiquettejeu.h \
     f_listereservations.h \
-    acces_photos_http.h \
     d_image.h \
     lb_image.h \
-    d_ajoutsuppmodiffournisseursediteurs.h
+    d_ajoutsuppmodiffournisseursediteurs.h \
+    acces_fichier_http.h
 
 FORMS    += \
     f_statistiques.ui \

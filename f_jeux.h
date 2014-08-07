@@ -12,6 +12,8 @@
 #include "f_detailsjeux.h"
 #include "f_reservation.h"
 
+using namespace std;
+
 namespace Ui {
     class F_Jeux;
 }
@@ -43,13 +45,16 @@ public:
      */
     void set_JeuEnConsultation(QString CodeJeuChoisi);
 
+    /** @brief Affiche les information sur un jeu
+     */
+    void AfficherJeu();
+
+    /** @brief Affiche tous les jeux dans le tableau
+     */
+    void AfficherJeux();
 
 private slots:
     // METHODES---------------------------------------------------
-    /** @brief Appeler lorsque l'on clic sur le bouton OK
-     *
-     */
-    void on_Bt_ok_clicked();
 
     /** @brief Appeler lorsque l'on clic sur le bouton Declarer intervention
      *
@@ -129,13 +134,7 @@ private slots:
     /** @brief Appeler lorsque l'on clic sur une case du tableau
      *
      */
-    void on_TbV_NomJeux_clicked(const QModelIndex &index);
-    
-    /** @brief Appeler lorsque l'on modifie le contenu de la case de recherche par code
-     *
-     */
-    void on_Le_recherchecode_textChanged(const QString &arg1);
-    
+    void on_TbV_NomJeux_clicked(const QModelIndex &index);    
 
     void on_Le_nom_textChanged(const QString &arg1);
 
@@ -166,6 +165,15 @@ private:
 
     //! Label Image
     lb_image* Lb_Image;
+
+    //! Stocke l'ID du jeu sélectionné
+    QString nIdJeuSelectionne;
+
+    //! Stocke les chemins des fichiers de règles
+    QString sCheminFichier[100];
+
+    //! Stocke le nombre de fichiers de règles
+    int iNbFichier;
 };
 
 //-----------------------------------------------------------------

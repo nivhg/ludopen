@@ -305,9 +305,10 @@ void F_Membres::RechercherParNomEtNumero()
             //Si le Nom, le code ou les 2 correspondent, on l'ajoute dans le vecteur VecteurRechercheMembres
             bool numeric;
             ui->LE_Nom->text().toInt(&numeric);
+            // Si le texte saisie est un nombre
             if( numeric )
             {
-                if( this->VecteurMembres[i].sCodeMembre.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                if( this->VecteurMembres[i].sCodeMembre.indexOf( ui->LE_Nom->text(),0,Qt::CaseInsensitive ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
@@ -723,6 +724,7 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
 void F_Membres::AfficherMembre()
 {
     this->AfficherMembre( this->nIdMembreSelectionne ) ;
+    ui->LE_Nom->setFocus();
 }
 //==========================================================================================================
 /** Affiche les informations d'un membre

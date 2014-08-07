@@ -65,80 +65,36 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QGroupBox" name="groupBox_8">
-          <property name="minimumSize">
-           <size>
-            <width>120</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>150</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>Nom jeu :</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
-            <widget class="QLineEdit" name="Le_recherchenom">
-             <property name="inputMethodHints">
-              <set>Qt::ImhUppercaseOnly</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QGroupBox" name="groupBox_9">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>100</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="title">
-           <string>Code Jeu :</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_6">
-           <item row="0" column="0">
-            <widget class="QLineEdit" name="Le_recherchecode">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="Bt_ok">
-          <property name="maximumSize">
-           <size>
-            <width>35</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Ok</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="horizontalLayout"/>
       </item>
-      <item row="1" column="0">
+      <item row="5" column="0" alignment="Qt::AlignHCenter">
+       <widget class="QCommandLinkButton" name="Bt_DeclarerIntervention">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Intervention sur ce jeu</string>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Reparation.png</normaloff>:/Reparation.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
        <widget class="QTableView" name="TbV_NomJeux">
         <property name="minimumSize">
          <size>
@@ -163,7 +119,7 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+      <item row="4" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
        <widget class="QCommandLinkButton" name="Bt_Reserver">
         <property name="enabled">
          <bool>false</bool>
@@ -184,29 +140,17 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0" alignment="Qt::AlignHCenter">
-       <widget class="QCommandLinkButton" name="Bt_DeclarerIntervention">
-        <property name="enabled">
-         <bool>false</bool>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="Le_recherchenom">
+        <property name="inputMethodHints">
+         <set>Qt::ImhUppercaseOnly</set>
         </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_6">
         <property name="text">
-         <string>Intervention sur ce jeu</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Reparation.png</normaloff>:/Reparation.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
+         <string>Saisir le nom du jeu ou son code :</string>
         </property>
        </widget>
       </item>
@@ -442,7 +386,7 @@
       <item row="13" column="2">
        <widget class="QPushButton" name="Bt_regle">
         <property name="text">
-         <string>Règle du jeu</string>
+         <string>Voir les règles</string>
         </property>
        </widget>
       </item>
