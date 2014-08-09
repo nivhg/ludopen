@@ -25,115 +25,33 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //Layout///////////////
 
     //Widgets-onglets//////
-    qDebug()<<"Création F_Emprunt";
-    this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
-    qDebug()<<"Création F_Jeux";
-    this->pJeux=new F_Jeux (this->ui->Jeu);
-    qDebug()<<"Création F_Retour";
-    this->pRetour=new F_Retour (this->ui->Retour);
-    qDebug()<<"Création F_ListeJeux";
-    this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
-    qDebug()<<"Création F_Membres";
-    this->pMembres=new F_Membres (this, false, this->ui->Membre);
-    qDebug()<<"Création F_ListeMembres";
-    this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
-    qDebug()<<"Création F_Retards";
-    this->pRetards=new F_Retards (this->ui->Retards);
-    qDebug()<<"Création F_ListeReservation";
-    this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
+    this->pEmprunt=0;
+    this->pJeux=0;
+    this->pRetour=0;
+    this->pListeJeux=0;
+    this->pMembres=0;
+    this->pListeMembres = 0;
+    this->pRetards=0;
+    this->pListeReservations = 0;
     qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
 
     //Widget-admin/////////
     ////Fournisseur////////
-    qDebug()<<"Création ADMIN-F_AjoutSuppModifFournisseursEditeurs";
-    this->pAjoutSuppModifFournisseurEditeurs=new F_AjoutSuppModifFournisseursEditeurs (this->ui->admin);
-    this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-
-    ////Membre/////////////
-    qDebug()<<"Création ADMIN-F_RechercheMembres";
-    this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
-    this->pAdministrerMembres->setVisible(false);
-    this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
-    this->pAdministrerMembres->setVisible(true);
-
-    ////Liste Membres//////
-    qDebug()<<"Création ADMIN-F_ListeMembres";
-    this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
-
-    ////Statistiques////////
-    qDebug()<<"Création ADMIN-F_ListeMembres";
-    this->pStatistiques=new F_Statistiques (this->ui->admin);
-    this->ui->Lay_Admin->addWidget(this->pStatistiques);
-    this->pStatistiques->setVisible(false);
-
-    ////Jeux////////
-    qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
-    this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
-    this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
-    this->pAjoutSuppModifJeux->setVisible(false);
-
-    ////Abonnement////////
-    qDebug()<<"Création ADMIN-F_Abonnements";
-    this->pAbonnements=new F_Abonnements(this->ui->admin);
-    this->ui->Lay_Admin->addWidget(this->pAbonnements);
-    this->pAbonnements->setVisible(false);
-
-    qDebug()<<"Création ADMIN-F_PopUpCode";
-    this->pPopUpCode = new F_PopUpCode;
-    this->pPopUpCode->setWindowTitle("Code d'accés");
-    this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
+    this->pAjoutSuppModifFournisseurEditeurs=0;
+    this->pAdministrerMembres=0;
+    this->pListeMembresAdmin = 0;
+    this->pStatistiques=0;
+    this->pAjoutSuppModifJeux=0;
+    this->pAbonnements=0;
+    this->pPopUpCode = 0;
     /*****************************************************************************/
-
-    //Membres
-    this->ui->Lay_Membres->addWidget(this->pMembres);
-
-    //Liste Membres
-    ui->Lay_ListeMembres->addWidget( this->pListeMembres ) ;
-
-    //Jeu
-    this->ui->Lay_Jeux->addWidget(this->pJeux);
-
-    //Liste Jeux
-    this->ui->Layout_ListeJeux->addWidget(this->pListeJeux);
-
-    //Emprunt
-    this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
-
-    //Liste Réservations
-    ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
-
-    //Retour
-    this->ui->Lay_Retour->addWidget(this->pRetour);
-
-    //Retards
-    this->ui->Layout_Retards->addWidget(this->pRetards);
 
     //PostIt
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
 
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(9);
-
-    // #################################################
-    // ##################### SIGNAUX  ##################
-    // #################################################
-    connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
-    // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
-
-    connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
-    connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
-
-    // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
-    connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
-
-    connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
-
-    // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
-    connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
 
     qDebug()<<"Constructeur F_MainWindow = OK";
 }
@@ -277,6 +195,14 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     switch(index)
     {
     case 0 : //Membre
+        if(!this->pMembres)
+        {
+            qDebug()<<"Création F_Membres";
+            this->pMembres=new F_Membres (this, false, this->ui->Membre);
+            //Membres
+            this->ui->Lay_Membres->addWidget(this->pMembres);
+            connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+        }
         ui->menuImprimer->setEnabled(false);
         this->pMembres->MaJListeMembres() ;
         this->pMembres->AfficherListe() ;
@@ -286,6 +212,14 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         break;
 
     case 1 : //Liste Membres
+        if(!this->pListeMembres)
+        {
+            qDebug()<<"Création F_ListeMembres";
+            this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
+            //Liste Membres
+            ui->Lay_ListeMembres->addWidget( this->pListeMembres ) ;
+            connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
+        }
         this->pListeMembres->AffichageListe() ;
         break ;
     case 2 : //Jeux
@@ -293,19 +227,51 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
     {
+        if(!this->pJeux)
+        {
+            qDebug()<<"Création F_Jeux";
+            this->pJeux=new F_Jeux (this->ui->Jeu);
+            //Jeux
+            this->ui->Lay_Jeux->addWidget(this->pJeux);
+        }
         ui->menuImprimer->setEnabled(true);
         this->pJeux->ActualiserJeux();
     }
         break;
     case 3 : //Liste jeux
+        if(!this->pListeJeux)
+        {
+            qDebug()<<"Création F_ListeJeux";
+            this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
+            //Liste Jeux
+            this->ui->Layout_ListeJeux->addWidget(this->pListeJeux);
+
+            // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
+            connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
+
+        }
         ui->menuImprimer->setEnabled(false);
         break;
     case 4 : //Emprunt
+        if(!this->pEmprunt)
+        {
+            qDebug()<<"Création F_Emprunt";
+            this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
+            //Emprunt
+            this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
+        }
         ui->menuImprimer->setEnabled(false);
         this->pEmprunt->ActualiserJeu();
         this->pEmprunt->ActualiserMembre();
         break;
     case 5 : //Retour
+        if(!this->pRetour)
+        {
+            qDebug()<<"Création F_Retour";
+            this->pRetour=new F_Retour (this->ui->Retour);
+            //Retour
+            this->ui->Lay_Retour->addWidget(this->pRetour);
+        }
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         // actualise les infos afficher sur le membre sélectionné actuellement
@@ -316,15 +282,84 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pRetour->ActualiserListeEmprunteurs();
         break;
     case 6 : //Liste Réservations
+        if(!this->pListeReservations)
+        {
+            qDebug()<<"Création F_ListeReservation";
+            this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
+            //Liste Réservations
+            ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
+        }
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         this->pListeReservations->AffichageListe() ;
         break;
     case 7 : //retards
+        if(!this->pRetards)
+        {
+            qDebug()<<"Création F_Retards";
+            this->pRetards=new F_Retards (this->ui->Retards);
+            //Retards
+            this->ui->Layout_Retards->addWidget(this->pRetards);
+            // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
+            connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
+        }
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
         break;
     case 8 : //Administration
+        //Widget-admin/////////
+        ////Fournisseur////////
+        if(!this->pAjoutSuppModifFournisseurEditeurs)
+        {
+            qDebug()<<"Création ADMIN-F_AjoutSuppModifFournisseursEditeurs";
+            this->pAjoutSuppModifFournisseurEditeurs=new F_AjoutSuppModifFournisseursEditeurs (this->ui->admin);
+            this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
+            this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
+
+            ////Membre/////////////
+            qDebug()<<"Création ADMIN-F_RechercheMembres";
+            this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
+            this->pAdministrerMembres->setVisible(false);
+            this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
+            this->pAdministrerMembres->setVisible(true);
+
+            ////Liste Membres//////
+            qDebug()<<"Création ADMIN-F_ListeMembres";
+            this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
+            this->pListeMembresAdmin->setVisible( false ) ;
+            this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
+
+            ////Statistiques////////
+            qDebug()<<"Création ADMIN-F_ListeMembres";
+            this->pStatistiques=new F_Statistiques (this->ui->admin);
+            this->ui->Lay_Admin->addWidget(this->pStatistiques);
+            this->pStatistiques->setVisible(false);
+
+            ////Jeux////////
+            qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
+            this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
+            this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
+            this->pAjoutSuppModifJeux->setVisible(false);
+
+            ////Abonnement////////
+            qDebug()<<"Création ADMIN-F_Abonnements";
+            this->pAbonnements=new F_Abonnements(this->ui->admin);
+            this->ui->Lay_Admin->addWidget(this->pAbonnements);
+            this->pAbonnements->setVisible(false);
+
+            qDebug()<<"Création ADMIN-F_PopUpCode";
+            this->pPopUpCode = new F_PopUpCode;
+            this->pPopUpCode->setWindowTitle("Code d'accès");
+            this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
+
+            connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
+            // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
+
+            //connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+            connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
+        }
+
+        /*****************************************************************************/
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
         ui->menuImprimer->setEnabled(false);
         this->pAdministrerMembres->MaJListeMembres() ;

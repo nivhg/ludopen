@@ -61,7 +61,11 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     this->show() ;
 
     QSqlQuery RequeteFicheJeuComplete ;
-    RequeteFicheJeuComplete.prepare("SELECT NomJeu, CodeJeu, NomCreateurJeu, DateAchat, PrixAchat, PrixLoc, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, Remarque, ContenuJeu, Caution, DescriptionJeu, EtatInitial, TypeJeux_Classification, Emplacement_IdEmplacement, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux, Fournisseurs_IdFournisseur, Editeur_IdEditeur, CheminPhotoJeu FROM jeux WHERE CodeJeu =:CodeDuJeu") ;
+    RequeteFicheJeuComplete.prepare("SELECT NomJeu, CodeJeu, NomCreateurJeu, DateAchat, PrixAchat,"
+          "PrixLoc, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, Remarque, ContenuJeu, Caution, "
+          "DescriptionJeu, EtatInitial, TypeJeux_Classification, Emplacement_IdEmplacement, "
+          "EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux, Fournisseurs_IdFournisseur,"
+          "Editeur_IdEditeur FROM jeux WHERE CodeJeu =:CodeDuJeu") ;
     RequeteFicheJeuComplete.bindValue(":CodeDuJeu", CodeJeu) ;
     if(!RequeteFicheJeuComplete.exec())
     {
@@ -247,16 +251,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
         ui->LE_Editeur->setText(RequeteEditeur.value(1).toString());
     }
     ui->LE_Editeur->setReadOnly(true);
-
-    /*
-    QSqlQuery RequeteImage ;
-    QString CheminPhotosJeux ;
-    
-    RequeteImage.prepare("SELECT CheminPhotoJeu, CodeJeu FROM jeux WHERE CodeJeu = :CodeDuJeu") ;
-    RequeteImage.bindValue(":CodeDuJeu", ui->LE_Code->text());
-    RequeteImage.exec() ;
-    RequeteImage.next() ;
-    */
 
     ////////////////////////////////////////////////////////
     ////////////// Photo //////////////////////////////////

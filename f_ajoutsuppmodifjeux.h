@@ -13,6 +13,8 @@ class F_AjoutSuppModifJeux;
 #include "f_popupclesttem.h"
 #include "lb_image.h"
 
+using namespace std;
+
 class D_AjoutSuppModifFournisseursEditeurs;
 
 namespace Ui {
@@ -61,6 +63,31 @@ public:
      */
     void AjouterImage(QString sCheminImage , QString sCodeJeux ) ;
     
+    /** @brief Affiche tous les jeux dans le tableau
+     */
+    void AfficherJeux();
+
+    /** @brief Affiche les informations sur un jeu
+     */
+    void AfficherJeu();
+
+    /** @brief Vide les champs d'un jeu
+     */
+    void VideChamps();
+
+    /** @brief Active ou désactive les champs d'un jeu
+     */
+    void ActiveChamps(bool etat);
+
+    /** @brief Active ou désactive les boutons valider et annuler
+     */
+    void ActiveBoutons(bool etat);
+
+    /** @brief Bloque les signaux pour éviter que la modification de ces champs active les boutons de validation et d'annulation
+    */
+    void BloquerSignalsChamps(bool etat);
+
+
 public slots:
     void slot_ValiderClassification();
     void slot_ValiderEtat();
@@ -70,22 +97,10 @@ public slots:
 
 private slots:
     // METHODEs -----------------------------------------------------------------
-
-    /** @brief Appelé lorsque l'on clic sur le bouton OK
-     */
-    void on_Bt_OK_clicked();
     
     /** @brief Appelé lorsque l'on modifier le contenu de la case de recherche par nom
      */
     void on_LE_RechercheNom_textChanged(const QString &arg1);
-    
-    /** @brief Appelé lorsque l'on clic sur la touche Entrée du calicer
-     */
-    void on_LE_RechercheCode_returnPressed();
-    
-    /** @brief Appelé lorsque l'on modifier le contenu de la case de recherche par code
-     */
-    void on_LE_RechercheCode_textChanged(const QString &arg1);
     
     /** @brief Appelé lorsque l'on clic sur le bouton Ajouter
      */
@@ -94,78 +109,28 @@ private slots:
     /** @brief Appelé lorsque l'on clic sur le bouton Supprimer
      */
     void on_Bt_Supprimer_clicked();
-            
-    /** @brief Appelé lorsque le contenu de la case Nom change
-     */
-    void on_LE_Nom_textChanged(const QString &arg1);
-    
+                
     /** @brief Appelé lorsque le contenu du Cbx_Classification change
      */
     void on_CBx_Classification_activated(int index);
-    
-    /** @brief Appelé lorsque le contenu du SBx_JoueurMin change
-     */
-    void on_SBx_JoueursMin_valueChanged(int arg1);
-    
-    /** @brief Appelé lorsque le contenu du SBx_JoueurMax change
-     */
-    void on_SBx_JoueursMax_valueChanged(int arg1);
-    
-    /** @brief Appelé lorsque le contenu du SBx_AgeMin change
-     */
-    void on_SBx_AgeMin_valueChanged(int arg1);
-    
-    /** @brief Appelé lorsque le contenu du SBx_AgeMax change
-     */
-    void on_SBx_AgeMax_valueChanged(int arg1);
-    
+
     /** @brief Appelé lorsque le contenu du Cbx_Etat change
      */
     void on_CBx_Etat_activated(int index);
-    
+
     /** @brief Appelé lorsque le contenu du Cbx_Statut change
      *
      */
     void on_CBx_Statut_activated(int index);
-    
+
     /** @brief Appelé lorsque le contenu du Cbx_Editeur change
-     *
      */
     void on_CBx_Editeur_activated(int index);
-    
+
     /** @brief Appelé lorsque le contenu du Cbx_Fournisseur change
      */
     void on_CBx_Fournisseur_activated(int index);
-    
-    /** @brief Appelé lorsque le contenu du LE_Createur change
-     */
-    void on_LE_Createur_textChanged(const QString &arg1);
-    
-    /** @brief Appelé lorsque le contenu du DtE_Achat change
-     */
-    void on_DtE_Achat_dateChanged(const QDate &date);
-    
-    /** @brief Appelé lorsque le contenu du SBx_PrixAchat change
-     */
-    void on_SBx_PrixAchat_valueChanged(double arg1);
-    
-    /** @brief Appelé lorsque le contenu du SBx_PrixLocation change
-     */
-    void on_SBx_PrixLocation_valueChanged(int arg1);
-    
-    /** @brief Appelé lorsque le contenu du SBx_Caution change
-     */
-    void on_SBx_Caution_valueChanged(int arg1);
-    
-    /** @brief Appelé lorsque le contenu du TxE_Remarques change
-     */
-    void on_TxE_Remarques_textChanged();
-    
-    /** @brief Appelé lorsque le contenu du TxE_Description change
-     *
-     */
-    void on_TxE_Description_textChanged();
-    
+
     /** @brief Appelé lorsque l'on sélectionne sur une case du tableau
      */
     void on_TbV_Recherche_selectionChanged(const QModelIndex &index);
@@ -189,19 +154,6 @@ private slots:
     /** @brief Appelé lorsque le contenu du CBx_MotCle3 change
      */
     void on_CBx_MotCle3_activated(int index);
-    
-    /** @brief Appelé lorsque le contenu du TxE_Contenu change
-     */
-    void on_TxE_Contenu_textChanged();
-    
-    /** @brief Appelé lorsque l'état du RBt_Neuf change
-     */
-    void on_RBt_Neuf_toggled(bool checked);
-    
-    /** @brief Appelé lorsque l'état du RBt_Occasion change
-     */
-    void on_RBt_Occasion_toggled(bool checked);
-
 
     /** @brief Appelé lorsque le contenu du Cbx_Emplacement change
      */
@@ -215,18 +167,24 @@ private slots:
 
     void toUpper(const QString &text);
 
+    void on_TbV_Recherche_clicked(const QModelIndex &index);
+
+    /** @brief Pour gérer le jeu de cache cache des boutons Valider/Annuler/Ajouter/Supprimer
+     */
+    void CacherBoutons() ;
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
 
     Ui::F_AjoutSuppModifJeux *ui;
     
-    /** @brief Contient le code du jeu en cour de consultation
+    /** @brief Contient le code du jeu en cours de consultation
      *
      */
-    //Code du jeu actif sur la fênentre
-    QString JeuEnConsultation ;
+    //Code du jeu actif sur la fenêtre
+    QString nIdJeuSelectionne ;
     
-    //! Model du TableView des membres
+    //! Model du TableView des jeux
     QStandardItemModel * ModelJeu;
     
     /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
@@ -256,10 +214,6 @@ private:
     /** @brief Pointeur qui fait le lien entre la classe D_AjoutSuppModifFournisseursEditeurs coté éditeur et celle-ci
      */
     D_AjoutSuppModifFournisseursEditeurs * pAjoutEditeur;
-
-    /** @brief Pour gérer le jeu de cache cache des boutons Valider/Annuler/Ajouter/Supprimer
-     */
-    void CacherBoutons() ;
     
     /** @brief Tableau permettant de retrouver l'index sélectionné
      * 0 : Etat
@@ -278,9 +232,6 @@ private:
      * false : modificatiion
      */
     bool AjoutOuModif ;
-
-    // A voir si nécessité de garder les champs CheminPhoto et CheminRègles dans BD (VV: pour moi non)
-    QString CheminPhoto ;
 
     //! Label Image
     lb_image* Lb_Image;

@@ -58,12 +58,9 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     // Mise en lecture seule
     ui->TbV_Recherche->setEditTriggers(0);
     // Initialise la table view avec tous les jeux
-    this->on_LE_RechercheNom_textChanged("") ;
+    AfficherJeux();
     //Supprime le numéro des lignes
     ui->TbV_Recherche->verticalHeader()->setVisible(false);
-
-    // Faire défiler le tableau des jeux avec les flêches du clavier
-    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_selectionChanged(QModelIndex)));
 
     ui->LE_CodeClassification->setReadOnly(true);
     //Affiche la date du jour
@@ -81,6 +78,9 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
     Lb_Image->setCursor(Souris);
     ui->gridLayout_11->addWidget(Lb_Image,0,1);
+
+    // Faire défiler le tableau des jeux avec les flèches du clavier
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
 
     //////////////////////////////////////////////
     //////////// Remplir les COMBO BOX //////////
@@ -138,43 +138,69 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     this->pMotCleAjMod->hide();
 
     //Grise les boutons valider/annuler/supprimer
-    ui->Bt_Valider->setEnabled(false);
-    ui->Bt_Annuler->setEnabled(false);
+    ActiveBoutons(false);
     ui->Bt_Supprimer->setEnabled(false);
 
     ////////////////////////////////////////////////
     ///// Bloque tout avant l'ajout ///////////////
     //////////////////////////////////////////////
-    ui->CBx_Classification->setDisabled(true);
-    ui->CBx_Editeur->setDisabled(true);
-    ui->CBx_Emplacement->setDisabled(true);
-    ui->CBx_Etat->setDisabled(true);
-    ui->CBx_Fournisseur->setDisabled(true);
-    ui->CBx_MotCle1->setDisabled(true);
-    ui->CBx_MotCle2->setDisabled(true);
-    ui->CBx_MotCle3->setDisabled(true);
-    ui->CBx_Statut->setDisabled(true);
-    ui->LE_Code->setDisabled(true);
-    ui->LE_CodeClassification->setDisabled(true);
-    ui->LE_Createur->setDisabled(true);
-    ui->LE_Nom->setDisabled(true);
-    ui->DtE_Achat->setDisabled(true);
-    ui->SBx_AgeMax->setDisabled(true);
-    ui->SBx_AgeMin->setDisabled(true);
-    ui->SBx_Caution->setDisabled(true);
-    ui->SBx_JoueursMax->setDisabled(true);
-    ui->SBx_JoueursMin->setDisabled(true);
-    ui->SBx_PrixAchat->setDisabled(true);
-    ui->SBx_PrixLocation->setDisabled(true);
-    ui->TxE_Contenu->setDisabled(true);
-    ui->TxE_Description->setDisabled(true);
-    ui->TxE_Remarques->setDisabled(true);
-    ui->RBt_Neuf->setDisabled(true);
-    ui->RBt_Occasion->setDisabled(true);
+    QList<QWidget*> QWidgetlist = this->findChildren<QWidget *>();
+    QString className;
+    QStringList classList;
+    classList<<"QTextEdit"<<"QLineEdit"<<"QComboBox"<<"QSpinBox"<<"QRadioButton"<<"QDoubleSpinBox"
+               <<"QDateEdit";
+    // Parcours la liste de widget ci-dessus et connecte les évenements associés à la fonction cacherboutons
+    foreach(QWidget *w, QWidgetlist)
+    {
+        className = w->metaObject()->className();
+        bool classFound = false;
+        foreach(QString classN, classList)
+        {
+            if( classN == className )
+            {
+                classFound = true;
+                break;
+            }
+        }
+        if(!classFound)
+        {
+            continue;
+        }
+        if( w->objectName() == "LE_RechercheNom" )
+        {
+            continue;
+        }
+        w->setDisabled(true);
+        if(className == "QComboBox" )
+        {
+            connect(w, SIGNAL(activated(int)), this, SLOT(CacherBoutons()));
+        }
+        else if(className == "QRadioButton")
+        {
+            connect(w, SIGNAL(clicked(bool)), this, SLOT(CacherBoutons()));
+        }
+        else if(className == "QTextEdit")
+        {
+            connect(w, SIGNAL(textChanged()), this, SLOT(CacherBoutons()));
+        }
+        else if(className == "QDateEdit")
+        {
+            connect(w, SIGNAL(dateChanged(QDate)), this, SLOT(CacherBoutons()));
+        }
+        else if(className == "QSpinBox" or className == "QDoubleSpinBox")
+        {
+            connect(w, SIGNAL(valueChanged(QString)), this, SLOT(CacherBoutons()));
+        }
+        else
+        {
+            connect(w, SIGNAL(textEdited(QString)), this, SLOT(CacherBoutons()));
+        }
+    }
 
     // Connecte l'évenement textEdited à la fonction toUpper
     connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
 
+    AfficherJeux() ;
 }
 //###################################################################
 /**
@@ -223,73 +249,88 @@ void F_AjoutSuppModifJeux::slot_ValiderStatut()
  */
 void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
 {
-    ui->LE_RechercheCode->setText("");
+    qDebug() << "F_Jeux::on_Le_recherchenom_textChanged" << "Texte : " << arg1;
+    unsigned int NumeroLigne (0);
+    const int CodeColonne=0;
+    const int CodeNomJeu=1;
+    int ColonneRecherche;
+    QString NomJeu=arg1;
+    QString TexteCellule;
+    bool numeric;
+    NomJeu.toInt(&numeric);
+    int firstrow=-1;
+    // Déconnexion du défilement du tableau des jeux avec les flêches du clavier
+    disconnect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+    //Tant qu'il y a des jeux dans la table jeux,
+    for(int i=0;i<this->ModelJeu->rowCount();i++)
+    {
+        // Si le texte saisie est un nombre
+        if( numeric )
+        {
+            ColonneRecherche=CodeColonne;
+        }
+        else
+        {
+            ColonneRecherche=CodeNomJeu;
+        }
+
+        TexteCellule = this->ModelJeu->item(i,ColonneRecherche)->text();
+        if(TexteCellule.indexOf(
+                    NomJeu,0,Qt::CaseInsensitive ) != string::npos )
+        {
+            ui->TbV_Recherche->showRow(i);
+            if(firstrow==-1)
+            {
+                firstrow=i;
+                ui->TbV_Recherche->selectRow(firstrow);
+                qDebug() << "F_Jeux::on_Le_recherchenom_textChanged" << "Selecting " << firstrow;
+            }
+        }
+        else
+        {
+            ui->TbV_Recherche->hideRow(i);
+        }
+    }
+    // Reconnexion du défilement du tableau des jeux avec les flèches du clavier
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+    this->nIdJeuSelectionne=this->ModelJeu->index(firstrow, 0).data().toString();
+    AfficherJeu();
+}
+
+void F_AjoutSuppModifJeux::AfficherJeux()
+{
+
     ///////////////////////////////////////////////////
     ///////////////////// Recherche par nom //////////
     /////////////////////////////////////////////////
     unsigned int NumeroLigne (0);
-    QString NomJeu=arg1;
 
-    if(NomJeu.size()>=2)
+    QSqlQuery RequeteRechercheJeu;
+    NumeroLigne=0;
+
+    RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu,TypeJeux_Classification FROM jeux");
+    RequeteRechercheJeu.exec();
+
+    //On vide le modèle
+    this->ModelJeu->clear();
+    //Indique le nombres de colones puis leurs noms
+    this->ModelJeu->setColumnCount(3);
+    this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+    this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+    this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
+    //impose une taille aux colonnes
+    ui->TbV_Recherche->setColumnWidth(0, 45);
+    ui->TbV_Recherche->setColumnWidth(1,300);
+    ui->TbV_Recherche->setColumnWidth(2, 50);
+
+    //Tant qu'il y a des jeux dans la table jeux,
+    while(RequeteRechercheJeu.next())
     {
-        NomJeu="%"+NomJeu+"%";
-
-        QSqlQuery RequeteRechercheJeu;
-        NumeroLigne=0;
-
-        RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu,TypeJeux_Classification FROM jeux WHERE NomJeu LIKE (:NomJeu)");
-        RequeteRechercheJeu.bindValue(":NomJeu",NomJeu);
-        RequeteRechercheJeu.exec();
-
-        //On vide le modèle
-        this->ModelJeu->clear();
-        //Indique le nombres de colones puis leurs noms
-        this->ModelJeu->setColumnCount(3);
-        this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
-        //impose une taille aux colonnes
-        ui->TbV_Recherche->setColumnWidth(0, 45);
-        ui->TbV_Recherche->setColumnWidth(1,300);
-        ui->TbV_Recherche->setColumnWidth(2, 50);
-
-        //Tant qu'il y a des jeux dans la table jeux,
-        while(RequeteRechercheJeu.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
-            NumeroLigne++;
-        }
-    }
-    else
-    {
-        QSqlQuery RequeteRechercheJeu;
-        NumeroLigne =0;
-        RequeteRechercheJeu.exec("SELECT CodeJeu,NomJeu,TypeJeux_Classification FROM jeux");
-
-        //On vide le modèle
-        this->ModelJeu->clear();
-        //Indique le nombes de colones puis leurs noms
-        this->ModelJeu->setColumnCount(3);
-        this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModelJeu->setHorizontalHeaderItem(2, new QStandardItem("Classification"));
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,45);
-        ui->TbV_Recherche->setColumnWidth(1,130);
-        ui->TbV_Recherche->setColumnWidth(2,50);
-
-        //Tant qu'il y a des jeux dans la table jeux,
-        while(RequeteRechercheJeu.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
-            NumeroLigne++;
-        }
+        //on ajoute une nouvelle ligne du table view
+        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
+        NumeroLigne++;
     }
 }
 //###################################################################
@@ -300,235 +341,14 @@ void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
  */
 void F_AjoutSuppModifJeux::on_TbV_Recherche_selectionChanged(const QModelIndex &index)
 {
-    // Remplir le code du jeu recherché avec le jeu cliqué dans le tableau
-    ui->LE_RechercheCode->setText(this->ModelJeu->index(index.row(), 0).data().toString());
-    on_Bt_OK_clicked();
+  /*  AfficherJeu();
     // Griser Valider et Annuler/ Autoriser Ajout et suppression
     ui->Bt_Valider->setEnabled(false);
     ui->Bt_Annuler->setEnabled(false);
     ui->Bt_Supprimer->setEnabled(true);
-    ui->Bt_Ajouter->setEnabled(true);
-}
-//###################################################################
-/**
- * @brief Méthode qui appel la fontion Bt_OK_Clicked lorsque l'on appui sur la touche entrée du clavier
- *
- */
-void F_AjoutSuppModifJeux::on_LE_RechercheCode_returnPressed()
-{
-    on_Bt_OK_clicked() ;
-}
-//###################################################################
-/**
- * @brief Méthode qui permet de vider la case de recherche par nom lorsqu'on entre un code
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_LE_RechercheCode_textChanged(const QString &arg1)
-{
-    //ui->LE_RechercheNom->setText("");
+    ui->Bt_Ajouter->setEnabled(true);*/
 }
 
-//###################################################################
-/**
- * @brief Méthode qui permet d'activer les boutons valider et annuler lorsque le contenu de la case Nom change
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_LE_Nom_textChanged(const QString &arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu du SBx_JoueursMin change
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_JoueursMin_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu du SBx_JoueursMax change
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_JoueursMax_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu du SBx_AgeMin change
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_AgeMin_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu du SBx_AgeMax change
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_AgeMax_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case créateur est modifié
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_LE_Createur_textChanged(const QString &arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case date achat est modifié
- *
- * @param date
- */
-void F_AjoutSuppModifJeux::on_DtE_Achat_dateChanged(const QDate &date)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case prix achat est modifié
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_PrixAchat_valueChanged(double arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case prix location est modifié
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_PrixLocation_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case caution est modifié
- *
- * @param arg1
- */
-void F_AjoutSuppModifJeux::on_SBx_Caution_valueChanged(int arg1)
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case remarque est modifié
- *
- */
-void F_AjoutSuppModifJeux::on_TxE_Remarques_textChanged()
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case description est modifié
- *
- */
-void F_AjoutSuppModifJeux::on_TxE_Description_textChanged()
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque le contenu de la case contenu est modifié
- *
- */
-void F_AjoutSuppModifJeux::on_TxE_Contenu_textChanged()
-{
-    if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-    {
-        this->CacherBoutons();
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque l'état du bouton neuf est modifié
- *
- * @param checked
- */
-void F_AjoutSuppModifJeux::on_RBt_Neuf_toggled(bool checked)
-{
-    if(checked == false)
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
-}
-//###################################################################
-/**
- * @brief Méthode qui active les boutons valider et annuler lorsque l'état du bouton occasion est modifié
- *
- * @param checked
- */
-void F_AjoutSuppModifJeux::on_RBt_Occasion_toggled(bool checked)
-{
-    if(checked == false)
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
-}
 //###################################################################
 /**
  * @brief Méthode qui lance la fenêtre d'ajout d'un emplacement
@@ -542,13 +362,6 @@ void F_AjoutSuppModifJeux::on_CBx_Emplacement_activated(int index)
     {
         this->pEmplacementAjMod->Ajouter();
         //this->ActualiserCBx_Emplacement();
-    }
-    else
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
     }
 }
 //###################################################################
@@ -568,14 +381,8 @@ void F_AjoutSuppModifJeux::on_CBx_Fournisseur_activated(int index)
         }
         this->pAjoutFournisseur->show();
     }
-    else
-    {   // Afficher ou non les boutons Valider/Annuler
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
 }
+
 //###################################################################
 /**
  * @brief Méthode qui lance la fenêtre d'ajout d'un éditeur
@@ -584,7 +391,7 @@ void F_AjoutSuppModifJeux::on_CBx_Fournisseur_activated(int index)
  */
 void F_AjoutSuppModifJeux::on_CBx_Editeur_activated(int index)
 {
-    //Si l'élément séléctionné est le dernier : afficher la fenêter pour ajouter un éditeur
+    //Si l'élément séléctionné est le dernier : afficher la fenêtre pour ajouter un éditeur
     if(index == ui->CBx_Editeur->count() -1)
     {
         if(!this->pAjoutEditeur)
@@ -592,13 +399,6 @@ void F_AjoutSuppModifJeux::on_CBx_Editeur_activated(int index)
             this->pAjoutEditeur= new D_AjoutSuppModifFournisseursEditeurs(this,MODE_EDITEUR);
         }
         this->pAjoutEditeur->show();
-    }
-    else
-    {   // Afficher ou non les boutons Valider/Annuler
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
     }
 }
 //###################################################################
@@ -614,13 +414,6 @@ void F_AjoutSuppModifJeux::on_CBx_Statut_activated(int index)
     {
         this->pStatutAjMod->Ajouter();
     }
-    else
-    {   // Afficher ou non les boutons Valider/Annuler
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
 }
 //###################################################################
 /**
@@ -630,8 +423,6 @@ void F_AjoutSuppModifJeux::on_CBx_Statut_activated(int index)
  */
 void F_AjoutSuppModifJeux::on_CBx_Classification_activated(int index)
 {
-   //qDebug()<<"F_AjoutSuppModifJeux::on_CBx_Classification_activated";
-
    // Récupère le code de classification et l'affiche dans le champs LE_CodeClassification
    if(index != 0)
    {
@@ -649,13 +440,6 @@ void F_AjoutSuppModifJeux::on_CBx_Classification_activated(int index)
    {
       this->pClassificationAjMod->Ajouter();
    }
-   else
-   { // Afficher ou non les boutons Valider/Annuler
-      if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-      {
-         this->CacherBoutons();
-      }
-   }
 }
 //###################################################################
 /**
@@ -669,13 +453,6 @@ void F_AjoutSuppModifJeux::on_CBx_Etat_activated(int index)
     if(index == ui->CBx_Etat->count() -1)
     {
         this->pEtatAjMod->Ajouter();
-    }
-    else
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
     }
 }
 //###################################################################
@@ -691,13 +468,6 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle1_activated(int index)
     {
         this->pMotCleAjMod->Ajouter();
     }
-    else
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
 }
 //###################################################################
 /**
@@ -712,13 +482,6 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle2_activated(int index)
     {
         this->pMotCleAjMod->Ajouter();
     }
-    else
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
-    }
 }
 //###################################################################
 /**
@@ -732,13 +495,6 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle3_activated(int index)
     if(index == ui->CBx_MotCle3->count() -1)
     {
         this->pMotCleAjMod->Ajouter();
-    }
-    else
-    {
-        if(ui->LE_RechercheCode->text() != "" || ui->LE_RechercheNom->text() != "")
-        {
-            this->CacherBoutons();
-        }
     }
 }
 
@@ -875,16 +631,16 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteEditeur.next() ;
 
            RequeteAjouterJeu.prepare("INSERT INTO jeux(NomJeu,NomCreateurJeu,DateAchat,PrixAchat,PrixLoc,NbrJoueurMin,"
-                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,CheminReglesJeu,"
-                                     "CheminPhotoJeu,DescriptionJeu,CodeJeu,EtatInitial,MotCle1,MotCle2,MotCle3,"
+                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
+                                     "DescriptionJeu,CodeJeu,EtatInitial,MotCle1,MotCle2,MotCle3,"
                                      "TypeJeux_Classification,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,"
-                                     "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur) "
+                                     "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,SiteWeb2) "
                                      "VALUES (:NomDuJeu,:NomDuCreateurJeu,:DateDeAchat,:PrixDeAchat,:PrixDeLoc,"
                                      ":NbrDeJoueurMin,:NbrDeJoueurMax,:LeAgeMin,:LeAgeMax,:LaRemarque,:ContenuDuJeu,"
-                                     ":LaCaution,:CheminReglesDuJeu,:CheminPhotoDuJeu,:DescriptionDuJeu,:CodeDuJeu,"
+                                     ":LaCaution,:DescriptionDuJeu,:CodeDuJeu,"
                                      ":LeEtatInitial,:LeMotCle1,:LeMotCle2,:LeMotCle3,:LeTypeJeux_Classification,"
                                      ":StatutDuJeux_IdStatutJeux,:EtatsDuJeu_IdEtatsJeu,:Emplacement_IdDeEmplacement,"
-                                     ":LeFournisseurs_IdFournisseur,:LeEditeur_IdEditeur)" ) ;
+                                     ":LeFournisseurs_IdFournisseur,:LeEditeur_IdEditeur,:LeSiteWeb1,:LeSiteWeb2)" ) ;
            RequeteAjouterJeu.bindValue(":NomDuJeu", this->ui->LE_Nom->text());
            RequeteAjouterJeu.bindValue(":NomDuCreateurJeu", this->ui->LE_Createur->text());
            RequeteAjouterJeu.bindValue(":DateDeAchat", this->ui->DtE_Achat->date());
@@ -899,7 +655,17 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteAjouterJeu.bindValue(":LaCaution", this->ui->SBx_Caution->value());
            RequeteAjouterJeu.bindValue(":DescriptionDuJeu", this->ui->TxE_Description->toPlainText());
            RequeteAjouterJeu.bindValue(":CodeDuJeu", this->ui->LE_Code->text());
-           RequeteAjouterJeu.bindValue(":CheminPhotoDuJeu", this->CheminPhoto);
+           RequeteAjouterJeu.bindValue(":LeTypeJeux_Classification", RequeteClassification.value(0).toString());
+           RequeteAjouterJeu.bindValue(":StatutDuJeux_IdStatutJeux", RequeteStatut.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":EtatsDuJeu_IdEtatsJeu", RequeteEtat.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":Emplacement_IdDeEmplacement", RequeteEmplacement.value(0));
+           RequeteAjouterJeu.bindValue(":LeFournisseurs_IdFournisseur", RequeteFournisseur.value(0).toString());
+           RequeteAjouterJeu.bindValue(":LeEditeur_IdEditeur", RequeteEditeur.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":LeMotCle1", RequeteMotCle1.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":LeMotCle2", RequeteMotCle2.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":LeMotCle3", RequeteMotCle3.value(0).toString() );
+           RequeteAjouterJeu.bindValue(":LeSiteWeb1", this->ui->LE_SiteWeb1->text() );
+           RequeteAjouterJeu.bindValue(":LeSiteWeb2", this->ui->LE_SiteWeb2->text() );
 
            if(ui->RBt_Neuf->isChecked())
            {
@@ -910,16 +676,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
               RequeteAjouterJeu.bindValue(":LeEtatInitial", "Occasion");
            }
 
-           RequeteAjouterJeu.bindValue(":LeTypeJeux_Classification", RequeteClassification.value(0).toString());
-           RequeteAjouterJeu.bindValue(":StatutDuJeux_IdStatutJeux", RequeteStatut.value(0).toString() );
-           RequeteAjouterJeu.bindValue(":EtatsDuJeu_IdEtatsJeu", RequeteEtat.value(0).toString() );
-           RequeteAjouterJeu.bindValue(":Emplacement_IdDeEmplacement", RequeteEmplacement.value(0));
-           RequeteAjouterJeu.bindValue(":LeFournisseurs_IdFournisseur", RequeteFournisseur.value(0).toString());
-           RequeteAjouterJeu.bindValue(":LeEditeur_IdEditeur", RequeteEditeur.value(0).toString() );
-           RequeteAjouterJeu.bindValue(":LeMotCle1", RequeteMotCle1.value(0).toString() );
-           RequeteAjouterJeu.bindValue(":LeMotCle2", RequeteMotCle2.value(0).toString() );
-           RequeteAjouterJeu.bindValue(":LeMotCle3", RequeteMotCle3.value(0).toString() );
-
            if(!RequeteAjouterJeu.exec())
            {
               qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked()-"<<RequeteAjouterJeu.lastQuery();
@@ -927,29 +683,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteAjouterJeu.next() ;
         }
         // Vide tous les champs après l'ajout
-        ui->LE_Code->clear();
-        ui->LE_CodeClassification->clear();
-        ui->LE_Createur->clear();
-        ui->LE_Nom->clear();
-        ui->TxE_Contenu->clear();
-        ui->TxE_Description->clear();
-        ui->TxE_Remarques->clear();
-        ui->SBx_AgeMax->setValue(0);
-        ui->SBx_AgeMin->setValue(0);
-        ui->SBx_Caution->setValue(0);
-        ui->SBx_JoueursMax->setValue(0);
-        ui->SBx_JoueursMin->setValue(0);
-        ui->SBx_PrixAchat->setValue(0);
-        ui->SBx_PrixLocation->setValue(0);
-        ui->CBx_Classification->setCurrentIndex(0);
-        ui->CBx_Editeur->setCurrentIndex(0);
-        ui->CBx_Emplacement->setCurrentIndex(0);
-        ui->CBx_Etat->setCurrentIndex(0);
-        ui->CBx_Fournisseur->setCurrentIndex(0);
-        ui->CBx_Statut->setCurrentIndex(0);
-        ui->CBx_MotCle1->setCurrentIndex(0);
-        ui->CBx_MotCle2->setCurrentIndex(0);
-        ui->CBx_MotCle3->setCurrentIndex(0);
+        VideChamps();
 
         // Vider la saisie de la recherche du nom
         ui->LE_RechercheNom->setText("");
@@ -960,25 +694,12 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
 
         // Plus de modif en cours donc :
         // griser les boutons Annuler et Valider
-        ui->Bt_Annuler->setEnabled(false);
-        ui->Bt_Valider->setEnabled(false);
+        ActiveBoutons(false);
         // Autoriser la création d'un nouveau jeux
         ui->Bt_Ajouter->setEnabled(true);
     }
     else  // MISE A JOUR D'UN JEU EXISTANT
     {
-         /////// Maj Photo ///////////////////--------------------------------------------------------------
-         QSqlQuery RequeteModifCheminPhoto ;
-         //prépare le requête de mise à jour
-         RequeteModifCheminPhoto.prepare("UPDATE jeux SET CheminPhotoJeu=:CheminPhotoDuJeu WHERE CodeJeu=:CodeDuJeu");
-         //Entre les valeurs de la requête
-         RequeteModifCheminPhoto.bindValue(":CodeDuJeu",ui->LE_Code->text());
-         RequeteModifCheminPhoto.bindValue(":CheminPhotoDuJeu", this->CheminPhoto);
-         //Exécute la requête
-         if (!RequeteModifCheminPhoto.exec())
-         {
-             qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked() : MajPhoto" << RequeteModifCheminPhoto.lastQuery() ;
-         }
          ////////////// MAJ du Nbr de joueurs /////////------------------------------------------------------------
          QSqlQuery RequeteModifNbrJoueurs ;
          //prépare le requête de mise à jour
@@ -1049,12 +770,14 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          QSqlQuery RequeteModifTxE ;
          //prépare le requête de mise à jour
          RequeteModifTxE.prepare("UPDATE jeux SET DescriptionJeu=:DescriptionDuJeu,Remarque=:RemarqueDuJeu,"
-                                 "ContenuJeu=:ContenuDuJeu WHERE CodeJeu=:CodeDuJeu");
+                                 "ContenuJeu=:ContenuDuJeu, SiteWeb1=:LeSiteWeb1, SiteWeb2=:LeSiteWeb2 WHERE CodeJeu=:CodeDuJeu");
          //Entre les valeurs de la requête
          RequeteModifTxE.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifTxE.bindValue(":DescriptionDuJeu", ui->TxE_Description->toPlainText());
          RequeteModifTxE.bindValue(":RemarqueDuJeu", ui->TxE_Remarques->toPlainText());
          RequeteModifTxE.bindValue(":ContenuDuJeu", ui->TxE_Contenu->toPlainText());
+         RequeteModifTxE.bindValue(":LeSiteWeb1", ui->LE_SiteWeb1->text());
+         RequeteModifTxE.bindValue(":LeSiteWeb2", ui->LE_SiteWeb1->text());
          //Exécute la requête
          if (!RequeteModifTxE.exec())
          {
@@ -1211,8 +934,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          }
 
         //Griser les boutons de modification du contenu
-        ui->Bt_Valider->setEnabled(false);
-        ui->Bt_Annuler->setEnabled(false);
+        ActiveBoutons(false);
         ui->Bt_Supprimer->setEnabled(true);
         ui->Bt_Ajouter->setEnabled(true);
 
@@ -1221,7 +943,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
 
         // Raffraichir la liste des jeux
         this->on_LE_RechercheNom_textChanged(ui->LE_RechercheNom->text()) ;
-        ui->LE_RechercheCode->setText(ui->LE_Code->text());
 
         // Réactualiser les combobox qui ont peu avoir de nouvelles entrées
         this->ActualiserCBx_Classification();
@@ -1233,38 +954,131 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
         this->ActualiserCBx_Statut();
 
         // Rafraichir l'affichage du jeu
-        this->on_Bt_OK_clicked();
+        AfficherJeu();
     }
     // Tout griser
-    ui->CBx_Classification->setDisabled(true);
-    ui->CBx_Editeur->setDisabled(true);
-    ui->CBx_Emplacement->setDisabled(true);
-    ui->CBx_Etat->setDisabled(true);
-    ui->CBx_Fournisseur->setDisabled(true);
-    ui->CBx_MotCle1->setDisabled(true);
-    ui->CBx_MotCle2->setDisabled(true);
-    ui->CBx_MotCle3->setDisabled(true);
-    ui->CBx_Statut->setDisabled(true);
-    ui->LE_Code->setDisabled(true);
-    ui->LE_CodeClassification->setDisabled(true);
-    ui->LE_Createur->setDisabled(true);
-    ui->LE_Nom->setDisabled(true);
-    ui->DtE_Achat->setDisabled(true);
-    ui->SBx_AgeMax->setDisabled(true);
-    ui->SBx_AgeMin->setDisabled(true);
-    ui->SBx_Caution->setDisabled(true);
-    ui->SBx_JoueursMax->setDisabled(true);
-    ui->SBx_JoueursMin->setDisabled(true);
-    ui->SBx_PrixAchat->setDisabled(true);
-    ui->SBx_PrixLocation->setDisabled(true);
-    ui->TxE_Contenu->setDisabled(true);
-    ui->TxE_Description->setDisabled(true);
-    ui->TxE_Remarques->setDisabled(true);
-    ui->RBt_Neuf->setDisabled(true);
-    ui->RBt_Occasion->setDisabled(true);
+    ActiveChamps(false);
+    ActiveBoutons(false);
+}
+
+/**
+ * @brief Active ou désactive les boutons valider et annuler
+ *
+ * @param etat : true pour activer et false pour désactiver
+ */
+void F_AjoutSuppModifJeux::ActiveBoutons(bool etat)
+{
+    qDebug()<<"Activation boutons:" <<etat;
+    ui->Bt_Valider->setEnabled(etat);
+    ui->Bt_Annuler->setEnabled(etat);
+}
+
+/**
+ * @brief Active ou désactive les champs d'un jeu
+ *
+ * @param etat : true pour activer et false pour désactiver
+ */
+void F_AjoutSuppModifJeux::ActiveChamps(bool etat)
+{
+    ui->CBx_Classification->setEnabled(etat);
+    ui->CBx_Editeur->setEnabled(etat);
+    ui->CBx_Emplacement->setEnabled(etat);
+    ui->CBx_Etat->setEnabled(etat);
+    ui->CBx_Fournisseur->setEnabled(etat);
+    ui->CBx_MotCle1->setEnabled(etat);
+    ui->CBx_MotCle2->setEnabled(etat);
+    ui->CBx_MotCle3->setEnabled(etat);
+    ui->CBx_Statut->setEnabled(etat);
+    ui->LE_Code->setEnabled(etat);
+    ui->LE_CodeClassification->setEnabled(etat);
+    ui->LE_Createur->setEnabled(etat);
+    ui->LE_Nom->setEnabled(etat);
+    ui->LE_SiteWeb1->setEnabled(etat);
+    ui->LE_SiteWeb2->setEnabled(etat);
+    ui->DtE_Achat->setEnabled(etat);
+    ui->SBx_AgeMax->setEnabled(etat);
+    ui->SBx_AgeMin->setEnabled(etat);
+    ui->SBx_Caution->setEnabled(etat);
+    ui->SBx_JoueursMax->setEnabled(etat);
+    ui->SBx_JoueursMin->setEnabled(etat);
+    ui->SBx_PrixAchat->setEnabled(etat);
+    ui->SBx_PrixLocation->setEnabled(etat);
+    ui->TxE_Contenu->setEnabled(etat);
+    ui->TxE_Description->setEnabled(etat);
+    ui->TxE_Remarques->setEnabled(etat);
+    ui->RBt_Neuf->setEnabled(etat);
+    ui->RBt_Occasion->setEnabled(etat);
+}
+
+/**
+ * @brief Vide les champs d'un jeu
+ *
+ */
+void F_AjoutSuppModifJeux::VideChamps()
+{
+    ui->CBx_Classification->setCurrentIndex(0);
+    ui->CBx_Editeur->setCurrentIndex(0);
+    ui->CBx_Emplacement->setCurrentIndex(0);
+    ui->CBx_Etat->setCurrentIndex(0);
+    ui->CBx_Fournisseur->setCurrentIndex(0);
+    ui->CBx_Statut->setCurrentIndex(0);
+    ui->CBx_MotCle1->setCurrentIndex(0);
+    ui->CBx_MotCle2->setCurrentIndex(0);
+    ui->CBx_MotCle3->setCurrentIndex(0);
     ui->LE_Code->clear();
-    ui->Bt_Valider->setDisabled(true);
-    ui->Bt_Annuler->setDisabled(true);
+    ui->LE_CodeClassification->clear();
+    ui->LE_Createur->clear();
+    ui->LE_Nom->clear();
+    ui->LE_SiteWeb1->setText("http://");
+    ui->LE_SiteWeb2->setText("http://");
+    ui->SBx_AgeMax->setValue(99);
+    ui->SBx_AgeMin->setValue(1);
+    ui->SBx_Caution->setValue(0);
+    ui->SBx_JoueursMax->setValue(1);
+    ui->SBx_JoueursMin->setValue(1);
+    ui->SBx_PrixAchat->setValue(0);
+    ui->SBx_PrixLocation->setValue(0);
+    ui->TxE_Contenu->clear();
+    ui->TxE_Description->clear();
+    ui->TxE_Remarques->clear();
+    ui->RBt_Neuf->setChecked(true);
+}
+
+/**
+ * @brief Bloque les signaux pour éviter que la modification de ces champs active les boutons de validation et d'annulation
+ *
+ * @param etat : true pour bloquer et false pour débloquer
+ */
+void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
+{
+    ui->CBx_Classification->blockSignals(etat);
+    ui->CBx_Editeur->blockSignals(etat);
+    ui->CBx_Emplacement->blockSignals(etat);
+    ui->CBx_Etat->blockSignals(etat);
+    ui->CBx_Fournisseur->blockSignals(etat);
+    ui->CBx_MotCle1->blockSignals(etat);
+    ui->CBx_MotCle2->blockSignals(etat);
+    ui->CBx_MotCle3->blockSignals(etat);
+    ui->CBx_Statut->blockSignals(etat);
+    ui->LE_Code->blockSignals(etat);
+    ui->LE_CodeClassification->blockSignals(etat);
+    ui->LE_Createur->blockSignals(etat);
+    ui->LE_Nom->blockSignals(etat);
+    ui->LE_SiteWeb1->blockSignals(etat);
+    ui->LE_SiteWeb2->blockSignals(etat);
+    ui->DtE_Achat->blockSignals(etat);
+    ui->SBx_AgeMax->blockSignals(etat);
+    ui->SBx_AgeMin->blockSignals(etat);
+    ui->SBx_Caution->blockSignals(etat);
+    ui->SBx_JoueursMax->blockSignals(etat);
+    ui->SBx_JoueursMin->blockSignals(etat);
+    ui->SBx_PrixAchat->blockSignals(etat);
+    ui->SBx_PrixLocation->blockSignals(etat);
+    ui->TxE_Contenu->blockSignals(etat);
+    ui->TxE_Description->blockSignals(etat);
+    ui->TxE_Remarques->blockSignals(etat);
+    ui->RBt_Neuf->blockSignals(etat);
+    ui->RBt_Occasion->blockSignals(etat);
 }
 //###################################################################
 /**
@@ -1282,7 +1096,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 
 
         RequeteAnnulerAge.prepare("SELECT AgeMin,AgeMax FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerAge.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerAge.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
 
         //Exécute la requête
@@ -1306,7 +1120,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         QSqlQuery RequeteAnnulerNbrJoueurs;
 
         RequeteAnnulerNbrJoueurs.prepare("SELECT NbrJoueurMin,NbrJoueurMax FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerNbrJoueurs.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerNbrJoueurs.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
         //Exécute la requête
         if (!RequeteAnnulerNbrJoueurs.exec())
@@ -1330,7 +1144,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 
 
         RequeteAnnulerPrix.prepare("SELECT PrixAchat,PrixLoc,Caution FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerPrix.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerPrix.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
 
         //Exécute la requête
@@ -1356,7 +1170,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         QSqlQuery RequeteAnnulerDateAchat;
 
         RequeteAnnulerDateAchat.prepare("SELECT DateAchat FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerDateAchat.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerDateAchat.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
         //Exécute la requête
         if (!RequeteAnnulerDateAchat.exec())
@@ -1377,7 +1191,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         QSqlQuery RequeteAnnulerCreateur;
 
         RequeteAnnulerCreateur.prepare("SELECT NomCreateurJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerCreateur.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerCreateur.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
         //Exécute la requête
         if (!RequeteAnnulerCreateur.exec())
@@ -1398,7 +1212,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         QSqlQuery RequeteAnnulerTxE;
 
         RequeteAnnulerTxE.prepare("SELECT Remarque,ContenuJeu,DescriptionJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerTxE.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteAnnulerTxE.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
         //Exécute la requête
         if (!RequeteAnnulerTxE.exec())
@@ -1418,32 +1232,11 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 
         //--------------------------------------------------------------------------------------------------------------------------
         //////////////////////////////////////////////////
-        /////// Annulation des Chemin D'accès ///////////
-        ////////////////////////////////////////////////
-        QSqlQuery RequeteAnnulerCheminAcces;
-
-        RequeteAnnulerCheminAcces.prepare("SELECT CheminReglesJeu,CheminPhotoJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteAnnulerCheminAcces.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
-
-        //Exécute la requête
-        if (!RequeteAnnulerCheminAcces.exec())
-        {
-            qDebug() << "F_AjoutSuppModifJeux::on_Bt_Annuler_clicked() : AnnulerCheminAcces" << RequeteAnnulerCheminAcces.lastQuery() ;
-        }
-
-        RequeteAnnulerCheminAcces.next();
-
-        //Récupère les informations dans la base de données et les affiches
-        QString CheminReglesJeu = (RequeteAnnulerCheminAcces.value(0).toString());
-        QString CheminPhotoJeu = (RequeteAnnulerCheminAcces.value(1).toString()) ;
-
-        //--------------------------------------------------------------------------------------------------------------------------
-        //////////////////////////////////////////////////
         /////// Annulation du nom  //////////////////////
         ////////////////////////////////////////////////
         QSqlQuery RequeteAnnulerNomJeu;
 
-        RequeteAnnulerNomJeu.prepare("SELECT NomJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
+        RequeteAnnulerNomJeu.prepare("SELECT NomJeu,SiteWeb1,SiteWeb2 FROM jeux WHERE CodeJeu=:CodeDuJeu");
         RequeteAnnulerNomJeu.bindValue(":CodeDuJeu",ui->LE_Code->text());
 
         //Exécutee la requête
@@ -1456,11 +1249,14 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 
         //Récupère les informations dans la base de données et les affiches
         QString NomJeu = (RequeteAnnulerNomJeu.value(0).toString());
+        QString SiteWeb1 = (RequeteAnnulerNomJeu.value(1).toString());
+        QString SiteWeb2 = (RequeteAnnulerNomJeu.value(1).toString());
         ui->LE_Nom->setText(NomJeu);
+        ui->LE_SiteWeb1->setText(SiteWeb1);
+        ui->LE_SiteWeb2->setText(SiteWeb2);
 
         //Grise le bouton annuler
-        ui->Bt_Valider->setEnabled(false);
-        ui->Bt_Annuler->setEnabled(false);
+        ActiveBoutons(false);
 
         //--------------------------------------------------------------------------------------------------------------------------
         //////////////////////////////////////////////////
@@ -1693,40 +1489,13 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         ui->CBx_MotCle3->setCurrentIndex(TableauPositionIndex[7]);
 
         //Grise le bouton annuler
-        ui->Bt_Valider->setEnabled(false);
-        ui->Bt_Annuler->setEnabled(false);
+        ActiveBoutons(false);
     }
     else
     {
-        ui->CBx_Classification->setDisabled(true);
-        ui->CBx_Editeur->setDisabled(true);
-        ui->CBx_Emplacement->setDisabled(true);
-        ui->CBx_Etat->setDisabled(true);
-        ui->CBx_Fournisseur->setDisabled(true);
-        ui->CBx_MotCle1->setDisabled(true);
-        ui->CBx_MotCle2->setDisabled(true);
-        ui->CBx_MotCle3->setDisabled(true);
-        ui->CBx_Statut->setDisabled(true);
-        ui->LE_Code->setDisabled(true);
-        ui->LE_CodeClassification->setDisabled(true);
-        ui->LE_Createur->setDisabled(true);
-        ui->LE_Nom->setDisabled(true);
-        ui->DtE_Achat->setDisabled(true);
-        ui->SBx_AgeMax->setDisabled(true);
-        ui->SBx_AgeMin->setDisabled(true);
-        ui->SBx_Caution->setDisabled(true);
-        ui->SBx_JoueursMax->setDisabled(true);
-        ui->SBx_JoueursMin->setDisabled(true);
-        ui->SBx_PrixAchat->setDisabled(true);
-        ui->SBx_PrixLocation->setDisabled(true);
-        ui->TxE_Contenu->setDisabled(true);
-        ui->TxE_Description->setDisabled(true);
-        ui->TxE_Remarques->setDisabled(true);
-        ui->RBt_Neuf->setDisabled(true);
-        ui->RBt_Occasion->setDisabled(true);
+        ActiveChamps(true);
+        ActiveBoutons(true);
         ui->LE_Code->clear();
-        ui->Bt_Valider->setDisabled(true);
-        ui->Bt_Annuler->setDisabled(true);
     }
     // Rendre utilisable la création et la suppression d'un jeu en cas
     // d'annulation du jeu courant
@@ -1742,47 +1511,10 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
 {
     // Rendre utilisable (cliquable) les widgets de l'IHM
-    ui->CBx_Classification->setEnabled(true);
-    ui->CBx_Editeur->setEnabled(true);
-    ui->CBx_Emplacement->setEnabled(true);
-    ui->CBx_Etat->setEnabled(true);
-    ui->CBx_Fournisseur->setEnabled(true);
-    ui->CBx_MotCle1->setEnabled(true);
-    ui->CBx_MotCle2->setEnabled(true);
-    ui->CBx_MotCle3->setEnabled(true);
-    ui->CBx_Statut->setEnabled(true);
-    ui->LE_Code->setEnabled(true);
-    ui->LE_CodeClassification->setEnabled(true);
-    ui->LE_Createur->setEnabled(true);
-    ui->LE_Nom->setEnabled(true);
-    ui->DtE_Achat->setEnabled(true);
-    ui->SBx_AgeMax->setEnabled(true);
-    ui->SBx_AgeMin->setEnabled(true);
-    ui->SBx_Caution->setEnabled(true);
-    ui->SBx_JoueursMax->setEnabled(true);
-    ui->SBx_JoueursMin->setEnabled(true);
-    ui->SBx_PrixAchat->setEnabled(true);
-    ui->SBx_PrixLocation->setEnabled(true);
-    ui->TxE_Contenu->setEnabled(true);
-    ui->TxE_Description->setEnabled(true);
-    ui->TxE_Remarques->setEnabled(true);
-    ui->RBt_Neuf->setEnabled(true);
-    ui->RBt_Occasion->setEnabled(true);
+    ActiveChamps(true);
 
     // Vide tous les champs avant l'ajout
-    ui->LE_Code->clear();
-    ui->LE_CodeClassification->clear();
-    ui->LE_Createur->clear();
-    ui->LE_Nom->clear();
-    ui->TxE_Contenu->clear();
-    ui->TxE_Description->clear();
-    ui->TxE_Remarques->clear();
-    ui->SBx_AgeMax->setValue(99);
-    ui->SBx_AgeMin->setValue(1);
-    ui->SBx_Caution->setValue(0);
-    ui->SBx_JoueursMax->setValue(1);
-    ui->SBx_JoueursMin->setValue(1);
-    ui->SBx_PrixAchat->setValue(0);
+    VideChamps();
 
     QSqlQuery RequetePrixLocation ;
     //Sélectionne le prix de location par défaut dans la table préférence
@@ -1808,12 +1540,6 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
     // Par défaut, le jeu est empruntable
     ui->CBx_Statut->setCurrentIndex(1);
 
-    // Afficher de choisir le mot clé
-    ui->CBx_MotCle1->setCurrentIndex(0);
-    ui->CBx_MotCle2->setCurrentIndex(0);
-    ui->CBx_MotCle3->setCurrentIndex(0);
-
-    ui->LE_RechercheCode->clear();
     ui->LE_RechercheNom->clear();
 
     // Affichage de la date d'achat à la date du jour
@@ -1831,8 +1557,7 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
     // On passe en mode Création d'un nouveau jeu, pas en modif d'un jeu
     AjoutOuModif = true ;
     // Autoriser les boutons pour valider ou annuler
-    ui->Bt_Valider->setEnabled(true);
-    ui->Bt_Annuler->setEnabled(true);
+    ActiveBoutons(true);
     // Curseur dans le chanmps de saisie du nom du jeu
     ui->LE_Nom->setFocus();
 }
@@ -1916,43 +1641,19 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
                     RequeteSuppressionJeux.next() ;
 
                     //Vider tous les champs après la suppression du jeu
-                    ui->LE_Code->clear();
-                    ui->LE_Createur->clear();
-                    ui->LE_Nom->clear();
-                    ui->LE_CodeClassification->clear();
-                    ui->TxE_Contenu->clear();
-                    ui->TxE_Description->clear();
-                    ui->TxE_Remarques->clear();
-                    ui->SBx_AgeMax->setValue(0);
-                    ui->SBx_AgeMin->setValue(0);
-                    ui->SBx_Caution->setValue(0);
-                    ui->SBx_JoueursMax->setValue(0);
-                    ui->SBx_JoueursMin->setValue(0);
-                    ui->SBx_PrixAchat->setValue(0);
-                    ui->SBx_PrixLocation->setValue(0);
-                    ui->CBx_Classification->setCurrentIndex(0);
-                    ui->CBx_Editeur->setCurrentIndex(0);
-                    ui->CBx_Emplacement->setCurrentIndex(0);
-                    ui->CBx_Etat->setCurrentIndex(0);
-                    ui->CBx_Fournisseur->setCurrentIndex(0);
-                    ui->CBx_Statut->setCurrentIndex(0);
-                    ui->CBx_MotCle1->setCurrentIndex(0);
-                    ui->CBx_MotCle2->setCurrentIndex(0) ;
-                    ui->CBx_MotCle3->setCurrentIndex(0);
+                    VideChamps();
 
                     //QDate DateDefaut ;
                     //DateDefaut = DateDefaut.currentDate() ;
                     ui->DtE_Achat->setDate(QDate::currentDate());
                     // Bloquer les boutons Valider/Annuler et Supprimer
-                    ui->Bt_Valider->setEnabled(false);
-                    ui->Bt_Annuler->setEnabled(false);
+                    ActiveBoutons(false);
                     ui->Bt_Supprimer->setEnabled(false);
                     // Autoriser la création d'un nouveau jeu
                     ui->Bt_Ajouter->setEnabled(true);
                     // Remettre à jour la liste des jeux puisqu'un jeu a été enlevé de la liste
                     ui->LE_RechercheNom->clear();
-                    ui->LE_RechercheCode->clear();
-                    this->on_Bt_OK_clicked();
+                    AfficherJeux();
                 }
             }
         }
@@ -1967,36 +1668,12 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
  * @brief Méthode qui recherche le jeu correspondant au code entrée, et affiche les informations
  *
  */
-void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
+void F_AjoutSuppModifJeux::AfficherJeu()
 {
-    qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() ++++++++++++++++++++++++++++++++++++" ;
+    qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() ++++++++++++++++++++++++++++++++++++" ;
     // Débloque tous les champs de saisie en vue d'une modification possible
-    ui->CBx_Classification->setEnabled(true);
-    ui->CBx_Editeur->setEnabled(true);
-    ui->CBx_Emplacement->setEnabled(true);
-    ui->CBx_Etat->setEnabled(true);
-    ui->CBx_Fournisseur->setEnabled(true);
-    ui->CBx_MotCle1->setEnabled(true);
-    ui->CBx_MotCle2->setEnabled(true);
-    ui->CBx_MotCle3->setEnabled(true);
-    ui->CBx_Statut->setEnabled(true);
-    ui->LE_Code->setEnabled(true);
-    ui->LE_CodeClassification->setEnabled(true);
-    ui->LE_Createur->setEnabled(true);
-    ui->LE_Nom->setEnabled(true);
-    ui->DtE_Achat->setEnabled(true);
-    ui->SBx_AgeMax->setEnabled(true);
-    ui->SBx_AgeMin->setEnabled(true);
-    ui->SBx_Caution->setEnabled(true);
-    ui->SBx_JoueursMax->setEnabled(true);
-    ui->SBx_JoueursMin->setEnabled(true);
-    ui->SBx_PrixAchat->setEnabled(true);
-    ui->SBx_PrixLocation->setEnabled(true);
-    ui->TxE_Contenu->setEnabled(true);
-    ui->TxE_Description->setEnabled(true);
-    ui->TxE_Remarques->setEnabled(true);
-    ui->RBt_Neuf->setEnabled(true);
-    ui->RBt_Occasion->setEnabled(true);
+    ActiveChamps(true);
+    BloquerSignalsChamps(true);
 
     // Vérifie si un jeu n'est pas en cours de modification
     // Evite de perdre des modif avant de passer à un autre jeu
@@ -2010,61 +1687,68 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         QSqlQuery RequeteRechercheJeu;
 
         RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu,TypeJeux_Classification,NomCreateurJeu,DateAchat,PrixAchat,"
-                                    "PrixLoc,NbrJoueurMin,NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,CheminReglesJeu,"
-                                    "CheminPhotoJeu,DescriptionJeu,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,Editeur_IdEditeur,"
-                                    "Fournisseurs_IdFournisseur,Emplacement_IdEmplacement,MotCle1,MotCle2,MotCle3,EtatInitial "
+                                    "PrixLoc,NbrJoueurMin,NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
+                                    "DescriptionJeu,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,Editeur_IdEditeur,"
+                                    "Fournisseurs_IdFournisseur,Emplacement_IdEmplacement,MotCle1,MotCle2,MotCle3,"
+                                    "EtatInitial,SiteWeb1,SiteWeb2 "
                                     "FROM jeux WHERE CodeJeu=:CodeDuJeu");
-        RequeteRechercheJeu.bindValue(":CodeDuJeu",ui->LE_RechercheCode->text());
+        RequeteRechercheJeu.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
         if(!RequeteRechercheJeu.exec())
         {
-            qDebug() << " F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteRechercheJeu="<<RequeteRechercheJeu.lastQuery() ;
+            qDebug() << " F_AjoutSuppModifJeux::AfficherJeu() : Erreur RequeteRechercheJeu="<<RequeteRechercheJeu.lastQuery() ;
         }
         RequeteRechercheJeu.next();
         //-------------------------------------------------------------------------------------------------
-        QString CodeJeu = RequeteRechercheJeu.value(0).toString() ;
+        QString CodeJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("CodeJeu")).toString() ;
         ui->LE_Code->setText(CodeJeu);
         //-------------------------------------------------------------------------------------------------
-        QString NomJeu = RequeteRechercheJeu.value(1).toString() ;
+        QString NomJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("NomJeu")).toString() ;
         ui->LE_Nom->setText(NomJeu);
         ui->LE_Nom->setCursorPosition(0) ;
         //-------------------------------------------------------------------------------------------------
-        QString NomCreateurJeu = RequeteRechercheJeu.value(3).toString() ;
+        QString SiteWeb1Jeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("SiteWeb1")).toString() ;
+        ui->LE_SiteWeb1->setText(SiteWeb1Jeu);
+        //-------------------------------------------------------------------------------------------------
+        QString SiteWeb2Jeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("SiteWeb2")).toString() ;
+        ui->LE_SiteWeb2->setText(SiteWeb2Jeu);
+        //-------------------------------------------------------------------------------------------------
+        QString NomCreateurJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("NomCreateurJeu")).toString() ;
         ui->LE_Createur->setText(NomCreateurJeu);
         //-------------------------------------------------------------------------------------------------
-        QDate DateAchat = RequeteRechercheJeu.value(4).toDate() ;
+        QDate DateAchat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("DateAchat")).toDate() ;
         ui->DtE_Achat->setDate(DateAchat);
         //-------------------------------------------------------------------------------------------------
-        unsigned int PrixAchat = RequeteRechercheJeu.value(5).toInt() ;
+        unsigned int PrixAchat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("PrixAchat")).toInt() ;
         ui->SBx_PrixAchat->setValue(PrixAchat);
         //-------------------------------------------------------------------------------------------------
-        unsigned int PrixLoc = RequeteRechercheJeu.value(6).toInt() ;
+        unsigned int PrixLoc = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("PrixLoc")).toInt() ;
         ui->SBx_PrixLocation->setValue(PrixLoc);
         //-------------------------------------------------------------------------------------------------
-        unsigned int NbrJoueurMin = RequeteRechercheJeu.value(7).toInt() ;
+        unsigned int NbrJoueurMin = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("NbrJoueurMin")).toInt() ;
         ui->SBx_JoueursMin->setValue(NbrJoueurMin);
         //-------------------------------------------------------------------------------------------------
-        unsigned int NbrJoueurMax = RequeteRechercheJeu.value(8).toInt() ;
+        unsigned int NbrJoueurMax = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("NbrJoueurMax")).toInt() ;
         ui->SBx_JoueursMax->setValue(NbrJoueurMax);
         //-------------------------------------------------------------------------------------------------
-        unsigned int AgeMin = RequeteRechercheJeu.value(9).toInt() ;
+        unsigned int AgeMin = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("AgeMin")).toInt() ;
         ui->SBx_AgeMin->setValue(AgeMin);
         //-------------------------------------------------------------------------------------------------
-        unsigned int AgeMax = RequeteRechercheJeu.value(10).toInt() ;
+        unsigned int AgeMax = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("AgeMax")).toInt() ;
         ui->SBx_AgeMax->setValue(AgeMax) ;
         //-------------------------------------------------------------------------------------------------
-        QString Remarques = RequeteRechercheJeu.value(11).toString() ;
+        QString Remarques = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Remarque")).toString() ;
         ui->TxE_Remarques->setText(Remarques);
         //-------------------------------------------------------------------------------------------------
-        QString ContenuJeu = RequeteRechercheJeu.value(12).toString() ;
+        QString ContenuJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("ContenuJeu")).toString() ;
         ui->TxE_Contenu->setText(ContenuJeu);
         //-------------------------------------------------------------------------------------------------
-        unsigned int Caution = RequeteRechercheJeu.value(13).toInt() ;
+        unsigned int Caution = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Caution")).toInt() ;
         ui->SBx_Caution->setValue(Caution);
         //-------------------------------------------------------------------------------------------------
-        QString Description = RequeteRechercheJeu.value(16).toString() ;
+        QString Description = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("DescriptionJeu")).toString() ;
         ui->TxE_Description->setText(Description);
         //--------Remplissage CBx Classification-----------------------------------------------------------------------------------
-        QString CodeClassification = RequeteRechercheJeu.value(2).toString() ;
+        QString CodeClassification = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("TypeJeux_Classification")).toString() ;
         ui->LE_CodeClassification->setText(CodeClassification);
 
         QSqlQuery RequeteNomClassification ;
@@ -2072,7 +1756,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         RequeteNomClassification.bindValue(":CodeDeClassification", ui->LE_CodeClassification->text());
         if(!RequeteNomClassification.exec())
         {
-            qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteNomClassification="<<RequeteNomClassification.lastQuery() ;
+            qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() : RequeteNomClassification="<<RequeteNomClassification.lastQuery() ;
         }
         RequeteNomClassification.next();
 
@@ -2084,13 +1768,13 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
 
         //--------------Remplissage CBx Statut----------------------------------------------------------------------------
         QSqlQuery RequeteStatut ;
-        QString IdStatut = RequeteRechercheJeu.value(17).toString() ;
+        QString IdStatut = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("StatutJeux_IdStatutJeux")).toString() ;
 
         RequeteStatut.prepare("SELECT StatutJeu,IdStatutJeux FROM statutjeux WHERE IdStatutJeux =:IdStatutDuJeu") ;
         RequeteStatut.bindValue(":IdStatutDuJeu", IdStatut);
         if(!RequeteStatut.exec())
         {
-            qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteStatut="<<RequeteStatut.lastQuery() ;
+            qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() : RequeteStatut="<<RequeteStatut.lastQuery() ;
         }
         RequeteStatut.next() ;
 
@@ -2100,20 +1784,20 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
 
         //-------------------Remplissage CBx Etat-------------------------------------------------------------
         QSqlQuery RequeteEtat ;
-        QString IdEtat = RequeteRechercheJeu.value(18).toString() ;
+        QString IdEtat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("EtatsJeu_IdEtatsJeu")).toString() ;
 
         RequeteEtat.prepare("SELECT Etat,IdEtatsJeu FROM etatsjeu WHERE IdEtatsJeu =:IdEtatDuJeu") ;
         RequeteEtat.bindValue(":IdEtatDuJeu", IdEtat);
         if(!RequeteEtat.exec())
         {
-            qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteEtat="<<RequeteEtat.lastQuery() ;
+            qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() : RequeteEtat="<<RequeteEtat.lastQuery() ;
         }
         RequeteEtat.next() ;
         ui->CBx_Etat->setCurrentIndex(RequeteEtat.value(1).toInt());
         TableauPositionIndex[0] = ui->CBx_Etat->currentIndex() ;
         //-----------------Remplissage CBx Editeur---------------------------------------------------------------
         QSqlQuery RequeteEditeur ;
-        QString IdEditeur = RequeteRechercheJeu.value(19).toString() ;
+        QString IdEditeur = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Editeur_IdEditeur")).toString() ;
         if(IdEditeur == 0)
         {
         }
@@ -2136,7 +1820,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         }
         //-----------------Remplissage CBx Fournisseur---------------------------------------------------------
         QSqlQuery RequeteFournisseur ;
-        QString idFournisseur = RequeteRechercheJeu.value(20).toString() ;
+        QString idFournisseur = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Fournisseurs_IdFournisseur")).toString() ;
         if(idFournisseur == 0)
         {
         }
@@ -2162,11 +1846,8 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         }
         //-----------------Remplissage CBx Emplacement -----------------------------------------------------
         QSqlQuery RequeteEmplacement ;
-        QString IdEmplacement = RequeteRechercheJeu.value(21).toString() ;
-        if(IdEmplacement == 0)
-        {
-        }
-        else
+        QString IdEmplacement = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Emplacement_IdEmplacement")).toString() ;
+        if(IdEmplacement != 0)
         {
             RequeteEmplacement.prepare("SELECT IdEmplacement,Nom FROM emplacement WHERE IdEmplacement =:IdDeEmplacement") ;
             RequeteEmplacement.bindValue(":IdDeEmplacement", IdEmplacement);
@@ -2184,7 +1865,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         }
         //---------------Remplissage CBx MotCle1-----------------------------------------------------------------------
         QSqlQuery RequeteMotCle1 ;
-        QString IdMotCle1 = RequeteRechercheJeu.value(22).toString() ;
+        QString IdMotCle1 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle1")).toString() ;
         if(IdMotCle1 == 0)
         {
         }
@@ -2202,7 +1883,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         }
         //----------------Remplissage CBx MotCle2--------------------------------------------------------
         QSqlQuery RequeteMotCle2 ;
-        QString IdMotCle2 = RequeteRechercheJeu.value(23).toString() ;
+        QString IdMotCle2 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle2")).toString() ;
         if(IdMotCle2 == 0)
         {
         }
@@ -2220,7 +1901,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
         }
         //-------------Remplissage CBx MotCle3----------------------------------------------------------------
         QSqlQuery RequeteMotCle3 ;
-        QString IdMotCle3 = RequeteRechercheJeu.value(24).toString() ;
+        QString IdMotCle3 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle3")).toString() ;
         if(IdMotCle3 == 0)
         {
         }
@@ -2237,7 +1918,7 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
             TableauPositionIndex[7] = ui->CBx_MotCle3->currentIndex() ;
         }
         //--------------Cocher EtatInitial-----------------------------------------------------------------
-        QString EtatInitial = RequeteRechercheJeu.value(25).toString() ;
+        QString EtatInitial = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("EtatInitial")).toString() ;
 
         if(EtatInitial == "Neuf")
         {
@@ -2256,12 +1937,12 @@ void F_AjoutSuppModifJeux::on_Bt_OK_clicked()
             }
         }
         //----------Affichage photo----------------------------------------------------------------------------
-        ui->Lb_ImageName->setText(Lb_Image->ChargerImage(QSize(200,160),ui->LE_RechercheCode->text()));
+        ui->Lb_ImageName->setText(Lb_Image->ChargerImage(QSize(200,160),this->nIdJeuSelectionne));
 
-        //Grisee les boutons valider et annuler
+        // Grise les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
-        ui->Bt_Valider->setEnabled(false);
-        ui->Bt_Annuler->setEnabled(false);
+        ActiveBoutons(false);
+        BloquerSignalsChamps(false);
         ui->Bt_Supprimer->setEnabled(true);
         ui->Bt_Ajouter->setEnabled(true);
         AjoutOuModif = false ;
@@ -2453,12 +2134,11 @@ void F_AjoutSuppModifJeux::ActualiserCBx_MotCle()
 }
 //###################################################################
 /**
- *  Pour gérer le jeu de cache cache des boutons Valider/Annuler/Ajouter/Supprimer
+ *  Gris les boutons Supprimer et ajouter et active les boutons Valider et Annuler
  */
 void F_AjoutSuppModifJeux::CacherBoutons()
 {
-    ui->Bt_Valider->setEnabled(true);
-    ui->Bt_Annuler->setEnabled(true);
+    ActiveBoutons(true);
     ui->Bt_Supprimer->setEnabled(false);
     ui->Bt_Ajouter->setEnabled(false);
 }
@@ -2498,4 +2178,15 @@ void F_AjoutSuppModifJeux::toUpper(const QString &text)
     if (!le)
     return;
     le->setText(text.toUpper());
+}
+
+/**
+ * @brief Méthode qui récupère le code du jeu sur lequel on a cliqué dans le tableau
+ *
+ * @param index
+ */
+void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
+{
+    this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
+    AfficherJeu() ;
 }

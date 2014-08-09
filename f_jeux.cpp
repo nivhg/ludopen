@@ -65,8 +65,6 @@ F_Jeux::F_Jeux(QWidget *parent) :
     ui->TbV_NomJeux->setSortingEnabled(true);
     //Supprime le numéro des lignes
     ui->TbV_NomJeux->verticalHeader()->setVisible(false);
-    // Faire défiler le tableau des jeux avec les flêches du clavier
-    connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
     //Création de l'objet QLabel pour l'affichage des images
     Lb_Image = new lb_image(this);
     //Gestion de l'évenement MousePress
@@ -77,6 +75,8 @@ F_Jeux::F_Jeux(QWidget *parent) :
     QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
     Lb_Image->setCursor(Souris);
     ui->gridLayout_11->addWidget(Lb_Image,0,3);
+    // Faire défiler le tableau des jeux avec les flèches du clavier
+    connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
     // Initialise la table view avec tous les jeux
     AfficherJeux() ;
 }
@@ -736,18 +736,6 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     this->nIdJeuSelectionne=this->ModelJeu->index(firstrow, 0).data().toString();
     AfficherJeu();
 }
-////////////////////////////////////////////////////////////
-///////// Lien entre le bouton OK et la touche Entree//////
-//////////////////////////////////////////////////////////
-/**
- * @brief Méthode qui active la méthode Bt_Ok_Clicked lorsque l'on appui sur la touche entrée du clavier
- *
- */
-void F_Jeux::on_Le_recherchecode_returnPressed()
-{
-    AfficherJeu(); ;
-}
-
 
 /**
  * @brief Méthode qui récupère le code du jeu sur lequel on a cliqué dans le tableau
@@ -757,12 +745,7 @@ void F_Jeux::on_Le_recherchecode_returnPressed()
 void F_Jeux::on_TbV_NomJeux_clicked(const QModelIndex &index)
 {
     this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
-    // Récupère le code du jeu, et l'inscrit dans le LineEdit
-//    ui->Le_recherchecode->setText(this->nIdJeuSelectionne);
-    //Valide la code du jeu récupéré
     AfficherJeu() ;
-    //Séléctionne la ligne sur laquelle on a cliqué
-    //ui->TbV_NomJeux->selectRow(index.row());
 }
 
 /**

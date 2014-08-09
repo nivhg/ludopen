@@ -120,11 +120,6 @@ private slots:
      *
      */
     void on_Le_recherchenom_textChanged(const QString &arg1);
-    
-    /** @brief Appeler lorsque l'on clic sur la touche Entrée du clavier
-     *
-     */
-    void on_Le_recherchecode_returnPressed();
 
     /** @brief Appeler lorsque l'on clic sur le bouton règle du jeu
      *
