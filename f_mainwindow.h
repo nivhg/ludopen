@@ -32,6 +32,9 @@ public:
     explicit F_MainWindow(QWidget *parent = 0);
     ~F_MainWindow();
     void VerifierConnexionBDD() ;
+    /** @brief Cache les différentes fenêtres admin et affiche celle passée en argument
+     */
+    void ChangerFenetre(QWidget *w=NULL);
 
 public slots:
     void slot_ChangerOnglet();

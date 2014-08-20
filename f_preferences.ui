@@ -51,7 +51,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <property name="iconSize">
       <size>
@@ -534,6 +534,147 @@
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="0">
         <layout class="QGridLayout" name="gridLayout_2">
+         <item row="12" column="0">
+          <widget class="QLabel" name="Lb_CheminImage">
+           <property name="text">
+            <string>Chemin ou URL des images des jeux :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="3" rowspan="3">
+          <widget class="QTableView" name="TbV_JeuxEmplacement">
+           <property name="alternatingRowColors">
+            <bool>false</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="5">
+          <spacer name="VS_2">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="10" column="1" colspan="3">
+          <widget class="QLineEdit" name="LE_CheminRegle">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="4">
+          <widget class="QPushButton" name="Bt_ParcourirRegle">
+           <property name="text">
+            <string>Parcourir ...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="4">
+          <widget class="QPushButton" name="Bt_ParcourirImage">
+           <property name="text">
+            <string>Parcourir ...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="4">
+          <widget class="QCommandLinkButton" name="Bt_AjouterEmplacement">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BBD_Ajouter.png</normaloff>:/BBD_Ajouter.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="4">
+          <widget class="QCommandLinkButton" name="Bt_ModifierEmplacement">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BDD_Modifier.png</normaloff>:/BDD_Modifier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="4">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerEmplacement">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="1" colspan="3">
+          <widget class="QLineEdit" name="LE_CheminPhotosJeux">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="5">
+          <spacer name="VS_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>10</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="11" column="0">
+          <widget class="QLabel" name="label_5">
+           <property name="text">
+            <string>Chemin des règles sur le serveur</string>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="0" rowspan="3" colspan="2">
           <widget class="QTableView" name="TbV_JeuxType">
            <property name="alternatingRowColors">
@@ -686,6 +827,19 @@
            </property>
           </widget>
          </item>
+         <item row="1" column="3" rowspan="3">
+          <widget class="QTableView" name="TbV_JeuxStatut">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="3">
           <widget class="QLabel" name="Lb_Statut">
            <property name="font">
@@ -713,19 +867,6 @@
              <width>30</width>
              <height>30</height>
             </size>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_JeuxStatut">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
            </property>
           </widget>
          </item>
@@ -783,6 +924,13 @@
            </property>
           </widget>
          </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="Lb_CheminRegle">
+           <property name="text">
+            <string>Chemin ou URL des règles des jeux :</string>
+           </property>
+          </widget>
+         </item>
          <item row="5" column="3">
           <widget class="QLabel" name="Lb_Emplacement">
            <property name="font">
@@ -796,146 +944,18 @@
            </property>
           </widget>
          </item>
-         <item row="6" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_JeuxEmplacement">
-           <property name="alternatingRowColors">
-            <bool>false</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0" colspan="5">
-          <spacer name="VS_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>10</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="Lb_CheminRegle">
+         <item row="13" column="0">
+          <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>URL des règles des jeux :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="0">
-          <widget class="QLabel" name="Lb_CheminImage">
-           <property name="text">
-            <string>URL des images des jeux :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="1" colspan="3">
-          <widget class="QLineEdit" name="LE_CheminRegle">
-           <property name="text">
-            <string>http://</string>
-           </property>
-          </widget>
-         </item>
-         <item row="10" column="4">
-          <widget class="QPushButton" name="Bt_ParcourirRegle">
-           <property name="text">
-            <string>Parcourir ...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="11" column="4">
-          <widget class="QPushButton" name="Bt_ParcourirImage">
-           <property name="text">
-            <string>Parcourir ...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="4">
-          <widget class="QCommandLinkButton" name="Bt_AjouterEmplacement">
-           <property name="text">
-            <string>Ajouter</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/BBD_Ajouter.png</normaloff>:/BBD_Ajouter.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="4">
-          <widget class="QCommandLinkButton" name="Bt_ModifierEmplacement">
-           <property name="text">
-            <string>Modifier</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/BDD_Modifier.png</normaloff>:/BDD_Modifier.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="4">
-          <widget class="QCommandLinkButton" name="Bt_SupprimerEmplacement">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="text">
-            <string>Supprimer</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
+            <string>Chemin des images sur le serveur</string>
            </property>
           </widget>
          </item>
          <item row="11" column="1" colspan="3">
-          <widget class="QLineEdit" name="LE_CheminPhotosJeux">
-           <property name="text">
-            <string>http://</string>
-           </property>
-          </widget>
+          <widget class="QLineEdit" name="LE_CheminReglesServeur"/>
          </item>
-         <item row="4" column="0" colspan="5">
-          <spacer name="VS_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>10</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
+         <item row="13" column="1" colspan="3">
+          <widget class="QLineEdit" name="LE_CheminPhotosServeur"/>
          </item>
         </layout>
        </item>

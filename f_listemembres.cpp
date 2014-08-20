@@ -169,7 +169,7 @@ void F_ListeMembres::DecocherTout( bool bSelection )
     this->AffichageListe();
 }
 
-/** Description dtaille de la mthode
+/** Description détaillée de la méthode
  *  @pre    Combobox remplie avec le vecteur
  *  @param  unsigned int nIdTitre
  *  @retval int

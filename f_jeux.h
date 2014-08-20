@@ -159,16 +159,13 @@ private:
     QStandardItemModel * ModelJeu;
 
     //! Label Image
-    lb_image* Lb_Image;
+    Lb_Image* lb_image;
 
     //! Stocke l'ID du jeu sélectionné
     QString nIdJeuSelectionne;
 
     //! Stocke les chemins des fichiers de règles
-    QString sCheminFichier[100];
-
-    //! Stocke le nombre de fichiers de règles
-    int iNbFichier;
+    QStringList sCheminFichier;
 };
 
 //-----------------------------------------------------------------

@@ -23,8 +23,6 @@
 #include <QMessageBox>
 
 // En-tête propre à l'application ----------------------------------------------
-#include "d_image.h"
-#include "lb_image.h"
 #include "f_ajoutsuppmodifjeux.h"
 #include "ui_f_ajoutsuppmodifjeux.h"
 #include "f_ajoutsuppmodiffournisseursediteurs.h"
@@ -50,7 +48,10 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     this->pEmplacementAjMod = new F_PopUpCLESTTEM(2);
     this->pClassificationAjMod = new F_PopUpCLESTTEM(3);
     this->pMotCleAjMod = new F_PopUpCLESTTEM(4);
-    
+    //Création de l'objet QLabel pour l'affichage des images
+    lb_image = new Lb_Image(this);
+    this->pImage = new D_Image(this,lb_image);
+
     //Création d'un modèle pour le TableView des jeux
     this->ModelJeu = new QStandardItemModel() ;
     //Associe le modèle au TableView
@@ -68,19 +69,8 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     DateDefaut = DateDefaut.currentDate() ;
     ui->DtE_Achat->setDate(DateDefaut) ;
 
-    //Création de l'objet QLabel pour l'affichage des images
-    Lb_Image = new lb_image(this);
-    //Gestion de l'évenement MousePress
-    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
-    Lb_Image->setAlignment(Qt::AlignCenter);
-    //Crée un curseur loupe et l'assigne à l'image
-    //Initialisation des variables liées à l'affichage des images
-    QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
-    Lb_Image->setCursor(Souris);
-    ui->gridLayout_11->addWidget(Lb_Image,0,1);
-
-    // Faire défiler le tableau des jeux avec les flèches du clavier
-    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+    lb_image->setAlignment(Qt::AlignCenter);
+    ui->gridLayout_11->addWidget(lb_image,0,1);
 
     //////////////////////////////////////////////
     //////////// Remplir les COMBO BOX //////////
@@ -141,15 +131,21 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ActiveBoutons(false);
     ui->Bt_Supprimer->setEnabled(false);
 
-    ////////////////////////////////////////////////
-    ///// Bloque tout avant l'ajout ///////////////
-    //////////////////////////////////////////////
+    // Connecte l'évenement textEdited à la fonction toUpper
+    connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
+
+    AfficherJeux() ;
+
+    ////////////////////////////////////////////////////////////////////
+    ///// Bloque tout et connecte les événements à cacherboutons ///////
+    ////////////////////////////////////////////////////////////////////
     QList<QWidget*> QWidgetlist = this->findChildren<QWidget *>();
     QString className;
     QStringList classList;
     classList<<"QTextEdit"<<"QLineEdit"<<"QComboBox"<<"QSpinBox"<<"QRadioButton"<<"QDoubleSpinBox"
                <<"QDateEdit";
-    // Parcours la liste de widget ci-dessus et connecte les évenements associés à la fonction cacherboutons
+    // Parcours la liste de widget ci-dessus et
+    // connecte les évenements associés à la fonction cacherboutons
     foreach(QWidget *w, QWidgetlist)
     {
         className = w->metaObject()->className();
@@ -196,11 +192,9 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
             connect(w, SIGNAL(textEdited(QString)), this, SLOT(CacherBoutons()));
         }
     }
-
-    // Connecte l'évenement textEdited à la fonction toUpper
-    connect(ui->LE_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
-
-    AfficherJeux() ;
+    connect( this->lb_image, SIGNAL( SignalChargementFini() ), this, SLOT( slot_ActiverClicImage() ) ) ;
+    // Faire défiler le tableau des jeux avec les flèches du clavier
+    connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
 }
 //###################################################################
 /**
@@ -1937,8 +1931,9 @@ void F_AjoutSuppModifJeux::AfficherJeu()
             }
         }
         //----------Affichage photo----------------------------------------------------------------------------
-        ui->Lb_ImageName->setText(Lb_Image->ChargerImage(QSize(200,160),this->nIdJeuSelectionne));
-
+        lb_image->setCursor(Qt::WaitCursor);
+        disconnect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
+        ui->Lb_ImageName->setText(lb_image->ChargerImage(QSize(200,160),this->nIdJeuSelectionne));
         // Grise les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
         ActiveBoutons(false);
@@ -2145,24 +2140,29 @@ void F_AjoutSuppModifJeux::CacherBoutons()
 
 void F_AjoutSuppModifJeux::on_Bt_Gauche_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->AfficherImagePrecedente());
+    ui->Lb_ImageName->setText(lb_image->AfficherImagePrecedente());
 }
 
 void F_AjoutSuppModifJeux::on_Bt_Droite_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->AfficherImageSuivante());
+    ui->Lb_ImageName->setText(lb_image->AfficherImageSuivante());
 }
 
 void F_AjoutSuppModifJeux::on_Lb_Image_clicked()
 {
-    // Deconnecte le signal de clic pour zoom pour éviter qu'il soit appelé dans la QDialog
-    disconnect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
-    QDialog *D_Image = new d_image(this,Lb_Image);
-    D_Image->exec();
-    // Remet Lb_Image dans la fenêtre principale Jeux
-    ui->gridLayout_11->addWidget(Lb_Image,0,1);
-    // Reconnecte le signal de clic pour zoom
-    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    // Bloque les signaux pour éviter qu'il soit appelé dans la QDialog
+    lb_image->blockSignals(true);
+    // Afficher l'image et passe à D_Image la liste des fichiers images temporaires
+    this->pImage->AfficherImage(this->nIdJeuSelectionne,lb_image->ObtenirsCheminImage());
+    // Mets la fenêtre au max
+    this->pImage->showMaximized();
+    this->pImage->exec();
+    delete this->pImage;
+    this->pImage = new D_Image(this,lb_image);
+    // Remet lb_image dans la fenêtre principale Jeux
+    ui->gridLayout_11->addWidget(lb_image,0,1);
+    // Débloque les signaux
+    lb_image->blockSignals(false);
 }
 
 
@@ -2189,4 +2189,11 @@ void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
 {
     this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
     AfficherJeu() ;
+}
+
+void F_AjoutSuppModifJeux::slot_ActiverClicImage()
+{
+    //Gestion de l'évenement MousePress
+    connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
+    lb_image->setCursor(Qt::CrossCursor);
 }

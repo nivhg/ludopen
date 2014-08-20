@@ -13,6 +13,8 @@ RESOURCES = ImagesIcones.qrc
 # pour avoir les messages d'erreur
 #CONFIG   += CONSOLE
 
+INCLUDEPATH = $$PWD/libs/ssh/
+
 SOURCES += \
     main.cpp \
     f_statistiques.cpp \
@@ -46,7 +48,9 @@ SOURCES += \
     d_image.cpp \
     lb_image.cpp \
     d_ajoutsuppmodiffournisseursediteurs.cpp \
-    acces_fichier_http.cpp
+    acces_fichier_http.cpp \
+    securefileuploader.cpp \
+    fonctions_globale.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -81,7 +85,9 @@ HEADERS  += \
     d_image.h \
     lb_image.h \
     d_ajoutsuppmodiffournisseursediteurs.h \
-    acces_fichier_http.h
+    acces_fichier_http.h \
+    securefileuploader.h \
+    fonctions_globale.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -113,3 +119,6 @@ FORMS    += \
     f_listereservations.ui \
     d_image.ui \
     d_ajoutsuppmodiffournisseursediteurs.ui
+
+include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
+LIBS += -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(Botan) -l$$qtLibraryName(QSsh)

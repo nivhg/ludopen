@@ -23,6 +23,7 @@
 #include "d_image.h"
 #include "lb_image.h"
 #include "acces_fichier_http.h"
+#include "fonctions_globale.h"
 
 // En-têtes standards -----------------------------------------------------------
 #include <QtSql>
@@ -44,7 +45,6 @@ F_Jeux::F_Jeux(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    iNbFichier=0;
     pReservation= new F_Reservation;
     pDetailsJeux=new F_DetailsJeux;
     pDeclarerIntervention=new F_DeclarerIntervention;
@@ -66,15 +66,15 @@ F_Jeux::F_Jeux(QWidget *parent) :
     //Supprime le numéro des lignes
     ui->TbV_NomJeux->verticalHeader()->setVisible(false);
     //Création de l'objet QLabel pour l'affichage des images
-    Lb_Image = new lb_image(this);
+    lb_image = new Lb_Image(this);
     //Gestion de l'évenement MousePress
-    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
-    Lb_Image->setAlignment(Qt::AlignCenter);
+    connect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    lb_image->setAlignment(Qt::AlignCenter);
     //Crée un curseur loupe et l'assigne à l'image
     //Initialisation des variables liées à l'affichage des images
     QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
-    Lb_Image->setCursor(Souris);
-    ui->gridLayout_11->addWidget(Lb_Image,0,3);
+    lb_image->setCursor(Souris);
+    ui->gridLayout_11->addWidget(lb_image,0,3);
     // Faire défiler le tableau des jeux avec les flèches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
     // Initialise la table view avec tous les jeux
@@ -368,7 +368,7 @@ void F_Jeux::AfficherJeu()
     ////////////// Chargement Photo //////////////////////////////////
     //////////////////////////////////////////////////////
 
-    ui->Lb_ImageName->setText(Lb_Image->ChargerImage(QSize(200,200),ui->Le_code->text()));
+    ui->Lb_ImageName->setText(lb_image->ChargerImage(QSize(200,200),ui->Le_code->text()));
 
     ////////////////////////////////////////////////////////
     ////////////// Règles //////////////////////////////////
@@ -381,10 +381,10 @@ void F_Jeux::AfficherJeu()
     sCheminReglePref = RequeteCheminReglesJeux.value(0).toString();
 
     // Suppression des fichiers temporaires du précédent jeu
-    if( sCheminReglePref.indexOf("http://",0,Qt::CaseInsensitive) != -1)
+    if( EstCeURL(sCheminReglePref) )
     {
         QDir CheminFichierImage;
-        for(int i=0;i<iNbFichier;i++)
+        for(int i=0;i<sCheminFichier.count();i++)
         {
             CheminFichierImage.remove(sCheminFichier[i]);
         }
@@ -398,14 +398,14 @@ void F_Jeux::AfficherJeu()
     int i=2;
     //qDebug() << "F_Jeux::AfficherJeu()" << "Code jeu" << this->nIdJeuSelectionne<< "ReglePref" << sCheminReglePref;
     // Recherche la première règle
-    if(manager.FichierEtExtensionsExiste( &sCheminFichier[0], sCheminReglePref, this->nIdJeuSelectionne , &TypeRegle,ListeExtension))
+    if(manager.FichierEtExtensionsExiste( &sCheminFichier, sCheminReglePref, this->nIdJeuSelectionne , &TypeRegle,ListeExtension))
     {
         //qDebug() << "F_Jeux::AfficherJeu()" << "Regles trouvée";
         ui->Bt_regle->setEnabled(true);
         i++;
         NomFichier = this->nIdJeuSelectionne + "-" + QString::number(2);
         // Tant qu'il existe des règles avec le même code jeu
-        while( manager.FichierEtExtensionsExiste( &sCheminFichier[i-2],sCheminReglePref,NomFichier,&TypeRegle,ListeExtension))
+        while( manager.FichierEtExtensionsExiste( &sCheminFichier,sCheminReglePref,NomFichier,&TypeRegle,ListeExtension))
         {
            // Nom du prochain fichier à chercher
            NomFichier = this->nIdJeuSelectionne + "-" + QString::number(i++);
@@ -416,7 +416,6 @@ void F_Jeux::AfficherJeu()
         //qDebug() << "F_Jeux::AfficherJeu()" << "Regles non trouvée, Code :"<<this->nIdJeuSelectionne;
         ui->Bt_regle->setEnabled(false);
     }
-    iNbFichier=i-2;
     //qDebug() << "F_Jeux::AfficherJeu()" << "iNbFichier:" << iNbFichier<<" Code : "<<this->nIdJeuSelectionne;
 }
 
@@ -430,7 +429,7 @@ void F_Jeux::AfficherJeu()
 void F_Jeux::on_Bt_regle_clicked()
 {
     // Ouvre tous les fichiers sauvés dans sCheminFichier
-    for(int i=0;i<iNbFichier;i++)
+    for(int i=0;i<sCheminFichier.count();i++)
     {
         QDesktopServices::openUrl(QUrl::fromLocalFile(sCheminFichier[i]));
     }
@@ -801,19 +800,19 @@ void F_Jeux::on_Le_nom_textChanged(const QString &arg1)
 
 void F_Jeux::on_Bt_Gauche_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->AfficherImagePrecedente());
+    ui->Lb_ImageName->setText(lb_image->AfficherImagePrecedente());
 }
 
 void F_Jeux::on_Bt_Droite_clicked()
 {
-    ui->Lb_ImageName->setText(Lb_Image->AfficherImageSuivante());
+    ui->Lb_ImageName->setText(lb_image->AfficherImageSuivante());
 }
 
 void F_Jeux::on_Lb_Image_clicked()
 {
-    disconnect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
-    QDialog *D_Image = new d_image(this,Lb_Image);
-    D_Image->exec();
-    ui->gridLayout_11->addWidget(Lb_Image,0,3);
-    connect( Lb_Image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    disconnect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    QDialog *d_image = new D_Image(this,lb_image);
+    d_image->exec();
+    ui->gridLayout_11->addWidget(lb_image,0,3);
+    connect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
 }

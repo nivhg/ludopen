@@ -12,6 +12,7 @@ class F_AjoutSuppModifJeux;
 #include "d_ajoutsuppmodiffournisseursediteurs.h"
 #include "f_popupclesttem.h"
 #include "lb_image.h"
+#include "d_image.h"
 
 using namespace std;
 
@@ -94,6 +95,7 @@ public slots:
     void slot_ValiderEmplacement();
     void slot_ValiderMotCle();
     void slot_ValiderStatut();
+    void slot_ActiverClicImage();
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -215,6 +217,10 @@ private:
      */
     D_AjoutSuppModifFournisseursEditeurs * pAjoutEditeur;
     
+    /** @brief Pointeur qui fait le lien entre la classe D_Image et celle-ci
+     */
+    D_Image * pImage;
+
     /** @brief Tableau permettant de retrouver l'index sélectionné
      * 0 : Etat
      * 1 : Statut
@@ -234,8 +240,7 @@ private:
     bool AjoutOuModif ;
 
     //! Label Image
-    lb_image* Lb_Image;
-
+    Lb_Image* lb_image;
 };
 
 //------------------------------------------------------------------------------

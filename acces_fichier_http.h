@@ -1,4 +1,4 @@
-//acces_photo_http.h	0.1	<Vincent VICTORIN>
+//acces_fichier_http.h	0.1	<Vincent VICTORIN>
 #ifndef ACCESFICHIERPARHTTP_H
 #define ACCESFICHIERPARHTTP_H
 
@@ -19,13 +19,13 @@ public:
     /**
      *  @brief Vérifie l'existence d'une image sur un système de fichier ou en HTTP
      */
-    bool FichierEtExtensionsExiste( QString *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist);
+    bool FichierEtExtensionsExiste( QStringList *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist);
 
     /**
      *  @brief Vérifie l'existence d'un fichier en fonction de l'extention sur un système de fichier ou en HTTP
      *          La fonction va rechercher si le fichier existe avec l'extention en minuscule et majuscule
      */
-    bool FichierExiste( QString *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage);
+    bool FichierExiste( QStringList *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage);
 
 };
 

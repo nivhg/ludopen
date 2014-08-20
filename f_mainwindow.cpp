@@ -121,72 +121,126 @@ void F_MainWindow::slot_ChangerOnglet()
 // Si les préférences ont été mise à jours, mettre à jour certains affichages sur certaines fenêtres
 void F_MainWindow::slot_Preferences()
 {
-    this->pAdministrerMembres->MaJTitre() ;
-    this->pAdministrerMembres->MaJType() ;
-    this->pAdministrerMembres->AfficherMembre() ;
-    this->pMembres->MaJTitre() ;
-    this->pMembres->MaJType() ;
-    this->pMembres->AfficherMembre() ;
+    if(this->pAdministrerMembres)
+    {
+        this->pAdministrerMembres->MaJTitre() ;
+        this->pAdministrerMembres->MaJType() ;
+        this->pAdministrerMembres->AfficherMembre() ;
+    }
+    if(this->pMembres)
+    {
+        this->pMembres->MaJTitre() ;
+        this->pMembres->MaJType() ;
+        this->pMembres->AfficherMembre() ;
+    }
 }
 
 void F_MainWindow::on_Bt_Membre_clicked()
 {
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pStatistiques->setVisible(false);
-    this->pAdministrerMembres->setVisible(true);
+    ChangerFenetre(this->pAdministrerMembres);
 }
 
 void F_MainWindow::on_Bt_Jeux_clicked()
 {
-    this->pAdministrerMembres->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pStatistiques->setVisible(false);
-    this->pAjoutSuppModifJeux->setVisible(true);
+    if(!this->pAjoutSuppModifJeux)
+    {
+        ////Jeux////////
+        qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
+        this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
+        this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
+        this->pAjoutSuppModifJeux->setVisible(false);
+    }
+    ChangerFenetre(this->pAjoutSuppModifJeux);
 }
 
 void F_MainWindow::on_Bt_FournisseurEditeur_clicked()
 {
-    this->pAdministrerMembres->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pStatistiques->setVisible(false);
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(true);
+    if(!this->pAjoutSuppModifFournisseurEditeurs)
+    {
+        ////Fournisseur////////
+        qDebug()<<"Création ADMIN-F_AjoutSuppModifFournisseursEditeurs";
+        this->pAjoutSuppModifFournisseurEditeurs=new F_AjoutSuppModifFournisseursEditeurs (this->ui->admin);
+        this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
+        this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
+    }
+    ChangerFenetre(this->pAjoutSuppModifFournisseurEditeurs);
 }
 
 void F_MainWindow::on_Bt_Abonnements_clicked()
 {
-    this->pAdministrerMembres->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pStatistiques->setVisible(false);
-    this->pAbonnements->setVisible(true);
+    if(!this->pAbonnements)
+    {
+        ////Abonnement////////
+        qDebug()<<"Création ADMIN-F_Abonnements";
+        this->pAbonnements=new F_Abonnements(this->ui->admin);
+        this->ui->Lay_Admin->addWidget(this->pAbonnements);
+        this->pAbonnements->setVisible(false);
+    }
+    ChangerFenetre(this->pAbonnements);
 }
 
 void F_MainWindow::on_Bt_Statistiques_clicked()
 {
-    this->pAdministrerMembres->setVisible(false);
-    this->pListeMembresAdmin->setVisible( false ) ;
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pStatistiques->setVisible(true);
+    if(!this->pStatistiques)
+    {
+        ////Statistiques////////
+        qDebug()<<"Création ADMIN-F_Statistiques";
+        this->pStatistiques=new F_Statistiques (this->ui->admin);
+        this->ui->Lay_Admin->addWidget(this->pStatistiques);
+        this->pStatistiques->setVisible(false);
+    }
+    ChangerFenetre(this->pStatistiques);
 }
 
 void F_MainWindow::on_Bt_ListeMembres_clicked()
 {
-    this->pAdministrerMembres->setVisible(false);
-    this->pAjoutSuppModifJeux->setVisible(false);
-    this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-    this->pAbonnements->setVisible(false);
-    this->pStatistiques->setVisible(false) ;
-    this->pListeMembresAdmin->setVisible( true ) ;
+    if(!this->pListeMembresAdmin)
+    {
+        ////Liste Membres//////
+        qDebug()<<"Création ADMIN-F_ListeMembres";
+        this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
+        this->pListeMembresAdmin->setVisible( false ) ;
+        this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
+        // Si double clic dans la liste des membres sur un membre, affiche la fiche détaillée du membre sélectionné
+        connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
+        this->pListeMembresAdmin->AffichageListe() ;
+    }
+    ChangerFenetre(this->pListeMembresAdmin);
+}
+
+/** @brief Cache les différentes fenêtres admin et affiche celle passée en argument
+ *  @param  QWidget : fenêtre à afficher
+ */
+void F_MainWindow::ChangerFenetre(QWidget *w)
+{
+    if(this->pAdministrerMembres)
+    {
+        this->pAdministrerMembres->setVisible(false);
+    }
+    if(this->pAjoutSuppModifJeux)
+    {
+        this->pAjoutSuppModifJeux->setVisible(false);
+    }
+    if(this->pAjoutSuppModifFournisseurEditeurs)
+    {
+        this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
+    }
+    if(this->pAbonnements)
+    {
+        this->pAbonnements->setVisible(false);
+    }
+    if(this->pStatistiques)
+    {
+        this->pStatistiques->setVisible(false) ;
+    }
+    if(this->pListeMembresAdmin)
+    {
+        this->pListeMembresAdmin->setVisible(false) ;
+    }
+    if(w)
+    {
+        w->setVisible(true);
+    }
 }
 
 //Changement d'onglet
@@ -308,63 +362,30 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         break;
     case 8 : //Administration
         //Widget-admin/////////
-        ////Fournisseur////////
-        if(!this->pAjoutSuppModifFournisseurEditeurs)
+        if(!this->pAdministrerMembres)
         {
-            qDebug()<<"Création ADMIN-F_AjoutSuppModifFournisseursEditeurs";
-            this->pAjoutSuppModifFournisseurEditeurs=new F_AjoutSuppModifFournisseursEditeurs (this->ui->admin);
-            this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
-            this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
-
             ////Membre/////////////
-            qDebug()<<"Création ADMIN-F_RechercheMembres";
+            qDebug()<<"Création ADMIN-F_Membres";
             this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
             this->pAdministrerMembres->setVisible(false);
             this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
             this->pAdministrerMembres->setVisible(true);
-
-            ////Liste Membres//////
-            qDebug()<<"Création ADMIN-F_ListeMembres";
-            this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
-            this->pListeMembresAdmin->setVisible( false ) ;
-            this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
-
-            ////Statistiques////////
-            qDebug()<<"Création ADMIN-F_ListeMembres";
-            this->pStatistiques=new F_Statistiques (this->ui->admin);
-            this->ui->Lay_Admin->addWidget(this->pStatistiques);
-            this->pStatistiques->setVisible(false);
-
-            ////Jeux////////
-            qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
-            this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
-            this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
-            this->pAjoutSuppModifJeux->setVisible(false);
-
-            ////Abonnement////////
-            qDebug()<<"Création ADMIN-F_Abonnements";
-            this->pAbonnements=new F_Abonnements(this->ui->admin);
-            this->ui->Lay_Admin->addWidget(this->pAbonnements);
-            this->pAbonnements->setVisible(false);
-
-            qDebug()<<"Création ADMIN-F_PopUpCode";
-            this->pPopUpCode = new F_PopUpCode;
-            this->pPopUpCode->setWindowTitle("Code d'accès");
-            this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
-
-            connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
-            // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
-
-            //connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
-            connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
         }
 
         /*****************************************************************************/
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
+        /*if(!this->pPopUpCode)
+        {
+                qDebug()<<"Création ADMIN-F_PopUpCode";
+                this->pPopUpCode = new F_PopUpCode;
+                this->pPopUpCode->setWindowTitle("Code d'accès");
+                this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
+
+                connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
+        }*/
         ui->menuImprimer->setEnabled(false);
         this->pAdministrerMembres->MaJListeMembres() ;
         this->pAdministrerMembres->AfficherListe() ;
-        this->pListeMembresAdmin->AffichageListe() ;
         this->pAdministrerMembres->MaJTitre() ;
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;

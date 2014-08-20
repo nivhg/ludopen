@@ -410,13 +410,13 @@
             </property>
             <property name="minimumSize">
              <size>
-              <width>150</width>
+              <width>0</width>
               <height>0</height>
              </size>
             </property>
             <property name="maximumSize">
              <size>
-              <width>40</width>
+              <width>16777215</width>
               <height>16777215</height>
              </size>
             </property>
@@ -537,6 +537,12 @@
           </item>
           <item row="19" column="5">
            <widget class="QSpinBox" name="SBx_PrixLocation">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
@@ -834,6 +840,12 @@
             <property name="enabled">
              <bool>true</bool>
             </property>
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="readOnly">
              <bool>true</bool>
             </property>
@@ -909,6 +921,12 @@
           </item>
           <item row="18" column="5">
            <widget class="QDoubleSpinBox" name="SBx_PrixAchat">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
@@ -1011,6 +1029,12 @@
           </item>
           <item row="20" column="5">
            <widget class="QSpinBox" name="SBx_Caution">
+            <property name="maximumSize">
+             <size>
+              <width>50</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
@@ -1135,8 +1159,11 @@
           <bold>false</bold>
          </font>
         </property>
+        <property name="cursor">
+         <cursorShape>CrossCursor</cursorShape>
+        </property>
         <property name="frameShape">
-         <enum>QFrame::StyledPanel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <property name="text">
          <string/>

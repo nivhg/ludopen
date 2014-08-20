@@ -9,6 +9,7 @@
 #include<QFile>
 #include<QDebug>
 
+#include"fonctions_globale.h"
 
 /**
  *  @brief Vérifie l'existence d'un fichier à partir d'une liste d'extension sur un système de fichier ou en HTTP
@@ -22,7 +23,7 @@
  *  @param extlist : Liste des extensions à vérifier
  *
  */
-    bool AccesFichierParHTTP::FichierEtExtensionsExiste( QString *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist)
+    bool AccesFichierParHTTP::FichierEtExtensionsExiste( QStringList *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist)
     {
         bool ret;
         foreach (QString ext, extlist)
@@ -46,7 +47,7 @@
      *  @param ext : Extention du fichier à rechercher.
      *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
      */
-    bool AccesFichierParHTTP::FichierExiste( QString *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage)
+    bool AccesFichierParHTTP::FichierExiste( QStringList *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage)
     {
         // On suppose que l'argument ext est toujours mis en minuscule,
         // et on rappele la fonction avec ext en majuscule
@@ -59,10 +60,10 @@
         }
         *TypeImage=ext.toUpper();
         // Si le chemin des images est une URL
-        if( URLorPath.indexOf("http://",0,Qt::CaseInsensitive) != -1)
+        if( EstCeURL(URLorPath) )
         {
             QNetworkAccessManager m_NetworkMngr;
-            QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(URLorPath + "/" + file +"." + ext));
+            QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(QUrl(URLorPath + "/" + file +"." + ext)));
             QEventLoop loop;
             QObject::connect(reply, SIGNAL(finished()),&loop, SLOT(quit()));
             loop.exec();
@@ -81,7 +82,7 @@
                 case QNetworkReply::NoError:
                   // No error
                   delete reply;
-                  *returnfile=tempfile.fileName();
+                  returnfile->append(tempfile.fileName());
                   return true;
                 case QNetworkReply::ContentNotFoundError:
                   // 404 Not found
@@ -100,7 +101,7 @@
             // Si le fichier existe, on rajoute l'extention à URL
             if(QFile::exists(URLorPath+"/"+file+"."+ext))
             {
-                *returnfile=URLorPath+"/"+file+"."+ext;
+                returnfile->append(URLorPath+"/"+file+"."+ext);
                 return true;
             }
             else
