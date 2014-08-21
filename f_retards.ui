@@ -163,7 +163,26 @@ Nb de jours de retard : %jours</string>
    </item>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="2" column="0" colspan="2">
+     <item row="1" column="1">
+      <widget class="QPushButton" name="Bt_Deselectionner">
+       <property name="text">
+        <string>Tous déselectionner</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Decocher_tout.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="Bt_Exporter">
+       <property name="text">
+        <string>Exporter CSV</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="4">
       <widget class="QTableView" name="TbW_Retards">
        <property name="minimumSize">
         <size>
@@ -188,32 +207,6 @@ Nb de jours de retard : %jours</string>
        </attribute>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="Bt_Deselectionner">
-       <property name="text">
-        <string>Tous déselectionner</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normalon>:/Decocher_tout.png</normalon>
-        </iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="Bt_Selectionner">
-       <property name="text">
-        <string>Tous sélectionner</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QPushButton" name="Bt_Envoyer">
-       <property name="text">
-        <string>Envoyer</string>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="0">
       <widget class="QLabel" name="Lb_NbDeMembresEnRetard">
        <property name="text">
@@ -224,12 +217,29 @@ Nb de jours de retard : %jours</string>
        </property>
       </widget>
      </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="Bt_Selectionner">
+       <property name="text">
+        <string>Tous sélectionner</string>
+       </property>
+      </widget>
+     </item>
      <item row="7" column="1">
       <widget class="QLabel" name="Lb_Resultat">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
+     </item>
+     <item row="3" column="0" colspan="2">
+      <widget class="QPushButton" name="Bt_Envoyer">
+       <property name="text">
+        <string>Envoyer</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QComboBox" name="CBx_Exporter"/>
      </item>
     </layout>
    </item>

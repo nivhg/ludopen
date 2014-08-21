@@ -52,21 +52,36 @@ F_Retards::F_Retards(QWidget *parent) :
    // Pas d'édition possible dans les cases
    ui->TbW_Retards->setEditTriggers( 0 ) ;
 
-   // Création des caractéristiques du tableau : Nombre de colonnes, Nom des colonnes
-   // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
-   modeleTabRetard.setHorizontalHeaderItem(  0, new QStandardItem( "" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  1, new QStandardItem( "" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  2, new QStandardItem( "Nom" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  3, new QStandardItem( "Prénom" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  4, new QStandardItem( "Nb Email envoyé" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  5, new QStandardItem( "Jours de retard" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  6, new QStandardItem( "Amende" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  7, new QStandardItem( "Ville" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  8, new QStandardItem( "Email" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem(  9, new QStandardItem( "Tél. Fixe" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem( 10, new QStandardItem( "Tél. Mobile" ) ) ;
-   modeleTabRetard.setHorizontalHeaderItem( 11, new QStandardItem( "Jeux en retard" ) ) ;
+   QStandardItemModel *Model = new QStandardItemModel(2, 1);
 
+   // Liste des champs de la combobox d'export
+   QString* sChamps = new QString[13] { "Nom", "Prénom", "Nb Email envoyé", "Jours de retard", "Amende",
+           "Ville", "Email", "Tél. Fixe", "Tél. Mobile", "Jeux en retard" };
+   // Ajout des checkboxes dans la combobox d'export
+   for (int r = 0; r < 11; ++r)
+       {
+           if(sChamps[r]!="")
+           {
+               QStandardItem* item;
+               item = new QStandardItem(sChamps[r]);
+
+               item->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+               item->setData(Qt::Unchecked, Qt::CheckStateRole);
+               item->setCheckState(Qt::Checked);
+
+               Model->setItem(r, 0, item);
+               this->Items.push_back(item);
+           }
+           // Création des caractéristiques du tableau : Nombre de colonnes, Nom des colonnes
+           // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
+           modeleTabRetard.setHorizontalHeaderItem(  r, new QStandardItem( (sChamps[r] ) )) ;
+   }
+
+   ui->CBx_Exporter->setModel(Model);
+   // Nécessaire pour l'affichage des combobox sous Linux (Bug ?)
+   ui->CBx_Exporter->setStyle(new QCommonStyle);
+   ui->CBx_Exporter->setStyleSheet("border-style: outset;");
+   ui->CBx_Exporter->setCurrentText("Champs à exporter");
 
    // associer le tableau et le modèle d'affichage
    ui->TbW_Retards->setModel( &modeleTabRetard ) ;
@@ -425,7 +440,7 @@ void F_Retards::on_Bt_Selectionner_clicked()
    {
       //0 IdMembre, 1 case à cocher, 2 CodeMembre, 3 Nom, 4 Prenom, 5 Ville, 6 Email, 7 Telephone, 8 Mobile, 9 DatePrévue, 10 liste des jeux en retard
       //Permet d'ajouter une checkbox à la ligne si un email est diponible pour le membre
-      if ( ! ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,6)).toString().isEmpty() )
+      if ( ! ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8)).toString().isEmpty() )
        {
         ui->TbW_Retards->model()->setData( ui->TbW_Retards->model()->index(i ,1), Qt::Checked, Qt::CheckStateRole) ;
        }
@@ -521,4 +536,57 @@ void F_Retards::on_LE_Sujet_textChanged(const QString &arg1)
 void F_Retards::on_TbW_Retards_doubleClicked(const QModelIndex &index)
 {
     emit( this->Signal_DoubleClic_ListeMembres( ui->TbW_Retards->model()->data( this->modeleTabRetard.index( index.row() , 0 )).toUInt() )) ;
+}
+
+void F_Retards::on_Bt_Exporter_clicked()
+{
+    int nNombreColonne (0);
+    int nNombreLigne (0);
+
+    QString sCaractere;
+    QString nomFichier = QFileDialog::getSaveFileName(this, "Enregistrer sous ...", "Sans titre 1.csv");
+    QFile fichier(nomFichier);
+    QTextStream ecrire (&fichier);
+    fichier.open(QIODevice::WriteOnly);
+
+    // Récupération des titres de colonnes et concaténation dans la variable titre si les checkboxes sont cochées
+    QString titre;
+    for (int i = 0; i < this->Items.size(); ++i) {
+        QStandardItem * item = this->Items[i];
+        if(item->checkState() == Qt::Checked)
+        {
+            if(titre.size()==0)
+            {
+                titre+=item->text();
+            }
+            else
+            {
+                titre+=";"+item->text();
+            }
+        }
+    }
+
+    ecrire << titre + "\r\n";
+
+    for(nNombreLigne = 0; nNombreLigne<ui->TbW_Retards->model()->rowCount(); nNombreLigne++)
+    {
+        for(nNombreColonne = 2; nNombreColonne<ui->TbW_Retards->model()->columnCount(); nNombreColonne++)
+        {
+            QStandardItem * item = this->Items[nNombreColonne-2];
+            if(item->checkState() == Qt::Checked)
+            {
+                titre=ui->TbW_Retards->model()->headerData(nNombreColonne,Qt::Horizontal,Qt::DisplayRole).toString();
+                sCaractere = ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
+                // On rejete les valeurs à caractère unique et on le remplace par un champs vide
+                sCaractere.replace(" ", "\ ") ;
+                if(sCaractere == "-" || sCaractere == "_" || sCaractere == ".")
+                {
+                    sCaractere = "";
+                }
+                ecrire << "\"" << sCaractere << "\";";
+            }
+        }
+        ecrire << "\r\n";
+        nNombreColonne = 0;
+    }
 }

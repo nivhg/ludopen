@@ -125,6 +125,8 @@ private slots :
 
     void on_TbW_Retards_doubleClicked(const QModelIndex &index);
 
+    void on_Bt_Exporter_clicked();
+
 private:
     Ui::F_Retards *ui;
 
@@ -138,6 +140,7 @@ private:
     QVector <EMail> ListeEMailAEnvoyer ;
     /// le thread qui gère l'envoie des emails
     Courriel * pCourriel ;
+    std::vector<QStandardItem*> Items;      //! Liste des checkboxes dans la combobox d'export
 };
 
 #endif // F_RETARDS_H
