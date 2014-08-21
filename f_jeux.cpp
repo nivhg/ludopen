@@ -194,12 +194,12 @@ void F_Jeux::AfficherJeu()
     
     QSqlQuery RequeteRechercheCode ;
 
-    JeuEnConsultation = this->nIdJeuSelectionne ;
+    JeuEnConsultation = this->JeuEnConsultation ;
 
     RequeteRechercheCode.prepare("SELECT NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
                                  "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
                                  "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
-    RequeteRechercheCode.bindValue(":CodeDuJeu", this->nIdJeuSelectionne);
+    RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
     if (!RequeteRechercheCode.exec())
     {
         qDebug() << "F_Jeux::AfficherJeu() : RequeteRechercheCode :" << RequeteRechercheCode.lastQuery()  ;
@@ -396,27 +396,27 @@ void F_Jeux::AfficherJeu()
     QStringList ListeExtension;
     ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm"<<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
     int i=2;
-    //qDebug() << "F_Jeux::AfficherJeu()" << "Code jeu" << this->nIdJeuSelectionne<< "ReglePref" << sCheminReglePref;
+    //qDebug() << "F_Jeux::AfficherJeu()" << "Code jeu" << this->JeuEnConsultation<< "ReglePref" << sCheminReglePref;
     // Recherche la première règle
-    if(manager.FichierEtExtensionsExiste( &sCheminFichier, sCheminReglePref, this->nIdJeuSelectionne , &TypeRegle,ListeExtension))
+    if(manager.FichierEtExtensionsExiste( &sCheminFichier, sCheminReglePref, this->JeuEnConsultation , &TypeRegle,ListeExtension))
     {
         //qDebug() << "F_Jeux::AfficherJeu()" << "Regles trouvée";
         ui->Bt_regle->setEnabled(true);
         i++;
-        NomFichier = this->nIdJeuSelectionne + "-" + QString::number(2);
+        NomFichier = this->JeuEnConsultation + "-" + QString::number(2);
         // Tant qu'il existe des règles avec le même code jeu
         while( manager.FichierEtExtensionsExiste( &sCheminFichier,sCheminReglePref,NomFichier,&TypeRegle,ListeExtension))
         {
            // Nom du prochain fichier à chercher
-           NomFichier = this->nIdJeuSelectionne + "-" + QString::number(i++);
+           NomFichier = this->JeuEnConsultation + "-" + QString::number(i++);
         }
     }
     else
     {
-        //qDebug() << "F_Jeux::AfficherJeu()" << "Regles non trouvée, Code :"<<this->nIdJeuSelectionne;
+        //qDebug() << "F_Jeux::AfficherJeu()" << "Regles non trouvée, Code :"<<this->JeuEnConsultation;
         ui->Bt_regle->setEnabled(false);
     }
-    //qDebug() << "F_Jeux::AfficherJeu()" << "iNbFichier:" << iNbFichier<<" Code : "<<this->nIdJeuSelectionne;
+    //qDebug() << "F_Jeux::AfficherJeu()" << "iNbFichier:" << iNbFichier<<" Code : "<<this->JeuEnConsultation;
 }
 
 ////////////////////////////////////////////////////////////
@@ -732,7 +732,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     }
     // Reconnexion du défilement du tableau des jeux avec les flèches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
-    this->nIdJeuSelectionne=this->ModelJeu->index(firstrow, 0).data().toString();
+    this->JeuEnConsultation=this->ModelJeu->index(firstrow, 0).data().toString();
     AfficherJeu();
 }
 
@@ -743,7 +743,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
  */
 void F_Jeux::on_TbV_NomJeux_clicked(const QModelIndex &index)
 {
-    this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
+    this->JeuEnConsultation=this->ModelJeu->index(index.row(), 0).data().toString();
     AfficherJeu() ;
 }
 

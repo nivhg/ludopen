@@ -36,6 +36,17 @@ public:
      */
     void ChangerFenetre(QWidget *w=NULL);
 
+    // Fonction de création des interfaces
+    void CreerAdminMembres();
+    void CreerRetards();
+    void CreerMembre();
+    void CreerListeMembres();
+    void CreerJeux();
+    void CreerListeJeux();
+    void CreerEmprunt();
+    void CreerRetour();
+    void CreerReservations();
+
 public slots:
     void slot_ChangerOnglet();
     void slot_Preferences() ;

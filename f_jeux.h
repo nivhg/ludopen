@@ -161,9 +161,6 @@ private:
     //! Label Image
     Lb_Image* lb_image;
 
-    //! Stocke l'ID du jeu sélectionné
-    QString nIdJeuSelectionne;
-
     //! Stocke les chemins des fichiers de règles
     QStringList sCheminFichier;
 };

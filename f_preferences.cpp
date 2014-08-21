@@ -93,6 +93,9 @@ F_Preferences::F_Preferences(QWidget *parent) :
     this->pPaiementMembreAjMod = new F_PopUpCLESTTEM(9);
     this->pPaiementMembreAjMod->setWindowModality(Qt::ApplicationModal);
 
+    this->pMembresActiviteAjMod = new F_PopUpCLESTTEM(10);
+    this->pMembresActiviteAjMod->setWindowModality(Qt::ApplicationModal);
+
     this->TbMembresTitre = new QStandardItemModel();
     ui->TbV_MembresTitre->setModel(this->TbMembresTitre);
     ui->TbV_MembresTitre->setEditTriggers(0);
@@ -137,6 +140,11 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->TbV_InfoLieux->setModel(this->TbInfoLudoLieux);
     ui->TbV_InfoLieux->setEditTriggers(0);
     ui->TbV_InfoLieux->verticalHeader()->setVisible(false);
+
+    this->TbMembresActivite = new QStandardItemModel();
+    ui->TbV_MembresActivite->setModel(this->TbMembresActivite);
+    ui->TbV_MembresActivite->setEditTriggers(0);
+    ui->TbV_MembresActivite->verticalHeader()->setVisible(false);
 
     ui->Lb_VerifCode->hide();
     ui->Lb_InfoConnexion->hide();
@@ -350,6 +358,21 @@ void F_Preferences::AfficherTousLesTableaux()
 
     nNombreLigne = 0;
 
+    //Affichage de la BDD dans le tableau type d'emprunt qui est dans l'onglet Membres/Emprunts de F_Preferences.
+    this->TbMembresActivite->setColumnCount(1);
+    this->TbMembresActivite->setRowCount(nNombreLigne);
+    this->TbMembresActivite->setHorizontalHeaderItem(0, new QStandardItem("Activite"));
+    ui->TbV_MembresActivite->setColumnWidth(0, 180);
+
+    RechercheTableau.exec("SELECT Activite FROM activite");
+    while (RechercheTableau.next())
+    {
+        this->TbMembresActivite->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
+        nNombreLigne = nNombreLigne+ 1;
+    }
+
+    nNombreLigne = 0;
+
     //################################ onglet Jeux #################################################
 
     //Affichage de la BDD dans le tableau type qui est dans l'onglet Jeux de F_Preferences.
@@ -446,6 +469,7 @@ void F_Preferences::AfficherTousLesTableaux()
     ui->TbV_EmpruntType->resizeColumnsToContents();
     ui->TbV_InfoLieux->resizeColumnsToContents();
     ui->TbV_JeuxEmplacement->resizeColumnsToContents();
+    ui->TbV_MembresActivite->resizeColumnsToContents();
 }
 
 /**
@@ -1150,3 +1174,51 @@ void F_Preferences::on_LE_NumeroFax_textEdited(const QString &arg1)
 }
 
 //---------------------------------------------------------------------------
+
+/**
+ *  @brief  Permet d'ajouter un titre d'un membre.
+ *
+ *  @pre    Etre connecté à  la BDD.
+ */
+void F_Preferences::on_Bt_AjouterActivite_clicked()
+{
+    this->pMembresActiviteAjMod->Ajouter();
+    this->AfficherTousLesTableaux();
+}
+
+/**
+ *  @brief   Permet de modifier un titre d'un membre.
+ *
+ *  @pre    Etre connecté à  la BDD.
+ */
+void F_Preferences::on_Bt_ModifierActivite_clicked()
+{
+    this->pMembresActiviteAjMod->Modifier(this->sMembresActivite);
+    this->AfficherTousLesTableaux();
+}
+
+/**
+ *  @brief   Permet de supprimer un titre d'un membre.
+ *
+ *  @pre    Etre connecté à  la BDD.
+ *  @see    AfficherTousLesTableaux()
+ */
+void F_Preferences::on_Bt_SupprimerActivite_clicked()
+{
+    QSqlQuery RequeteSupprimer;
+
+    if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette activité ?", "Oui", "Non") == 0)
+    {
+        RequeteSupprimer.prepare("DELETE FROM Activite WHERE Activite=:Activite");
+        RequeteSupprimer.bindValue(":Activite", this->sMembresActivite);
+        RequeteSupprimer.exec();
+        RequeteSupprimer.next();
+    }
+
+    this->AfficherTousLesTableaux();
+}
+
+void F_Preferences::on_TbV_MembresActivite_clicked(const QModelIndex &index)
+{
+    this->sMembresActivite = this->TbMembresActivite->index(index.row(), 0).data().toString();
+}

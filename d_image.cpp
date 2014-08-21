@@ -179,15 +179,16 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
         ui->Bt_Droite->setEnabled(false);
     }
     // Liste des Lb_Image
-    QList< Lb_Image *> ListLb_Image;
-    ListLb_Image<<lb_image<<lb_image2<<lb_image3;
+    QList< Lb_Image **> ListLb_Image;
+    ListLb_Image<<&lb_image<<&lb_image2<<&lb_image3;
     // On initialise les 3 Lb_Image, on leur donne un nom et on les ajoute dans le layout
     for(int i=0;i<3;i++)
     {
         Lb_Image * lbi =new Lb_Image();
-        lbi->setObjectName(ListLb_Image[i]);
+        lbi->setObjectName("lb_image"+QString::number(i+1));
         lbi->setText("");
         ui->gridLayout_2->addWidget(lbi,2,i+1);
+        *ListLb_Image[i]=lbi;
         connect( lbi, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     }
     // Affiche les Label des images par défaut
@@ -509,7 +510,7 @@ void D_Image::Ajouter(int emplacement)
             sCheminImage << DestCheminFichier;
             // Si le nombre d'image ajouté sort du cadre (on affiche que 3 images à la fois),
             // On active le bouton Droite
-            if(sNomImagesAjoutees.count()+sCheminImage.count-iDecalage()>3)
+            if(sNomImagesAjoutees.count()+sCheminImage.count()-iDecalage>3)
             {
                 ui->Bt_Droite->setEnabled(true);
             }

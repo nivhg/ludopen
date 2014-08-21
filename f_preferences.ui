@@ -51,7 +51,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <property name="iconSize">
       <size>
@@ -973,16 +973,16 @@
       <layout class="QGridLayout" name="gridLayout_9">
        <item row="0" column="0">
         <layout class="QGridLayout" name="GL_4">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Lb_MembresTitre">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
+         <item row="2" column="2" rowspan="3">
+          <widget class="QTableView" name="TbV_MembresType">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
            </property>
-           <property name="text">
-            <string>Titre Membre :</string>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
            </property>
           </widget>
          </item>
@@ -999,31 +999,14 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="1">
-          <widget class="QCommandLinkButton" name="Bt_AjouterMembreTitre">
+         <item row="2" column="3">
+          <widget class="QCommandLinkButton" name="Bt_AjouterMembreType">
            <property name="text">
             <string>Ajouter</string>
            </property>
            <property name="icon">
             <iconset resource="ImagesIcones.qrc">
              <normaloff>:/BBD_Ajouter.png</normaloff>:/BBD_Ajouter.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>30</width>
-             <height>30</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="1">
-          <widget class="QCommandLinkButton" name="Bt_ModifierMembreTitre">
-           <property name="text">
-            <string>Modifier</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/BDD_Modifier.png</normaloff>:/BDD_Modifier.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1053,21 +1036,14 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="Lb_MembresType">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
+         <item row="2" column="4" rowspan="3">
+          <widget class="QTableView" name="TbV_MembresPaiement">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="text">
-            <string>Type Membre :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresType">
            <property name="alternatingRowColors">
             <bool>true</bool>
            </property>
@@ -1079,14 +1055,74 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="3">
-          <widget class="QCommandLinkButton" name="Bt_AjouterMembreType">
+         <item row="2" column="1">
+          <widget class="QCommandLinkButton" name="Bt_AjouterMembreTitre">
            <property name="text">
             <string>Ajouter</string>
            </property>
            <property name="icon">
             <iconset resource="ImagesIcones.qrc">
              <normaloff>:/BBD_Ajouter.png</normaloff>:/BBD_Ajouter.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="Lb_MembresPaiement">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Moyen de
+paiement :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="0">
+          <widget class="QLabel" name="Lb_EmpruntType">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Type Emprunt :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="Lb_MembresTitre">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Titre Membre :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="3">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerMembreType">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>Supprimer</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1113,8 +1149,21 @@
            </property>
           </widget>
          </item>
-         <item row="4" column="3">
-          <widget class="QCommandLinkButton" name="Bt_SupprimerMembreType">
+         <item row="0" column="2">
+          <widget class="QLabel" name="Lb_MembresType">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Type Membre :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerEmpruntType">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1124,6 +1173,70 @@
            <property name="icon">
             <iconset resource="ImagesIcones.qrc">
              <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1">
+          <widget class="QCommandLinkButton" name="Bt_AjouterEmpruntType">
+           <property name="text">
+            <string>Ajouter</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BBD_Ajouter.png</normaloff>:/BBD_Ajouter.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0" rowspan="3">
+          <widget class="QTableView" name="TbV_EmpruntType">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="1">
+          <widget class="QCommandLinkButton" name="Bt_ModifierEmpruntType">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BDD_Modifier.png</normaloff>:/BDD_Modifier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QCommandLinkButton" name="Bt_ModifierMembreTitre">
+           <property name="text">
+            <string>Modifier</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/BDD_Modifier.png</normaloff>:/BDD_Modifier.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1149,21 +1262,14 @@
            </property>
           </spacer>
          </item>
-         <item row="6" column="0">
-          <widget class="QLabel" name="Lb_EmpruntType">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
+         <item row="2" column="5">
+          <widget class="QCommandLinkButton" name="Bt_AjouterMembrePaiement">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <property name="text">
-            <string>Type Emprunt :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1">
-          <widget class="QCommandLinkButton" name="Bt_AjouterEmpruntType">
            <property name="text">
             <string>Ajouter</string>
            </property>
@@ -1179,8 +1285,14 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="1">
-          <widget class="QCommandLinkButton" name="Bt_ModifierEmpruntType">
+         <item row="3" column="5">
+          <widget class="QCommandLinkButton" name="Bt_ModifierMembrePaiement">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="text">
             <string>Modifier</string>
            </property>
@@ -1196,10 +1308,16 @@
            </property>
           </widget>
          </item>
-         <item row="9" column="1">
-          <widget class="QCommandLinkButton" name="Bt_SupprimerEmpruntType">
+         <item row="4" column="5">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerMembrePaiement">
            <property name="enabled">
             <bool>false</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="text">
             <string>Supprimer</string>
@@ -1216,21 +1334,8 @@
            </property>
           </widget>
          </item>
-         <item row="7" column="0" rowspan="3">
-          <widget class="QTableView" name="TbV_EmpruntType">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="2">
-          <widget class="QLabel" name="Lb_MembresPaiement">
+          <widget class="QLabel" name="label_7">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -1238,12 +1343,12 @@
             </font>
            </property>
            <property name="text">
-            <string>Moyen de paiement :</string>
+            <string>Activité :</string>
            </property>
           </widget>
          </item>
          <item row="7" column="3">
-          <widget class="QCommandLinkButton" name="Bt_AjouterMembrePaiement">
+          <widget class="QCommandLinkButton" name="Bt_AjouterActivite">
            <property name="text">
             <string>Ajouter</string>
            </property>
@@ -1260,7 +1365,7 @@
           </widget>
          </item>
          <item row="8" column="3">
-          <widget class="QCommandLinkButton" name="Bt_ModifierMembrePaiement">
+          <widget class="QCommandLinkButton" name="Bt_ModifierActivite">
            <property name="text">
             <string>Modifier</string>
            </property>
@@ -1277,7 +1382,7 @@
           </widget>
          </item>
          <item row="9" column="3">
-          <widget class="QCommandLinkButton" name="Bt_SupprimerMembrePaiement">
+          <widget class="QCommandLinkButton" name="Bt_SupprimerActivite">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -1297,17 +1402,7 @@
           </widget>
          </item>
          <item row="7" column="2" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresPaiement">
-           <property name="alternatingRowColors">
-            <bool>true</bool>
-           </property>
-           <property name="selectionMode">
-            <enum>QAbstractItemView::SingleSelection</enum>
-           </property>
-           <property name="selectionBehavior">
-            <enum>QAbstractItemView::SelectRows</enum>
-           </property>
-          </widget>
+          <widget class="QTableView" name="TbV_MembresActivite"/>
          </item>
         </layout>
        </item>

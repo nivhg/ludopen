@@ -361,6 +361,14 @@ private slots:
      */
     void on_Bt_Aide_clicked();
 
+    void on_Bt_AjouterActivite_clicked();
+
+    void on_Bt_ModifierActivite_clicked();
+
+    void on_Bt_SupprimerActivite_clicked();
+
+    void on_TbV_MembresActivite_clicked(const QModelIndex &index);
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
@@ -393,6 +401,9 @@ private:
     ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
     F_PopUpCLESTTEM * pLieuxInfoLudoAjMod;
 
+    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
+    F_PopUpCLESTTEM * pMembresActiviteAjMod;
+
     ///< Creer un modele du tableau pour les types des membres.
     QStandardItemModel * TbMembresType;
 
@@ -401,6 +412,9 @@ private:
 
     ///< Creer un modele du tableau pour les paiements des membres.
     QStandardItemModel * TbMembresPaiement;
+
+    ///< Creer un modele du tableau pour les activités des membres.
+    QStandardItemModel * TbMembresActivite;
 
     ///< Creer un modele du tableau pour les type d'emprunt.
     QStandardItemModel * TbEmpruntType;
@@ -446,6 +460,9 @@ private:
 
     ///< Récupère la valeur du lieu de la ludothèque.
     QString sLieuxInfoLudo;
+
+    ///< Récupère la valeur d'une activite
+    QString sMembresActivite;
 
     // METHODEs -----------------------------------------------------------------
     /**

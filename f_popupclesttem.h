@@ -24,6 +24,7 @@ class F_PopUpCLESTTEM;
  *      -Si 7, il s'agit d'un Type Emprunt.
  *      -Si 8, il s'agit d'un Lieux Ludothèque.
  *      -Si 9, il s'agit d'un Paiement Membre.
+ *      -Si 10, il s'agit d'une activité d'un membre.
  *
  */
 class F_PopUpCLESTTEM : public QWidget

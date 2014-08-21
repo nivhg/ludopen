@@ -251,11 +251,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     case 0 : //Membre
         if(!this->pMembres)
         {
-            qDebug()<<"Création F_Membres";
-            this->pMembres=new F_Membres (this, false, this->ui->Membre);
-            //Membres
-            this->ui->Lay_Membres->addWidget(this->pMembres);
-            connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+            CreerMembre();
         }
         ui->menuImprimer->setEnabled(false);
         this->pMembres->MaJListeMembres() ;
@@ -266,14 +262,8 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         break;
 
     case 1 : //Liste Membres
-        if(!this->pListeMembres)
-        {
-            qDebug()<<"Création F_ListeMembres";
-            this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
-            //Liste Membres
-            ui->Lay_ListeMembres->addWidget( this->pListeMembres ) ;
-            connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
-        }
+        CreerListeMembres();
+        ui->menuImprimer->setEnabled(false);
         this->pListeMembres->AffichageListe() ;
         break ;
     case 2 : //Jeux
@@ -281,51 +271,23 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
     {
-        if(!this->pJeux)
-        {
-            qDebug()<<"Création F_Jeux";
-            this->pJeux=new F_Jeux (this->ui->Jeu);
-            //Jeux
-            this->ui->Lay_Jeux->addWidget(this->pJeux);
-        }
+        CreerJeux();
         ui->menuImprimer->setEnabled(true);
         this->pJeux->ActualiserJeux();
     }
         break;
     case 3 : //Liste jeux
-        if(!this->pListeJeux)
-        {
-            qDebug()<<"Création F_ListeJeux";
-            this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
-            //Liste Jeux
-            this->ui->Layout_ListeJeux->addWidget(this->pListeJeux);
-
-            // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
-            connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
-
-        }
+        CreerListeJeux();
         ui->menuImprimer->setEnabled(false);
         break;
     case 4 : //Emprunt
-        if(!this->pEmprunt)
-        {
-            qDebug()<<"Création F_Emprunt";
-            this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
-            //Emprunt
-            this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
-        }
+        CreerEmprunt();
         ui->menuImprimer->setEnabled(false);
         this->pEmprunt->ActualiserJeu();
         this->pEmprunt->ActualiserMembre();
         break;
     case 5 : //Retour
-        if(!this->pRetour)
-        {
-            qDebug()<<"Création F_Retour";
-            this->pRetour=new F_Retour (this->ui->Retour);
-            //Retour
-            this->ui->Lay_Retour->addWidget(this->pRetour);
-        }
+        CreerRetour();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         // actualise les infos afficher sur le membre sélectionné actuellement
@@ -336,41 +298,19 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pRetour->ActualiserListeEmprunteurs();
         break;
     case 6 : //Liste Réservations
-        if(!this->pListeReservations)
-        {
-            qDebug()<<"Création F_ListeReservation";
-            this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
-            //Liste Réservations
-            ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
-        }
+        CreerReservations();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         this->pListeReservations->AffichageListe() ;
         break;
     case 7 : //retards
-        if(!this->pRetards)
-        {
-            qDebug()<<"Création F_Retards";
-            this->pRetards=new F_Retards (this->ui->Retards);
-            //Retards
-            this->ui->Layout_Retards->addWidget(this->pRetards);
-            // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
-            connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
-        }
+        CreerRetards();
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
         break;
     case 8 : //Administration
         //Widget-admin/////////
-        if(!this->pAdministrerMembres)
-        {
-            ////Membre/////////////
-            qDebug()<<"Création ADMIN-F_Membres";
-            this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
-            this->pAdministrerMembres->setVisible(false);
-            this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
-            this->pAdministrerMembres->setVisible(true);
-        }
+        CreerAdminMembres();
 
         /*****************************************************************************/
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
@@ -394,6 +334,114 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
         break;
+    }
+}
+
+void F_MainWindow::CreerAdminMembres()
+{
+    if(!this->pAdministrerMembres)
+    {
+        ////Membre/////////////
+        qDebug()<<"Création ADMIN-F_Membres";
+        this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
+        this->pAdministrerMembres->setVisible(false);
+        this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
+        this->pAdministrerMembres->setVisible(true);
+    }
+}
+
+void F_MainWindow::CreerRetards()
+{
+    if(!this->pRetards)
+    {
+        qDebug()<<"Création F_Retards";
+        this->pRetards=new F_Retards (this->ui->Retards);
+        //Retards
+        this->ui->Layout_Retards->addWidget(this->pRetards);
+        // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
+        connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
+    }
+}
+
+void F_MainWindow::CreerReservations()
+{
+    if(!this->pListeReservations)
+    {
+        qDebug()<<"Création F_ListeReservation";
+        this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
+        //Liste Réservations
+        ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
+    }
+}
+
+void F_MainWindow::CreerMembre()
+{
+    if(!this->pMembres)
+    {
+        qDebug()<<"Création F_Membres";
+        this->pMembres=new F_Membres (this, false, this->ui->Membre);
+        //Membres
+        this->ui->Lay_Membres->addWidget(this->pMembres);
+        connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+    }
+}
+
+void F_MainWindow::CreerListeMembres()
+{
+    if(!this->pListeMembres)
+    {
+        qDebug()<<"Création F_ListeMembres";
+        this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
+        //Liste Membres
+        ui->Lay_ListeMembres->addWidget( this->pListeMembres ) ;
+        connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
+    }
+}
+
+void F_MainWindow::CreerJeux()
+{
+    if(!this->pJeux)
+    {
+        qDebug()<<"Création F_Jeux";
+        this->pJeux=new F_Jeux (this->ui->Jeu);
+        //Jeux
+        this->ui->Lay_Jeux->addWidget(this->pJeux);
+    }
+}
+
+void F_MainWindow::CreerListeJeux()
+{
+    if(!this->pListeJeux)
+    {
+        qDebug()<<"Création F_ListeJeux";
+        this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
+        //Liste Jeux
+        this->ui->Layout_ListeJeux->addWidget(this->pListeJeux);
+
+        // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
+        connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
+    }
+}
+
+void F_MainWindow::CreerEmprunt()
+{
+    if(!this->pEmprunt)
+    {
+        qDebug()<<"Création F_Emprunt";
+        this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
+        //Emprunt
+        this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
+    }
+}
+
+void F_MainWindow::CreerRetour()
+{
+    if(!this->pRetour)
+    {
+        qDebug()<<"Création F_Retour";
+        this->pRetour=new F_Retour (this->ui->Retour);
+        //Retour
+        this->ui->Lay_Retour->addWidget(this->pRetour);
     }
 }
 
@@ -426,6 +474,7 @@ void F_MainWindow::on_Menu_Aide_Aide_triggered()
  */
 void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
 {
+    CreerJeux();
     // Indiquer à l'onglet jeu quel code jeu afficher
     this->pJeux->set_JeuEnConsultation(CodeJeu);
     // Afficher le détail du jeu choisi
@@ -441,6 +490,7 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
  */
 void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
 {
+    CreerMembre();
     // Indiquer à l'onglet Membre quel membre afficher
     this->pMembres->slot_AfficherMembre( IdMembre );
     // Faire apparaître l'onglet Membre

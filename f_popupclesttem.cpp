@@ -19,6 +19,7 @@
  *      -Si 7, il s'agit d'un Type Emprunt.
  *      -Si 8, il s'agit d'un Lieu Ludothèque.
  *      -Si 9, il s'agit d'un Paiement Membre.
+ *      -Si 10, il s'agit d'une activité d'un membre.
  *
  *  Fabrication   Qt Creator, projet    .pro
  *
@@ -154,6 +155,14 @@ void F_PopUpCLESTTEM::Ajouter()
 
         case 9: // Paiement Membre.
             ui->Lb_TitreFenetre->setText("Création d'un Paiement");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+        break;
+
+        case 10: // Activité d'un membre.
+            ui->Lb_TitreFenetre->setText("Création d'une activité");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
@@ -344,6 +353,14 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
 
             this->sCLESTTEM = Recherche.value(0).toString();
             ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+        break;
+
+        case 10: // Activité d'un membre.
+            ui->Lb_TitreFenetre->setText("Modification d'une activité");
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
         break;
 
         default: // Erreur création fenêtre.
@@ -567,6 +584,22 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                     RequeteValider.bindValue(":NomPaiementPrecedent", this->sCLESTTEM);
                     RequeteValider.exec();
                 }
+            }
+        break;
+
+        case 10: // Activité Membre.
+            if(this->bCLESTTEM)
+            {
+                RequeteValider.prepare("INSERT INTO activite (Activite) VALUES (:Activite)");
+                RequeteValider.bindValue(":Activite", ui->LE_CLESTTEM->text());
+                RequeteValider.exec();
+            }
+            else
+            {
+                RequeteValider.prepare("UPDATE activite SET Activite=:Activite WHERE Activite=:ActivitePrecedent");
+                RequeteValider.bindValue(":Activite", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":ActivitePrecedent", this->sCLESTTEM);
+                RequeteValider.exec();
             }
         break;
 
