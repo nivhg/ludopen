@@ -26,6 +26,7 @@
 #include "f_ajoutsuppmodifjeux.h"
 #include "ui_f_ajoutsuppmodifjeux.h"
 #include "f_ajoutsuppmodiffournisseursediteurs.h"
+#include "fonctions_globale.h"
 
 //###################################################################
 /**
@@ -895,6 +896,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          //Entre les valeurs de la requête
          RequeteModifMotCle1.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifMotCle1.bindValue(":LeMotCle1", ui->CBx_MotCle1->currentText());
+
          //Exécute la requête
          if (!RequeteModifMotCle1.exec())
          {
@@ -926,7 +928,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          {
              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked() : MajMotCle3" << RequeteModifMotCle3.lastQuery() ;
          }
-
         //Griser les boutons de modification du contenu
         ActiveBoutons(false);
         ui->Bt_Supprimer->setEnabled(true);
@@ -1872,7 +1873,15 @@ void F_AjoutSuppModifJeux::AfficherJeu()
                 qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteMotCle1="<<RequeteMotCle1.lastQuery() ;
             }
             RequeteMotCle1.next() ;
-            ui->CBx_MotCle1->setCurrentIndex(RequeteMotCle1.value(0).toInt());
+            QString MotCle1=RequeteMotCle1.value(1).toString();
+            if(MotCle1=="")
+            {
+                ui->CBx_MotCle1->setCurrentIndex(0);
+            }
+            else
+            {
+                ui->CBx_MotCle1->setCurrentText(RequeteMotCle1.value(1).toString());
+            }
             TableauPositionIndex[5] = ui->CBx_MotCle1->currentIndex() ;
         }
         //----------------Remplissage CBx MotCle2--------------------------------------------------------
@@ -1890,12 +1899,20 @@ void F_AjoutSuppModifJeux::AfficherJeu()
                 qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteMotCle2="<<RequeteMotCle2.lastQuery() ;
             }
             RequeteMotCle2.next() ;
-            ui->CBx_MotCle2->setCurrentIndex(RequeteMotCle2.value(0).toInt());
+            QString MotCle2=RequeteMotCle2.value(1).toString();
+            if(MotCle2=="")
+            {
+                ui->CBx_MotCle2->setCurrentIndex(0);
+            }
+            else
+            {
+                ui->CBx_MotCle2->setCurrentText(RequeteMotCle2.value(1).toString());
+            }
             TableauPositionIndex[6] = ui->CBx_MotCle2->currentIndex() ;
         }
         //-------------Remplissage CBx MotCle3----------------------------------------------------------------
         QSqlQuery RequeteMotCle3 ;
-        QString IdMotCle3 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle3")).toString() ;
+        QString IdMotCle3 = ObtenirValeurParNom(RequeteRechercheJeu,"MotCle3").toString() ;
         if(IdMotCle3 == 0)
         {
         }
@@ -1908,7 +1925,15 @@ void F_AjoutSuppModifJeux::AfficherJeu()
                 qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() : RequeteMotCle3="<<RequeteMotCle3.lastQuery() ;
             }
             RequeteMotCle3.next() ;
-            ui->CBx_MotCle3->setCurrentIndex(RequeteMotCle3.value(0).toInt());
+            QString MotCle3=RequeteMotCle3.value(1).toString();
+            if(MotCle3=="")
+            {
+                ui->CBx_MotCle3->setCurrentIndex(0);
+            }
+            else
+            {
+                ui->CBx_MotCle3->setCurrentText(RequeteMotCle3.value(1).toString());
+            }
             TableauPositionIndex[7] = ui->CBx_MotCle3->currentIndex() ;
         }
         //--------------Cocher EtatInitial-----------------------------------------------------------------
@@ -2109,19 +2134,25 @@ void F_AjoutSuppModifJeux::ActualiserCBx_MotCle()
 
     QSqlQuery RequeteMotCle ;
 
-    RequeteMotCle.exec("SELECT DISTINCT MotCle FROM motscles ORDER BY MotCle") ;
+    RequeteMotCle.exec("SELECT DISTINCT MotCle,Id_MotCle FROM motscles ORDER BY MotCle") ;
 
     ui->CBx_MotCle1->addItem("Mot clé 1");
     ui->CBx_MotCle2->addItem("Mot clé 2");
     ui->CBx_MotCle3->addItem("Mot clé 3");
 
+    int i=0;
     while(RequeteMotCle.next())
     {
 
-        QString MotCle = (RequeteMotCle.value(0).toString()) ;
+        QString MotCle = ObtenirValeurParNom(RequeteMotCle,"MotCle").toString();
+        QString IdMotCle = ObtenirValeurParNom(RequeteMotCle,"Id_MotCle").toString();
         ui->CBx_MotCle1->addItem(MotCle);
+        // Ajoute son ID dans la partie DATA
+        ui->CBx_MotCle1->setItemData(i,IdMotCle,Qt::UserRole);
         ui->CBx_MotCle2->addItem(MotCle);
+        ui->CBx_MotCle2->setItemData(i,IdMotCle,Qt::UserRole);
         ui->CBx_MotCle3->addItem(MotCle);
+        ui->CBx_MotCle3->setItemData(i,IdMotCle,Qt::UserRole);
     }
     ui->CBx_MotCle1->addItem("Ajouter un mot clé");
     ui->CBx_MotCle2->addItem("Ajouter un mot clé");

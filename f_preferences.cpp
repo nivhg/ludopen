@@ -96,6 +96,9 @@ F_Preferences::F_Preferences(QWidget *parent) :
     this->pMembresActiviteAjMod = new F_PopUpCLESTTEM(10);
     this->pMembresActiviteAjMod->setWindowModality(Qt::ApplicationModal);
 
+    this->pJeuxMotCleAjMod = new F_PopUpCLESTTEM(11);
+    this->pJeuxMotCleAjMod->setWindowModality(Qt::ApplicationModal);
+
     this->TbMembresTitre = new QStandardItemModel();
     ui->TbV_MembresTitre->setModel(this->TbMembresTitre);
     ui->TbV_MembresTitre->setEditTriggers(0);
@@ -146,6 +149,11 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->TbV_MembresActivite->setEditTriggers(0);
     ui->TbV_MembresActivite->verticalHeader()->setVisible(false);
 
+    this->TbJeuxMotCle = new QStandardItemModel();
+    ui->TbV_JeuxMotCle->setModel(this->TbJeuxMotCle);
+    ui->TbV_JeuxMotCle->setEditTriggers(0);
+    ui->TbV_JeuxMotCle->verticalHeader()->setVisible(false);
+
     ui->Lb_VerifCode->hide();
     ui->Lb_InfoConnexion->hide();
     ui->LE_NouveauCode->setEchoMode(QLineEdit::Password);
@@ -164,6 +172,8 @@ F_Preferences::F_Preferences(QWidget *parent) :
     connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pMembresActiviteAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pJeuxMotCleAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
 
     ui->label->hide();
     ui->label_2->hide();
@@ -370,6 +380,23 @@ void F_Preferences::AfficherTousLesTableaux()
         this->TbMembresActivite->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         nNombreLigne = nNombreLigne+ 1;
     }
+    ui->TbV_MembresActivite->selectRow(0);
+
+    nNombreLigne = 0;
+
+    //Affichage de la BDD dans le tableau type d'emprunt qui est dans l'onglet Membres/Emprunts de F_Preferences.
+    this->TbJeuxMotCle->setColumnCount(1);
+    this->TbJeuxMotCle->setRowCount(nNombreLigne);
+    this->TbJeuxMotCle->setHorizontalHeaderItem(0, new QStandardItem("Mot-clé"));
+    ui->TbV_JeuxMotCle->setColumnWidth(0, 180);
+
+    RechercheTableau.exec("SELECT MotCle FROM motscles");
+    while (RechercheTableau.next())
+    {
+        this->TbJeuxMotCle->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
+        nNombreLigne = nNombreLigne+ 1;
+    }
+    ui->TbV_JeuxMotCle->selectRow(0);
 
     nNombreLigne = 0;
 
@@ -470,6 +497,7 @@ void F_Preferences::AfficherTousLesTableaux()
     ui->TbV_InfoLieux->resizeColumnsToContents();
     ui->TbV_JeuxEmplacement->resizeColumnsToContents();
     ui->TbV_MembresActivite->resizeColumnsToContents();
+    ui->TbV_JeuxMotCle->resizeColumnsToContents();
 }
 
 /**
@@ -1183,7 +1211,6 @@ void F_Preferences::on_LE_NumeroFax_textEdited(const QString &arg1)
 void F_Preferences::on_Bt_AjouterActivite_clicked()
 {
     this->pMembresActiviteAjMod->Ajouter();
-    this->AfficherTousLesTableaux();
 }
 
 /**
@@ -1194,11 +1221,10 @@ void F_Preferences::on_Bt_AjouterActivite_clicked()
 void F_Preferences::on_Bt_ModifierActivite_clicked()
 {
     this->pMembresActiviteAjMod->Modifier(this->sMembresActivite);
-    this->AfficherTousLesTableaux();
 }
 
 /**
- *  @brief   Permet de supprimer un titre d'un membre.
+ *  @brief   Permet de supprimer une activité
  *
  *  @pre    Etre connecté à  la BDD.
  *  @see    AfficherTousLesTableaux()
@@ -1209,7 +1235,7 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette activité ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM Activite WHERE Activite=:Activite");
+        RequeteSupprimer.prepare("DELETE FROM activite WHERE Activite=:Activite");
         RequeteSupprimer.bindValue(":Activite", this->sMembresActivite);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
@@ -1221,4 +1247,57 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
 void F_Preferences::on_TbV_MembresActivite_clicked(const QModelIndex &index)
 {
     this->sMembresActivite = this->TbMembresActivite->index(index.row(), 0).data().toString();
+}
+
+//---------------------------------------------------------------------------
+
+/**
+ *  @brief  Permet d'ajouter un mot-clé.
+ *
+ *  @pre    Etre connecté à  la BDD.
+ */
+void F_Preferences::on_Bt_AjouterMotCle_clicked()
+{
+    this->pJeuxMotCleAjMod->Ajouter();
+}
+
+/**
+ *  @brief   Permet de modifier un mot-clé.
+ *
+ *  @pre    Etre connecté à  la BDD.
+ */
+void F_Preferences::on_Bt_ModifierMotCle_clicked()
+{
+    this->pJeuxMotCleAjMod->Modifier(this->sJeuxMotCle);
+}
+
+/**
+ *  @brief   Permet de supprimer un mot-clé
+ *
+ *  @pre    Etre connecté à  la BDD.
+ *  @see    AfficherTousLesTableaux()
+ */
+void F_Preferences::on_Bt_SupprimerMotCle_clicked()
+{
+    QSqlQuery RequeteSupprimer;
+
+    if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce mot-clé ?", "Oui", "Non") == 0)
+    {
+        RequeteSupprimer.prepare("DELETE FROM motscles WHERE MotCle=:MotCle");
+        RequeteSupprimer.bindValue(":MotCle", this->sJeuxMotCle);
+        RequeteSupprimer.exec();
+        RequeteSupprimer.next();
+    }
+
+    this->AfficherTousLesTableaux();
+}
+
+/**
+ *  @brief  Sélectionne la ligne entière du tableau Mot-clé
+ *
+ *  @param  index
+ */
+void F_Preferences::on_TbV_JeuxMotCle_clicked(const QModelIndex &index)
+{
+    this->sJeuxMotCle = this->TbJeuxMotCle->index(index.row(), 0).data().toString();
 }

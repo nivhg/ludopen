@@ -20,6 +20,7 @@
  *      -Si 8, il s'agit d'un Lieu Ludothèque.
  *      -Si 9, il s'agit d'un Paiement Membre.
  *      -Si 10, il s'agit d'une activité d'un membre.
+ *      -Si 11, il s'agit d'un mot-clé d'un jeu.
  *
  *  Fabrication   Qt Creator, projet    .pro
  *
@@ -163,6 +164,14 @@ void F_PopUpCLESTTEM::Ajouter()
 
         case 10: // Activité d'un membre.
             ui->Lb_TitreFenetre->setText("Création d'une activité");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+        break;
+
+        case 11: // Mot-clé d'un jeu.
+            ui->Lb_TitreFenetre->setText("Création d'un mot-clé");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
@@ -361,6 +370,16 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
+            this->sCLESTTEM = sCLESTTEM;
+        break;
+
+        case 11: // Mot-clé.
+            ui->Lb_TitreFenetre->setText("Modification d'un mot-clé");
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+            this->sCLESTTEM = sCLESTTEM;
         break;
 
         default: // Erreur création fenêtre.
@@ -600,6 +619,24 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                 RequeteValider.bindValue(":Activite", ui->LE_CLESTTEM->text());
                 RequeteValider.bindValue(":ActivitePrecedent", this->sCLESTTEM);
                 RequeteValider.exec();
+                QString requete=RequeteValider.lastQuery();
+            }
+        break;
+
+        case 11: // Mot-clé d'un jeu.
+            if(this->bCLESTTEM)
+            {
+                RequeteValider.prepare("INSERT INTO motscles (MotCle) VALUES (:MotCle)");
+                RequeteValider.bindValue(":MotCle", ui->LE_CLESTTEM->text());
+                RequeteValider.exec();
+            }
+            else
+            {
+                RequeteValider.prepare("UPDATE motscles SET MotCle=:MotCle WHERE MotCle=:MotClePrecedent");
+                RequeteValider.bindValue(":MotCle", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":MotClePrecedent", this->sCLESTTEM);
+                RequeteValider.exec();
+                QString requete=RequeteValider.lastQuery();
             }
         break;
 

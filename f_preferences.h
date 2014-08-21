@@ -369,6 +369,14 @@ private slots:
 
     void on_TbV_MembresActivite_clicked(const QModelIndex &index);
 
+    void on_TbV_JeuxMotCle_clicked(const QModelIndex &index);
+
+    void on_Bt_AjouterMotCle_clicked();
+
+    void on_Bt_ModifierMotCle_clicked();
+
+    void on_Bt_SupprimerMotCle_clicked();
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
@@ -404,6 +412,9 @@ private:
     ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
     F_PopUpCLESTTEM * pMembresActiviteAjMod;
 
+    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
+    F_PopUpCLESTTEM * pJeuxMotCleAjMod;
+
     ///< Creer un modele du tableau pour les types des membres.
     QStandardItemModel * TbMembresType;
 
@@ -434,6 +445,9 @@ private:
     ///< Creer un modele du tableau pour les lieux de l'info ludo.
     QStandardItemModel * TbInfoLudoLieux;
 
+    ///< Creer un modele du tableau pour les lieux de l'info ludo.
+    QStandardItemModel * TbJeuxMotCle;
+
     ///< Récupère la valeur du nom du type membre.
     QString sTypeMembre;
 
@@ -463,6 +477,10 @@ private:
 
     ///< Récupère la valeur d'une activite
     QString sMembresActivite;
+
+    ///< Récupère la valeur d'une activite
+    QString sJeuxMotCle;
+
 
     // METHODEs -----------------------------------------------------------------
     /**
