@@ -86,7 +86,7 @@ private:
 
 private:
     QTextStream FluxSMTP ;       ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
-    QTcpSocket SocketSMTP ;      ///< socket pour l'envoi d'email
+    QTcpSocket *SocketSMTP ;      ///< socket pour l'envoi d'email
 
 signals:
     //! Signal indiquand qu'il faut détruire le thread

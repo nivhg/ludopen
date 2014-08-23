@@ -141,6 +141,7 @@ private:
     /// le thread qui gère l'envoie des emails
     Courriel * pCourriel ;
     std::vector<QStandardItem*> Items;      //! Liste des checkboxes dans la combobox d'export
+    QThread *t;
 };
 
 #endif // F_RETARDS_H

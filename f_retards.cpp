@@ -37,7 +37,6 @@ F_Retards::F_Retards(QWidget *parent) :
    QSqlQuery Requete ;
 
    ui->setupUi(this);
-   this->pCourriel = NULL ;
 
    //Mise à  jour de la liste
    this->MaJListe() ;
@@ -414,8 +413,11 @@ void F_Retards::on_Bt_Envoyer_clicked()
     // s'il y a des emails à envoyer
     if ( NbEmailAEnvoyer > 0)
     {
-       // démarre le thread d'envoi pour les email
-       pCourriel->start();
+        //t = new QThread;
+        // démarre le thread d'envoi pour les email
+        //pCourriel->moveToThread(t);
+        //t->start();
+        pCourriel->start();
     }
 
     //On met à jour la liste

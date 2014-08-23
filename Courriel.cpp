@@ -27,11 +27,11 @@
  *  @param const QString sAdresseSmtp, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps
  *  @test   Voir la procédure dans le fichier associé.
  */
-Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> *ListeEMailAEnvoyer ) :
-    QThread ( NULL )
+Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> *ListeEMailAEnvoyer) :
+    QThread()
 {
-   //QTcpSocket Courriel::SocketSMTP(this);
-   qDebug()<<"Courriel::Courriel SocketSMTP="<< &SocketSMTP;
+       //QTcpSocket Courriel::SocketSMTP(this);
+   //qDebug()<<"Courriel::Courriel SocketSMTP="<< SocketSMTP;
 
    //  avoir accès au vecteur qui contient les emails à envoyer
    this->ListeEMailAEnvoyer = ListeEMailAEnvoyer ;
@@ -42,7 +42,6 @@ Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector
 
    //QTcpSocket Courriel::SocketSMTP ;
    //Création du flux
-   this->FluxSMTP.setDevice( &SocketSMTP ) ;
 }
 
 /** Détruit les objets dynamiques créés
@@ -52,7 +51,7 @@ Courriel::~Courriel()
 {
    qDebug("Courriel::~Courriel DEB") ;
    this->FluxSMTP.flush(); ;
-   SocketSMTP.disconnectFromHost();
+   SocketSMTP->disconnectFromHost();
    qDebug("Courriel::~Courriel FIN") ;
 }
 
@@ -111,17 +110,24 @@ void Courriel::run()
     this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
     this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
 
+    this->SocketSMTP=new QTcpSocket(this);
+    this->FluxSMTP.setDevice( SocketSMTP ) ;
+
     //connect avec le socket-----------------------------------------------------------------------------------------------
-    connect( &this->SocketSMTP, SIGNAL( readyRead() ), this, SLOT( slot_ReceptionDonnees() ) ) ;
-    connect( &this->SocketSMTP, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
-    connect( &this->SocketSMTP, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecue( QAbstractSocket::SocketError ) ) ) ;
-    connect( &this->SocketSMTP, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
+    connect( this->SocketSMTP, SIGNAL( readyRead() ), this, SLOT( slot_ReceptionDonnees() ) ) ;
+    connect( this->SocketSMTP, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
+    connect( this->SocketSMTP, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecue( QAbstractSocket::SocketError ) ) ) ;
+    connect( this->SocketSMTP, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
     //connect( this, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( TraiterEMailSuivant( uint ) ) ) ;
+    // start the tcp thread
+    //SocketSMTP->moveToThread(this);    // move events to thread
+    //this->start();   // start the thread
 
     //Connection au serveur smtp
-    SocketSMTP.connectToHost( this->sAdresseSmtp , this->nPort) ;
+    SocketSMTP->connectToHost( this->sAdresseSmtp , this->nPort) ;
     this->EtapeConnexion = Init ;
 
+    this->exec();
     qDebug("Courriel::run FIN") ;
 }
 
@@ -134,10 +140,10 @@ void Courriel::slot_ReceptionDonnees()
     //Attente de la réponse
     do
     {
-        ReponseServeurSMTP = this->SocketSMTP.readLine() ;
+        ReponseServeurSMTP = this->SocketSMTP->readLine() ;
         //qDebug() << ReponseServeurSMTP ;
     }
-    while ( this->SocketSMTP.canReadLine() ) ;
+    while ( this->SocketSMTP->canReadLine() ) ;
 
     ReponseServeurSMTP.truncate( 3 ) ;
 
@@ -273,7 +279,7 @@ void Courriel::slot_ReceptionDonnees()
         }
         else
         {
-            //Indique qu'il y a une erreur lors de l'envoie du message
+            //Indique qu'il y a une erreur lors de l'envoi du message
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : Quitter";
             //emit( this->Signal_Erreur_EMail( "EMAIL : Fin de connexion impossible" ) ) ;
