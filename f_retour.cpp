@@ -558,8 +558,8 @@ void F_Retour::AfficherJeuxEnEmprunt()
          //on ajoute une nouvelle ligne du table view
          this->ModelJeuEmpruntes->setItem(NumeroLigne, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString()));
          this->ModelJeuEmpruntes->setItem(NumeroLigne, 1, new QStandardItem(RequeteJeuEmprunte.value(2).toString()));
-         this->ModelJeuEmpruntes->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("yyyy-MM-dd ddd") ));
-         this->ModelJeuEmpruntes->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("yyyy-MM-dd ddd") ));
+         this->ModelJeuEmpruntes->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("ddd dd-MM-yyyy") ));
+         this->ModelJeuEmpruntes->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("ddd dd-MM-yyyy") ));
 
          // Calculer la date de retour possible avec la tolérance du nombre de jours
          DateDeRetourPrevue = RequeteJeuEmprunte.value(1).toDate();
@@ -583,7 +583,16 @@ void F_Retour::AfficherJeuxEnEmprunt()
             this->ModelJeuEmpruntes->setData(ModelJeuEmpruntes->index(NumeroLigne,3),QColor(Qt::red), Qt::BackgroundColorRole);
 
             // Calculer l'amende à payer
-            NbDeSemainesDeRetard = DateDeRetourPrevue.daysTo( QDate::currentDate() ) / RequeteNbJoursRetardToleres.value(0).toInt() ;
+            int NbJours=DateDeRetourPrevue.daysTo( QDate::currentDate() );
+            int JoursToleres=RequeteNbJoursRetardToleres.value(0).toInt();
+            if(JoursToleres==0)
+            {
+                NbDeSemainesDeRetard=0;
+            }
+            else
+            {
+                NbDeSemainesDeRetard = NbJours / JoursToleres ;
+            }
             this->Amende=this->Amende+RequeteAmende.value(0).toFloat() * NbDeSemainesDeRetard ;
             //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
          }

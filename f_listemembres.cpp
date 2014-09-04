@@ -166,6 +166,8 @@ void F_ListeMembres::DecocherTout( bool bSelection )
     ui->ChBx_DateNaissance->setChecked( bSelection ) ;
     ui->ChBx_Cotisation->setChecked( bSelection ) ;
     ui->ChBx_Abonnements->setChecked( bSelection ) ;
+    ui->ChBx_Retard->setChecked( bSelection );
+    ui->ChBx_Activite->setChecked( bSelection );
     this->AffichageListe();
 }
 
@@ -323,12 +325,12 @@ bool F_ListeMembres::AffichageListe()
             "titremembre,abonnements,activitemembre " ;
     sRequeteWHERE = "WHERE" ;
 
-    if ( ui->ChBx_Type->isChecked() )
+    if ( ui->ChBx_Type->isChecked() && ui->CBx_Type->currentIndex() != -1)
     {
         sRequeteWHERE = sRequeteWHERE + " TypeMembres_IdTypeMembres=" +  sNumero.setNum(this->VectorType[ui->CBx_Type->currentIndex()].id) + " AND" ;
     }
 
-    if ( ui->ChBx_Titre->isChecked() )
+    if ( ui->ChBx_Titre->isChecked() && ui->CBx_Titre->currentIndex() != -1)
     {
         sRequeteWHERE = sRequeteWHERE + " TitreMembre_IdTitreMembre=" + sNumero.setNum(this->VectorTitre[ui->CBx_Titre->currentIndex()].id) + " AND" ;
     }
@@ -382,40 +384,40 @@ bool F_ListeMembres::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " DateNaissance<='" + ui->DtE_DN_Fin->dateTime().toString("yyyy-MM-dd") + "' AND" ;
     }
 
-    if( ui->ChBx_Activite->isChecked() )
+    if( ui->ChBx_Activite->isChecked() && ui->CBx_Activites->currentIndex() !=-1)
     {
         int index = ui->CBx_Activites->currentIndex();
         QString sIdActivite = ui->CBx_Activites->itemData(index,Qt::UserRole).toString();
         sRequeteWHERE = sRequeteWHERE + " Activite_IdActivite = " + sIdActivite
                 + " AND IdMembre = activitemembre.Membres_IdMembre AND";
     }
-    if( ui->ChBx_Cotisation->isChecked() )
+    if( ui->ChBx_Cotisation->isChecked() && ui->CBx_Cotisation->currentIndex() !=-1)
     {
         switch( ui->CBx_Cotisation->currentIndex() )
         {
         case 0 : // cotisation expirée
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
             break ;
 
         case 1 : // cotisation expirant dans 2 semaines (14 jours)
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
-                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
+                                          + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
             break ;
 
         case 2 : // cotisation expirant dans 1 mois
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
-                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
+                                          + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
             break ;
         case 3 :  // cotisation à jour
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addYears( 1 ).toString( "yyyy-MM-dd" )
-                                          + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addYears( 1 ).toString( "yyyy-MM-dd" )
+                                          + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
             break ;
         }
     }
@@ -580,7 +582,7 @@ void F_ListeMembres::on_Bt_SelectionListe_clicked()
     //Permet mettre toute les checkbox en état "Check"
     for (register int i (0) ; i < ui->TbW_ListeMembre->model()->rowCount() ; i++ )
     {
-        ui->TbW_ListeMembre->model()->setData( ui->TbW_ListeMembre->model()->index(i ,0), Qt::Checked, Qt::CheckStateRole) ;
+        ui->TbW_ListeMembre->model()->setData( ui->TbW_ListeMembre->model()->index(i ,1), Qt::Checked, Qt::CheckStateRole) ;
     }
 }
 
@@ -589,7 +591,7 @@ void F_ListeMembres::on_Bt_DeselectionListe_clicked()
     //Parcour la liste pour "decheck" toute toutes les checkbox
     for (register int i (0) ; i < ui->TbW_ListeMembre->model()->rowCount() ; i++ )
     {
-        ui->TbW_ListeMembre->model()->setData( ui->TbW_ListeMembre->model()->index(i ,0), Qt::Unchecked, Qt::CheckStateRole) ;
+        ui->TbW_ListeMembre->model()->setData( ui->TbW_ListeMembre->model()->index(i ,1), Qt::Unchecked, Qt::CheckStateRole) ;
     }
 }
 
@@ -602,10 +604,10 @@ void F_ListeMembres::on_Bt_SupprimerListe_clicked()
 
     if ( QMessageBox::information( this, "Suppression Membre","Voulez vous vraiment supprimer tous les membres", "Supprimer", "Annuler" ) == 0 )
     {
-        for (register int i (0) ; i < ui->TbW_ListeMembre->model()->columnCount() ; i++ )
+        for (register int i (0) ; i < ui->TbW_ListeMembre->model()->rowCount() ; i++ )
         {
-            //Si le checkbox est "check" on prépare le mail et on l'envoie
-            if(ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index(i ,0), Qt::CheckStateRole).toBool() )
+            //Si le checkbox est "check" on vérifie qu'il n'y a pas d'emprunts et on supprime le membre
+            if(ui->TbW_ListeMembre->model()->data( ui->TbW_ListeMembre->model()->index(i ,1), Qt::CheckStateRole).toBool() )
             {
                 //Préparation de la requête la recherche des emprunts
                 RequeteEmprunts.prepare( "SELECT IdEmprunts FROM emprunts WHERE Membres_IdMembre=:IdMembre AND DateRetour IS NULL  " ) ;
@@ -865,6 +867,11 @@ void F_ListeMembres::on_ChBx_Activite_clicked()
 }
 
 void F_ListeMembres::on_CBx_Activites_currentIndexChanged(int index)
+{
+    this->AffichageListe() ;
+}
+
+void F_ListeMembres::on_ChBx_Retard_clicked()
 {
     this->AffichageListe() ;
 }

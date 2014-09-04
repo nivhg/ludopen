@@ -49,6 +49,16 @@ void SecureFileUploader::init(const QString &host, const QString &username, cons
 }
 
 /**
+ *  @brief EffacerCommandes : Efface la liste des commandes et fichiers source et destination
+ */
+void SecureFileUploader::EffacerCommandes()
+{
+    m_ListeCommandes.clear();
+    m_ListeFichierDestination.clear();
+    m_ListeFichierSource.clear();
+}
+
+/**
  *  @brief Ajoute une commande à la liste des commandes
  *
  *  @param commande : Type de commande à faire
@@ -97,7 +107,7 @@ void SecureFileUploader::onConnected()
         m_canal->initialize();
 
     } else {
-        qDebug() << "SecureUploader: Erreur canal nul";
+        qDebug() << "SecureUploader: Erreur canal nul. State :" << m_connexion->state();;
     }
 }
 
@@ -124,18 +134,26 @@ void SecureFileUploader::onChannelInitialized()
         switch(m_ListeCommandes[i])
         {
             case COMMANDE_TELEVERSEMENT:
+                qDebug() << "SecureUploader: Téléversement de " << m_ListeFichierSource[i]
+                            << "vers " << m_ListeFichierDestination[i];
                 job = m_canal->uploadFile(m_ListeFichierSource[i], m_ListeFichierDestination[i],QSsh::SftpOverwriteExisting);
                 break;
             case COMMANDE_RENOMMER:
+                qDebug() << "SecureUploader: Renommage de " << m_ListeFichierSource[i]
+                            << "vers " << m_ListeFichierDestination[i];
                 job = m_canal->renameFileOrDirectory(m_ListeFichierSource[i], m_ListeFichierDestination[i]);
                 break;
             case COMMANDE_SUPPRIMER:
+                qDebug() << "SecureUploader: Téléversement de " << m_ListeFichierSource[i];
                 job = m_canal->removeFile(m_ListeFichierSource[i]);
                 break;
         }
-        if (job != QSsh::SftpInvalidJob) {
+        if (job != QSsh::SftpInvalidJob)
+        {
             qDebug() << "SecureUploader: Demarrage de la commande #" << job;
-        } else {
+        }
+        else
+        {
             qDebug() << "SecureUploader: Commande invalide";
         }
         if(i==m_ListeCommandes.count()-1)

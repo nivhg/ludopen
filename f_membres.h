@@ -49,7 +49,7 @@ public:
      *  @param  pRechercheMembres : point sur un F_RechercheMembres, bAdmin : Indique si c'est une fenêtre administration
      *  @test   Voir la procédure dans le fichier associé.
      */
-    explicit F_Membres(QWidget * pRechercheMembres = NULL, bool bAdmin = false, QWidget *parent = 0) ;
+    explicit F_Membres(bool bAdmin = false, QWidget *parent = 0) ;
     ~F_Membres() ;
 
 
@@ -99,8 +99,11 @@ public:
     //! Verrouille ou deverouille l'emplacement des emprunts
     void VerrouillerJeux (bool bVerrouille ) ;
 
-    //! Verouille ou deverouille l'emplacement des abonnements
+    //! Verrouille ou deverrouille l'emplacement des abonnements
     void VerrouillerAbonnements ( bool bVerrouille ) ;
+
+    //! Verrouille ou deverrouille l'emplacement des activités
+    void VerrouillerActivite ( bool bVerrouille ) ;
 
     //! Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractéres dans un string
     QString ModifierSyntaxeNumTelephone ( QString sNum) ;
@@ -243,7 +246,6 @@ private:
     QVector<Membre> VecteurRechercheMembres ; ///< Vecteur contenant la liste des membres correspondant à  la recherche
     QStandardItemModel ModeleRechercheMembre;
 
-    QWidget * pRechercheMembres ; //! Pointeur sur la classe F_RechercheMembres
     F_HistoriqueJeux *   pHistoriqueJeux ;   //! Pointeur sur la classe F_HistoriqueJeux
     F_AjouterCotiCarte * pAjouterCotiCarte ; //! Pointeur sur la classe F_AjouterCoticarte
 

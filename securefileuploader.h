@@ -52,6 +52,11 @@ public:
      */
     void FaireCommandes();
 
+    /**
+     *  @brief EffacerCommandes : Efface la liste des commandes et fichiers source et destination
+     */
+    void EffacerCommandes();
+
 signals:
     /** @brief Signal emit à la fin du (télé)chargement des images
     */

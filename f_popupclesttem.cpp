@@ -591,18 +591,15 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO modepaiement (NomPaiement) VALUES (:NomPaiement)");
-                RequeteValider.bindValue(":NomLieux", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":NomPaiement", ui->LE_CLESTTEM->text());
                 RequeteValider.exec();
             }
             else
             {
-                if(this->bCLESTTEM == false)
-                {
-                    RequeteValider.prepare("UPDATE modepaiement SET NomPaiement=:NomPaiement WHERE NomPaiement=:NomPaiementPrecedent");
-                    RequeteValider.bindValue(":NomPaiement", ui->LE_CLESTTEM->text());
-                    RequeteValider.bindValue(":NomPaiementPrecedent", this->sCLESTTEM);
-                    RequeteValider.exec();
-                }
+                RequeteValider.prepare("UPDATE modepaiement SET NomPaiement=:NomPaiement WHERE NomPaiement=:NomPaiementPrecedent");
+                RequeteValider.bindValue(":NomPaiement", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":NomPaiementPrecedent", this->sCLESTTEM);
+                RequeteValider.exec();
             }
         break;
 

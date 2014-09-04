@@ -781,7 +781,7 @@
          </palette>
         </property>
         <property name="text">
-         <string>Enregistrer</string>
+         <string>Valider</string>
         </property>
         <property name="icon">
          <iconset resource="ImagesIcones.qrc">
@@ -1129,6 +1129,11 @@
            </property>
            <item row="0" column="0">
             <widget class="QLabel" name="Lb_Code">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Code membre :</string>
              </property>
@@ -1142,6 +1147,11 @@
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="Lb_CodeMembreAssocie">
+             <property name="font">
+              <font>
+               <pointsize>8</pointsize>
+              </font>
+             </property>
              <property name="text">
               <string>Membre associé :</string>
              </property>
@@ -1829,6 +1839,11 @@
              </disabled>
             </palette>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Membre écarté</string>
            </property>
@@ -1876,6 +1891,11 @@
              </disabled>
             </palette>
            </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
+           </property>
            <property name="text">
             <string>Nbre de retards :</string>
            </property>
@@ -1922,6 +1942,11 @@
               </colorrole>
              </disabled>
             </palette>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>8</pointsize>
+            </font>
            </property>
            <property name="text">
             <string>Nbre de jeux autorisés :</string>

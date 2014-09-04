@@ -55,11 +55,11 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
         iInversionDecalage=0;
         QSqlQuery RequeteConnexionServeur;
         //Récupères les informations pour la connexion au serveur
-        RequeteConnexionServeur.exec("SELECT CheminPhotosJeux, CheminPhotoServeur,AdresseServeur,LoginServeur FROM preferences WHERE IdPreferences=1") ;
+        RequeteConnexionServeur.exec("SELECT CheminPhotosJeux, CheminPhotosServeur,AdresseServeur,LoginServeur FROM preferences WHERE IdPreferences=1") ;
         RequeteConnexionServeur.next() ;
         sCheminPhotoJeux = ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosJeux").toString();
         EstCeLocal=!EstCeURL(sCheminPhotoJeux);
-        sCheminPhotoServeur=ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotoServeur").toString();
+        sCheminPhotoServeur=ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosServeur").toString();
         sAdresseServeur=ObtenirValeurParNom(RequeteConnexionServeur,"AdresseServeur").toString();
         sLoginServeur=ObtenirValeurParNom(RequeteConnexionServeur,"LoginServeur").toString();
 
@@ -265,7 +265,7 @@ void D_Image::on_Bt_Gauche_clicked()
  */
 void D_Image::MontrerLudopenWebDeux(bool Montrer)
 {
-    if(Montrer)
+    if(Montrer && sCheminImage.count()!=0)
     {
         if(EstCeNomFichierContient(sCheminImage[0],"-"))
         {
@@ -324,7 +324,10 @@ void D_Image::on_Bt_DeplacerGauche_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Inverser(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -344,7 +347,10 @@ void D_Image::on_Bt_DeplacerDroite_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Inverser(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -356,6 +362,11 @@ void D_Image::on_Bt_DeplacerDroite_clicked()
  */
 void D_Image::Inverser(int emplacement)
 {
+    if( iInversionDecalage == 0 )
+    {
+        // Il n'y a rien à faire, on quitte la fonction
+        return;
+    }
     QString NomFichierTemporaire = QString::number(QDateTime::currentMSecsSinceEpoch())+".tmp";
     // Info de l'image sélectionnée
     QFileInfo InfoFichierSource(sCheminImage[iLbImageSelectionnee+iDecalage]);
@@ -370,14 +381,12 @@ void D_Image::Inverser(int emplacement)
                                          InfoFichierSource.completeSuffix());
     if(emplacement==EMPLACEMENT_SERVEUR)
     {
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierDestination,
                                   sCheminPhotoServeur + NomFichierTemporaire);
         uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierSource,
                                   sCheminPhotoServeur + NouveauNomFichierDestination);
         uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierTemporaire,
                                   sCheminPhotoServeur + NouveauNomFichierSource);
-        uploader->FaireCommandes();
     }
     else
     {
@@ -452,7 +461,10 @@ void D_Image::on_Bt_Ajouter_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Ajouter(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -488,7 +500,6 @@ void D_Image::Ajouter(int emplacement)
         i++;
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
-            uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
             uploader->AjouterCommande(COMMANDE_TELEVERSEMENT,sNomImageAjoutee,sCheminPhotoServeur+"/"+DestNomFichier);
         }
         else
@@ -510,16 +521,11 @@ void D_Image::Ajouter(int emplacement)
             sCheminImage << DestCheminFichier;
             // Si le nombre d'image ajouté sort du cadre (on affiche que 3 images à la fois),
             // On active le bouton Droite
-            if(sNomImagesAjoutees.count()+sCheminImage.count()-iDecalage>3)
+            if(sCheminImage.count()-iDecalage>3)
             {
                 ui->Bt_Droite->setEnabled(true);
             }
         }
-    }
-    // Après avoir ajouté toutes les commandes nécessaires, on les exécute
-    if(emplacement==EMPLACEMENT_SERVEUR)
-    {
-        uploader->FaireCommandes();
     }
 }
 
@@ -536,7 +542,10 @@ void D_Image::on_Bt_Supprimer_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Suppression(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -552,7 +561,6 @@ void D_Image::Suppression(int emplacement)
     if(emplacement==EMPLACEMENT_SERVEUR)
     {
         InfoFichierSource.setFile(NomFichierSource);
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         uploader->AjouterCommande(COMMANDE_SUPPRIMER,
             sCheminPhotoServeur+"/"+InfoFichierSource.fileName(),"");
     }
@@ -606,11 +614,7 @@ void D_Image::DecalerAGauche(int emplacement)
             sCheminImage[i-1]=CheminFichierDestination;
         }
     }
-    if(emplacement==EMPLACEMENT_SERVEUR)
-    {
-        uploader->FaireCommandes();
-    }
-    else
+    if(emplacement!=EMPLACEMENT_SERVEUR)
     {
         // On supprime la dernière case du tableeau sCheminImage
         sCheminImage.removeLast();
@@ -640,7 +644,10 @@ void D_Image::on_Bt_Defaut_Ludopen_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirLudopen(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -666,11 +673,9 @@ void D_Image::DefinirLudopen(int emplacement)
         // On renomme l'image sélectionnée en sCodeJeu suivit de son extension
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
-            uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
             uploader->AjouterCommande(COMMANDE_RENOMMER,
                 sCheminPhotoServeur + InfoFichierSource.fileName(),
                 sCheminPhotoServeur + sCodeJeu+"."+InfoFichierSource.completeSuffix());
-            uploader->FaireCommandes();
         }
         else
         {
@@ -688,7 +693,7 @@ void D_Image::DefinirLudopen(int emplacement)
             FichierSource.setFileName(NomFichierSource);
             FichierSource.rename(NomFichierDestination);
             // On supprime l'image sélectionnée du tableau
-            sCheminImage.removeAt(iLbImageSelectionnee+iDecalage);
+//            sCheminImage.removeAt(iLbImageSelectionnee+iDecalage);
             // Et on l'ajoute au début
             sCheminImage.insert(0,NomFichierDestination);
         }
@@ -712,7 +717,10 @@ void D_Image::on_Bt_Defaut_Web_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirWeb(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -748,7 +756,10 @@ void D_Image::on_Bt_Defaut_Deux_clicked()
     }
     else
     {
+        uploader->EffacerCommandes();
+        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirDeux(EMPLACEMENT_SERVEUR);
+        uploader->FaireCommandes();
     }
 }
 
@@ -771,11 +782,11 @@ void D_Image::DefinirDeux(int emplacement)
         // On déplace le 1° fichier en fin de liste (nouvel élément)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
-            uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
             uploader->AjouterCommande(COMMANDE_RENOMMER,
                 sCheminPhotoServeur + InfoFichierSource.fileName(),
                 sCheminPhotoServeur + NouveauNomFichierDestination);
-            uploader->FaireCommandes();
+            // On inverse la première image (qui est une "-2") avec celle sélectionnée
+            iInversionDecalage=-iLbImageSelectionnee-iDecalage+1;
         }
         else
         {
@@ -794,24 +805,24 @@ void D_Image::DefinirDeux(int emplacement)
             // Le 1° fichier est mis à la fin et on le supprime du tableau
             sCheminImage<<CheminNouvelleDestination;
             sCheminImage.removeAt(0);
+            // Si on a sélectionné le 1° fichier, on va inverser ce fichier
+            // (qui se trouve désormais en fin de liste) avec le fichier -2
+            if(iLbImageSelectionnee-iDecalage==0)
+            {
+                iLbImageSelectionneeSauvegardee=iLbImageSelectionnee;
+                iLbImageSelectionnee=sCheminImage.count()-1;
+            }
+            else
+            // Sinon, on inverse l'image sélectionnée
+            // (qui se trouve décalée de 1, vu que la 1° case du tableau a été supprimée) avec le fichier -2
+            {
+                iLbImageSelectionnee--;
+            }
+            // On inverse la première image (qui est une "-2") avec celle sélectionnée
+            iInversionDecalage=-iLbImageSelectionnee-iDecalage;
         }
         MontrerLudopenWebDeux(true);
-        // Si on a sélectionné le 1° fichier, on va inverser ce fichier
-        // (qui se trouve désormais en fin de liste) avec le fichier -2
-        if(iLbImageSelectionnee-iDecalage==0)
-        {
-            iLbImageSelectionneeSauvegardee=iLbImageSelectionnee;
-            iLbImageSelectionnee=sCheminImage.count()-1;
-        }
-        else
-        // Sinon, on inverse l'image sélectionnée
-        // (qui se trouve décalée de 1, vu que la 1° case du tableau a été supprimée) avec le fichier -2
-        {
-            iLbImageSelectionnee--;
-        }
     }
-    // On inverse la première image (qui est une "-2") avec celle sélectionnée
-    iInversionDecalage=-iLbImageSelectionnee-iDecalage;
     Inverser(emplacement);
     // Si l'image sélectionnée a la valeur de la taille du tableau, on restaure sa valeur
     if(iLbImageSelectionnee==sCheminImage.count())
@@ -891,6 +902,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
             case OP_DEFINIR_DEUX:
                 if(!EstCeLocal) DefinirDeux(EMPLACEMENT_TEMP);
                 RechargerImages();
+                ChangerSelection(lb_image);
                 break;
         }
     }

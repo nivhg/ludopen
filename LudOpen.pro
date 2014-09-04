@@ -11,7 +11,7 @@ TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
 # Si je veux que l'application démarre dans une fenêtre de shell
 # pour avoir les messages d'erreur
-#CONFIG   += CONSOLE
+CONFIG   += CONSOLE
 
 INCLUDEPATH = $$PWD/libs/ssh/
 

@@ -176,7 +176,7 @@ void F_ListeReservations::MaJLieux ()
     ui->CBx_LieuxDeReservation->clear() ;
     ui->CBx_LieuxDeRetrait->clear() ;
 
-    //Exécution de la requête qui sélectionne le contenu de la table tytremembres
+    //Exécution de la requête qui sélectionne le contenu de la table titremembres
     if( RequeteDesReservations.exec( "SELECT * FROM lieux" ) )
     {
         oLieux.id = 0 ;

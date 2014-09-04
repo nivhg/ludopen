@@ -75,7 +75,8 @@ void F_DeclarerIntervention::on_Bt_ValiderIntervention_clicked()
     
     unsigned int IdDuJeu = RequeteCorrespondanceId_Jeux.value(0).toInt() ;
     
-    RequeteDeclarerIntervention.prepare("INSERT INTO intervientionsjeu(DateIntervention, TypeIntervention, Jeux_IdJeux) VALUES (:DateIntervention, :TypeIntervention, :Jeux_IdJeux)" ) ;
+    RequeteDeclarerIntervention.prepare("INSERT INTO intervientionsjeu(DateIntervention, TypeIntervention,"
+                             "Jeux_IdJeux) VALUES (:DateIntervention, :TypeIntervention, :Jeux_IdJeux)" ) ;
     RequeteDeclarerIntervention.bindValue(":DateIntervention", this->ui->DE_DateIntervention->date());
     RequeteDeclarerIntervention.bindValue(":TypeIntervention", this->ui->TxE_Intervention->toPlainText());
     RequeteDeclarerIntervention.bindValue(":Jeux_IdJeux", IdDuJeu);

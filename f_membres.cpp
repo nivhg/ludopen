@@ -24,7 +24,7 @@
  *  @param  F_RechercheMembres * pRechercheMembres
  *
  */
-F_Membres::F_Membres( QWidget * pRechercheMembres, bool bAdmin, QWidget *parent ):
+F_Membres::F_Membres( bool bAdmin, QWidget *parent ):
     QWidget( parent ),
     ui( new Ui::F_Membres )
 {
@@ -39,8 +39,6 @@ F_Membres::F_Membres( QWidget * pRechercheMembres, bool bAdmin, QWidget *parent 
     //aucun membre sélectionné par defaut
     this->nIdMembreSelectionne = 0 ;
 
-    //Initialisation des pointeur
-    this->pRechercheMembres = pRechercheMembres ;
     qDebug()<< "F_Membres::Creation F_HistoriqueJeux";
     this->pHistoriqueJeux = new F_HistoriqueJeux ;
     this->pHistoriqueJeux->setWindowModality( Qt::ApplicationModal ) ;
@@ -359,40 +357,6 @@ int F_Membres::RecupererProchainCodeNonUtilise ()
      return ui->TbW_Recherche->currentIndex().row() ;
  }
 
-
- //---------------------------------------------------------------------------
- // SLOTS PRIVEES
- //---------------------------------------------------------------------------
- /** Sélectionne un membre avec un double click
-  *  @pre    Double clique sur un membre
-  *  @param  const QModelIndex &index
-  *  @test   Voir la procédure dans le fichier associé.
-  */
- void F_Membres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
- {
-     on_TbW_Recherche_clicked(index);
- }
-
- /** Sélectionne un membre avec un click
-  *  @param  const QModelIndex &index
-  *  @test   Voir la procédure dans le fichier associé.
-  */
-void F_Membres::on_TbW_Recherche_clicked(const QModelIndex &index)
-{
-    slot_AfficherMembre(this->VecteurRechercheMembres[index.row()].id);
-}
-
-/** Recherche les membres correspondant au champs chaque fois que le champs est modifié
- *  @param  const QString &arg1
- *  @test   Voir la procédure dans le fichier associé.
- */
-void F_Membres::on_LE_Nom_textEdited(const QString &arg1)
-{
-    // Effectue la recherche
-    this->RechercherParNomEtNumero() ;
-    // Sélectionne le premier résultat
-    ui->TbW_Recherche->selectRow( 0 ) ;
-}
 
 //==========================================================================================================
 /** Met   jour la liste des Titres depuis la base de données
@@ -1199,8 +1163,11 @@ void F_Membres::EffacerTousLesChamps ()
     ui->DtE_Insritption->clear() ;
     ui->DtE_Naissance->clear() ;
     ui->TE_Remarque->clear() ;
-    ui->LW_JeuxEmpruntes->clearSpans() ;
-    ui->Tw_activites->clearSpans();
+    QStandardItemModel* modeleVide = new QStandardItemModel() ;
+    ui->LW_JeuxEmpruntes->setModel( modeleVide ) ;
+    ui->LW_Abonnements->setModel( modeleVide ) ;
+    ui->Tw_activites->clearContents();
+    ui->Tw_activites->setRowCount(0);
     ui->SBx_JeuxAutorises->clear() ;
 
     ui->Lb_MembreEcarte->setHidden( true ) ;
@@ -1210,7 +1177,8 @@ void F_Membres::EffacerTousLesChamps ()
  */
 void F_Membres::AfficherAjouterModifierMembre ( bool bAffiche )
 {
-    ui->Bt_AjouterMembre->setVisible( bAffiche ) ;
+    // VV : Ne voit pas l'utilité de masquer le bouton de création de membre
+    //ui->Bt_AjouterMembre->setVisible( bAffiche ) ;
     if ( bAdmin == true )
     {
         ui->Bt_SupprimerMembre->setVisible( bAffiche ) ;
@@ -1244,6 +1212,14 @@ void F_Membres::VerrouillerAbonnements ( bool bVerrouille )
     ui->Bt_AjouterAbonnement->setDisabled( bVerrouille ) ;
     ui->Bt_ModifierAbonnement->setDisabled( bVerrouille ) ;
     ui->Bt_SupprimerAbonnement->setDisabled( bVerrouille ) ;
+}
+//==========================================================================================================
+/** Verouille ou deverouille l'emplacement des activités
+ */
+void F_Membres::VerrouillerActivite ( bool bVerrouille )
+{
+    ui->Bt_AjouterActivite->setDisabled( bVerrouille ) ;
+    ui->Bt_SupprimerActivite->setDisabled( bVerrouille ) ;
 }
 //==========================================================================================================
 /** Permet l'affichage d'un membre
@@ -1405,6 +1381,34 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
         ui->CBx_Ville->setCurrentIndex( 0 ) ;
     }
 }
+
+/**
+ *  @brief Mets en majuscule le texte saisi dans un QLineEdit
+ *
+ *  @param text
+ */
+
+void F_Membres::toUpper(const QString &text)
+{
+    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
+    if (!le)
+    return;
+    le->setText(text.toUpper());
+}
+
+//==========================================================================================================
+/** Récupère l'id d'un membre pour l'afficher
+ *  @pre    Recevoir un signal avec l'id d'un membre
+ *  @param  unsigned int nIdMembre
+ */
+void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
+{
+    this->VerrouillerAbonnements( false ) ;
+    this->VerrouillerActivite(false);
+    this->VerrouillerJeux( false ) ;
+    this->AfficherMembre( nIdMembre ) ;
+}
+
 //==========================================================================================================
 /** Permet l'ajout d'un type
  */
@@ -1595,7 +1599,7 @@ void F_Membres::on_CBx_Titre_activated(int index)
  */
 void F_Membres::on_Bt_AjouterMembre_clicked()
 {
-   qDebug()<< "F_Membres::on_Bt_AjouterMembre_clicked";
+    qDebug()<< "F_Membres::on_Bt_AjouterMembre_clicked";
 
     QString sNombre      ;
     QDate   DateActuelle ;
@@ -1604,13 +1608,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     this->nIdMembreSelectionne = 0 ;
 
     this->AfficherVilles( "" ) ;
-
-    modeleVide = new QStandardItemModel() ;
-    ui->LW_JeuxEmpruntes->setModel( modeleVide ) ;
-
-    ui->LW_Abonnements->setModel( modeleVide ) ;
-
-    this->pRechercheMembres->setDisabled( true ) ;
 
     this->AfficherAjouterModifierMembre( false ) ;
 
@@ -1622,7 +1619,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     this->VerrouillerJeux( true ) ;
 
-    this->VerrouillerAbonnements( false ) ;
 
     //Sélectionne le premier CodeMembre qui est libre (supérieur au plus grand)
     QSqlQuery RequetePremierCodeLibre ;
@@ -1637,8 +1633,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     ui->Bt_ValiderMembre->setDisabled( true ) ;
 
-    ui->Bt_ValiderMembre->setText( "Valider création" ) ;
-
     ui->Lb_MembreEcarte->hide() ;
 
     ui->ChBx_MembreEcarte->hide() ;
@@ -1646,9 +1640,10 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     ui->SPx_NbreRetards->setDisabled( true ) ;
 
     ui->DtE_Naissance->setDate( QDate( 1920, 1, 1 ) ) ;
-    ui->Bt_AjouterAbonnement->setDisabled( true ) ;
-    ui->Bt_ModifierAbonnement->setDisabled( true ) ;
-    ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
+
+    this->VerrouillerAbonnements( true );
+
+    this->VerrouillerActivite( true ) ;
 
     ui->Le_Nom->setFocus();
 }
@@ -1658,7 +1653,8 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
  */
 void F_Membres::on_Bt_AnnulerMembre_clicked()
 {
-    this->AfficherMembre( this->nIdMembreSelectionne ) ;
+    this->AfficherMembre( this->nIdMembreSelectionne );
+    this->AfficherAjouterModifierMembre( true ) ;
 }
 //==========================================================================================================
 /** Valide la modification ou l'ajout d'un membre
@@ -1666,7 +1662,7 @@ void F_Membres::on_Bt_AnnulerMembre_clicked()
  */
 void F_Membres::on_Bt_ValiderMembre_clicked()
 {
-    if( ui->Tw_activites->rowCount() == 0)
+    if( this->nIdMembreSelectionne != 0 && ui->Tw_activites->rowCount() == 0)
     {
         QMessageBox::information( this, "Manque activité","Vous devez choisir au moins une activité.",  "Ok" ) ;
         return;
@@ -1690,9 +1686,9 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
                 {
                     this->MaJListeMembres() ;
                     this->AfficherListe() ;
-                    this->pRechercheMembres->setEnabled( true ) ;
                     this->VerrouillerAbonnements( false ) ;
                     this->VerrouillerJeux( false ) ;
+                    this->VerrouillerActivite(false);
                     //this->VerrouillerInfosPerso( true ) ;
                     //this->AfficherValiderAnnuler( false ) ;
                     this->AfficherAjouterModifierMembre( true ) ;
@@ -1754,7 +1750,6 @@ void F_Membres::on_Bt_ModifierMembre_clicked()
     this->AfficherValiderAnnuler( true ) ;
     this->AfficherAjouterModifierMembre( false ) ;
     ui->Bt_ValiderMembre->setText( "Valider Modifications" ) ;
-    this->pRechercheMembres->setDisabled( true ) ;
     ui->LE_Email->setFocus();
 }
 //==========================================================================================================
@@ -1830,32 +1825,6 @@ void F_Membres::on_Bt_SupprimerAbonnement_clicked()
            ui->Bt_SupprimerAbonnement->setDisabled( true ) ;
         }
     }
-}
-
-/**
- *  @brief Mets en majuscule le texte saisi dans un QLineEdit
- *
- *  @param text
- */
-
-void F_Membres::toUpper(const QString &text)
-{
-    QLineEdit *le = qobject_cast<QLineEdit *>(sender());
-    if (!le)
-    return;
-    le->setText(text.toUpper());
-}
-
-//==========================================================================================================
-/** Récupère l'id d'un membre pour l'afficher
- *  @pre    Recevoir un signal avec l'id d'un membre
- *  @param  unsigned int nIdMembre
- */
-void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
-{
-    this->VerrouillerAbonnements( false ) ;
-    this->VerrouillerJeux( false ) ;
-    this->AfficherMembre( nIdMembre ) ;
 }
 
 //==========================================================================================================
@@ -1951,4 +1920,38 @@ void F_Membres::on_Bt_SupprimerActivite_clicked()
         qDebug()<< "F_Membres::on_ChBx_Activites_clicked : RequeteActivite " << RequeteActivites.lastQuery() ;
     }
     AfficherActivites(this->nIdMembreSelectionne);
+}
+
+//---------------------------------------------------------------------------
+// SLOTS PRIVEES
+//---------------------------------------------------------------------------
+/** Sélectionne un membre avec un double click
+ *  @pre    Double clique sur un membre
+ *  @param  const QModelIndex &index
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
+{
+    on_TbW_Recherche_clicked(index);
+}
+
+/** Sélectionne un membre avec un click
+ *  @param  const QModelIndex &index
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+void F_Membres::on_TbW_Recherche_clicked(const QModelIndex &index)
+{
+   slot_AfficherMembre(this->VecteurRechercheMembres[index.row()].id);
+}
+
+/** Recherche les membres correspondant au champs chaque fois que le champs est modifié
+*  @param  const QString &arg1
+*  @test   Voir la procédure dans le fichier associé.
+*/
+void F_Membres::on_LE_Nom_textEdited(const QString &arg1)
+{
+   // Effectue la recherche
+   this->RechercherParNomEtNumero() ;
+   // Sélectionne le premier résultat
+   ui->TbW_Recherche->selectRow( 0 ) ;
 }

@@ -476,7 +476,7 @@ Cotisations</string>
   </action>
   <action name="Menu_Aide_Propos_LudOpen">
    <property name="text">
-    <string>Á propos de LudOpen ...</string>
+    <string>A propos de LudOpen ...</string>
    </property>
   </action>
   <action name="Menu_Jeux_Imprimer_Etiquette">

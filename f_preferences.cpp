@@ -49,6 +49,7 @@ using namespace std;
 // En-tête propre à  l'application ----------------------------------------------
 #include "f_preferences.h"
 #include "ui_f_preferences.h"
+#include "fonctions_globale.h"
 //------------------------------------------------------------------------------
 
 /**
@@ -266,8 +267,8 @@ void F_Preferences::AfficherAutresInformations()
     RequeteDemarrage.exec("SELECT Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,Email,SiteWeb,"
                           "JeuxAutorises,UniteLocation,JourAvantMail,JourRetard,CheminPhotosJeux,"
                           "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende,NbReservationsMaxi,"
-                          "DelaiConfirmationReservationParEmail "
-                          "FROM preferences WHERE IdPreferences=1");
+                          "DelaiConfirmationReservationParEmail, CheminPhotosServeur, CheminReglesServeur,"
+                          "AdresseServeur, LoginServeur FROM preferences WHERE IdPreferences=1");
     RequeteDemarrage.next();
     // ORDRE des champs dans la table préférences
     // 0-Nom,1-Adresse,2-CodePostal,3-Ville,4-NumeroTel,5-NumeroFax,6-Email,7-SiteWeb,
@@ -291,6 +292,10 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_AdresseSMTP->setText(RequeteDemarrage.value(14).toString());
     ui->LE_PortSMTP->setText(RequeteDemarrage.value(15).toString());
     ui->DSBx_PrixAmende->setValue(RequeteDemarrage.value(16).toFloat());
+    ui->LE_CheminPhotosServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"CheminPhotosServeur").toString());
+    ui->LE_CheminReglesServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"CheminReglesServeur").toString());
+    ui->LE_AdresseServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"AdresseServeur").toString());
+    ui->LE_Login->setText(ObtenirValeurParNom(RequeteDemarrage,"LoginServeur").toString());
 }
 
 /**
@@ -522,10 +527,12 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     {
         RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences,Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,"
                                    "Email,SiteWeb,JeuxAutorises,UniteLocation,JourRetard,JourAvantMail,CheminPhotosJeux,"
-                                   "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende) "
+                                   "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende,CheminPhotosServeur,"
+                                   "CheminReglesServeur, AdresseServeur, LoginServeur) "
                                    "VALUES (:IdPreferences,:Nom,:Adresse,:CodePostal,:Ville,:NumeroTel,:NumeroFax,:Email,:SiteWeb,"
                                    ":JeuxAutorises,:UniteLocation,:JourRetard,:JourAvantMail,:CheminPhotosJeux,:CheminReglesJeux,"
-                                   ":AdresseServeurSMTP,:PortSMTP,:PrixAmende)");
+                                   ":AdresseServeurSMTP,:PortSMTP,:PrixAmende,:CheminPhotosServeur,"
+                                   ":CheminReglesServeur,:AdresseServeur, :LoginServeur)");
         RequeteEnregistrer.bindValue("IdPreferences", 1);
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
@@ -544,6 +551,10 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
         RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
+        RequeteEnregistrer.bindValue(":CheminPhotosServeur", ui->LE_CheminPhotosServeur->text());
+        RequeteEnregistrer.bindValue(":CheminReglesServeur", ui->LE_CheminReglesServeur->text());
+        RequeteEnregistrer.bindValue(":AdresseServeur", ui->LE_AdresseServeur->text());
+        RequeteEnregistrer.bindValue(":LoginServeur", ui->LE_Login->text());
         if ( ! RequeteEnregistrer.exec() )
         {
            qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
@@ -551,8 +562,14 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     }
     else
     {
-        RequeteEnregistrer.prepare("UPDATE preferences SET Nom=:Nom, Adresse=:Adresse, CodePostal=:CodePostal, Ville=:Ville, NumeroTel=:NumeroTel, NumeroFax=:NumeroFax, Email=:Email, SiteWeb=:SiteWeb, JeuxAutorises=:JeuxAutorises,"
-                                   "UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail, JourRetard=:JourRetard, CheminPhotosJeux=:CheminPhotosJeux, CheminReglesJeux=:CheminReglesJeux, AdresseServeurSMTP=:AdresseServeurSMTP, PortSMTP=:PortSMTP, PrixAmende=:PrixAmende WHERE IdPreferences = 1");
+        RequeteEnregistrer.prepare("UPDATE preferences SET Nom=:Nom, Adresse=:Adresse, CodePostal=:CodePostal, Ville=:Ville,"
+                                   "NumeroTel=:NumeroTel, NumeroFax=:NumeroFax, Email=:Email, SiteWeb=:SiteWeb,"
+                                   "JeuxAutorises=:JeuxAutorises, UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail,"
+                                   "JourRetard=:JourRetard, CheminPhotosJeux=:CheminPhotosJeux,"
+                                   "CheminReglesJeux=:CheminReglesJeux, AdresseServeurSMTP=:AdresseServeurSMTP,"
+                                   "PortSMTP=:PortSMTP, PrixAmende=:PrixAmende, CheminPhotosServeur=:CheminPhotosServeur,"
+                                   "CheminReglesServeur=:CheminReglesServeur, AdresseServeur=:AdresseServeur,"
+                                   "LoginServeur=:LoginServeur WHERE IdPreferences = 1");
         RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
         RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
         RequeteEnregistrer.bindValue(":CodePostal", ui->LE_CodePostal->text().toInt());
@@ -570,6 +587,10 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
         RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
         RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
+        RequeteEnregistrer.bindValue(":CheminPhotosServeur", ui->LE_CheminPhotosServeur->text());
+        RequeteEnregistrer.bindValue(":CheminReglesServeur", ui->LE_CheminReglesServeur->text());
+        RequeteEnregistrer.bindValue(":AdresseServeur", ui->LE_AdresseServeur->text());
+        RequeteEnregistrer.bindValue(":LoginServeur", ui->LE_Login->text());
         if ( ! RequeteEnregistrer.exec() )
         {
            qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
@@ -681,7 +702,7 @@ void F_Preferences::on_Bt_Connection_clicked()
     else
     {
         qDebug()<< "Erreur : " << db.lastError() << endl;
-        ui->Lb_InfoConnexion->setText("<font color=red> La connexion a échouée. Veuiller réassayer. </font>");
+        ui->Lb_InfoConnexion->setText("<font color=red> La connexion a échouée. Veuiller réessayer. </font>");
     }
 }
 

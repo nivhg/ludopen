@@ -119,6 +119,8 @@ private slots:
 
     void on_CBx_Activites_currentIndexChanged(int index);
 
+    void on_ChBx_Retard_clicked();
+
 private:
     Ui::F_ListeMembres *ui;
 

@@ -86,12 +86,15 @@ void F_MainWindow::VerifierConnexionBDD()
 
     db.open();
 
+
     // Test d'accès à la base de données
     if(db.isOpen() == false)
     {
-        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données !" ,"Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
+        QMessageBox Err(QMessageBox::Critical,"LudOpen - Erreur d'accès aux données !",
+          "Impossible d'accéder à la base de données !\n\n"+ db.lastError().text(),QMessageBox::Close);
         Err.exec();
-        qDebug()<< "Vous etes sur l'adresse IP " << sAdresseIP << " sur le port " << nPort << " en tant que " << sNomUtilisateur << "." << endl << endl;
+        qDebug()<< "Vous etes sur l'adresse IP " << sAdresseIP << " sur le port " << nPort <<
+                   " en tant que " << sNomUtilisateur << "." << endl << endl;
         qDebug()<< endl << "La connexion à la BDD " << sNomBDD << " a échouée." << endl;
 
         // Création de la fenêtre de choix des préférences du logiciel
@@ -343,7 +346,7 @@ void F_MainWindow::CreerAdminMembres()
     {
         ////Membre/////////////
         qDebug()<<"Création ADMIN-F_Membres";
-        this->pAdministrerMembres=new F_Membres (this, true,this->ui->admin);
+        this->pAdministrerMembres=new F_Membres (true,this->ui->admin);
         this->pAdministrerMembres->setVisible(false);
         this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
         this->pAdministrerMembres->setVisible(true);
@@ -379,7 +382,7 @@ void F_MainWindow::CreerMembre()
     if(!this->pMembres)
     {
         qDebug()<<"Création F_Membres";
-        this->pMembres=new F_Membres (this, false, this->ui->Membre);
+        this->pMembres=new F_Membres (false, this->ui->Membre);
         //Membres
         this->ui->Lay_Membres->addWidget(this->pMembres);
         connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
@@ -530,9 +533,10 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
 {
     QMessageBox APropos;
 
-    APropos.about(this, "A propos de ...", "<center><IMG SRC=\"Ludopen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2014.05.16<br><br>"
+    APropos.about(this, "A propos de ...", "<center><IMG SRC=\":LudOpen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
+                  "LudOpen version 2014.09.01<br><br>"
                   "Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
+                  "<a href='http://code.google.com/p/ludopen'>http://code.google.com/p/ludopen</a><br><br>"
                   "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }

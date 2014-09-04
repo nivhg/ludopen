@@ -68,11 +68,13 @@ F_Jeux::F_Jeux(QWidget *parent) :
     //Création de l'objet QLabel pour l'affichage des images
     lb_image = new Lb_Image(this);
     //Gestion de l'évenement MousePress
-    connect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     lb_image->setAlignment(Qt::AlignCenter);
     //Crée un curseur loupe et l'assigne à l'image
     //Initialisation des variables liées à l'affichage des images
-    QCursor Souris(QPixmap(QApplication::applicationDirPath() + "/Loupe.png"));
+    QCursor Souris(QPixmap(":Loupe.png"));
+    //QString path=QCoreApplication::applicationDirPath();
+    //QCursor Souris(QPixmap( QCoreApplication::applicationDirPath() + QDir::separator() + "Loupe.png"));
     lb_image->setCursor(Souris);
     ui->gridLayout_11->addWidget(lb_image,0,3);
     // Faire défiler le tableau des jeux avec les flèches du clavier
@@ -380,21 +382,12 @@ void F_Jeux::AfficherJeu()
     RequeteCheminReglesJeux.next();
     sCheminReglePref = RequeteCheminReglesJeux.value(0).toString();
 
-    // Suppression des fichiers temporaires du précédent jeu
-    if( EstCeURL(sCheminReglePref) )
-    {
-        QDir CheminFichierImage;
-        for(int i=0;i<sCheminFichier.count();i++)
-        {
-            CheminFichierImage.remove(sCheminFichier[i]);
-        }
-    }
-
     QString TypeRegle;
     AccesFichierParHTTP manager;
     QString NomFichier;
     QStringList ListeExtension;
-    ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm"<<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
+    ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm";
+    // Retrait des images car rentre en conflit avec les images de jeu <<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
     int i=2;
     //qDebug() << "F_Jeux::AfficherJeu()" << "Code jeu" << this->JeuEnConsultation<< "ReglePref" << sCheminReglePref;
     // Recherche la première règle
@@ -812,6 +805,7 @@ void F_Jeux::on_Lb_Image_clicked()
 {
     disconnect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
     QDialog *d_image = new D_Image(this,lb_image);
+    d_image->showMaximized();
     d_image->exec();
     ui->gridLayout_11->addWidget(lb_image,0,3);
     connect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );

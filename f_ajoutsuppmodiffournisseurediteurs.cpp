@@ -24,7 +24,7 @@
 // En-tête propre à l'application -----------------------------------------------
 #include "f_ajoutsuppmodiffournisseursediteurs.h"
 #include "ui_f_ajoutsuppmodiffournisseursediteurs.h"
-
+#include "fonctions_globale.h"
 
 
 /**
@@ -187,36 +187,39 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
     ui->LE_Telephone->setEnabled(true);
 
 
-        QSqlQuery RequeteInfoFournisseur ;
-        RequeteInfoFournisseur.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Remarque, SiteWeb FROM fournisseursediteur WHERE NomFournisseur =:NomDuFournisseur") ;
-        RequeteInfoFournisseur.bindValue(":NomDuFournisseur", this->Selection);
-        if(!RequeteInfoFournisseur.exec())
-        {
-            qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()" << RequeteInfoFournisseur.lastQuery();
-        }
-        RequeteInfoFournisseur.next() ;
+    QSqlQuery RequeteInfoFournisseur ;
+    RequeteInfoFournisseur.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur,"
+             "VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Remarque, SiteWeb,"
+             "Pays FROM fournisseursediteur WHERE NomFournisseur =:NomDuFournisseur") ;
+    RequeteInfoFournisseur.bindValue(":NomDuFournisseur", this->Selection);
+    if(!RequeteInfoFournisseur.exec())
+    {
+        qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()" << RequeteInfoFournisseur.lastQuery();
+    }
+    RequeteInfoFournisseur.next() ;
 
-        QString NomFournisseur = RequeteInfoFournisseur.value(0).toString() ;
-        QString Adresse = RequeteInfoFournisseur.value(1).toString() ;
-        QString CP = RequeteInfoFournisseur.value(2).toString() ;
-        QString VilleFournisseur = RequeteInfoFournisseur.value(3).toString() ;
-        QString Contact = RequeteInfoFournisseur.value(4).toString() ;
-        QString Tel = RequeteInfoFournisseur.value(5).toString() ;
-        QString Email = RequeteInfoFournisseur.value(6).toString() ;
-        QString Fax = RequeteInfoFournisseur.value(7).toString() ;
-        QString Remarque = RequeteInfoFournisseur.value(8).toString() ;
-        QString SiteWeb = RequeteInfoFournisseur.value(9).toString() ;
+    QString NomFournisseur = RequeteInfoFournisseur.value(0).toString() ;
+    QString Adresse = RequeteInfoFournisseur.value(1).toString() ;
+    QString CP = RequeteInfoFournisseur.value(2).toString() ;
+    QString VilleFournisseur = RequeteInfoFournisseur.value(3).toString() ;
+    QString Contact = RequeteInfoFournisseur.value(4).toString() ;
+    QString Tel = RequeteInfoFournisseur.value(5).toString() ;
+    QString Email = RequeteInfoFournisseur.value(6).toString() ;
+    QString Fax = RequeteInfoFournisseur.value(7).toString() ;
+    QString Remarque = RequeteInfoFournisseur.value(8).toString() ;
+    QString SiteWeb = RequeteInfoFournisseur.value(9).toString() ;
 
-        ui->LE_Contact->setText(Contact);
-        ui->LE_Email->setText(Email);
-        ui->LE_Fax->setText(Fax);
-        ui->LE_Nom->setText(NomFournisseur);
-        ui->LE_Telephone->setText(Tel);
-        ui->LE_Ville->setText(VilleFournisseur);
-        ui->LE_CodePostal->setText(CP);
-        ui->LE_Rue->setText(Adresse);
-        ui->TxE_Remarques->setText(Remarque);
-        ui->LE_SiteWeb->setText(SiteWeb);
+    ui->LE_Contact->setText(Contact);
+    ui->LE_Email->setText(Email);
+    ui->LE_Fax->setText(Fax);
+    ui->LE_Nom->setText(NomFournisseur);
+    ui->LE_Telephone->setText(Tel);
+    ui->LE_Ville->setText(VilleFournisseur);
+    ui->LE_CodePostal->setText(CP);
+    ui->LE_Rue->setText(Adresse);
+    ui->TxE_Remarques->setText(Remarque);
+    ui->LE_SiteWeb->setText(SiteWeb);
+    ui->LE_Pays->setText(ObtenirValeurParNom(RequeteInfoFournisseur,"Pays").toString());
 }
 /**
  * @brief Méthode qui permet de passe le booléen AjoutOuModif à true pour dire que l'on se trouve désormais en mode ajout
@@ -319,7 +322,11 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             }
 
             QSqlQuery RequeteAjoutFournEdit ;
-            RequeteAjoutFournEdit.prepare("INSERT INTO fournisseursediteur(NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Fournisseur, Editeur, Remarque, SiteWeb) VALUES (:LeNom, :LaAdresse, :LeCP, :LaVille, :LeContact, :LeTel, :LeEmail, :LeFax, :LePays, :LeFournisseur, :LeEditeur, :LaRemarque, :LeSiteWeb)") ;
+            RequeteAjoutFournEdit.prepare("INSERT INTO fournisseursediteur(NomFournisseur,"
+                     "AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte,"
+                     "NumTelephone, Email, NumFax, Pays, Fournisseur, Editeur, Remarque, SiteWeb)"
+                     "VALUES (:LeNom, :LaAdresse, :LeCP, :LaVille, :LeContact, :LeTel, :LeEmail,"
+                     ":LeFax, :LePays, :LeFournisseur, :LeEditeur, :LaRemarque, :LeSiteWeb)") ;
             RequeteAjoutFournEdit.bindValue(":LeNom", ui->LE_Nom->text());
             RequeteAjoutFournEdit.bindValue(":LaAdresse", ui->LE_Rue->text());
             RequeteAjoutFournEdit.bindValue(":LeCP", ui->LE_CodePostal->text());
@@ -387,7 +394,10 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
 
         QSqlQuery RequeteModifFournOuEdit ;
 
-        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET AdresseFournisseur =:LaAdresse, CPFournisseur =:LeCP, VilleFournisseur =:LaVille, PersonneContacte =:LeContact, NumTelephone =:LeNum, Email =:LeEmail, NumFax =:LeFax, Pays =:LePays, Remarque =:LaRemarque, SiteWeb =:LeSiteWeb WHERE NomFournisseur =:LeNom") ;
+        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET AdresseFournisseur =:LaAdresse,"
+                  "CPFournisseur =:LeCP, VilleFournisseur =:LaVille, PersonneContacte =:LeContact,"
+                  "NumTelephone =:LeNum, Email =:LeEmail, NumFax =:LeFax, Pays =:LePays,"
+                  "Remarque =:LaRemarque, SiteWeb =:LeSiteWeb WHERE NomFournisseur =:LeNom") ;
         RequeteModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
         RequeteModifFournOuEdit.bindValue(":LaAdresse", ui->LE_Rue->text());
         RequeteModifFournOuEdit.bindValue(":LeCP", ui->LE_CodePostal->text());
@@ -419,27 +429,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()
 {
-    QSqlQuery RequeteAnnulModifFournOuEdit ;
-
-    RequeteAnnulModifFournOuEdit.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur, VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Pays, Remarque, SiteWeb FROM fournisseursediteur WHERE NomFournisseur =:LeNom") ;
-    RequeteAnnulModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
-    if(!RequeteAnnulModifFournOuEdit.exec())
-    {
-        qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Annuler_clicked()" << RequeteAnnulModifFournOuEdit.lastQuery() ;
-    }
-    RequeteAnnulModifFournOuEdit.next();
-
-    ui->LE_Nom->setText(RequeteAnnulModifFournOuEdit.value(0).toString());
-    ui->LE_Rue->setText(RequeteAnnulModifFournOuEdit.value(1).toString());
-    ui->LE_CodePostal->setText(RequeteAnnulModifFournOuEdit.value(2).toString());
-    ui->LE_Ville->setText(RequeteAnnulModifFournOuEdit.value(3).toString());
-    ui->LE_Contact->setText(RequeteAnnulModifFournOuEdit.value(4).toString());
-    ui->LE_Telephone->setText(RequeteAnnulModifFournOuEdit.value(5).toString());
-    ui->LE_Email->setText(RequeteAnnulModifFournOuEdit.value(6).toString());
-    ui->LE_Fax->setText(RequeteAnnulModifFournOuEdit.value(7).toString());
-    ui->LE_Pays->setText(RequeteAnnulModifFournOuEdit.value(8).toString());
-    ui->TxE_Remarques->setText(RequeteAnnulModifFournOuEdit.value(9).toString());
-    ui->LE_SiteWeb->setText(RequeteAnnulModifFournOuEdit.value(10).toString());
+    on_Bt_Ok_clicked();
     // Si on est appelé par D_AjoutSuppModifFournisseursEditeurs donc on doit fermer la fenêtre
     if( this->parent()->objectName() == "D_AjoutSuppModifFournisseursEditeurs")
     {

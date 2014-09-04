@@ -49,6 +49,8 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     this->pEmplacementAjMod = new F_PopUpCLESTTEM(2);
     this->pClassificationAjMod = new F_PopUpCLESTTEM(3);
     this->pMotCleAjMod = new F_PopUpCLESTTEM(4);
+    this->pAjoutFournisseur=0;
+    this->pAjoutEditeur=0;
     //Création de l'objet QLabel pour l'affichage des images
     lb_image = new Lb_Image(this);
     this->pImage = new D_Image(this,lb_image);
@@ -167,7 +169,11 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
         {
             continue;
         }
-        w->setDisabled(true);
+        if(w->objectName() == "qt_spinbox_lineedit")
+        {
+            continue;
+        }
+        w->setEnabled(false);
         if(className == "QComboBox" )
         {
             connect(w, SIGNAL(activated(int)), this, SLOT(CacherBoutons()));
@@ -687,9 +693,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
         DateDefaut = DateDefaut.currentDate() ;
         ui->DtE_Achat->setDate(DateDefaut);
 
-        // Plus de modif en cours donc :
-        // griser les boutons Annuler et Valider
-        ActiveBoutons(false);
         // Autoriser la création d'un nouveau jeux
         ui->Bt_Ajouter->setEnabled(true);
     }
@@ -951,8 +954,13 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
         // Rafraichir l'affichage du jeu
         AfficherJeu();
     }
+    // Mettre à jour la liste des jeux
+    AfficherJeux();
+    ui->LE_RechercheNom->clear();
     // Tout griser
     ActiveChamps(false);
+    // Plus de modif en cours donc :
+    // griser les boutons Annuler et Valider
     ActiveBoutons(false);
 }
 
@@ -1483,15 +1491,14 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         //Se place sur l'index précédent
         ui->CBx_MotCle3->setCurrentIndex(TableauPositionIndex[7]);
 
-        //Grise le bouton annuler
-        ActiveBoutons(false);
     }
     else
     {
         ActiveChamps(true);
-        ActiveBoutons(true);
         ui->LE_Code->clear();
     }
+    //Grise le bouton annuler
+    ActiveBoutons(false);
     // Rendre utilisable la création et la suppression d'un jeu en cas
     // d'annulation du jeu courant
     ui->Bt_Supprimer->setEnabled(true);
@@ -2188,7 +2195,7 @@ void F_AjoutSuppModifJeux::on_Lb_Image_clicked()
     // Mets la fenêtre au max
     this->pImage->showMaximized();
     this->pImage->exec();
-    delete this->pImage;
+    //delete this->pImage;
     this->pImage = new D_Image(this,lb_image);
     // Remet lb_image dans la fenêtre principale Jeux
     ui->gridLayout_11->addWidget(lb_image,0,1);

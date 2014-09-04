@@ -63,27 +63,28 @@
         if( EstCeURL(URLorPath) )
         {
             QNetworkAccessManager m_NetworkMngr;
-            QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(QUrl(URLorPath + "/" + file +"." + ext)));
+            QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(
+                                  QUrl(URLorPath + "/" + file +"." + ext)));
             QEventLoop loop;
             QObject::connect(reply, SIGNAL(finished()),&loop, SLOT(quit()));
             loop.exec();
 
-            // Création du fichier temporaire
             QFile tempfile;
-            tempfile.setFileName(QDir::fromNativeSeparators(QDir::tempPath()+"/"+file +"." + ext));
-            tempfile.open(QIODevice::WriteOnly);
-//            tempfile->setAutoRemove(false);
-            tempfile.write(reply->readAll());
-            tempfile.close();
-
-
             switch (reply->error())
               {
                 case QNetworkReply::NoError:
-                  // No error
-                  delete reply;
-                  returnfile->append(tempfile.fileName());
-                  return true;
+                    // Pas d'erreur
+                    // Création du fichier temporaire
+                    tempfile.setFileName(QDir::fromNativeSeparators(QDir::tempPath()+"/"+file +"." + ext));
+                    tempfile.open(QIODevice::WriteOnly);
+                    //            tempfile->setAutoRemove(false);
+                    tempfile.write(reply->readAll());
+                    tempfile.close();
+
+                    delete reply;
+                    returnfile->append(tempfile.fileName());
+                    return true;
+                    break;
                 case QNetworkReply::ContentNotFoundError:
                   // 404 Not found
                   /*int httpStatus = reply->attribute(
@@ -91,7 +92,6 @@
                   QByteArray httpStatusMessage = reply->attribute(
                     QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();*/
                   delete reply;
-                  tempfile.remove();
                   return false;
                   break;
                 }

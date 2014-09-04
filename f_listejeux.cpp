@@ -136,7 +136,10 @@ void F_ListeJeux::RecupererContenuIndex()
     QString ListeJeux ;
     bool PremierCritere (false) ;
     QSqlQuery RequeteFiltreJeux ;
-    FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux, TypeJeux_Classification, NomJeu, CodeJeu FROM jeux, etatsjeu, motscles, statutjeux, typejeux " ;
+    FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin,"
+            "NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux,"
+            "TypeJeux_Classification, NomJeu, CodeJeu FROM jeux, etatsjeu, motscles,"
+            "statutjeux, typejeux " ;
 
     if(ui->CBx_DateAcquisition->currentIndex() != 0)
     {
@@ -290,8 +293,8 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " NomJeu = " ;
-        ListeJeux += " \"% "+ui->LE_Nom->text()+" % \"" ;
+        ListeJeux += " NomJeu LIKE " ;
+        ListeJeux += " \"%"+ui->LE_Nom->text()+"%\"" ;
         PremierCritere = true ;
     }
 
@@ -459,7 +462,7 @@ void F_ListeJeux::on_Bt_ExporterListe_clicked()
     QTextStream ecrire (&fichier);
     fichier.open(QIODevice::WriteOnly);
 
-    ecrire << "Code;Nom;Classification;JoueursMin;JoueursMax;AgeMin;AgeMax,DateAchat\r\n" ;
+    ecrire << "Code;Nom;Classification;JoueursMin;JoueursMax;AgeMin;AgeMax;DateAchat\r\n" ;
     for(nNombreLigne = 0; nNombreLigne<ui->TbV_Recherche->model()->rowCount(); nNombreLigne++)
     {
         for(nNombreColonne = 0 ; nNombreColonne<ui->TbV_Recherche->model()->columnCount(); nNombreColonne++)

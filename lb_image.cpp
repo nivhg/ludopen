@@ -107,6 +107,11 @@ void Lb_Image::EffacerFichiers()
  */
 QString Lb_Image::ChargerImage(QSize size,QString code_jeu)
 {
+    qDebug()<<"Lb_Image::ChargerImage ; code_jeu="<<code_jeu;
+            if(code_jeu=="798")
+            {
+                code_jeu=code_jeu;
+            }
     if(ChargementEnCours)
     {
         if(sCheminImage.count()==0)
