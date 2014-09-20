@@ -143,6 +143,8 @@ F_Retour::F_Retour(QWidget *parent) :
 
    ui->TbV_JeuxReserve->setColumnWidth(0,40);
    ui->TbV_JeuxReserve->setColumnWidth(1,125);
+
+   ui->DtE_Prolonger->setDisplayFormat("dd-MM-yyyy");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -436,7 +438,7 @@ void F_Retour::AfficherEtatCotisation(QString CodeMembre)
         }
         ui->Lb_Cotisation->setText(Cotisation);
         ui->Lb_Cotisation->setStyleSheet("QLabel {color:red;}");
-        ui->Lb_CotisationDate->setText(RequeteCotisation.value(0).toDate().toString("ddd d MMMM yyyy"));
+        ui->Lb_CotisationDate->setText(RequeteCotisation.value(0).toDate().toString("dd-MM-yyyy"));
         ui->Lb_CotisationDate->setStyleSheet(" QLabel{color:red;}" );
     }
     else
@@ -558,8 +560,8 @@ void F_Retour::AfficherJeuxEnEmprunt()
          //on ajoute une nouvelle ligne du table view
          this->ModelJeuEmpruntes->setItem(NumeroLigne, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString()));
          this->ModelJeuEmpruntes->setItem(NumeroLigne, 1, new QStandardItem(RequeteJeuEmprunte.value(2).toString()));
-         this->ModelJeuEmpruntes->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("ddd dd-MM-yyyy") ));
-         this->ModelJeuEmpruntes->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("ddd dd-MM-yyyy") ));
+         this->ModelJeuEmpruntes->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("dd-MM-yyyy") ));
+         this->ModelJeuEmpruntes->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("dd-MM-yyyy") ));
 
          // Calculer la date de retour possible avec la tolérance du nombre de jours
          DateDeRetourPrevue = RequeteJeuEmprunte.value(1).toDate();
@@ -678,9 +680,9 @@ void F_Retour::AfficherJeuxEnReservation()
         //on ajoute une nouvelle ligne du table view
         this->ModelJeuReserves->setItem(NumeroLigne, 0, new QStandardItem(RequeteJeuReserve.value(5).toString() ));
         this->ModelJeuReserves->setItem(NumeroLigne, 1, new QStandardItem(RequeteJeuReserve.value(4).toString()));
-        this->ModelJeuReserves->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("yyyy-MM-dd ddd") ));
-        this->ModelJeuReserves->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("yyyy-MM-dd ddd") ));
-        this->ModelJeuReserves->setItem(NumeroLigne, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModelJeuReserves->setItem(NumeroLigne, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("dd-MM-yyyy") ));
+        this->ModelJeuReserves->setItem(NumeroLigne, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("dd-MM-yyyy") ));
+        this->ModelJeuReserves->setItem(NumeroLigne, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("dd-MM-yyyy") ));
         this->ModelJeuReserves->setItem(NumeroLigne, 5, new QStandardItem(RequeteJeuReserve.value(3).toString() ));
 
         //Savoir si le jeu est disponible ou non
@@ -786,7 +788,7 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
     if(Nom.size()>=2)
     {
         Nom="%"+Nom+"%";
-        RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres,emprunts"
+        RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom FROM membres,emprunts"
                               " WHERE emprunts.DateRetour IS NULL AND Membres_IdMembre=IdMembre"
                               " AND membres.Nom LIKE (:Nom) GROUP BY CodeMembre ORDER BY Nom ASC ");
 
@@ -800,14 +802,12 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
         //On vide le modèle
         this->ModelMembre->clear();
         //Indique le nombes de colonnes puis leurs noms
-        this->ModelMembre->setColumnCount(4);
+        this->ModelMembre->setColumnCount(3);
         this->ModelMembre->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModelMembre->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
         this->ModelMembre->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        this->ModelMembre->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
         //Impose une taille aux colonnes
         ui->TbV_Recherche->setColumnWidth(0,40);
-        ui->TbV_Recherche->setColumnWidth(3,40);
 
         //Tant qu'il y a des membres dans la table membres,
         while(RequeteMembre.next())
@@ -816,13 +816,12 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
             this->ModelMembre->setItem(NumeroLigne, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
             this->ModelMembre->setItem(NumeroLigne, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
             this->ModelMembre->setItem(NumeroLigne, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-            this->ModelMembre->setItem(NumeroLigne, 3, new QStandardItem(RequeteMembre.value(3).toString() ));
             NumeroLigne++;
         }
     }
     else
     {
-        if (!RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres,emprunts"
+        if (!RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom FROM membres,emprunts"
                                 " WHERE emprunts.DateRetour IS NULL"
                                 " AND Membres_IdMembre=IdMembre GROUP BY CodeMembre"))
         {
@@ -832,14 +831,12 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
         //On vide le modèle
         this->ModelMembre->clear();
         //Indique le nombres de colonnes puis leurs noms
-        this->ModelMembre->setColumnCount(4);
+        this->ModelMembre->setColumnCount(3);
         this->ModelMembre->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModelMembre->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
         this->ModelMembre->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        this->ModelMembre->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
         //impose une taille aux colonnes
         ui->TbV_Recherche->setColumnWidth(0,40);
-        ui->TbV_Recherche->setColumnWidth(3,40);
         ui->TbV_Recherche->verticalHeader()->setVisible(false);
 
         //Tant qu'il y a des membres dans la table membres,
@@ -849,7 +846,6 @@ void F_Retour::on_LE_RechercheMembre_textChanged(const QString &arg1)
             this->ModelMembre->setItem(NumeroLigne, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
             this->ModelMembre->setItem(NumeroLigne, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
             this->ModelMembre->setItem(NumeroLigne, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-            this->ModelMembre->setItem(NumeroLigne, 3, new QStandardItem(RequeteMembre.value(3).toString() ));
             NumeroLigne++;
          }
     }

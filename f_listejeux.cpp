@@ -117,7 +117,7 @@ void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
             this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteRechercheJeu.value(4).toString() ));
             this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteRechercheJeu.value(5).toString() ));
             this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteRechercheJeu.value(6).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toString() ));
+            this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toDate().toString( "dd-MM-yyyy" ) ));
             NumeroLigne++;
          }
         ui->Lb_Resultat->setNum( NumeroLigne ) ;
@@ -147,8 +147,8 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " DateAchat = " ;
-        ListeJeux += " \""+ ui->CBx_DateAcquisition->currentText()+" \"" ;
+        ListeJeux += " DATE_FORMAT(DateAchat,'%d-%m-%Y') = " ;
+        ListeJeux += " \"" + ui->CBx_DateAcquisition->currentText() + " \"" ;
         PremierCritere = true ;
     }
     if(ui->CBx_PrixLoc->currentIndex() != 0)
@@ -310,7 +310,7 @@ void F_ListeJeux::RecupererContenuIndex()
     {
         qDebug() << "F_ListeJeux::RecupererContenuIndex()" << RequeteFiltreJeux.lastQuery() ;
     }
-    
+    ui->LE_sql->setText(FiltreJeux);
     
     int NumeroLigne (0);
 
@@ -328,7 +328,7 @@ void F_ListeJeux::RecupererContenuIndex()
         this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteFiltreJeux.value(6).toString() ));
         this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteFiltreJeux.value(7).toString() ));
         this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteFiltreJeux.value(8).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteFiltreJeux.value(0).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteFiltreJeux.value(0).toDate().toString( "dd-MM-yyyy" ) ));
         NumeroLigne++;
      }
      ui->Lb_Resultat->setNum( NumeroLigne ) ;
@@ -664,7 +664,7 @@ void F_ListeJeux::RAZCriteres()
 
     while(RequeteDateAcquisition.next())
     {
-        QString DateAcquisition = (RequeteDateAcquisition.value(0).toString()) ;
+        QString DateAcquisition = (RequeteDateAcquisition.value(0).toDate().toString("dd-MM-yyyy")) ;
         ui->CBx_DateAcquisition->addItem(DateAcquisition);
     }
 
@@ -719,7 +719,7 @@ void F_ListeJeux::RAZCriteres()
         this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteRechercheJeu.value(4).toString() ));
         this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteRechercheJeu.value(5).toString() ));
         this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteRechercheJeu.value(6).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toDate().toString( "dd-MM-yyyy" ) ));
         NumeroLigne++;
     }
 

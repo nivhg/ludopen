@@ -411,13 +411,13 @@ bool F_ListeReservations::AffichageListe()
             }
 
             // Date réservation
-            ModeleReservations.setItem( i, 6, new QStandardItem( RequeteDesReservations.record().value( 4 ).toString() ) ) ;
+            ModeleReservations.setItem( i, 6, new QStandardItem( RequeteDesReservations.record().value( 4 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Date d'emprunt prévue
-            ModeleReservations.setItem( i, 7, new QStandardItem( RequeteDesReservations.record().value( 5 ).toString() ) ) ;
+            ModeleReservations.setItem( i, 7, new QStandardItem( RequeteDesReservations.record().value( 5 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Date de retour prévue
-            ModeleReservations.setItem( i, 8, new QStandardItem( RequeteDesReservations.record().value( 6 ).toString() ) ) ;
+            ModeleReservations.setItem( i, 8, new QStandardItem( RequeteDesReservations.record().value( 6 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Lieu de réservation
-            ModeleReservations.setItem( i, 9, new QStandardItem( RequeteDesReservations.record().value( 1 ).toString() ) ) ;
+            ModeleReservations.setItem( i, 9, new QStandardItem( RequeteDesReservations.record().value( 1 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
 
             i++ ;
         }        

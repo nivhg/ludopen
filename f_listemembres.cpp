@@ -461,7 +461,7 @@ bool F_ListeMembres::AffichageListe()
             ModeleMembres.setItem( i, 11, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("NbreRetard") ).toInt() ) ) ) ;
 
             DateCotisation = RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() ;
-            ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
+            ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd-MM-yyyy" ) ) ) ;
             if ( DateCotisation < QDate::currentDate() )
             {
                 ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
@@ -481,7 +481,7 @@ bool F_ListeMembres::AffichageListe()
             if( DateCotisation > RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() )
             {
                 DateCotisation = RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateExpiration") ).toDate() ;
-                ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "yyyy-MM-dd" ) ) ) ;
+                ModeleMembres.setItem( i, 12, new QStandardItem( DateCotisation.toString( "dd-MM-yyyy" ) ) ) ;
                 if ( DateCotisation < QDate::currentDate() )
                 {
                     ModeleMembres.setData( ModeleMembres.index( i, 12 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
@@ -500,7 +500,7 @@ bool F_ListeMembres::AffichageListe()
             }
             //",NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant
             ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("CreditRestant") ).toInt() ) ) ) ;
-            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateInscription") ).toDate().toString( "yyyy-MM-dd" ) ) ) ;
+            ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateInscription") ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
 
             i++ ;
         }

@@ -126,7 +126,7 @@ void F_DetailsJeux::AfficherDetailJeu()
     while(RequeteHistoriqueInterventionJeu.next())
     {
         //On ajoute une nouvelle ligne du table view avec les données
-        this->ModelHistoriqueInterventions->setItem(NumeroLigne, 0, new QStandardItem(RequeteHistoriqueInterventionJeu.value(0).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModelHistoriqueInterventions->setItem(NumeroLigne, 0, new QStandardItem(RequeteHistoriqueInterventionJeu.value(0).toDate().toString("dd-MM-yyyy") ));
         this->ModelHistoriqueInterventions->setItem(NumeroLigne, 1, new QStandardItem(RequeteHistoriqueInterventionJeu.value(1).toString() ));
         // Adapte la taille de la ligne en fonction de son contenu
         this->ui->TbV_HistoriqueInterventions->resizeRowToContents(NumeroLigne) ;
@@ -165,8 +165,8 @@ void F_DetailsJeux::AfficherDetailJeu()
         //On ajoute une nouvelle ligne du table view avec les données
         this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 0, new QStandardItem(RequeteHistoriqueEmprunt.value(1).toString() ));
         this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 1, new QStandardItem(RequeteHistoriqueEmprunt.value(0).toString() ));
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 2, new QStandardItem(RequeteHistoriqueEmprunt.value(2).toDate().toString("yyyy-MM-dd ddd") ));
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 3, new QStandardItem(RequeteHistoriqueEmprunt.value(3).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 2, new QStandardItem(RequeteHistoriqueEmprunt.value(2).toDate().toString("dd-MM-yyyy") ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 3, new QStandardItem(RequeteHistoriqueEmprunt.value(3).toDate().toString("dd-MM-yyyy") ));
         NumeroLigne ++ ;
     }
 }

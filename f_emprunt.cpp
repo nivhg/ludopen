@@ -143,6 +143,7 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     // Bloque la saisie de code jeu à emprunter et du bouton OK tant que pas d'adhérent sélectionné
     ui->LE_CodeJeu->setEnabled(false);
     ui->Bt_OK->setDisabled(true);
+    ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -320,9 +321,9 @@ void F_Emprunt::AfficherJeuxReserve()
         //on ajoute une nouvelle ligne du table view
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteJeuReserve.value(5).toString() ));
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteJeuReserve.value(4).toString()));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("yyyy-MM-dd ddd") ));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("yyyy-MM-dd ddd") ));
-        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("yyyy-MM-dd ddd") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuReserve.value(0).toDate().toString("dd-MM-yyyy") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuReserve.value(1).toDate().toString("dd-MM-yyyy") ));
+        this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 4, new QStandardItem(RequeteJeuReserve.value(2).toDate().toString("dd-MM-yyyy") ));
         this->ModeleJeuxReserves->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 5, new QStandardItem(RequeteJeuReserve.value(3).toString() ));
 
         //Savoir si le jeu est disponible ou non
@@ -626,7 +627,7 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
         }
         ui->Lb_Cotisation->setText(Cotisation);
         ui->Lb_Cotisation->setStyleSheet("QLabel {color:red;}");
-        ui->Lb_CotisationARemplir->setText(RequeteCotisation.value(0).toDate().toString("ddd d MMMM yyyy"));
+        ui->Lb_CotisationARemplir->setText(RequeteCotisation.value(0).toDate().toString("dd-MM-yyyy"));
         ui->Lb_CotisationARemplir->setStyleSheet(" QLabel{color:red;}" );
         EtatDeLaCotisation=false;
     }
@@ -768,8 +769,8 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
         //on ajoute une nouvelle ligne du table view
         this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteJeuEmprunte.value(3).toString() ));
         this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteJeuEmprunte.value(2).toString()));
-        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("yyyy-MM-dd") ));
-        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("yyyy-MM-dd") ));
+        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteJeuEmprunte.value(0).toDate().toString("dd-MM-yyyy") ));
+        this->ModeleJeuxEmpruntes->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteJeuEmprunte.value(1).toDate().toString("dd-MM-yyyy") ));
 
         if (RequeteJeuEmprunte.value(1).toDate()>DateActuelle)
         {
@@ -843,7 +844,7 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
         NbrTotalDeJeuxDejaSurCeCompteAdherent=0;
 
         //Rechercher dans la table membres, les membres qui contiennent dans leur nom le suite de caractères présente dans le line édit du nom
-        RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres WHERE Nom LIKE (:Nom) ORDER BY Nom ASC");
+        RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom FROM membres WHERE Nom LIKE (:Nom) ORDER BY Nom ASC");
         RequeteMembre.bindValue(":Nom",Nom);
         if( ! RequeteMembre.exec())
         {
@@ -852,14 +853,12 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
         //On vide le modèle
         this->ModeleListeDesMembres->clear();
         //Indique le nombes de colones puis leurs noms
-        this->ModeleListeDesMembres->setColumnCount(4);
+        this->ModeleListeDesMembres->setColumnCount(3);
         this->ModeleListeDesMembres->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModeleListeDesMembres->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
         this->ModeleListeDesMembres->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
         //Impose une taille aux colones
         ui->TbV_Recherche->setColumnWidth(0,40);
-        ui->TbV_Recherche->setColumnWidth(3,40);
 
         //Tant qu'il y a des membres dans la table membres,
         while(RequeteMembre.next())
@@ -868,7 +867,6 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteMembre.value(3).toString() ));
              NbrTotalDeJeuxDejaSurCeCompteAdherent++;
         }
     }
@@ -877,18 +875,17 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
         //On Affiche tous les membres :
         QSqlQuery RequeteMembre;
         NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
-        if ( ! RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres ORDER BY Nom ASC") )
+        if ( ! RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom FROM membres ORDER BY Nom ASC") )
         {
             qDebug()<<"F_Emprunt::F_Emprunt => RequeteMembre "<<RequeteMembre.lastQuery();
         }
         //On vide le modèle
         this->ModeleListeDesMembres->clear();
         //Indique le nombes de colones puis leurs noms
-        this->ModeleListeDesMembres->setColumnCount(4);
+        this->ModeleListeDesMembres->setColumnCount(3);
         this->ModeleListeDesMembres->setHorizontalHeaderItem(0, new QStandardItem("Code"));
         this->ModeleListeDesMembres->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
         this->ModeleListeDesMembres->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(3, new QStandardItem("Date de naissance"));
         //impose une taille aux colones
         ui->TbV_Recherche->setColumnWidth(0,40);
         ui->TbV_Recherche->setColumnWidth(3,40);
@@ -901,7 +898,6 @@ void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
             this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 3, new QStandardItem(RequeteMembre.value(3).toString() ));
             NbrTotalDeJeuxDejaSurCeCompteAdherent++;
         }
     }
@@ -1427,7 +1423,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(ui->LE_CodeJeu->text()));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,1, new QStandardItem(ui->Le_NomJeuARemplir->text()));
-        ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("ddd d MMMM yyyy") ));
+        ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("dd-MM-yyyy") ));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,3, new QStandardItem(ui->Le_PrixEmpruntARemplir->text()));
 
         this->NbLignesEmpruntsAValider++;

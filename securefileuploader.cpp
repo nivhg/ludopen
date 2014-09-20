@@ -116,7 +116,7 @@ void SecureFileUploader::onConnected()
  */
 void SecureFileUploader::onConnectionError(QSsh::SshError err)
 {
-    qDebug() << "SecureUploader: Erreur de connection" << err;
+    qDebug() << "SecureUploader: Erreur de connection N°" << err<<" : "<<m_connexion->errorString();
 }
 
 /**
@@ -144,7 +144,7 @@ void SecureFileUploader::onChannelInitialized()
                 job = m_canal->renameFileOrDirectory(m_ListeFichierSource[i], m_ListeFichierDestination[i]);
                 break;
             case COMMANDE_SUPPRIMER:
-                qDebug() << "SecureUploader: Téléversement de " << m_ListeFichierSource[i];
+                qDebug() << "SecureUploader: Suppression de " << m_ListeFichierSource[i];
                 job = m_canal->removeFile(m_ListeFichierSource[i]);
                 break;
         }
@@ -168,7 +168,7 @@ void SecureFileUploader::onChannelInitialized()
  */
 void SecureFileUploader::onChannelError(const QString &err)
 {
-    qDebug() << "SecureUploader: Erreur: " << err;
+    qDebug() << "SecureUploader: Erreur N°" << err<<" : "<<m_connexion->errorString();
 }
 
 /**

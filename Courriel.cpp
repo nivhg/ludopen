@@ -50,11 +50,11 @@ Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector
 Courriel::~Courriel()
 {
    qDebug("Courriel::~Courriel DEB") ;
-   this->FluxSMTP.flush();
    if(SocketSMTP)
    {
         SocketSMTP->disconnectFromHost();
    }
+   this->FluxSMTP.flush();
    qDebug("Courriel::~Courriel FIN") ;
 }
 

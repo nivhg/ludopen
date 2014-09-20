@@ -28,6 +28,9 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
     ui->setupUi(this);
 
     this->MaJListeAbonnements() ;
+    // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
+    ui->DtE_DateSouscription->setDisplayFormat("dd/MM/yyyy");
+
 }
 //======================================================================================================
 /** Détruit l'objet ui

@@ -546,7 +546,7 @@ void F_Membres::AfficherActivites( unsigned int nIdMembre )
 
     QSqlQuery RequeteActivites;
 
-    //requête permettant d'avoir les jeux empruntés correspondant à l'id du membre
+    //requête permettant d'avoir les activités correspondant à l'id du membre
     RequeteActivites.prepare(
                 "SELECT IdActivite, Activite, Newsletter FROM activite "
                 "INNER JOIN activitemembre ON Activite_IdActivite = IdActivite "
@@ -641,8 +641,8 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
                 qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteJeux " << RequeteJeux.lastQuery() ;
             }
 
-            modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
+            modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
 
             // Met en rouge la ligne si le jeu emprunté est rendu en retard, sinon en vert
             // Tient compte du nombre de jour de retard toléré
@@ -1267,7 +1267,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
         while( RequetePrestation.next() )
         {
             modele->setItem( i, 0, new QStandardItem( RequetePrestation.record().value( 0 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
             this->VecteurAbonnements.append( RequetePrestation.record().value( 2 ).toInt() ) ;
 
             if ( RequetePrestation.value( 1 ).toDate()< QDate::currentDate() )
@@ -1307,7 +1307,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
         {
             modele->setItem( i, 0, new QStandardItem( RequeteCartes.record().value( 0 ).toString() ) ) ;
             modele->setItem( i, 1, new QStandardItem( RequeteCartes.record().value( 2 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteCartes.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequeteCartes.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
             this->VecteurAbonnements.append( RequeteCartes.record().value( 3 ).toInt() ) ;
 
             if ( RequeteCartes.value( 1 ).toDate()< QDate::currentDate() )

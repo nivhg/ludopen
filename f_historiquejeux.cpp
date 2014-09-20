@@ -74,8 +74,8 @@ void F_HistoriqueJeux::AfficherHistorique( unsigned int nIdMembre )
             // Fixe le nombre de lignes du tableau
             ModeleHistoriqueJeuxEmprunter.setRowCount( queryHistorique.size() ) ;
             ModeleHistoriqueJeuxEmprunter.setItem( i, 0, new QStandardItem( queryHistorique.record().value( 0 ).toString() ) ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 1, new QStandardItem( queryHistorique.record().value( 1 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 2, new QStandardItem( queryHistorique.record().value( 2 ).toDateTime().toString( "yyyy-MM-dd ddd" ) ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 1, new QStandardItem( queryHistorique.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 2, new QStandardItem( queryHistorique.record().value( 2 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
             ModeleHistoriqueJeuxEmprunter.setItem( i, 3, new QStandardItem( queryHistorique.record().value( 4 ).toInt() ) ) ;
             i++ ;
         }
