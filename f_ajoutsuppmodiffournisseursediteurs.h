@@ -10,6 +10,7 @@
 #include "f_ajoutsuppmodifjeux.h"
 
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
+#include <QSqlQuery>
 #include <QtWidgets>
 #include <QStandardItemModel>
 
@@ -36,6 +37,7 @@ public:
      *  @brief Cache la partie recherche de la fenêtre et active les champs fournisseur/editeur
      */
     void AjoutFournisseursEditeursSeulement();
+    void ActualiserModele(QSqlQuery requete);
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -114,6 +116,10 @@ private:
      *
      */
     QString Selection ;
+
+    /** @brief Int pour stocket l'ID du fournisseur sur lequel on a cliqué dans le tableau
+     */
+    int IdSelection ;
 
     /** @brief Booléen pour savoir si l'on se trouve en mode ajout ou en mode modification
      *

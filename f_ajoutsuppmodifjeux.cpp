@@ -509,7 +509,8 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
    // Si pas de nom de jeu ou pas de code de jeu
    if (ui->LE_Nom->text() == "" || ui->LE_Code->text() == "" )
    {
-       QMessageBox::warning(this, "Pré-requis pour l'ajout", "Vous devez saisir au minimum le nom du jeu et son code avant de valider !", "OK") ;
+       QMessageBox::warning(this, "Pré-requis pour l'ajout",
+                    "Vous devez saisir au minimum le nom du jeu et son code avant de valider !", "OK") ;
        return ;
    }
 
@@ -1090,7 +1091,8 @@ void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
  */
 void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 {
-    if(ui->LE_Nom->text() != "")
+    // Si on est en mode édition
+    if(!AjoutOuModif)
     {
         //////////////////////////////////////////////////
         /////// Annulation modif Age ////////////////////
@@ -1720,7 +1722,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QDate DateAchat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("DateAchat")).toDate() ;
         ui->DtE_Achat->setDate(DateAchat);
         //-------------------------------------------------------------------------------------------------
-        unsigned int PrixAchat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("PrixAchat")).toInt() ;
+        double PrixAchat = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("PrixAchat")).toDouble() ;
         ui->SBx_PrixAchat->setValue(PrixAchat);
         //-------------------------------------------------------------------------------------------------
         unsigned int PrixLoc = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("PrixLoc")).toInt() ;

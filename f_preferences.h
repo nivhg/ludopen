@@ -377,6 +377,8 @@ private slots:
 
     void on_Bt_SupprimerMotCle_clicked();
 
+    void on_Bt_ParcourirClePrivee_clicked();
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.

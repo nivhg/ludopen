@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>850</width>
+    <width>912</width>
     <height>500</height>
    </rect>
   </property>
@@ -29,21 +29,18 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QRadioButton" name="Rbt_Jour">
+     <item row="0" column="0" colspan="3">
+      <widget class="QLabel" name="label">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
        <property name="text">
-        <string>Jour</string>
+        <string>Sélectionner la statistique à visualiser :</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="3">
-      <widget class="QDateEdit" name="DtE_Fin">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="currentSection">
-        <enum>QDateTimeEdit::DaySection</enum>
-       </property>
+     <item row="4" column="1">
+      <widget class="QDateEdit" name="DtE_Debut">
        <property name="displayFormat">
         <string>dd/MM/yyyy</string>
        </property>
@@ -52,43 +49,8 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Date de début :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <spacer name="VS">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>10</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item row="2" column="3">
-      <widget class="QRadioButton" name="RBt_Annee">
-       <property name="text">
-        <string>Année</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="4" colspan="3">
       <widget class="QComboBox" name="CBx_Stat">
-       <item>
-        <property name="text">
-         <string>- - - - -</string>
-        </property>
-       </item>
        <item>
         <property name="text">
          <string>Total d'adhérents inscrits</string>
@@ -121,50 +83,24 @@
        </item>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QDateEdit" name="DtE_Debut">
-       <property name="displayFormat">
-        <string>dd/MM/yyyy</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_Stat">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="6">
-      <widget class="QPushButton" name="Bt_Exporter">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_2">
        <property name="text">
-        <string>Exporter</string>
+        <string>Date de début :</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="7">
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0" colspan="3">
-      <widget class="QLabel" name="label">
-       <property name="layoutDirection">
-        <enum>Qt::RightToLeft</enum>
-       </property>
+     <item row="2" column="3">
+      <widget class="QRadioButton" name="RBt_Annee">
        <property name="text">
-        <string>Sélectionner la statistique à visualiser :</string>
+        <string>Année</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="5">
+      <widget class="QPushButton" name="Bt_AfficherStatistique">
+       <property name="text">
+        <string>Afficher la statistique</string>
        </property>
       </widget>
      </item>
@@ -175,23 +111,10 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QRadioButton" name="RBt_Mois">
+     <item row="9" column="0">
+      <widget class="QLabel" name="Lb_NombreResultat">
        <property name="text">
-        <string>Mois</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="4" colspan="3">
-      <widget class="QTableView" name="TbV_StatPlus">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
+        <string>Nombre de résultats répondant à vos critères :</string>
        </property>
       </widget>
      </item>
@@ -211,10 +134,49 @@
        </property>
       </spacer>
      </item>
-     <item row="4" column="5">
-      <widget class="QPushButton" name="Bt_AfficherStatistique">
+     <item row="7" column="0" colspan="4">
+      <widget class="QTableView" name="TbV_Stat">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QDateEdit" name="DtE_Fin">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="currentSection">
+        <enum>QDateTimeEdit::DaySection</enum>
+       </property>
+       <property name="displayFormat">
+        <string>dd/MM/yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="6">
+      <widget class="QPushButton" name="Bt_Exporter">
        <property name="text">
-        <string>Afficher la statistique</string>
+        <string>Exporter</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QRadioButton" name="Rbt_Jour">
+       <property name="text">
+        <string>Jour</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -225,19 +187,58 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="Lb_NombreResultat">
-       <property name="text">
-        <string>Nombre de résultats répondant à vos critères :</string>
+     <item row="7" column="4" colspan="3">
+      <widget class="QTableView" name="TbV_StatPlus">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="2" column="2">
+      <widget class="QRadioButton" name="RBt_Mois">
+       <property name="text">
+        <string>Mois</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="7">
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <spacer name="VS">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>10</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item row="9" column="1">
       <widget class="QLabel" name="Lb_Resultat">
        <property name="text">
         <string>0</string>
        </property>
       </widget>
+     </item>
+     <item row="8" column="0" colspan="7">
+      <widget class="QLineEdit" name="LE_SQL"/>
      </item>
     </layout>
    </item>

@@ -62,6 +62,12 @@ F_Abonnements::F_Abonnements(QWidget *parent) :
     ui->TbV_Recherche->setEditTriggers(0);
     ui->TbV_Recherche->resizeColumnsToContents();
 
+    // Masquage des champs recherche car inutilisable.
+    // Voir si il y a un besoin car nombre d'abonnements limitée
+    ui->Lb_Recherche->setVisible(false);
+    ui->LE_Recherche->setVisible(false);
+    ui->Bt_Recherche->setVisible(false);
+
     this->MettreAJourBDD();
 }
 
@@ -89,6 +95,7 @@ void F_Abonnements::MettreAJourBDD()
    QSqlQuery RechercheTableau;
    unsigned nNombreLigne(0);
 
+   this->TbRechercheModele->clear();
    this->TbRechercheModele->setColumnCount(5);
    //this->TbRechercheModele->setRowCount(nNombreLigne);
    this->TbRechercheModele->setHorizontalHeaderItem(0, new QStandardItem("Type"));

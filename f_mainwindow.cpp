@@ -10,8 +10,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->setupUi(this);
     qDebug()<<"Constructeur F_MainWindow = Début";
 
-    this->VerifierConnexionBDD() ;
-
     ui->centralWidget->setLayout(ui->gridLayout);
 
     ui->menuImprimer->setEnabled(false);
@@ -33,8 +31,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pListeMembres = 0;
     this->pRetards=0;
     this->pListeReservations = 0;
-    qDebug()<<"Création F_POSTIT";
-    this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -46,6 +42,11 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pAbonnements=0;
     this->pPopUpCode = 0;
     /*****************************************************************************/
+
+    this->VerifierConnexionBDD() ;
+
+    qDebug()<<"Création F_POSTIT";
+    this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
 
     //PostIt
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
@@ -136,6 +137,14 @@ void F_MainWindow::slot_Preferences()
         this->pMembres->MaJType() ;
         this->pMembres->AfficherMembre() ;
     }
+    if(this->pJeux)
+    {
+
+    }
+    if(!this->pAjoutSuppModifJeux)
+    {
+
+    }
 }
 
 void F_MainWindow::on_Bt_Membre_clicked()
@@ -204,8 +213,11 @@ void F_MainWindow::on_Bt_ListeMembres_clicked()
         this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
         this->pListeMembresAdmin->setVisible( false ) ;
         this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
-        // Si double clic dans la liste des membres sur un membre, affiche la fiche détaillée du membre sélectionné
-        connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this, SLOT( on_Bt_Membre_clicked() ) ) ;
+        // Si double clic dans la liste des membres sur un membre,
+        // affiche la fiche détaillée du membre sélectionné
+        connect( this->pListeMembresAdmin,
+                 SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this,
+                 SLOT( slot_DoubleClic_ListeMembresAdmin ( uint )) ) ;
         this->pListeMembresAdmin->AffichageListe() ;
     }
     ChangerFenetre(this->pListeMembresAdmin);
@@ -487,8 +499,9 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
 }
 
 /**
- * Quand double clic sur un jeu dans l'onglet Liste de jeux, affiche l'onglet jeu avec le jeu concerné pour avoir le détail
- * grâce à un signal envoyé par f_listejeux.
+ * Quand double clic sur un membre dans l'onglet Liste des membres,
+ * affiche l'onglet Membres avec le membre concerné pour avoir le détail
+ * grâce à un signal envoyé par f_listemembres.
  * @param index Ligne choisie dans le modèle associé au tableau TbV_Recherche
  */
 void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
@@ -498,6 +511,21 @@ void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
     this->pMembres->slot_AfficherMembre( IdMembre );
     // Faire apparaître l'onglet Membre
     ui->TbW_Main->setCurrentIndex(0);
+}
+
+/**
+ * Quand double clic sur un membre dans l'onglet Admin/Liste des membres,
+ * affiche l'onglet Admin/Membres avec le membre concerné pour avoir le détail
+ * grâce à un signal envoyé par f_listemembres.
+ * @param index Ligne choisie dans le modèle associé au tableau TbV_Recherche
+ */
+void F_MainWindow::slot_DoubleClic_ListeMembresAdmin(uint IdMembre)
+{
+    CreerMembre();
+    // Indiquer à l'onglet Membre quel membre afficher
+    this->pAdministrerMembres->slot_AfficherMembre( IdMembre );
+    // Faire apparaître l'onglet Admin/Membre
+    ChangerFenetre(this->pAdministrerMembres);
 }
 
 void F_MainWindow::on_Menu_Jeux_Imprimer_Etiquette_triggered()

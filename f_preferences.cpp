@@ -175,7 +175,6 @@ F_Preferences::F_Preferences(QWidget *parent) :
     connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pMembresActiviteAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pJeuxMotCleAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-
     ui->label->hide();
     ui->label_2->hide();
     ui->lineEdit->hide();
@@ -206,7 +205,9 @@ void F_Preferences::slot_Valider()
 
 void F_Preferences::closeEvent( QCloseEvent * event )
 {
-    emit( this->SignalFermerFenetre() ) ;
+    AfficherAutresInformations();
+    on_Bt_Connection_clicked();
+    emit( this->SignalFermerFenetre());
     event->accept() ;
 }
 
@@ -262,6 +263,7 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_MotdePasse->setText(FichierDeConfig.value("BaseDeDonnees/MotDePasse", "config").toString());
     ui->LE_Port->setText(FichierDeConfig.value("BaseDeDonnees/Port", "config").toString());
     ui->CBx_LieuOrdi->setCurrentIndex(FichierDeConfig.value("Autres/IdLieux", "config").toInt() - 1);
+    ui->LE_ClePrivee->setText(FichierDeConfig.value("Autres/CheminClePrivee", "config").toString());
 
 
     RequeteDemarrage.exec("SELECT Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,Email,SiteWeb,"
@@ -385,8 +387,6 @@ void F_Preferences::AfficherTousLesTableaux()
         this->TbMembresActivite->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         nNombreLigne = nNombreLigne+ 1;
     }
-    ui->TbV_MembresActivite->selectRow(0);
-
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau type d'emprunt qui est dans l'onglet Membres/Emprunts de F_Preferences.
@@ -401,8 +401,6 @@ void F_Preferences::AfficherTousLesTableaux()
         this->TbJeuxMotCle->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         nNombreLigne = nNombreLigne+ 1;
     }
-    ui->TbV_JeuxMotCle->selectRow(0);
-
     nNombreLigne = 0;
 
     //################################ onglet Jeux #################################################
@@ -503,6 +501,17 @@ void F_Preferences::AfficherTousLesTableaux()
     ui->TbV_JeuxEmplacement->resizeColumnsToContents();
     ui->TbV_MembresActivite->resizeColumnsToContents();
     ui->TbV_JeuxMotCle->resizeColumnsToContents();
+    ui->TbV_JeuxType->selectRow(0);
+    ui->TbV_JeuxEtat->selectRow(0);
+    ui->TbV_JeuxStatut->selectRow(0);
+    ui->TbV_JeuxEmplacement->selectRow(0);
+    ui->TbV_InfoLieux->selectRow(0);
+    ui->TbV_MembresTitre->selectRow(0);
+    ui->TbV_MembresType->selectRow(0);
+    ui->TbV_MembresPaiement->selectRow(0);
+    ui->TbV_EmpruntType->selectRow(0);
+    ui->TbV_MembresActivite->selectRow(0);
+    ui->TbV_JeuxMotCle->selectRow(0);
 }
 
 /**
@@ -605,6 +614,7 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         FichierDeConfig.beginGroup("Autres");
         FichierDeConfig.setValue("IdLieux", RequeteCombo.value(0).toInt());
         FichierDeConfig.setValue("NomLieux", RequeteCombo.value(1).toString());
+        FichierDeConfig.setValue("CheminClePrivee", ui->LE_ClePrivee->text());
         FichierDeConfig.endGroup();
         // TO DO Ecrire ici tout ce qui doit aller dans le fichier ini
         // string Qt::md5 ( data )
@@ -702,7 +712,8 @@ void F_Preferences::on_Bt_Connection_clicked()
     else
     {
         qDebug()<< "Erreur : " << db.lastError() << endl;
-        ui->Lb_InfoConnexion->setText("<font color=red> La connexion a échouée. Veuiller réessayer. </font>");
+        ui->Lb_InfoConnexion->setText("<font color=red> " + QTime::currentTime().toString() +
+                                      " : La connexion a échouée. Veuiller réessayer. </font>");
     }
 }
 
@@ -1321,4 +1332,11 @@ void F_Preferences::on_Bt_SupprimerMotCle_clicked()
 void F_Preferences::on_TbV_JeuxMotCle_clicked(const QModelIndex &index)
 {
     this->sJeuxMotCle = this->TbJeuxMotCle->index(index.row(), 0).data().toString();
+}
+
+void F_Preferences::on_Bt_ParcourirClePrivee_clicked()
+{
+    QString NomClePrivee = QFileDialog::getOpenFileName(this, tr("Sélectionner le fichier..."),
+                                      QDir::currentPath());
+    ui->LE_ClePrivee->setText(NomClePrivee);
 }

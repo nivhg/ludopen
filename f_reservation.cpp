@@ -1012,6 +1012,8 @@ if((MembreActif)!=(""))
 
     //Lieu de l'emprunt (site ou est le logiciel)
     unsigned int Lieu (2);
+    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
+    Lieu=FichierDeConfig.value("Autres/IdLieux", "config").toInt();
 
    //Enregistre la réservation
     //Prépare la requête

@@ -16,6 +16,7 @@
 //------------------------------------------------------------------------------
 #include "f_membres.h"
 #include "ui_f_membres.h"
+#include "fonctions_globale.h"
 
 // En-têtes standards nécessaires dans ce fichier en-tête seulement ------------
 #include <QMessageBox>
@@ -66,6 +67,8 @@ F_Membres::F_Membres( bool bAdmin, QWidget *parent ):
 
     this->LE_AjoutVille = new QLineEdit( this->oFenetreAjoutVille ) ;
     this->LE_AjoutVille->setGeometry(10, 30, 210, this->LE_AjoutVille->height() );
+    // Connecte l'évenement textEdited à la fonction toUpper
+    connect(this->LE_AjoutVille, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
 
     this->Bt_ValiderVille = new QPushButton ( this->oFenetreAjoutVille ) ;
     this->Bt_ValiderVille->setText( "Valider" ) ;
@@ -317,7 +320,7 @@ void F_Membres::RechercherParNomEtNumero()
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
-                if( this->VecteurMembres[i].sPrenom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                else if( this->VecteurMembres[i].sPrenom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
@@ -724,35 +727,40 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
             //Remplissage des champs avec les données retournées par la base de données
             if( RequeteMembre.next() )
             {
-                ui->CBx_Titre->setCurrentIndex( this->RecupererEmplacementTitreVecteur( RequeteMembre.record().value( 1 ).toInt() ) ) ;
+                ui->CBx_Titre->setCurrentIndex( this->RecupererEmplacementTitreVecteur(
+                               ObtenirValeurParNom(RequeteMembre,"TitreMembre_IdTitreMembre").toInt()));
 
-                ui->CBx_Type->setCurrentIndex( this->RecupererEmplacementTypeVecteur( RequeteMembre.record().value( 2 ).toInt() ) ) ;
+                ui->CBx_Type->setCurrentIndex( this->RecupererEmplacementTypeVecteur(
+                               ObtenirValeurParNom(RequeteMembre,"TypeMembres_IdTypeMembres").toInt()));
 
-                ui->Le_Nom->setText( RequeteMembre.record().value( 3 ).toString() ) ;
+                ui->Le_Nom->setText( ObtenirValeurParNom(RequeteMembre,"Nom").toString() ) ;
 
-                ui->Le_Prenom->setText( RequeteMembre.value( 4 ).toString() ) ;
+                ui->Le_Prenom->setText( ObtenirValeurParNom(RequeteMembre,"Prenom").toString() ) ;
 
-                ui->Te_Rue->setPlainText( RequeteMembre.record().value( 5 ).toString() ) ;
+                ui->Te_Rue->setPlainText( ObtenirValeurParNom(RequeteMembre,"Rue").toString() ) ;
 
-                ui->Le_CP->setText( RequeteMembre.record().value( 6 ).toString() ) ;
+                ui->Le_CP->setText( ObtenirValeurParNom(RequeteMembre,"CP").toString() ) ;
 
-                this->AfficherVilles( RequeteMembre.record().value( 7 ).toString() ) ;
+                this->AfficherVilles( ObtenirValeurParNom(RequeteMembre,"Ville").toString() ) ;
 
-                ui->Le_TelFix->setText( this->ModifierSyntaxeNumTelephone( RequeteMembre.value( 8 ).toString() ) ) ;
+                ui->Le_TelFix->setText( this->ModifierSyntaxeNumTelephone(
+                                     ObtenirValeurParNom(RequeteMembre,"Telephone").toString() ) ) ;
 
-                ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone( RequeteMembre.value( 9 ).toString() ) ) ;
+                ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone(
+                                     ObtenirValeurParNom(RequeteMembre,"Mobile").toString() ) ) ;
 
-                ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone( RequeteMembre.value( 10 ).toString() ) ) ;
+                ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone(
+                                     ObtenirValeurParNom(RequeteMembre,"Fax").toString() ) ) ;
 
-                ui->LE_Email->setText( RequeteMembre.value( 11 ).toString() ) ;
+                ui->LE_Email->setText( ObtenirValeurParNom(RequeteMembre,"Email").toString() ) ;
 
-                ui->SBx_JeuxAutorises->setValue( RequeteMembre.record().value( 12 ).toInt() ) ;
+                ui->SBx_JeuxAutorises->setValue( ObtenirValeurParNom(RequeteMembre,"NbreJeuxAutorises").toInt() ) ;
 
-                ui->DtE_Insritption->setDateTime( RequeteMembre.record().value( 13 ).toDateTime() ) ;
+                ui->DtE_Insritption->setDateTime( ObtenirValeurParNom(RequeteMembre,"DateInscription").toDateTime() ) ;
 
-                ui->TE_Remarque->setPlainText( RequeteMembre.record().value( 14 ).toString() ) ;
+                ui->TE_Remarque->setPlainText( ObtenirValeurParNom(RequeteMembre,"Remarque").toString() ) ;
 
-                if( RequeteMembre.record().value( 15 ).toBool() )
+                if( ObtenirValeurParNom(RequeteMembre,"Ecarte").toBool() )
                 {
                     ui->Lb_MembreEcarte->setVisible( true ) ;
                     ui->ChBx_MembreEcarte->setChecked( true ) ;
@@ -776,13 +784,23 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                     ui->Lb_MembreEcarte->setPalette( palette ) ;
                 }
 
-                ui->DtE_Naissance->setDateTime( RequeteMembre.record().value( 16 ).toDateTime() ) ;
+                QVariant DateNaissance=ObtenirValeurParNom(RequeteMembre,"DateNaissance");
+                // Si la date de naissance est vide, on ne mets rien dans le champs correspondant
+                if(DateNaissance.toString()=="")
+                {
+                    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
+                    lineEdit->setText("");
+                }
+                else
+                {
+                    ui->DtE_Naissance->setDateTime( DateNaissance.toDateTime() ) ;
+                }
 
-                ui->Le_Code->setText( RequeteMembre.record().value( 17 ).toString() ) ;
+                ui->Le_Code->setText( ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString() ) ;
 
-                ui->LE_MembreAssocie->setText( RequeteMembre.record().value( 21 ).toString() ) ;
+                ui->LE_MembreAssocie->setText( ObtenirValeurParNom(RequeteMembre,"MembreAssocie").toString() ) ;
 
-                ui->SPx_NbreRetards->setValue( RequeteMembre.record().value( 22 ).toInt() ) ;
+                ui->SPx_NbreRetards->setValue( ObtenirValeurParNom(RequeteMembre,"NbreRetard").toInt() ) ;
 
                 this->AfficherJeuxEmpruntes( nIdMembre ) ;
 
@@ -815,11 +833,12 @@ bool F_Membres::AjouterMembre()
     QSqlQuery RequeteMembre ;
 
     //Enregistrement d'un nouveau membre dans la base de données
-    RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,Nom,Prenom,Rue,CP,Ville,Telephone,"
-                           "Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,DateNaissance,Remarque,Ecarte,CodeMembre,MembreAssocie) "
-                           "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,:Telephone,"
-                           ":Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,:Ecarte,:CodeMembre,"
-                           ":MembreAssocie)" ) ;
+    RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
+        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,"
+        "DateNaissance,Remarque,Ecarte,CodeMembre,MembreAssocie,NbreRetard) "
+        "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
+        ":Telephone,:Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,"
+        ":Ecarte,:CodeMembre,:MembreAssocie,:NbreRetard)" ) ;
 
     //Titre Membre
     RequeteMembre.bindValue( ":TitreMembre_IdTitreMembre", this->VectorTitre[ui->CBx_Titre->currentIndex()].id ) ;
@@ -860,8 +879,9 @@ bool F_Membres::AjouterMembre()
     //Date d'inscription
     RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
 
+    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
     //Date Naissance
-    RequeteMembre.bindValue( ":DateNaissance", ui->DtE_Naissance->date() ) ;
+    RequeteMembre.bindValue( ":DateNaissance", lineEdit->text() ) ;
 
     //Remarque
     RequeteMembre.bindValue( ":Remarque", ui->TE_Remarque->toPlainText() ) ;
@@ -874,6 +894,9 @@ bool F_Membres::AjouterMembre()
 
     //Membre associé
     RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text().toInt() ) ;
+
+    //Nombre de retards
+    RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->text() ) ;
 
     //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
     if( RequeteMembre.exec() )
@@ -928,8 +951,9 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.prepare( "UPDATE membres SET membres.TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre,"
                                "membres.TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,membres.Nom=:Nom,"
                                "membres.Prenom=:Prenom,membres.Rue=:Rue,membres.CP=:CP,membres.Ville=:Ville,"
-                               "membres.Telephone=:Telephone,membres.Mobile=:Mobile,membres.Fax=:Fax,membres.Email=:Email,"
-                               "membres.NbreJeuxAutorises=:NbreJeuxAutorises,membres.DateInscription=:DateInscription,"
+                               "membres.Telephone=:Telephone,membres.Mobile=:Mobile,membres.Fax=:Fax,"
+                               "membres.Email=:Email,membres.NbreJeuxAutorises=:NbreJeuxAutorises,"
+                               "membres.DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
                                "DateNaissance=:DateNaissance,membres.Remarque=:Remarque,membres.Ecarte=:Ecarte,"
                                "membres.CodeMembre=:CodeMembre ,membres.MembreAssocie=:MembreAssocie "
                                "WHERE membres.IdMembre=:IdMembre" ) ;
@@ -991,6 +1015,9 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         //Membre associé
         RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text() ) ;
 
+        //Nombre de retards
+        RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->value() ) ;
+
         //Si le membre n'a pas été enregisté on indique l'erreur qu'il y a une erreur et on retourne l'erreur de sql
         if( RequeteMembre.exec()== false )
         {
@@ -1029,7 +1056,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
         bRetourne = false ;
     }
 
-    //S'il n'y a pas d'emprunt en cour
+    //S'il n'y a pas d'emprunt en cours
     if( RequeteEmprunts.size()== 0 )
     {
         //Vérification que la personne veux bien supprimer le membre
@@ -1637,9 +1664,11 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     ui->ChBx_MembreEcarte->hide() ;
 
-    ui->SPx_NbreRetards->setDisabled( true ) ;
+    //ui->SPx_NbreRetards->setDisabled( true ) ;
 
-    ui->DtE_Naissance->setDate( QDate( 1920, 1, 1 ) ) ;
+    //ui->DtE_Naissance->setDate( QDate( 1920, 1, 1 ) ) ;
+    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
+    lineEdit->setText("");
 
     this->VerrouillerAbonnements( true );
 
@@ -1847,8 +1876,8 @@ void F_Membres::on_Bt_AjouterActivite_clicked()
     QSqlQuery RequeteActivites;
 
     RequeteActivites.prepare(
-                "INSERT INTO activitemembre (Activite_IdActivite, Membres_IdMembre) "
-                "VALUES (:nIdActivite, :nIdMembre)" ) ;
+                "INSERT INTO activitemembre (Activite_IdActivite, Membres_IdMembre, Newsletter) "
+                "VALUES (:nIdActivite, :nIdMembre, 1)" ) ;
     RequeteActivites.bindValue( ":nIdMembre", this->nIdMembreSelectionne );
     RequeteActivites.bindValue( ":nIdActivite", nIdActivite );
 

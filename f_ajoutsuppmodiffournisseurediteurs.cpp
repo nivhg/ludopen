@@ -67,8 +67,6 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
             ui->Bt_Annuler->setDisabled(true);
             ui->Bt_Supprimer->setDisabled(true);
         }
-
-
     ui->LE_CodePostal->setDisabled(true);
     ui->LE_Contact->setDisabled(true);
     ui->LE_Email->setDisabled(true);
@@ -94,65 +92,55 @@ F_AjoutSuppModifFournisseursEditeurs::~F_AjoutSuppModifFournisseursEditeurs()
     delete ui;
 }
 /**
- * @brief Méthode qui modifie le contenu de tableau en fonction de ce que l'on rentre dans la case de recherche
+ * @brief Méthode qui modifie le contenu de tableau en fonction de ce que l'on rentre
+ * dans la case de recherche
  *
  * @param arg1
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_LE_Recherche_textChanged(const QString &arg1)
 {
-    unsigned int NumeroLigne (0);
     QString NomFournisseur = arg1;
 
+    QSqlQuery RequeteRechercheFournisseur;
     if(NomFournisseur.size() >= 2)
     {
-        NomFournisseur="%"+NomFournisseur+"%";
-
         QSqlQuery RequeteRechercheFournisseur;
-        NumeroLigne=0;
 
-        RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur FROM fournisseursediteur WHERE NomFournisseur LIKE (:NomFournissseur)");
+        RequeteRechercheFournisseur.prepare("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur WHERE NomFournisseur LIKE (:NomFournissseur)");
         RequeteRechercheFournisseur.bindValue(":NomFournissseur",NomFournisseur);
         RequeteRechercheFournisseur.exec();
 
-        //On vide le model
-        this->ModelFournisseur->clear();
-        //Indique le nombes de colones puis leurs noms
-        this->ModelFournisseur->setColumnCount(1);
-        this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,300);
-
-        //Tant qu'il y a des fournisseursediteur dans la table fournisseursediteur
-        while(RequeteRechercheFournisseur.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheFournisseur.value(0).toString() ));
-            NumeroLigne++;
-         }
     }
     else
     {
-        QSqlQuery RequeteRechercheFournisseur;
-        NumeroLigne =0;
-        RequeteRechercheFournisseur.exec("SELECT  NomFournisseur FROM fournisseursediteur ORDER BY NomFournisseur ASC");
-
-        //On vide le model
-        this->ModelFournisseur->clear();
-        //Indique le nombes de colones puis leurs noms
-        this->ModelFournisseur->setColumnCount(1);
-        this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,300);
-
-        //Tant qu'il y a des jeux dans la table jeux,
-        while(RequeteRechercheFournisseur.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheFournisseur.value(0).toString() ));
-            NumeroLigne++;
-         }
+        RequeteRechercheFournisseur.exec("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur ORDER BY NomFournisseur ASC");
     }
+    ActualiserModele(RequeteRechercheFournisseur);
 }
+
+void F_AjoutSuppModifFournisseursEditeurs::ActualiserModele(QSqlQuery requete)
+{
+    //On vide le model
+    this->ModelFournisseur->clear();
+    //Indique le nombes de colones puis leurs noms
+    this->ModelFournisseur->setColumnCount(2);
+    this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
+    this->ModelFournisseur->setHorizontalHeaderItem(1, new QStandardItem("Id"));
+    //impose une taille aux colones
+    ui->TbV_Recherche->setColumnWidth(0,300);
+    ui->TbV_Recherche->setColumnWidth(1,0);
+
+    unsigned int NumeroLigne (0);
+    //Tant qu'il y a des jeux dans la table jeux,
+    while(requete.next())
+    {
+        //on ajoute une nouvelle ligne du table view
+        this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(requete.value(0).toString() ));
+        this->ModelFournisseur->setItem(NumeroLigne, 1, new QStandardItem(requete.value(1).toString() ));
+        NumeroLigne++;
+     }
+}
+
 /**
  * @brief Méthode qui récupère et sélectionne le nom du fournisseur de la case sur laquelle on a cliqué
  *
@@ -162,8 +150,12 @@ void F_AjoutSuppModifFournisseursEditeurs::on_TbV_Recherche_clicked(const QModel
 {
     // Récupère le nom du fournisseurediteur séléctionné
     this->Selection = (this->ModelFournisseur->index(index.row(), 0).data().toString());
+    qDebug()<< "Le nom recuperé est :" << Selection ;
 
-    qDebug()<< "Le nom recuperer est :" << Selection ;
+    // Récupère l'Id du fournisseurediteur séléctionné
+    this->IdSelection = (this->ModelFournisseur->index(index.row(), 1).data().toInt());
+    qDebug()<< "L'Id recuperé est :" << this->IdSelection ;
+
 
     //Valide le nom du fournisseur récupéré
     on_Bt_Ok_clicked() ;
@@ -188,31 +180,37 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()
 
 
     QSqlQuery RequeteInfoFournisseur ;
-    RequeteInfoFournisseur.prepare("SELECT NomFournisseur, AdresseFournisseur, CPFournisseur,"
+    RequeteInfoFournisseur.prepare("SELECT IdFournisseur, NomFournisseur, AdresseFournisseur, CPFournisseur,"
              "VilleFournisseur, PersonneContacte, NumTelephone, Email, NumFax, Remarque, SiteWeb,"
-             "Pays FROM fournisseursediteur WHERE NomFournisseur =:NomDuFournisseur") ;
-    RequeteInfoFournisseur.bindValue(":NomDuFournisseur", this->Selection);
+             "Pays FROM fournisseursediteur WHERE IdFournisseur =:IdFournisseur") ;
+    RequeteInfoFournisseur.bindValue(":IdFournisseur", this->IdSelection);
     if(!RequeteInfoFournisseur.exec())
     {
         qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ok_clicked()" << RequeteInfoFournisseur.lastQuery();
     }
     RequeteInfoFournisseur.next() ;
 
-    QString NomFournisseur = RequeteInfoFournisseur.value(0).toString() ;
-    QString Adresse = RequeteInfoFournisseur.value(1).toString() ;
-    QString CP = RequeteInfoFournisseur.value(2).toString() ;
-    QString VilleFournisseur = RequeteInfoFournisseur.value(3).toString() ;
-    QString Contact = RequeteInfoFournisseur.value(4).toString() ;
-    QString Tel = RequeteInfoFournisseur.value(5).toString() ;
-    QString Email = RequeteInfoFournisseur.value(6).toString() ;
-    QString Fax = RequeteInfoFournisseur.value(7).toString() ;
-    QString Remarque = RequeteInfoFournisseur.value(8).toString() ;
-    QString SiteWeb = RequeteInfoFournisseur.value(9).toString() ;
+    //this->IdSelection = ObtenirValeurParNom(RequeteInfoFournisseur,"IdFournisseur").toInt() ;
+    QString NomFournisseur = ObtenirValeurParNom(RequeteInfoFournisseur,"NomFournisseur").toString() ;
+    QString Adresse = ObtenirValeurParNom(RequeteInfoFournisseur,"AdresseFournisseur").toString() ;
+    QString CP = ObtenirValeurParNom(RequeteInfoFournisseur,"CPFournisseur").toString() ;
+    QString VilleFournisseur = ObtenirValeurParNom(RequeteInfoFournisseur,"VilleFournisseur").toString() ;
+    QString Contact = ObtenirValeurParNom(RequeteInfoFournisseur,"PersonneContacte").toString() ;
+    QString Tel = ObtenirValeurParNom(RequeteInfoFournisseur,"NumTelephone").toString() ;
+    QString Email = ObtenirValeurParNom(RequeteInfoFournisseur,"Email").toString() ;
+    QString Fax = ObtenirValeurParNom(RequeteInfoFournisseur,"NumFax").toString() ;
+    QString Remarque = ObtenirValeurParNom(RequeteInfoFournisseur,"Remarque").toString() ;
+    QString SiteWeb = ObtenirValeurParNom(RequeteInfoFournisseur,"SiteWeb").toString() ;
 
     ui->LE_Contact->setText(Contact);
     ui->LE_Email->setText(Email);
     ui->LE_Fax->setText(Fax);
     ui->LE_Nom->setText(NomFournisseur);
+    // SI le nom est vide, on force l'appel de textchanged
+    if(NomFournisseur=="")
+    {
+        this->on_LE_Nom_textChanged("");
+    }
     ui->LE_Telephone->setText(Tel);
     ui->LE_Ville->setText(VilleFournisseur);
     ui->LE_CodePostal->setText(CP);
@@ -250,25 +248,18 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ajouter_clicked()
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
 {
-    if(ui->LE_Nom->text() == "")
+    if(QMessageBox::warning(this, "Confirmation suppression", "Êtes-vous sur de vouloir le supprimer ?", "Oui", "Non") == 0)
     {
-        ui->Bt_Supprimer->setDisabled(true);
+        QSqlQuery RequeteSuppFournOuEdit ;
+        RequeteSuppFournOuEdit.prepare("DELETE FROM fournisseursediteur WHERE IdFournisseur =:IdFournisseur") ;
+        RequeteSuppFournOuEdit.bindValue(":IdFournisseur", this->IdSelection);
+        RequeteSuppFournOuEdit.exec() ;
+        RequeteSuppFournOuEdit.next() ;
+        ViderChamps();
     }
     else
     {
-        if(QMessageBox::warning(this, "Confirmation suppression", "Êtes-vous sur de vouloir le supprimer ?", "Oui", "Non") == 0)
-        {
-            QSqlQuery RequeteSuppFournOuEdit ;
-            RequeteSuppFournOuEdit.prepare("DELETE FROM fournisseursediteur WHERE NomFournisseur =:LeNom") ;
-            RequeteSuppFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
-            RequeteSuppFournOuEdit.exec() ;
-            RequeteSuppFournOuEdit.next() ;
-            ViderChamps();
-        }
-        else
-        {
 
-        }
     }
     on_Rb_Les2_clicked();
 }
@@ -394,11 +385,13 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
 
         QSqlQuery RequeteModifFournOuEdit ;
 
-        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET AdresseFournisseur =:LaAdresse,"
+        RequeteModifFournOuEdit.prepare("UPDATE fournisseursediteur SET NomFournisseur=:NomFournisseur,"
+                  "AdresseFournisseur =:LaAdresse,"
                   "CPFournisseur =:LeCP, VilleFournisseur =:LaVille, PersonneContacte =:LeContact,"
                   "NumTelephone =:LeNum, Email =:LeEmail, NumFax =:LeFax, Pays =:LePays,"
-                  "Remarque =:LaRemarque, SiteWeb =:LeSiteWeb WHERE NomFournisseur =:LeNom") ;
-        RequeteModifFournOuEdit.bindValue(":LeNom", ui->LE_Nom->text());
+                  "Remarque =:LaRemarque, SiteWeb =:LeSiteWeb WHERE IdFournisseur =:IdFournisseur") ;
+        RequeteModifFournOuEdit.bindValue(":IdFournisseur", this->IdSelection);
+        RequeteModifFournOuEdit.bindValue(":NomFournisseur", ui->LE_Nom->text());
         RequeteModifFournOuEdit.bindValue(":LaAdresse", ui->LE_Rue->text());
         RequeteModifFournOuEdit.bindValue(":LeCP", ui->LE_CodePostal->text());
         RequeteModifFournOuEdit.bindValue(":LaVille", ui->LE_Ville->text());
@@ -415,7 +408,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()
             qDebug() << "F_AjoutSuppModifFournisseursEditeurs::on_Bt_Valider_clicked()" << RequeteModifFournOuEdit.lastQuery();
         }
         RequeteModifFournOuEdit.next() ;
-        QMessageBox::information(this, "Succès", "Nouveau fournisseur/éditeur modifié avec succès", "OK") ;
+        QMessageBox::information(this, "Succès", "Fournisseur/éditeur modifié avec succès", "OK") ;
         ViderChamps();
         // réactualiser la liste des fournisseurs
         this->on_LE_Recherche_textChanged("") ;
@@ -448,24 +441,10 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Rb_Fournisseur_clicked()
     QSqlQuery RequeteRechercheFournisseur;
     unsigned int NumeroLigne(0) ;
 
-    RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur, Fournisseur FROM fournisseursediteur WHERE Fournisseur = 1 ORDER BY NomFournisseur ASC");
+    RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur, IdFournisseur FROM fournisseursediteur WHERE Fournisseur = 1 ORDER BY NomFournisseur ASC");
     RequeteRechercheFournisseur.exec();
 
-    //On vide le model
-    this->ModelFournisseur->clear();
-    //Indique le nombes de colones puis leurs noms
-    this->ModelFournisseur->setColumnCount(1);
-    this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom fournisseur"));
-    //impose une taille aux colones
-    ui->TbV_Recherche->setColumnWidth(0,300);
-
-    //Tant qu'il y a des fournisseursediteur dans la table fournisseursediteur
-    while(RequeteRechercheFournisseur.next())
-    {
-        //on ajoute une nouvelle ligne du table view
-        this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheFournisseur.value(0).toString() ));
-        NumeroLigne ++ ;
-    }
+    ActualiserModele(RequeteRechercheFournisseur);
 }
 
 /**
@@ -480,25 +459,10 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Rb_Editeur_clicked()
     QSqlQuery RequeteRechercheFournisseur;
     unsigned int NumeroLigne(0) ;
 
-    RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur, Editeur FROM fournisseursediteur WHERE Editeur = 1 ORDER BY NomFournisseur ASC");
-    //RequeteRechercheFournisseur.bindValue(":NomFournissseur",NomFournisseur);
+    RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur, IdFournisseur FROM fournisseursediteur WHERE Editeur = 1 ORDER BY NomFournisseur ASC");
     RequeteRechercheFournisseur.exec();
 
-    //On vide le model
-    this->ModelFournisseur->clear();
-    //Indique le nombres de colones puis leurs noms
-    this->ModelFournisseur->setColumnCount(1);
-    this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom editeur"));
-    //impose une taille aux colones
-    ui->TbV_Recherche->setColumnWidth(0,300);
-
-    //Tant qu'il y a des fournisseursediteur dans la table fournisseursediteur
-    while(RequeteRechercheFournisseur.next())
-    {
-        //on ajoute une nouvelle ligne du table view
-        this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheFournisseur.value(0).toString() ));
-        NumeroLigne ++ ;
-    }
+    ActualiserModele(RequeteRechercheFournisseur);
 }
 
 /**
@@ -513,24 +477,10 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Rb_Les2_clicked()
     QSqlQuery RequeteRechercheFournisseur;
     unsigned int NumeroLigne(0) ;
 
-    RequeteRechercheFournisseur.prepare("SELECT  NomFournisseur FROM fournisseursediteur ORDER BY NomFournisseur ASC");
+    RequeteRechercheFournisseur.prepare("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur ORDER BY NomFournisseur ASC");
     RequeteRechercheFournisseur.exec();
 
-    //On vide le model
-    this->ModelFournisseur->clear();
-    //Indique le nombes de colones puis leurs noms
-    this->ModelFournisseur->setColumnCount(1);
-    this->ModelFournisseur->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
-    //impose une taille aux colones
-    ui->TbV_Recherche->setColumnWidth(0,300);
-
-    //Tant qu'il y a des fournisseursediteur dans la table fournisseursediteur
-    while(RequeteRechercheFournisseur.next())
-    {
-        //on ajoute une nouvelle ligne du table view
-        this->ModelFournisseur->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheFournisseur.value(0).toString() ));
-        NumeroLigne ++ ;
-    }
+    ActualiserModele(RequeteRechercheFournisseur);
 }
 /**
  * @brief Méthode qui lorsque l'on appui sur la touche entrée du clavier elle appele la méthode qui appui sur le bouton OK

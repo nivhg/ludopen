@@ -65,7 +65,7 @@
         <item>
          <widget class="QLabel" name="Lb_Recherche">
           <property name="text">
-           <string>Rechercher un fournisseur :</string>
+           <string>Rechercher un éditeur/fournisseur :</string>
           </property>
          </widget>
         </item>
@@ -73,13 +73,6 @@
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
            <widget class="QLineEdit" name="LE_Recherche"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="Bt_Ok">
-            <property name="text">
-             <string>OK</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -103,7 +96,7 @@
         <item>
          <widget class="QCommandLinkButton" name="Bt_Ajouter">
           <property name="text">
-           <string>Ajouter un nouveau fournisseur</string>
+           <string>Créer un éditeur/fournisseur</string>
           </property>
           <property name="icon">
            <iconset resource="ImagesIcones.qrc">

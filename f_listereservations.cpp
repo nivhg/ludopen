@@ -456,7 +456,8 @@ void F_ListeReservations::on_Bt_RAZ_clicked()
 
 void F_ListeReservations::on_Bt_Deselection_clicked()
 {
-   this->TousSelectionner( false ) ;
+    this->TousSelectionner( false ) ;
+    this->AffichageListe() ;
 }
 
 void F_ListeReservations::on_Bt_SupprimerListe_clicked()

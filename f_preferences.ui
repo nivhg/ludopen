@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>963</width>
-    <height>556</height>
+    <height>550</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -297,6 +297,19 @@
       <layout class="QGridLayout" name="gridLayout_8">
        <item row="0" column="0">
         <layout class="QGridLayout" name="GL_5">
+         <item row="13" column="0">
+          <widget class="QLabel" name="Lb_Messagerie">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Messagerie :</string>
+           </property>
+          </widget>
+         </item>
          <item row="4" column="1">
           <widget class="QLineEdit" name="LE_MotdePasse">
            <property name="text">
@@ -314,19 +327,6 @@
            </property>
           </widget>
          </item>
-         <item row="12" column="0">
-          <widget class="QLabel" name="Lb_Messagerie">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Messagerie :</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
           <widget class="QLabel" name="Lb_NomUtilisateur">
            <property name="text">
@@ -334,7 +334,7 @@
            </property>
           </widget>
          </item>
-         <item row="14" column="0">
+         <item row="15" column="0">
           <widget class="QLabel" name="Lb_PortSMTP">
            <property name="text">
             <string>Numéro de Port :</string>
@@ -392,6 +392,9 @@
            </property>
           </widget>
          </item>
+         <item row="17" column="1">
+          <widget class="QLineEdit" name="lineEdit_2"/>
+         </item>
          <item row="1" column="1">
           <widget class="QLineEdit" name="LE_NomBDD">
            <property name="text">
@@ -399,13 +402,24 @@
            </property>
           </widget>
          </item>
-         <item row="16" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
+         <item row="5" column="0">
+          <widget class="QLabel" name="Lb_Port">
+           <property name="text">
+            <string>Port :</string>
+           </property>
+          </widget>
          </item>
          <item row="5" column="1">
           <widget class="QLineEdit" name="LE_Port">
            <property name="text">
             <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="0">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Nom d'utilisateur :</string>
            </property>
           </widget>
          </item>
@@ -451,21 +465,7 @@
            </property>
           </spacer>
          </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="Lb_Port">
-           <property name="text">
-            <string>Port :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="15" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Nom d'utilisateur :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="1">
+         <item row="15" column="1">
           <widget class="QLineEdit" name="LE_PortSMTP"/>
          </item>
          <item row="10" column="0">
@@ -475,7 +475,14 @@
            </property>
           </widget>
          </item>
-         <item row="17" column="0" colspan="3">
+         <item row="14" column="0">
+          <widget class="QLabel" name="Lb_AdresseSMTP">
+           <property name="text">
+            <string>Adresse du serveur SMTP :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="18" column="0" colspan="3">
           <spacer name="VS_8">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -488,6 +495,9 @@
            </property>
           </spacer>
          </item>
+         <item row="16" column="1">
+          <widget class="QLineEdit" name="lineEdit"/>
+         </item>
          <item row="6" column="2">
           <widget class="QPushButton" name="Bt_Connection">
            <property name="text">
@@ -495,12 +505,8 @@
            </property>
           </widget>
          </item>
-         <item row="13" column="0">
-          <widget class="QLabel" name="Lb_AdresseSMTP">
-           <property name="text">
-            <string>Adresse du serveur SMTP :</string>
-           </property>
-          </widget>
+         <item row="14" column="1">
+          <widget class="QLineEdit" name="LE_AdresseSMTP"/>
          </item>
          <item row="1" column="2">
           <spacer name="HS_3">
@@ -515,26 +521,7 @@
            </property>
           </spacer>
          </item>
-         <item row="15" column="1">
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-         <item row="13" column="1">
-          <widget class="QLineEdit" name="LE_AdresseSMTP"/>
-         </item>
-         <item row="0" column="4" rowspan="18">
-          <spacer name="HS_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="16" column="0">
+         <item row="17" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Mot de passe :</string>
@@ -548,8 +535,38 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="4" rowspan="19">
+          <spacer name="HS_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
          <item row="11" column="1">
           <widget class="QLineEdit" name="LE_AdresseServeur"/>
+         </item>
+         <item row="12" column="1">
+          <widget class="QLineEdit" name="LE_ClePrivee"/>
+         </item>
+         <item row="12" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Chemin clé privée</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="2">
+          <widget class="QPushButton" name="Bt_ParcourirClePrivee">
+           <property name="text">
+            <string>Parcourir...</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -793,7 +810,7 @@
          <item row="6" column="5" rowspan="3">
           <widget class="QTableView" name="TbV_JeuxEmplacement">
            <property name="alternatingRowColors">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="selectionMode">
             <enum>QAbstractItemView::SingleSelection</enum>
@@ -909,7 +926,17 @@
           </widget>
          </item>
          <item row="6" column="3" rowspan="3">
-          <widget class="QTableView" name="TbV_JeuxMotCle"/>
+          <widget class="QTableView" name="TbV_JeuxMotCle">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
          <item row="11" column="0" colspan="2">
           <widget class="QLabel" name="label_5">
@@ -1688,7 +1715,17 @@ paiement :</string>
           </widget>
          </item>
          <item row="7" column="4" rowspan="3">
-          <widget class="QTableView" name="TbV_MembresActivite"/>
+          <widget class="QTableView" name="TbV_MembresActivite">
+           <property name="alternatingRowColors">
+            <bool>true</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SingleSelection</enum>
+           </property>
+           <property name="selectionBehavior">
+            <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

@@ -19,6 +19,7 @@
 #include "Courriel.h"
 #include "f_retards.h"
 #include "ui_f_retards.h"
+#include "fonctions_globale.h"
 
 // En-têtes standards ----------------------------------------------------------
 #include <QStandardItemModel>
@@ -42,6 +43,7 @@ F_Retards::F_Retards(QWidget *parent) :
    this->MaJListe() ;
 
    this->NbEmailAEnvoyer = 0 ;
+   this->pCourriel=0;
 
    // Permettre le tri des colonnes
    ui->TbW_Retards->setSortingEnabled(true);
@@ -89,17 +91,37 @@ F_Retards::F_Retards(QWidget *parent) :
    ui->Lb_Erreur->setText("");
 
    //Recupération du corps de l'email et des paramètre de connection
-   if( Requete.exec( "SELECT AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail FROM preferences WHERE IdPreferences=1" ) )
+   if( Requete.exec( "SELECT AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail,Email FROM preferences WHERE IdPreferences=1" ) )
    {
+        Requete.next();
+       QString ServeurSMTP =  ObtenirValeurParNom(Requete,"AdresseServeurSMTP").toString();
+       int PortSMTP = ObtenirValeurParNom(Requete,"PortSMTP").toInt();
+       if(ServeurSMTP=="" || PortSMTP==0)
+       {
+           QMessageBox::critical(this, "Erreur de paramétrage",
+                "Serveur d'envoi de courriel (SMTP) mal paramétré.\n"
+                "Vérifier le paramétrage dans les Préférences->Réseaux et relancer l'application.");
+           ui->gridLayout_3->setEnabled(false);
+           return;
+       }
+       QString Email=ObtenirValeurParNom(Requete,"Email").toString();
+       if(Email.indexOf("@")==-1)
+       {
+           QMessageBox::critical(this, "Erreur de paramétrage",
+                "Courriel d'envoi de courriel mal formé ou vide.\n"
+                "Vérifier le paramétrage dans les Préférences->Informations et relancer l'application.");
+           ui->gridLayout_3->setEnabled(false);
+           return;
+       }
       Requete.next() ;
-      ui->LE_Sujet->setText( Requete.record().value( 2 ).toString() ) ;
-      ui->TE_Corps->setPlainText( Requete.record().value( 3 ).toString() ) ;
+      ui->LE_Sujet->setText( ObtenirValeurParNom(Requete,"SujetEmail").toString() ) ;
+      ui->TE_Corps->setPlainText( ObtenirValeurParNom(Requete,"CorpsEmail").toString() ) ;
 
       ui->Bt_Enregistrer->setDisabled( true ) ;
       ui->Bt_Annuler->setDisabled( true ) ;
 
       //On crée l'objet Courriel qui permettra l'envoi des emails
-      pCourriel = new Courriel( Requete.record().value(0).toString() , Requete.record().value(1).toInt() , &this->ListeEMailAEnvoyer ) ;
+      pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
 
       //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
       connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
@@ -255,10 +277,7 @@ void F_Retards::MaJListe()
 void F_Retards::slot_FermerThreadCourriel( )
 {   
    //On déverrouille la liste et ses boutons
-   ui->TbW_Retards->setEnabled( true ) ;
-   ui->Bt_Envoyer->setEnabled( true ) ;
-   ui->Bt_Selectionner->setEnabled( true ) ;
-   ui->Bt_Deselectionner->setEnabled( true ) ;
+   DesactiverChamps(false);
 
    //On vérifie que le thread est en route puis on arrête le thread d'envoi d'email.
    if( this->pCourriel->isRunning() )
@@ -413,22 +432,27 @@ void F_Retards::on_Bt_Envoyer_clicked()
     // s'il y a des emails à envoyer
     if ( NbEmailAEnvoyer > 0)
     {
-        //t = new QThread;
-        // démarre le thread d'envoi pour les email
-        //pCourriel->moveToThread(t);
-        //t->start();
         pCourriel->start();
     }
 
     //On met à jour la liste
-    if ( bSelection == true )
+    if ( bSelection )
     {
         //this->MaJListe() ;
-        ui->TbW_Retards->setDisabled( true ) ;
-        ui->Bt_Envoyer->setDisabled( true ) ;
-        ui->Bt_Selectionner->setDisabled( true ) ;
-        ui->Bt_Deselectionner->setDisabled( true ) ;
+        DesactiverChamps(true);
     }
+}
+
+/**
+ * @brief Permet de désactiver les champs de l'onglet
+ *
+ */
+void F_Retards::DesactiverChamps(bool Etat)
+{
+    ui->TbW_Retards->setDisabled( Etat ) ;
+    ui->Bt_Envoyer->setDisabled( Etat ) ;
+    ui->Bt_Selectionner->setDisabled( Etat ) ;
+    ui->Bt_Deselectionner->setDisabled( Etat ) ;
 }
 
 /**

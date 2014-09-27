@@ -41,9 +41,9 @@
         <string>Liste de jeux : %jeux 
 Nom : %nom
 Prénom : %prenom
-Adresse email du destinataire : %destinataire
-Adresse email de l'expéditeur : %expediteur
-Date d'envoie de l'email : %date
+Courriel du destinataire : %destinataire
+Courriel de l'expéditeur : %expediteur
+Date d'envoi du courriel : %date
 Prix de l'amende : %amende
 Nb de jours de retard : %jours</string>
        </property>

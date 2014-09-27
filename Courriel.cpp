@@ -30,9 +30,6 @@
 Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> *ListeEMailAEnvoyer) :
     QThread()
 {
-       //QTcpSocket Courriel::SocketSMTP(this);
-   //qDebug()<<"Courriel::Courriel SocketSMTP="<< SocketSMTP;
-
    //  avoir accès au vecteur qui contient les emails à envoyer
    this->ListeEMailAEnvoyer = ListeEMailAEnvoyer ;
 
@@ -40,8 +37,7 @@ Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector
    this->sAdresseSmtp = sAdresseServeurSNMP ;
    this->nPort = nPort ;
 
-   //QTcpSocket Courriel::SocketSMTP ;
-   //Création du flux
+    SocketSMTP=0;
 }
 
 /** Détruit les objets dynamiques créés
@@ -106,9 +102,10 @@ void Courriel::run()
     this->sFrom = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sFrom ;
     this->sTo = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sTo ;
 
-    this->sMessage = "To: " + this->sTo + "\n" ;
-    this->sMessage.append("From: " + this->sFrom + "\n") ;
+    this->sMessage="From: " + this->sFrom + "\n";
+    this->sMessage.append("To: " + this->sTo + "\n");
     this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+    this->sMessage.append("Content-Type: text/plain; charset=\"UTF-8\"\n\n");
     this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
     this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
     this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
@@ -209,7 +206,7 @@ void Courriel::slot_ReceptionDonnees()
         }
         else
         {
-            //Indique qu'il y a une erreur lors de l'envoie du mail de l'expediteur
+            //Indique qu'il y a une erreur lors de l'envoi du mail de l'expediteur
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : To";
             emit( this->Signal_Erreur_EMail( this->sTo + ": Adresse email de l'expediteur incorrect." ) ) ;

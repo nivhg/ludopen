@@ -72,10 +72,8 @@ F_Jeux::F_Jeux(QWidget *parent) :
     lb_image->setAlignment(Qt::AlignCenter);
     //Crée un curseur loupe et l'assigne à l'image
     //Initialisation des variables liées à l'affichage des images
-    QCursor Souris(QPixmap(":Loupe.png"));
-    //QString path=QCoreApplication::applicationDirPath();
-    //QCursor Souris(QPixmap( QCoreApplication::applicationDirPath() + QDir::separator() + "Loupe.png"));
-    lb_image->setCursor(Souris);
+    //QCursor Souris(QPixmap(":Loupe.png"));
+    lb_image->setCursor(Qt::PointingHandCursor);
     ui->gridLayout_11->addWidget(lb_image,0,3);
     // Faire défiler le tableau des jeux avec les flèches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));

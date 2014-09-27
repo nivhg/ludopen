@@ -69,7 +69,7 @@ F_ListeJeux::F_ListeJeux(QWidget *parent) :
     ui->TbV_Recherche->setColumnWidth(6,80);
     ui->TbV_Recherche->setColumnWidth(7,120);
 
-    //Rempli tous les crit?res combobox
+    //Rempli tous les critères combobox
     this->RAZCriteres();
 }
 
@@ -138,8 +138,7 @@ void F_ListeJeux::RecupererContenuIndex()
     QSqlQuery RequeteFiltreJeux ;
     FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin,"
             "NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux,"
-            "TypeJeux_Classification, NomJeu, CodeJeu FROM jeux, etatsjeu, motscles,"
-            "statutjeux, typejeux " ;
+            "TypeJeux_Classification, NomJeu, CodeJeu FROM jeux ";
 
     if(ui->CBx_DateAcquisition->currentIndex() != 0)
     {
@@ -211,8 +210,8 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " EtatsJeu_IdEtatsJeu = IdEtatsJeu AND Etat = " ;
-        ListeJeux += " \""+ui->CBX_Etat->currentText()+" \"" ;
+        ListeJeux += " EtatsJeu_IdEtatsJeu = " ;
+        ListeJeux += ui->CBX_Etat->itemData(ui->CBX_Etat->currentIndex(),Qt::UserRole).toString();
         PremierCritere = true ;
     }
     
@@ -222,15 +221,9 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " MotCle1 = Id_MotCle AND MotCle =" ;
-        ListeJeux += " \""+ui->CBx_MotCle1->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle2 = Id_MotCle AND MotCle =" ;
-        ListeJeux += " \""+ui->CBx_MotCle1->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle3 = Id_MotCle AND MotCle =" ;
-        ListeJeux += " \""+ui->CBx_MotCle1->currentText()+" \"" ;
-        
+        ListeJeux += " MotCle1 = " ;
+        ListeJeux += ui->CBx_MotCle1->itemData(ui->CBx_MotCle1->currentIndex(),Qt::UserRole).toString();
+                
         PremierCritere = true ;
     }
     if(ui->CBx_MotCle2->currentIndex() != 0)
@@ -239,15 +232,9 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " MotCle2 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle2->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle1 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle2->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle3 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle2->currentText()+" \"" ;
-        
+        ListeJeux += " MotCle2 = " ;
+        ListeJeux += ui->CBx_MotCle2->itemData(ui->CBx_MotCle2->currentIndex(),Qt::UserRole).toString();
+                
         PremierCritere = true ;
     }
     if(ui->CBx_MotCle3->currentIndex() != 0)
@@ -256,14 +243,9 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " MotCle3 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle3->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle2 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle3->currentText()+" \"" ;
-        
-        ListeJeux += " OR MotCle1 = Id_MotCle AND MotCle = " ;
-        ListeJeux += " \""+ui->CBx_MotCle3->currentText()+" \"" ;
+        ListeJeux += " MotCle3 = " ;
+        ListeJeux += ui->CBx_MotCle3->itemData(ui->CBx_MotCle3->currentIndex(),Qt::UserRole).toString();
+
         PremierCritere = true ;
     }
     
@@ -273,8 +255,8 @@ void F_ListeJeux::RecupererContenuIndex()
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " StatutJeux_IdStatutJeux = IdStatutJeux AND StatutJeu = " ;
-        ListeJeux += " \""+ui->CBx_Statut->currentText()+" \"" ;
+        ListeJeux += " StatutJeux_IdStatutJeux = " ;
+        ListeJeux += ui->CBx_Statut->itemData(ui->CBx_Statut->currentIndex(),Qt::UserRole).toString();
         PremierCritere = true ;
     }
     if(ui->CBx_Classification->currentIndex() != 0)
@@ -529,8 +511,8 @@ void F_ListeJeux::RAZCriteres()
     ui->CBx_Classification->addItem("Classification");
     ui->CBx_DateAcquisition->addItem("Date d'achat");
     ui->CBX_Etat->addItem("Etat");
-    ui->CBx_JoueursMax->addItem("Nb joueur mini");
-    ui->CBx_JoueursMin->addItem("Nb joueur maxi");
+    ui->CBx_JoueursMin->addItem("Nb joueur mini");
+    ui->CBx_JoueursMax->addItem("Nb joueur maxi");
     ui->CBx_MotCle1->addItem("Mot clé 1");
     ui->CBx_MotCle2->addItem("Mot clé 2");
     ui->CBx_MotCle3->addItem("Mot clé 3");
@@ -543,14 +525,15 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteEtatJeu ;
 
-    RequeteEtatJeu.exec("SELECT Etat FROM etatsjeu");
+    RequeteEtatJeu.exec("SELECT IdEtatsJeu,Etat FROM etatsjeu");
 
+    int i=1;
     //Tant qu'il y a différents états dans la table etatsjeu,
    while(RequeteEtatJeu.next())
    {
         //on entre un nouveau Item au ComboBox avec le nom de l'état
-        QString EtatJeu=(RequeteEtatJeu.value(0).toString()) ;
-        ui->CBX_Etat->addItem(EtatJeu);
+        ui->CBX_Etat->addItem(RequeteEtatJeu.value(1).toString());
+        ui->CBX_Etat->setItemData(i++,RequeteEtatJeu.value(0).toInt(),Qt::UserRole);
    }
    /////////////////////////////////////////
    /////////////////////////////////////////
@@ -558,14 +541,15 @@ void F_ListeJeux::RAZCriteres()
    ///////////////////////////////////////
    QSqlQuery RequeteStatutJeu ;
 
-  RequeteStatutJeu.exec("SELECT StatutJeu FROM statutjeux");
+  RequeteStatutJeu.exec("SELECT IdStatutJeux,StatutJeu FROM statutjeux");
 
 //Tant qu'il y a différents états dans la table jeux,
+  i=1;
   while(RequeteStatutJeu.next())
   {
       //on entre un nouveau Item au ComboBox avec le nom du statut
-      QString StatutJeu=(RequeteStatutJeu.value(0).toString()) ;
-      ui->CBx_Statut->addItem(StatutJeu);
+      ui->CBx_Statut->addItem(RequeteStatutJeu.value(1).toString());
+      ui->CBx_Statut->setItemData(i++,RequeteStatutJeu.value(0).toInt(),Qt::UserRole);
   }
 
   ////////////////////////////////////////
@@ -674,16 +658,17 @@ void F_ListeJeux::RAZCriteres()
 
     QSqlQuery RequeteMotsCle ;
 
-    RequeteMotsCle.exec("SELECT MotCle FROM motscles GROUP BY MotCle") ;
+    RequeteMotsCle.exec("SELECT Id_MotCle, MotCle FROM motscles GROUP BY MotCle") ;
 
+    i=1;
     while(RequeteMotsCle.next())
     {
-        QString MotCle1 = (RequeteMotsCle.value(0).toString()) ;
-        QString MotCle2 = (RequeteMotsCle.value(0).toString()) ;
-        QString MotCle3 = (RequeteMotsCle.value(0).toString()) ;
-        ui->CBx_MotCle1->addItem(MotCle1);
-        ui->CBx_MotCle2->addItem(MotCle2);
-        ui->CBx_MotCle3->addItem(MotCle3);
+        ui->CBx_MotCle1->addItem(RequeteMotsCle.value(1).toString());
+        ui->CBx_MotCle2->addItem(RequeteMotsCle.value(1).toString());
+        ui->CBx_MotCle3->addItem(RequeteMotsCle.value(1).toString());
+        ui->CBx_MotCle1->setItemData(i,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
+        ui->CBx_MotCle2->setItemData(i,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
+        ui->CBx_MotCle3->setItemData(i++,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
     }
 
     ////////////////////////////////////

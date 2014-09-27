@@ -48,9 +48,13 @@ public:
 
     /**
      * @brief Fait une mise à jour de la liste des membres qui ont au moins un jeu en retard
-     *
      */
     void MaJListe () ;
+    /**
+     * @brief Permet de désactiver les champs de l'onglet
+     */
+    void DesactiverChamps(bool Etat);
+
 
 signals:
     //! Signal indiquand qu'un double clic a eu lieu dans la liste des membres en retard

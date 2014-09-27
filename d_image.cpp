@@ -57,9 +57,9 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
         //Récupères les informations pour la connexion au serveur
         RequeteConnexionServeur.exec("SELECT CheminPhotosJeux, CheminPhotosServeur,AdresseServeur,LoginServeur FROM preferences WHERE IdPreferences=1") ;
         RequeteConnexionServeur.next() ;
-        sCheminPhotoJeux = ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosJeux").toString();
+        sCheminPhotoJeux = ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosJeux").toString()+QDir::separator();
         EstCeLocal=!EstCeURL(sCheminPhotoJeux);
-        sCheminPhotoServeur=ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosServeur").toString();
+        sCheminPhotoServeur=ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosServeur").toString()+QDir::separator();
         sAdresseServeur=ObtenirValeurParNom(RequeteConnexionServeur,"AdresseServeur").toString();
         sLoginServeur=ObtenirValeurParNom(RequeteConnexionServeur,"LoginServeur").toString();
 
@@ -324,6 +324,7 @@ void D_Image::on_Bt_DeplacerGauche_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Inverser(EMPLACEMENT_SERVEUR);
@@ -347,6 +348,7 @@ void D_Image::on_Bt_DeplacerDroite_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Inverser(EMPLACEMENT_SERVEUR);
@@ -461,6 +463,7 @@ void D_Image::on_Bt_Ajouter_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Ajouter(EMPLACEMENT_SERVEUR);
@@ -542,6 +545,7 @@ void D_Image::on_Bt_Supprimer_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         Suppression(EMPLACEMENT_SERVEUR);
@@ -644,6 +648,7 @@ void D_Image::on_Bt_Defaut_Ludopen_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirLudopen(EMPLACEMENT_SERVEUR);
@@ -717,6 +722,7 @@ void D_Image::on_Bt_Defaut_Web_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirWeb(EMPLACEMENT_SERVEUR);
@@ -756,6 +762,7 @@ void D_Image::on_Bt_Defaut_Deux_clicked()
     }
     else
     {
+        ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
         uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
         DefinirDeux(EMPLACEMENT_SERVEUR);
@@ -905,6 +912,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
                 ChangerSelection(lb_image);
                 break;
         }
+        ui->dockWidget->setCursor(Qt::ArrowCursor);
     }
 }
 

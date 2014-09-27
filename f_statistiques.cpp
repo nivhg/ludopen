@@ -43,8 +43,8 @@ F_Statistiques::F_Statistiques(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::F_Statistiques)
 {
-    this->nChampsCombo = 0;
-    this->nPeriode = 0;
+    this->nChampsCombo = 1;
+    this->nPeriode = 1;
     this->nJourDebut = 0;
     this->nJourFin = 0;
     this->nMoisDebut = 0;
@@ -63,11 +63,15 @@ F_Statistiques::F_Statistiques(QWidget *parent) :
     TbStatModele = new QStandardItemModel();
     ui->TbV_Stat->setModel(this->TbStatModele);
     ui->TbV_Stat->setEditTriggers(0);
+    // Autorise le tri pour ce tableau
+    ui->TbV_Stat->setSortingEnabled(true);
 
     TbStatPlusModele = new QStandardItemModel();
     ui->TbV_StatPlus->setModel(this->TbStatPlusModele);
     ui->TbV_StatPlus->setEditTriggers(0);
-    ui->TbV_StatPlus->verticalHeader()->setVisible(false);
+    //ui->TbV_StatPlus->verticalHeader()->setVisible(false);
+    // Autorise le tri pour ce tableau
+    ui->TbV_StatPlus->setSortingEnabled(true);
 
     ui->Bt_Exporter->hide();
     ui->Bt_PlusStat->hide();
@@ -103,7 +107,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
 {
     switch (index)
     {
-    case 1:
+    case 0:
         // Pour le total d'adhérent inscrits
         this->nChampsCombo = 1;
 
@@ -118,7 +122,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_2->show();
         ui->label_4->show();
         break;
-    case 2:
+    case 1:
         // Pour les adhérents ayant emprunté sur une période
         this->nChampsCombo = 2;
 
@@ -133,7 +137,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_2->show();
         ui->label_4->show();
         break;
-    case 3:
+    case 2:
         // Pour la répartition des adhérents par commune
         this->nChampsCombo = 3;
 
@@ -148,7 +152,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_2->show();
         ui->label_4->show();
         break;
-    case 4:
+    case 3:
         // Pour le classement des adhérents empruntant le plus
         this->nChampsCombo = 4;
 
@@ -163,7 +167,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_2->show();
         ui->label_4->show();
         break;
-    case 5:
+    case 4:
         // Pour le classement des jeux par popularités
         this->nChampsCombo = 5;
 
@@ -178,7 +182,7 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->label_2->hide();
         ui->label_4->hide();
         break;
-    case 6:
+    case 5:
         // Pour le nombre de jeux empruntés sur une période
         this->nChampsCombo = 6;
 
@@ -246,6 +250,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
+    ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
     {
         this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
@@ -280,6 +285,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscritJour()
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -310,7 +316,6 @@ void F_Statistiques::EffectuerRequeteAdherentInscritJour()
         }
         nDetail = 0;
     }
-    ui->Lb_Resultat->setNum( Statistique.numRowsAffected() ) ;
 }
 /**
  *  @brief Fonction qui exécute la requête SQL "SELECT".
@@ -336,6 +341,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscritMois()
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -379,6 +385,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscritAnnee()
         Statistique.prepare("SELECT * FROM membres WHERE YEAR(DateInscription)=:DateInscription AND Ecarte=0");
         Statistique.bindValue(":DateInscription", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -419,6 +426,7 @@ void F_Statistiques::EffectuerRequeteAdherentEmprunt()
         StatistiquePlus.prepare("SELECT Nom, Prenom FROM membres WHERE IdMembre=:IdMembre");
         StatistiquePlus.bindValue(":IdMembre", Statistique.value(0).toString());
         StatistiquePlus.exec();
+        ui->LE_SQL->setText(StatistiquePlus.lastQuery());
         while(StatistiquePlus.next())
         {
             this->TbStatModele->setItem(nNombreLigne, 1, new QStandardItem(StatistiquePlus.value(0).toString()));
@@ -428,6 +436,7 @@ void F_Statistiques::EffectuerRequeteAdherentEmprunt()
         this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
         nNombreLigne = nNombreLigne + 1;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 /**
  *  @brief  Fonction qui exécute la requête SQL "SELECT".
@@ -454,6 +463,7 @@ void F_Statistiques::EffectuerRequeteAdherentEmpruntJour()
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -510,6 +520,7 @@ void F_Statistiques::EffectuerRequeteAdherentEmpruntMois()
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -556,6 +567,7 @@ void F_Statistiques::EffectuerRequeteAdherentEmpruntAnnee()
         Statistique.prepare("SELECT * FROM emprunts WHERE YEAR(DateEmprunt)=:DateEmprunt");
         Statistique.bindValue(":DateEmprunt", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -600,6 +612,7 @@ void F_Statistiques::EffectuerRequeteAdherentCommune()
         StatistiquePlus.bindValue(":DateFin", ui->DtE_Fin->dateTime());
         StatistiquePlus.bindValue(":Ville", Statistique.value(0).toString());
         StatistiquePlus.exec();
+        ui->LE_SQL->setText(StatistiquePlus.lastQuery());
         while(StatistiquePlus.next())
         {
             nDetail = nDetail + 1;
@@ -611,6 +624,7 @@ void F_Statistiques::EffectuerRequeteAdherentCommune()
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 
 /**
@@ -631,6 +645,7 @@ void F_Statistiques::EffectuerRequeteAdherentPlus()
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
+    ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
     {
         StatistiquePlus.prepare("SELECT * FROM emprunts WHERE DateEmprunt>=:DateDebut AND DateEmprunt<=:DateFin AND Membres_IdMembre=:Membres");
@@ -658,6 +673,7 @@ void F_Statistiques::EffectuerRequeteAdherentPlus()
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 
 /**
@@ -676,6 +692,7 @@ void F_Statistiques::EffectuerRequeteJeuxPopularite()
 
     Statistique.prepare("SELECT Jeux_IdJeux FROM emprunts GROUP BY Jeux_IdJeux");
     Statistique.exec();
+    ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
     {
         StatistiquePlus.prepare("SELECT * FROM emprunts WHERE Jeux_IdJeux=:Jeux");
@@ -700,6 +717,7 @@ void F_Statistiques::EffectuerRequeteJeuxPopularite()
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 
 /**
@@ -720,6 +738,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmprunt()
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
+    ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
     {
         StatistiquePlus.prepare("SELECT * FROM emprunts WHERE DateEmprunt>=:DateDebut AND DateEmprunt<=:DateFin AND Jeux_IdJeux=:Jeux");
@@ -746,6 +765,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmprunt()
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;
     }
+    ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
 
 /**
@@ -773,6 +793,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmpruntJour()
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -829,6 +850,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmpruntMois()
         Statistique.bindValue(":DateMois", nMoisDebut);
         Statistique.bindValue(":DateAnnee", nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
@@ -875,6 +897,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmpruntAnnee()
         Statistique.prepare("SELECT * FROM emprunts WHERE YEAR(DateEmprunt)=:DateEmprunt");
         Statistique.bindValue(":DateEmprunt", this->nAnneeDebut);
         Statistique.exec();
+        ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
         {
             nDetail = nDetail + 1;
