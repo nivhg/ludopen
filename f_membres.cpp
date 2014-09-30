@@ -270,9 +270,17 @@ bool F_Membres::MaJListeMembres()
     //Vidange du vecteur
     this->VecteurMembres.clear() ;
 
+    QString requeteSQL;
+    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres";
+    if(this->iMode==MODE_CONTACTS)
+    {
+        requeteSQL+=" WHERE TitreMembre_IdTitreMembre<>2 AND TitreMembre_IdTitreMembre<>3";
+    }
+    requeteSQL+=" ORDER BY Nom ASC";
+
     //Execute une requète sql qui retourne la liste des membres
     //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
-    if(query.exec("SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres ORDER BY Nom ASC"))
+    if(query.exec(requeteSQL))
     {
         while(query.next())
         {
@@ -1137,12 +1145,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             RequeteSupprimer.prepare( "DELETE FROM membres WHERE IdMembre=:IdMembre" ) ;
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
-            //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
-            if( RequeteSupprimer.exec() )
-            {
-                bRetourne = true ;
-            }
-            else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
+            if( !RequeteSupprimer.exec() )
             {
                 qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer : Erreur de connexion avec la base de donne !" << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
@@ -1153,11 +1156,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
-            if( RequeteSupprimer.exec() )
-            {
-                bRetourne = true ;
-            }
-            else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
+            if( !RequeteSupprimer.exec() )
             {
                 qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
@@ -1168,11 +1167,7 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
-            if( RequeteSupprimer.exec() )
-            {
-                bRetourne = true ;
-            }
-            else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
+            if( !RequeteSupprimer.exec() )
             {
                 qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
@@ -1183,16 +1178,42 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
             RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
 
             //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
-            if( RequeteSupprimer.exec() )
-            {
-                bRetourne = true ;
-            }
-            else//Sinon on affiche un message d'erreur et on met la variable de retoure à faux
+            if( !RequeteSupprimer.exec() )
             {
                 qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
                 bRetourne = false ;
             }
-        }
+            //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
+            RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE Membres_IdMembre=:IdMembre" ) ;
+            RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
+
+            //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
+            if( !RequeteSupprimer.exec() )
+            {
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
+                bRetourne = false ;
+            }
+            //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
+            RequeteSupprimer.prepare( "DELETE FROM activitemembre WHERE Membres_IdMembre=:IdMembre" ) ;
+            RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
+
+            //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
+            if( !RequeteSupprimer.exec() )
+            {
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
+                bRetourne = false ;
+            }
+            //Préparation de la requête permettant la suppression dans la table abonnements-----------------------
+            RequeteSupprimer.prepare( "DELETE FROM membresassocies WHERE Membres_IdMembre=:IdMembre OR "
+                                      "Membres_IdCollectivite=:IdMembre") ;
+            RequeteSupprimer.bindValue( ":IdMembre", nIdMembre ) ;
+
+            //Execution de la requête, si elle fonctionne on met la variable de retoure à vrai
+            if( !RequeteSupprimer.exec() )
+            {
+                qDebug()<< "F_AdministrerMembres::SupprimerMembre : RequeteSupprimer " << RequeteSupprimer.lastQuery()<< endl ;
+                bRetourne = false ;
+            }        }
         else
         {
             bRetourne = false ;
@@ -1201,7 +1222,8 @@ bool F_Membres::SupprimerMembre( int nIdMembre )
     else
     {
         bRetourne = false ;
-        QMessageBox::information( this, "Suppression Membre","Impossible de supprimer ce membre.\nIl a des jeux encore en cours d'emprunts.",  "Ok" ) ;
+        QMessageBox::information( this, "Suppression Membre","Impossible de supprimer ce membre.\n"
+                                  "Il a des jeux encore en cours d'emprunts.",  "Ok" ) ;
     }
 
     this->MaJListeMembres() ;
