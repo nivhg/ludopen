@@ -34,5 +34,7 @@
         <file>Fleche_droite.png</file>
         <file>Fleche_gauche.png</file>
         <file>Loupe.png</file>
+        <file>Fleche_bas.png</file>
+        <file>Fleche_haut.png</file>
     </qresource>
 </RCC>

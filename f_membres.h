@@ -14,6 +14,10 @@
 
 using namespace std;
 
+#define MODE_UTILISATEUR 0
+#define MODE_ADMIN 1
+#define MODE_CONTACTS 2
+
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
 
 /** @struct Membre
@@ -49,11 +53,14 @@ public:
      *  @param  pRechercheMembres : point sur un F_RechercheMembres, bAdmin : Indique si c'est une fenêtre administration
      *  @test   Voir la procédure dans le fichier associé.
      */
-    explicit F_Membres(bool bAdmin = false, QWidget *parent = 0) ;
+    explicit F_Membres(int iMode = MODE_UTILISATEUR, QWidget *parent = 0,
+                       int nIdCollectivite=0) ;
     ~F_Membres() ;
 
 
 // METHODEs -----------------------------------------------------------------
+
+    Ui::F_Membres * ui;
 
     //! Recupere l'emplacement d'un titre dans un vecteur en fonction de son id
     int RecupererEmplacementTitreVecteur (unsigned int nIdTitre) ;
@@ -236,15 +243,28 @@ private slots:
 
     void on_Bt_SupprimerActivite_clicked();
 
+    void on_Bt_Contact_clicked();
+
+    void on_Bt_AJouterContact_clicked();
+
+    void on_Bt_SupprimerContact_clicked();
+
+    void AjouterContact(QList <QStandardItem *> ListStandardItem);
+
+    void on_Bt_ValiderContacts_clicked();
+
+    void on_Bt_AnnulerContacts_clicked();
+
+    void on_CBx_Titre_currentIndexChanged(int index);
+
 private:
 
     // ATTRIBUTs ----------------------------------------------------------------
 
-    Ui::F_Membres * ui;
-
     QVector<Membre> VecteurMembres ;///< Vecteur contenant la liste des membres
     QVector<Membre> VecteurRechercheMembres ; ///< Vecteur contenant la liste des membres correspondant à  la recherche
     QStandardItemModel ModeleRechercheMembre;
+    QStandardItemModel ModeleContacts;
 
     F_HistoriqueJeux *   pHistoriqueJeux ;   //! Pointeur sur la classe F_HistoriqueJeux
     F_AjouterCotiCarte * pAjouterCotiCarte ; //! Pointeur sur la classe F_AjouterCoticarte
@@ -258,8 +278,9 @@ private:
     QVector<int>     VecteurAbonnements ;    //! Vecteur contenant la liste des des Id des abonnements présent dans le tableau
 
     unsigned int nIdMembreSelectionne ;      //! Permet de savoir quelle membre est sélectionné
+    unsigned int nIdCollectivite;
 
-    bool bAdmin ;                            //! Indique les droits d'adminstration (vrai = admin, faux = simple bénévole)
+    int iMode ;                            //! Indique les droits d'adminstration (vrai = admin, faux = simple bénévole)
 
     /////////////Fenêtre d'ajout d'une ville///////////////
     QDialog     * oFenetreAjoutVille ;       //! Fenêtre pour l'ajout d'une ville
@@ -267,7 +288,7 @@ private:
     QPushButton * Bt_ValiderVille ;          //! Bouton Valider pour la fenêtre d'ajout d'une ville
     QPushButton * Bt_AnnuerVille ;           //! Bouton Annuler pour la fenêtre d'ajout d'une ville
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville
-
+    F_Membres * pContacts;
 };
 
 #endif // F_MEMBRES_H

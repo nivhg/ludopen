@@ -25,16 +25,20 @@
  *  @param  F_RechercheMembres * pRechercheMembres
  *
  */
-F_Membres::F_Membres( bool bAdmin, QWidget *parent ):
+F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     QWidget( parent ),
     ui( new Ui::F_Membres )
 {
     ui->setupUi( this ) ;
 
-    //Indique si c'est en administration ou pas
-    this->bAdmin = bAdmin ;
+    this->nIdCollectivite = nIdCollectivite;
+    //Indique le mode : Administration, utilisation standard ou Contacts
+    this->iMode = iMode ;
 
-    ui->Bt_SupprimerMembre->setVisible( this->bAdmin ) ;
+    if(this->iMode!=MODE_ADMIN)
+    {
+        ui->Bt_SupprimerMembre->setVisible( false );
+    }
     ui->Bt_SupprimerMembre->setDisabled( true ) ;
 
     //aucun membre sélectionné par defaut
@@ -111,11 +115,67 @@ F_Membres::F_Membres( bool bAdmin, QWidget *parent ):
     this->AfficherListe(this->VecteurRechercheMembres) ;
 
     ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
-    ui->TbW_Recherche->setEditTriggers(0);
+    ui->TbW_Recherche->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     // Faire défiler le tableau des membres avec les flêches du clavier
     connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
 
+    if(this->iMode==MODE_CONTACTS)
+    {
+        setWindowTitle("Contacts");
+        ui->frame->setVisible(false);
+        ui->frame_2->setVisible(false);
+        ui->Fr_Contacts->setVisible(true);
+        ui->Lb_Contacts->setVisible(true);
+        ui->TbW_Recherche->blockSignals(true);
+        QDesktopWidget *desktop = QApplication::desktop();
+        QRect geo_d_i = geometry();
+        int x = (desktop->width() - 350) / 2;
+        int y = (desktop->height() - geo_d_i.height()) / 2;
+        this->setGeometry(x, y, 350, geo_d_i.height());
+        this->show();
+        ui->TbW_Contacts->clearSpans() ;
+        ui->TbW_Contacts->setModel(&ModeleContacts) ;
+        ui->TbW_Contacts->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        ui->TbW_Contacts->setSortingEnabled(true);
+        ModeleContacts.setColumnCount(4);
+        ModeleContacts.setRowCount(0);
+        ModeleContacts.setHorizontalHeaderItem(0, new QStandardItem("Id"));
+        ModeleContacts.setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+        ModeleContacts.setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
+        ModeleContacts.setHorizontalHeaderItem(3, new QStandardItem("Ville"));
+        ModeleContacts.setHorizontalHeaderItem(4, new QStandardItem("Code Membre"));
+        ui->TbW_Contacts->setColumnWidth(0,0);
+        QSqlQuery RequeteContact ;
+        //Enregistrement d'un nouveau membre dans la base de données
+        RequeteContact.prepare( "SELECT Membres_IdMembre,Nom,Prenom,Ville,CodeMembre"
+            " FROM membresassocies,membres WHERE Membres_IdCollectivite=:IdCollectivite"
+            " AND IdMembre=Membres_IdMembre ORDER BY Nom") ;
+        RequeteContact.bindValue(":IdCollectivite",this->nIdCollectivite);
+        //Exectution de la requête
+        if( !RequeteContact.exec() )
+        {
+            qDebug()<< "F_Membres::on_Bt_ValiderContacts_clicked : RequeteMembre " << RequeteContact.lastQuery() ;
+        }
+        else
+        {
+            int i=0;
+            while(RequeteContact.next())
+            {
+                ModeleContacts.setItem(i,0,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Membres_IdMembre").toString()));
+                ModeleContacts.setItem(i,1,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Nom").toString()));
+                ModeleContacts.setItem(i,2,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Prenom").toString()));
+                ModeleContacts.setItem(i,3,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Ville").toString()));
+                ModeleContacts.setItem(i,4,new QStandardItem(ObtenirValeurParNom(RequeteContact,"CodeMembre").toString()));
+                i++;
+            }
+        }
+    }
+    else
+    {
+        ui->Fr_Contacts->setVisible(false);
+        ui->Lb_Contacts->setVisible(false);
+    }
 
     slot_AfficherMembre(this->VecteurRechercheMembres[0].id);
 
@@ -180,8 +240,8 @@ void F_Membres::ChargerActivites(QComboBox * combobox)
         while( RequeteActivites.next() )
         {
             // Récupère la valeurs des champs
-            Activite = RequeteActivites.record().value( RequeteActivites.record().indexOf("Activite") ).toString();
-            IdActivite = RequeteActivites.record().value( RequeteActivites.record().indexOf("IdActivite") ).toInt();
+            Activite = ObtenirValeurParNom(RequeteActivites,"Activite").toString();
+            IdActivite = ObtenirValeurParNom(RequeteActivites,"IdActivite").toInt();
             // Ajoute une activité et son ID dans la partie DATA
             combobox->addItem(Activite);
             combobox->setItemData(i,IdActivite,Qt::UserRole);
@@ -401,11 +461,13 @@ void F_Membres::MaJTitre ()
 
         this->VectorTitre.push_back( oTitre ) ;
 
+        ui->CBx_Titre->blockSignals(true);
         //Remplissage de la combobox grâce au vecteur
         for( i = 0 ; i < VectorTitre.size() ; i ++ )
         {
             ui->CBx_Titre->insertItem( i, VectorTitre[i].sTitre ) ;
         }
+        ui->CBx_Titre->blockSignals(false);
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
@@ -499,7 +561,7 @@ int F_Membres::RecupererEmplacementTypeVecteur( unsigned int nIdType )
     int nEmplacementType ( 0 ) ;
     int nBoucle          ( 0 ) ;
 
-    //Recherche de l'id dans le vecteur tant que l'on a pas fini de parcour le vecteur
+    //Recherche de l'id dans le vecteur tant que l'on a pas fini de parcours le vecteur
     while( nBoucle < this->VectorType.size()&& nEmplacementType == 0 && nIdType != 0 )
     {
         if( this->VectorType[ nBoucle ].id == nIdType )
@@ -798,7 +860,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->Le_Code->setText( ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString() ) ;
 
-                ui->LE_MembreAssocie->setText( ObtenirValeurParNom(RequeteMembre,"MembreAssocie").toString() ) ;
+//                ui->LE_MembreAssocie->setText( ObtenirValeurParNom(RequeteMembre,"MembreAssocie").toString() ) ;
 
                 ui->SPx_NbreRetards->setValue( ObtenirValeurParNom(RequeteMembre,"NbreRetard").toInt() ) ;
 
@@ -893,7 +955,7 @@ bool F_Membres::AjouterMembre()
     RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
 
     //Membre associé
-    RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text().toInt() ) ;
+//    RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text().toInt() ) ;
 
     //Nombre de retards
     RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->text() ) ;
@@ -901,7 +963,16 @@ bool F_Membres::AjouterMembre()
     //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
     if( RequeteMembre.exec() )
     {
-        this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt() ;
+        this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt();
+
+        QList <QStandardItem *> ListStandardItem;
+        ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
+        ListStandardItem.append(new QStandardItem(ui->Le_Nom->text()));
+        ListStandardItem.append(new QStandardItem(ui->Le_Prenom->text()));
+        ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
+        ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
+
+        AjouterContact(ListStandardItem);
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
@@ -1013,7 +1084,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
 
         //Membre associé
-        RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text() ) ;
+//        RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text() ) ;
 
         //Nombre de retards
         RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->value() ) ;
@@ -1155,7 +1226,7 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->LE_Fax->setReadOnly( bVerrouille ) ;
     ui->LE_Email->setReadOnly( bVerrouille ) ;
     ui->Le_Code->setReadOnly( bVerrouille ) ;
-    ui->LE_MembreAssocie->setReadOnly( bVerrouille ) ;
+//    ui->LE_MembreAssocie->setReadOnly( bVerrouille ) ;
     ui->Te_Rue->setReadOnly( bVerrouille ) ;
     ui->Le_CP->setReadOnly( bVerrouille ) ;
     ui->CBx_Ville->setDisabled( bVerrouille ) ;
@@ -1181,7 +1252,7 @@ void F_Membres::EffacerTousLesChamps ()
     ui->LE_Fax->clear() ;
     ui->LE_Email->clear() ;
     ui->Le_Code->clear() ;
-    ui->LE_MembreAssocie->clear() ;
+//    ui->LE_MembreAssocie->clear() ;
     ui->Te_Rue->clear() ;
     ui->Le_CP->clear() ;
     ui->CBx_Ville->setCurrentIndex( 0 ) ;
@@ -1206,11 +1277,10 @@ void F_Membres::AfficherAjouterModifierMembre ( bool bAffiche )
 {
     // VV : Ne voit pas l'utilité de masquer le bouton de création de membre
     //ui->Bt_AjouterMembre->setVisible( bAffiche ) ;
-    if ( bAdmin == true )
+    if ( iMode == MODE_ADMIN )
     {
         ui->Bt_SupprimerMembre->setVisible( bAffiche ) ;
     }
-
 }
 //==========================================================================================================
 /** Affiche ou cache les boutons PB_Valider et PB_Annuler
@@ -1601,24 +1671,10 @@ void F_Membres::on_CBx_Type_activated(int index)
         ui->CBx_Type->setCurrentIndex( 0 ) ;
     }
 }
-//==========================================================================================================
-/** Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
- *  @pre    l'utilisateur a choisi Créer titre...
- *  @post   Ouverture d'un popup pour l'ajout d'un titre
- *  @param  int index
- *  @test
- */
+
 void F_Membres::on_CBx_Titre_activated(int index)
 {
-    if( ( this->VectorTitre.size() - 1 ) == index )
-    {
-        this->pTitreAjMod->Ajouter() ;
-        ui->CBx_Titre->setCurrentIndex( 0 ) ;
-    }
-    else
-    {
-        ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
-    }
+
 }
 //==========================================================================================================
 /** Permet l'ajout d'un membre
@@ -1631,6 +1687,13 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     QString sNombre      ;
     QDate   DateActuelle ;
     QStandardItemModel * modeleVide ;
+
+    if(this->iMode==MODE_CONTACTS)
+    {
+        ui->frame->setVisible(true);
+        ui->frame_2->setVisible(true);
+        this->showMaximized();
+    }
 
     this->nIdMembreSelectionne = 0 ;
 
@@ -1645,7 +1708,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     this->VerrouillerInfosPerso( false ) ;
 
     this->VerrouillerJeux( true ) ;
-
 
     //Sélectionne le premier CodeMembre qui est libre (supérieur au plus grand)
     QSqlQuery RequetePremierCodeLibre ;
@@ -1983,4 +2045,103 @@ void F_Membres::on_LE_Nom_textEdited(const QString &arg1)
    this->RechercherParNomEtNumero() ;
    // Sélectionne le premier résultat
    ui->TbW_Recherche->selectRow( 0 ) ;
+}
+
+void F_Membres::on_Bt_Contact_clicked()
+{
+    pContacts = new F_Membres(MODE_CONTACTS,0,this->nIdMembreSelectionne);
+}
+
+void F_Membres::on_Bt_AJouterContact_clicked()
+{
+    if(ModeleContacts.findItems(QString::number(this->nIdMembreSelectionne),Qt::MatchExactly,0).count()!=0)
+    {
+        return;
+    }
+    QModelIndexList ModelIndexList;
+    QList <QStandardItem *> ListStandardItem;
+    ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
+    for(int i=0;i<ModeleRechercheMembre.columnCount();i++)
+    {
+        ModelIndexList=ui->TbW_Recherche->selectionModel()->selectedRows(i);
+        ListStandardItem.append(new QStandardItem(ModelIndexList.first().data().toString()));
+    }
+    AjouterContact(ListStandardItem);
+}
+
+void F_Membres::AjouterContact(QList <QStandardItem *> ListStandardItem)
+{
+    ModeleContacts.appendRow(ListStandardItem);
+    ui->TbW_Contacts->selectRow(0);
+    ui->Bt_SupprimerContact->setEnabled(true);
+}
+
+void F_Membres::on_Bt_SupprimerContact_clicked()
+{
+    ModeleContacts.removeRow(ui->TbW_Contacts->selectionModel()->selectedRows().first().row());
+    if(ModeleContacts.rowCount()==0)
+    {
+        ui->Bt_SupprimerContact->setEnabled(false);
+    }
+}
+
+void F_Membres::on_Bt_ValiderContacts_clicked()
+{
+    QSqlQuery RequeteContact ;
+    for(int i=0;i<ModeleContacts.rowCount();i++)
+    {
+        //Enregistrement d'un nouveau membre dans la base de données
+        RequeteContact.prepare( "INSERT INTO membresassocies "
+            "(Membres_IdCollectivite,Membres_IdMembre) VALUES (:IdCollectivite,:IdMembre)");
+        RequeteContact.bindValue(":IdCollectivite",this->nIdCollectivite);
+        RequeteContact.bindValue( ":IdMembre", ModeleContacts.item(i,0)->text() );
+
+        //Exectution de la requête
+        if( !RequeteContact.exec() )
+        {
+            qDebug()<< "F_Membres::on_Bt_ValiderContacts_clicked : RequeteMembre " << RequeteContact.lastQuery() ;
+        }
+    }
+    this->close();
+}
+
+void F_Membres::on_Bt_AnnulerContacts_clicked()
+{
+    this->close();
+
+}
+
+//==========================================================================================================
+/** Permet d'ajout un nouveau titre si "Créer titre..." a été sélectionné
+ *  @pre    l'utilisateur a choisi Créer titre...
+ *  @post   Ouverture d'un popup pour l'ajout d'un titre
+ *  @param  int index
+ *  @test
+ */
+void F_Membres::on_CBx_Titre_currentIndexChanged(int index)
+{
+    if(index == -1)
+    {
+        return;
+    }
+    if( ( this->VectorTitre.size() - 1 ) == index )
+    {
+        this->pTitreAjMod->Ajouter() ;
+        ui->CBx_Titre->setCurrentIndex( 0 ) ;
+    }
+    else
+    {
+        ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
+    }
+    // Si c'est collectivité ou association qui a été choisie
+    if(RecupererEmplacementTitreVecteur(2) == index || RecupererEmplacementTitreVecteur(3) == index )
+    {
+        ui->Gb_Prenom->setVisible(false);
+        ui->Bt_Contact->setVisible(true);
+    }
+    else
+    {
+        ui->Gb_Prenom->setVisible(true);
+        ui->Bt_Contact->setVisible(false);
+    }
 }

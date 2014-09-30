@@ -358,7 +358,7 @@ void F_MainWindow::CreerAdminMembres()
     {
         ////Membre/////////////
         qDebug()<<"Création ADMIN-F_Membres";
-        this->pAdministrerMembres=new F_Membres (true,this->ui->admin);
+        this->pAdministrerMembres=new F_Membres (MODE_ADMIN,this->ui->admin);
         this->pAdministrerMembres->setVisible(false);
         this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
         this->pAdministrerMembres->setVisible(true);
@@ -394,7 +394,7 @@ void F_MainWindow::CreerMembre()
     if(!this->pMembres)
     {
         qDebug()<<"Création F_Membres";
-        this->pMembres=new F_Membres (false, this->ui->Membre);
+        this->pMembres=new F_Membres (MODE_UTILISATEUR, this->ui->Membre);
         //Membres
         this->ui->Lay_Membres->addWidget(this->pMembres);
         connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;

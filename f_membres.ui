@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1121</width>
-    <height>826</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -174,7 +174,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_7">
+         <widget class="QGroupBox" name="Gb_Prenom">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -1145,23 +1145,12 @@
            <item row="0" column="1">
             <widget class="QLineEdit" name="Le_Code"/>
            </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="Lb_CodeMembreAssocie">
-             <property name="font">
-              <font>
-               <pointsize>8</pointsize>
-              </font>
-             </property>
+           <item row="1" column="0" colspan="2">
+            <widget class="QPushButton" name="Bt_Contact">
              <property name="text">
-              <string>Membre associé :</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <string>Contacts...</string>
              </property>
             </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLineEdit" name="LE_MembreAssocie"/>
            </item>
           </layout>
          </widget>
@@ -2623,6 +2612,23 @@
    </item>
    <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_16">
+     <item row="2" column="1" colspan="2">
+      <widget class="QCommandLinkButton" name="Bt_SupprimerMembre">
+       <property name="text">
+        <string>Supprimer membre</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>30</width>
+         <height>30</height>
+        </size>
+       </property>
+      </widget>
+     </item>
      <item row="2" column="0">
       <widget class="QCommandLinkButton" name="Bt_AjouterMembre">
        <property name="text">
@@ -2640,25 +2646,24 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCommandLinkButton" name="Bt_SupprimerMembre">
+     <item row="3" column="0" colspan="3">
+      <widget class="QLabel" name="Lb_RechercheNom">
        <property name="text">
-        <string>Supprimer membre</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ImagesIcones.qrc">
-         <normaloff>:/BDD_Supprimer.png</normaloff>:/BDD_Supprimer.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
+        <string>Saisir le nom ou le prénom ou le code du membre :</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0" colspan="3">
+     <item row="11" column="0" rowspan="3" colspan="3">
+      <layout class="QGridLayout" name="Gl_Contacts"/>
+     </item>
+     <item row="8" column="0" colspan="3">
       <widget class="QTableView" name="TbW_Recherche">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>300</height>
+        </size>
+       </property>
        <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
@@ -2673,13 +2678,95 @@
        </attribute>
       </widget>
      </item>
-     <item row="4" column="0" colspan="2">
+     <item row="5" column="0" rowspan="2" colspan="3">
       <widget class="QLineEdit" name="LE_Nom"/>
      </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QLabel" name="Lb_RechercheNom">
+     <item row="10" column="0" colspan="3">
+      <widget class="QFrame" name="Fr_Contacts">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_18">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="Bt_AJouterContact">
+          <property name="text">
+           <string>Ajouter</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QPushButton" name="Bt_SupprimerContact">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Supprimer</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0" colspan="2">
+         <widget class="QTableView" name="TbW_Contacts">
+          <property name="alternatingRowColors">
+           <bool>true</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SingleSelection</enum>
+          </property>
+          <property name="selectionBehavior">
+           <enum>QAbstractItemView::SelectRows</enum>
+          </property>
+          <attribute name="verticalHeaderVisible">
+           <bool>false</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="Lb_Contacts_2">
+          <property name="text">
+           <string>Contacts :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QPushButton" name="Bt_ValiderContacts">
+          <property name="text">
+           <string>Valider contacts</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QPushButton" name="Bt_AnnulerContacts">
+          <property name="text">
+           <string>Annuler</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="7" column="0" colspan="3">
+      <widget class="QLabel" name="Lb_Contacts">
        <property name="text">
-        <string>Saisir le nom ou le prénom ou le code du membre :</string>
+        <string>Sélectionner un membre à rajouter aux contacts :</string>
        </property>
       </widget>
      </item>
