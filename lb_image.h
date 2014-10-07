@@ -3,6 +3,8 @@
 #define LB_IMAGE_H
 
 #include <QLabel>
+#include<QtNetwork>
+#include "acces_fichier_http.h"
 
 class Lb_Image : public QLabel
 {
@@ -10,7 +12,7 @@ class Lb_Image : public QLabel
 public:
 
     //! Constructeur
-    explicit Lb_Image( QWidget * parent = 0 );
+    explicit Lb_Image( QWidget * parent = 0, QLabel * Lb_NomImage=0 );
 
     //! Destructeur
     ~Lb_Image();
@@ -20,14 +22,14 @@ public:
     void AfficherImage(QSize size);
     /** @brief Affiche l'image précédente
      */
-    QString AfficherImagePrecedente();
+    void AfficherImagePrecedente();
     /** @brief Affiche l'image suivante
      */
-    QString AfficherImageSuivante();
+    void AfficherImageSuivante();
 
     /** @brief Charge les images d'un jeu
      */
-    QString ChargerImage(QSize size,QString code_jeu);
+    void ChargerImage(QSize size,QString code_jeu,QCursor curseur);
 
     /** @brief Récupère les chemins des fichiers téléchargés
      */
@@ -73,6 +75,14 @@ private:
 
     //! Booléen pour indiquer que le téléchargement des images est en cours
     bool ChargementEnCours;
+
+    QCursor SauvegardeCurseur;
+    QLabel * Lb_NomImage;
+
+    AccesFichierParHTTP * acces;
+private slots:
+    void SlotFichierTelecharger(QString Fichier);
+    void SlotTelechargementsFini();
 };
 
 #endif // LB_IMAGE_H

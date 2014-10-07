@@ -531,7 +531,14 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     unsigned int nIdPreferences;
     RequeteVerification.next();
     nIdPreferences = RequeteVerification.value(0).toInt();
-
+    if(ui->LE_CheminPhotosJeux->text().at(ui->LE_CheminPhotosJeux->text().count()-1)!=QDir::separator())
+    {
+        ui->LE_CheminPhotosJeux->setText(ui->LE_CheminPhotosJeux->text().append(QDir::separator()));
+    }
+    if(ui->LE_CheminRegle->text().at(ui->LE_CheminRegle->text().count()-1)!=QDir::separator())
+    {
+        ui->LE_CheminRegle->setText(ui->LE_CheminRegle->text().append(QDir::separator()));
+    }
     if(nIdPreferences == 0)
     {
         RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences,Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,"

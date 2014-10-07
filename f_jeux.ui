@@ -489,6 +489,9 @@
              <height>16777215</height>
             </size>
            </property>
+           <property name="acceptDrops">
+            <bool>true</bool>
+           </property>
            <property name="readOnly">
             <bool>true</bool>
            </property>

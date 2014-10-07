@@ -119,6 +119,11 @@ void D_Image::ChangerSelection(QLabel * pLabel)
     QStringList ListeLabel;
     // Trouve le numéro du Lb_Image sélectionné
     ListeLabel<<"lb_image1"<<"lb_image2"<<"lb_image3";
+    // Si l'image sélectionnée n'a pas changée, on sort de la fonction
+    if(iLbImageSelectionnee==ListeLabel.indexOf(pLabel->objectName()))
+    {
+        return;
+    }
     iLbImageSelectionnee=ListeLabel.indexOf(pLabel->objectName());
     // Si l'image sélectionnée n'existe pas, on quitte la fonction
     if(iDecalage+iLbImageSelectionnee>=sCheminImage.count())
@@ -126,9 +131,18 @@ void D_Image::ChangerSelection(QLabel * pLabel)
         return;
     }
     // Déselectionne tous les Lb_Image
-    lb_image->setFrameShape(QFrame::NoFrame);
-    lb_image2->setFrameShape(QFrame::NoFrame);
-    lb_image3->setFrameShape(QFrame::NoFrame);
+    if(lb_image->frameShape()!=QFrame::NoFrame)
+    {
+        lb_image->setFrameShape(QFrame::NoFrame);
+    }
+    if(lb_image2->frameShape()!=QFrame::NoFrame)
+    {
+        lb_image2->setFrameShape(QFrame::NoFrame);
+    }
+    if(lb_image3->frameShape()!=QFrame::NoFrame)
+    {
+        lb_image3->setFrameShape(QFrame::NoFrame);
+    }
     // Selectionne le Lb_Image cliqué
     pLabel->setFrameShape(QFrame::WinPanel);
     // Active les boutons déplacer
@@ -181,10 +195,12 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
     // Liste des Lb_Image
     QList< Lb_Image **> ListLb_Image;
     ListLb_Image<<&lb_image<<&lb_image2<<&lb_image3;
+    QList< QLabel *> ListLabel;
+    ListLabel<<ui->Lb_NomFichier<<ui->Lb_NomFichier2<<ui->Lb_NomFichier3;
     // On initialise les 3 Lb_Image, on leur donne un nom et on les ajoute dans le layout
     for(int i=0;i<3;i++)
     {
-        Lb_Image * lbi =new Lb_Image();
+        Lb_Image * lbi =new Lb_Image(this,ListLabel[i]);
         lbi->setObjectName("lb_image"+QString::number(i+1));
         lbi->setText("");
         ui->gridLayout_2->addWidget(lbi,2,i+1);
@@ -224,7 +240,7 @@ void D_Image::RechargerImages()
             {
                 lbi->AfficherImage(QSize(800,800));
                 QDir* filepath=new QDir(sCheminImage[i]);                
-                lbl->setText(filepath->dirName());
+                //lbl->setText(filepath->dirName());
             }
         }
         else

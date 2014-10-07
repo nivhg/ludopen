@@ -22,7 +22,6 @@
 #include <QResizeEvent>
 #include <QSize>
 // En-tête propre à  l'application ----------------------------------------------
-#include "acces_fichier_http.h"
 #include "lb_image.h"
 #include "d_image.h"
 #include "fonctions_globale.h"
@@ -33,10 +32,11 @@
  *  @param parent
  *  @param fname : nom et chemin du fichier à afficher
  */
-Lb_Image::Lb_Image( QWidget * parent ) :
+Lb_Image::Lb_Image( QWidget * parent, QLabel * Lb_NomImage) :
     QLabel(parent)
 {
     ChargementEnCours=false;
+    this->Lb_NomImage=Lb_NomImage;
     iImage=0;
     QSqlQuery RequeteCheminPhotosJeux;
     RequeteCheminPhotosJeux.exec("SELECT CheminPhotosJeux FROM preferences WHERE IdPreferences = 1");
@@ -44,12 +44,17 @@ Lb_Image::Lb_Image( QWidget * parent ) :
     if ( RequeteCheminPhotosJeux.next() )
     {
        sCheminImagePref = RequeteCheminPhotosJeux.value(0).toString();
+       if(!EstCeURL(sCheminImagePref))
+       {
+            sCheminImagePref="file://"+sCheminImagePref;
+       }
     }
     else   // pas de photo à afficher
     {
        sCheminImagePref = "";
        setText("Aucune photo disponible pour ce jeu");
     }
+    acces=new AccesFichierParHTTP(this);
 }
 
 Lb_Image::~Lb_Image()
@@ -105,64 +110,28 @@ void Lb_Image::EffacerFichiers()
  *  @param code_jeu: code du jeu correspodant à l'image
  *
  */
-QString Lb_Image::ChargerImage(QSize size,QString code_jeu)
+void Lb_Image::ChargerImage(QSize size,QString code_jeu,QCursor curseur)
 {
     qDebug()<<"Lb_Image::ChargerImage ; code_jeu="<<code_jeu;
-            if(code_jeu=="798")
-            {
-                code_jeu=code_jeu;
-            }
-    if(ChargementEnCours)
-    {
-        if(sCheminImage.count()==0)
-        {
-            return false;
-        }
-        QDir* CheminFichier=new QDir(sCheminImage[0]);
-        return CheminFichier->dirName();
-    }
-    ChargementEnCours=true;
     EffacerFichiers();
     iImage=0;
     sCheminImage.clear();
 
     setText("Aucune photo disponible pour ce jeu");
+    Lb_NomImage->setText("");
 
-    QString TypeImage;
+    SauvegardeCurseur = curseur;
 
-    AccesFichierParHTTP manager;
-
-    QString NomFichier;
     QStringList ListeExtension;
     ListeExtension<<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
-    bool ret1=manager.FichierEtExtensionsExiste( &sCheminImage, sCheminImagePref,
-                            code_jeu , &TypeImage,ListeExtension);
-    bool ret2=manager.FichierEtExtensionsExiste( &sCheminImage, sCheminImagePref,
-                            code_jeu + "-2", &TypeImage, ListeExtension);
-    // Si il n'y a aucune image, on envoie le signal et on retourne false
-    if(!ret1 and !ret2)
-    {
-        emit SignalChargementFini();
-        ChargementEnCours=false;
-        return false;
-    }
-    int i=3;
-    NomFichier = code_jeu + "-" + QString::number(i);
-    if(ret2)
-    {
-        // Tant qu'il existe des images avec le même code jeu
-        while( manager.FichierEtExtensionsExiste( &sCheminImage,sCheminImagePref,NomFichier,&TypeImage,ListeExtension))
-        {
-           i++;
-           // Nom du prochain fichier à chercher
-           NomFichier = code_jeu + "-" + QString::number(i);
-        }
-    }
-    AfficherImage(QSize(width(),height()));
-    QDir* CheminFichier=new QDir(sCheminImage[0]);
-    ChargementEnCours=false;
-    emit SignalChargementFini();
-    return CheminFichier->dirName();
+    delete acces;
+    acces=new AccesFichierParHTTP(this);
+    connect( acces, SIGNAL( SignalFichierTelecharger(QString) ), this, SLOT( SlotFichierTelecharger(QString) ) );
+    connect( acces, SIGNAL( SignalTelechargementsFini() ), this, SLOT( SlotTelechargementsFini() ) );
+    acces->LancerTelechargements(sCheminImagePref,code_jeu,ListeExtension);
+    ChargementEnCours=true;
+    this->setCursor(Qt::WaitCursor);
+    return;
 }
 
 /**
@@ -174,12 +143,8 @@ void Lb_Image::AfficherImage(QSize size)
 {
     QPixmap Image;
     // Si il n'y pas d'image, on n'affiche rien
-    if( sCheminImage.count() == 0)
-    {
-        return;
-    }
     // Si iImage est plus grand que le tableau, on ne fait rien
-    if(iImage >= sCheminImage.count())
+    if( sCheminImage.count() == 0 || iImage >= sCheminImage.count())
     {
         return;
     }
@@ -187,7 +152,12 @@ void Lb_Image::AfficherImage(QSize size)
     if ( Image.load(sCheminImage[iImage]) )
     {
          //Met l'image à l'échelle du cadre
-        setPixmap( Image.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation) ) ;
+        setPixmap( Image.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation) );
+        QDir* filepath=new QDir(sCheminImage[iImage]);
+        if(Lb_NomImage)
+        {
+            Lb_NomImage->setText(filepath->dirName());
+        }
     }
     else   // pas de photo à afficher
     {
@@ -198,12 +168,20 @@ void Lb_Image::AfficherImage(QSize size)
 /**
  *  @brief Affiche l'image précédente de la liste
  */
-QString Lb_Image::AfficherImagePrecedente()
+void Lb_Image::AfficherImagePrecedente()
 {
     if(sCheminImage.count()==0)
     {
-        return "";
+        return;
     }
+    // Si on est à la fin, on fait attendre l'utilisateur en affichant un sablier
+    if(ChargementEnCours && iImage==0)
+    {
+        iImage=sCheminImage.count();
+        this->setCursor(Qt::WaitCursor);
+        return;
+    }
+    this->setCursor(SauvegardeCurseur.shape());
     // Si on n'est pas encore à 0, on décrémente le compteur sinon on repart à la fin des images
     if(iImage>0)
     {
@@ -214,20 +192,26 @@ QString Lb_Image::AfficherImagePrecedente()
         iImage=sCheminImage.count()-1;
     }
     AfficherImage(QSize(width(),height()));
-    QDir* filepath=new QDir(sCheminImage[iImage]);
-    return filepath->dirName();
 }
 
 /**
  *  @brief Affiche l'image suivante
  */
 
-QString Lb_Image::AfficherImageSuivante()
+void Lb_Image::AfficherImageSuivante()
 {
     if(sCheminImage.count()==0)
     {
-        return "";
+        return;
     }
+    // Si on est à la fin, on fait attendre l'utilisateur en affichant un sablier
+    if(ChargementEnCours && iImage>sCheminImage.count()-2)
+    {
+        iImage=sCheminImage.count();
+        this->setCursor(Qt::WaitCursor);
+        return;
+    }
+    this->setCursor(SauvegardeCurseur.shape());
     // Si on est à la fin, on repart à 0, sinon on incrémente le compteur
     if(iImage>sCheminImage.count()-2)
     {
@@ -238,8 +222,6 @@ QString Lb_Image::AfficherImageSuivante()
         iImage++;
     }
     AfficherImage(QSize(width(),height()));
-    QDir* filepath=new QDir(sCheminImage[iImage]);
-    return filepath->dirName();
 }
 
 /**
@@ -266,3 +248,20 @@ void Lb_Image::DefiniriImage(int iImage)
     this->iImage = iImage;
 }
 
+void Lb_Image::SlotFichierTelecharger(QString Fichier)
+{
+    this->setCursor(SauvegardeCurseur.shape());
+    sCheminImage.append(Fichier);
+    AfficherImage(QSize(width(),height()));
+}
+
+void Lb_Image::SlotTelechargementsFini()
+{
+    if(iImage==sCheminImage.count())
+    {
+        iImage=sCheminImage.count()-1;
+    }
+    ChargementEnCours=false;
+    this->setCursor(SauvegardeCurseur.shape());
+    emit SignalChargementFini();
+}

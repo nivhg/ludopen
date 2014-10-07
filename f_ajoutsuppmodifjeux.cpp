@@ -52,7 +52,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     this->pAjoutFournisseur=0;
     this->pAjoutEditeur=0;
     //Création de l'objet QLabel pour l'affichage des images
-    lb_image = new Lb_Image(this);
+    lb_image = new Lb_Image(this,ui->Lb_ImageName);
     this->pImage = new D_Image(this,lb_image);
 
     //Création d'un modèle pour le TableView des jeux
@@ -1967,7 +1967,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //----------Affichage photo----------------------------------------------------------------------------
         lb_image->setCursor(Qt::WaitCursor);
         disconnect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
-        ui->Lb_ImageName->setText(lb_image->ChargerImage(QSize(200,160),this->nIdJeuSelectionne));
+        lb_image->ChargerImage(QSize(200,160),this->nIdJeuSelectionne,Qt::WaitCursor);
         // Grise les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
         ActiveBoutons(false);
@@ -2180,12 +2180,12 @@ void F_AjoutSuppModifJeux::CacherBoutons()
 
 void F_AjoutSuppModifJeux::on_Bt_Gauche_clicked()
 {
-    ui->Lb_ImageName->setText(lb_image->AfficherImagePrecedente());
+    lb_image->AfficherImagePrecedente();
 }
 
 void F_AjoutSuppModifJeux::on_Bt_Droite_clicked()
 {
-    ui->Lb_ImageName->setText(lb_image->AfficherImageSuivante());
+    lb_image->AfficherImageSuivante();
 }
 
 void F_AjoutSuppModifJeux::on_Lb_Image_clicked()

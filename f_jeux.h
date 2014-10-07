@@ -47,7 +47,7 @@ public:
 
     /** @brief Affiche les information sur un jeu
      */
-    void AfficherJeu();
+    void AfficherJeu(QString Jeu);
 
     /** @brief Affiche tous les jeux dans le tableau
      */
@@ -139,6 +139,8 @@ private slots:
 
     void on_Lb_Image_clicked();
 
+    void SlotRegleTelecharger(QString CheminFichier);
+
 private:
     //ATTRIBUTS--------------------------------------------------
     Ui::F_Jeux *ui;
@@ -162,7 +164,9 @@ private:
     Lb_Image* lb_image;
 
     //! Stocke les chemins des fichiers de règles
-    QStringList sCheminFichier;
+    QString sCheminFichier;
+
+    AccesFichierParHTTP * acces;
 };
 
 //-----------------------------------------------------------------

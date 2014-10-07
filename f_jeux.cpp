@@ -45,6 +45,8 @@ F_Jeux::F_Jeux(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    acces=new AccesFichierParHTTP(this);
+
     pReservation= new F_Reservation;
     pDetailsJeux=new F_DetailsJeux;
     pDeclarerIntervention=new F_DeclarerIntervention;
@@ -66,7 +68,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     //Supprime le numéro des lignes
     ui->TbV_NomJeux->verticalHeader()->setVisible(false);
     //Création de l'objet QLabel pour l'affichage des images
-    lb_image = new Lb_Image(this);
+    lb_image = new Lb_Image(this,ui->Lb_ImageName);
     //Gestion de l'évenement MousePress
     connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     lb_image->setAlignment(Qt::AlignCenter);
@@ -173,242 +175,6 @@ void F_Jeux::on_Bt_DeclarerIntervention_clicked()
     this->pDeclarerIntervention->show();
     pDeclarerIntervention->set_JeuEnConsultation(this->JeuEnConsultation);
 }
-////////////////////////////////////////////////////////////
-///////////////// Clique sur le bouton OK /////////////////
-//////////////////////////////////////////////////////////
-
-/**
- * @brief Méthode qui permet d'affiche les informations sur le jeu correspondant à la recherche
- *
- */
-void F_Jeux::AfficherJeu()
-{
-    ui->TxE_contenu->setReadOnly(false);
-    ui->TxE_description->setReadOnly(false);
-    ui->TxE_emplacement->setReadOnly(false);
-    ui->TxE_remarques->setReadOnly(false);
-
-    ///////////////////////////////////////////////////
-    ////////////// Recherche par code ////////////////
-    /////////////////////////////////////////////////
-    
-    QSqlQuery RequeteRechercheCode ;
-
-    JeuEnConsultation = this->JeuEnConsultation ;
-
-    RequeteRechercheCode.prepare("SELECT NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
-                                 "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
-                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
-    RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
-    if (!RequeteRechercheCode.exec())
-    {
-        qDebug() << "F_Jeux::AfficherJeu() : RequeteRechercheCode :" << RequeteRechercheCode.lastQuery()  ;
-    }
-    RequeteRechercheCode.next();
-
-    QString Le_Nom =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomJeu")).toString() ;
-    QString Le_Code =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("CodeJeu")).toString() ;
-    QString Le_Createur =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomCreateurJeu")).toString() ;
-    QString TxE_Contenu = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("ContenuJeu")).toString() ;
-    QString TxE_Remarques = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Remarque")).toString() ;
-    QString TxE_Description = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("DescriptionJeu")).toString() ;
-    QString Le_AgeMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMin")).toString() ;
-    QString Le_AgeMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMin")).toString() ;
-    QString Le_NbrJoueurMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMin")).toString() ;
-    QString Le_NbrJoueurMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMax")).toString() ;
-    int IdStatut =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("StatutJeux_IdStatutJeux")).toInt());
-    int IdEditeur =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Editeur_IdEditeur")).toInt());
-    int IdEtat =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("EtatsJeu_IdEtatsJeu")).toInt());
-    int IdEmplacement =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Emplacement_IdEmplacement")).toInt());
-    QString Classification =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("TypeJeux_Classification")).toString());
-
-    // Remplir les champs en fonction du jeu choisi.
-    ui->Le_nom->setText(Le_Nom) ;
-
-    // aligne le curseur à gauche
-    ui->Le_nom->setCursorPosition(0) ;
-    ui->Le_code->setText(Le_Code);
-    ui->Le_createur->setText(Le_Createur);
-
-    // aligne le curseur à gauche
-    ui->Le_createur->setCursorPosition(0) ;
-    ui->TxE_contenu->setText(TxE_Contenu);
-    ui->Le_agemin->setText(Le_AgeMin);
-    ui->Le_agemax->setText(Le_AgeMax);
-    ui->Le_nbrejoueursmin->setText(Le_NbrJoueurMin);
-    ui->Le_nbrejoueursmax->setText(Le_NbrJoueurMax);
-    ui->TxE_remarques->setText(TxE_Remarques);
-    ui->TxE_description->setText(TxE_Description);
-
-    // Bloquer certains boutons
-    ui->Bt_ValiderContenu->setEnabled(false);
-    ui->Bt_AnnulerContenu->setEnabled(false);
-    ui->Bt_ValiderRemarques->setEnabled(false);
-    ui->Bt_AnnulerRemarques->setEnabled(false);
-    ui->Bt_ValiderDescription->setEnabled(false);
-    ui->Bt_AnnulerDescription->setEnabled(false);
-    
-    //////////////////////////////////////////////////////////
-    /////////// Remplissage label statut /////////////////////
-    ///////////////////////////////////////////////////////////
-    QSqlQuery RequeteStatut;
-    QString Le_Statut ;
-
-    RequeteStatut.prepare("SELECT StatutJeu FROM statutjeux WHERE IdStatutJeux=:IdStatutDuJeu");
-    RequeteStatut.bindValue(":IdStatutDuJeu",IdStatut);
-    RequeteStatut.exec() ;
-    RequeteStatut.next();
-
-    Le_Statut = (RequeteStatut.value(0).toString());
-    ui->Le_statut->setText(Le_Statut);
-    // aligne le curseur à gauche
-    ui->Le_statut->setCursorPosition(0) ;
-    //---------------- MISE EN COULEUR DU STATUT ----------------------------
-    switch (IdStatut)
-    {
-    case 1:  // Disponible en vert
-        ui->Le_statut->setStyleSheet("color: green");
-    break ;
-    case 2: // Emprunté ou emprunt à valider en noir
-    case 3:
-        ui->Le_statut->setStyleSheet("color: blue");
-    break ;
-    case 4: // En réparation en orange
-        ui->Le_statut->setStyleSheet("color: orange");
-    break ;
-    case 5: // Indisponible en rouge
-        ui->Le_statut->setStyleSheet("color: red");
-    break ;
-    default :
-        ui->Le_statut->setStyleSheet("color: black");
-    }
-    
-    //////////////////////////////////////////////////////////
-    /////////// Remplissage label Editeur ////////////////////
-    ///////////////////////////////////////////////////////////
-    QSqlQuery RequeteEditeur;
-    QString Le_Editeur ;
-
-    RequeteEditeur.prepare("SELECT NomFournisseur FROM fournisseursediteur WHERE IdFournisseur=:IdFournisseur");
-    RequeteEditeur.bindValue(":IdFournisseur",IdEditeur);
-    RequeteEditeur.exec();
-    if( RequeteEditeur.isValid() )
-    {
-        RequeteEditeur.next();
-        Le_Editeur = (RequeteEditeur.value(0).toString());
-    }
-    else
-    {
-        Le_Editeur = "";
-    }
-
-    ui->Le_editeur->setText(Le_Editeur);
-    // aligne le curseur à gauche
-    ui->Le_statut->setCursorPosition(0) ;
-
-    /////////////////////////////////////////////////////////
-    //////////// Remplissage label Etat Jeu /////////////////
-    /////////////////////////////////////////////////////////
-
-    QSqlQuery RequeteEtat;
-    QString Le_Etat ;
-
-    RequeteEtat.prepare("SELECT Etat FROM etatsjeu WHERE IdEtatsJeu=:IdEtatDuJeu");
-    RequeteEtat.bindValue(":IdEtatDuJeu",IdEtat);
-    RequeteEtat.exec() ;
-    RequeteEtat.next();
-
-
-    Le_Etat = (RequeteEtat.value(0).toString());
-    ui->Le_etat->setText(Le_Etat);
-    // aligne le curseur à gauche
-    ui->Le_etat->setCursorPosition(0) ;
-
-    ////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////
-    ///////// Remplissage TexteEdit Emplacement ////////////
-    ///////////////////////////////////////////////////////
-
-    QSqlQuery RequeteEmplacement;
-    QString TxE_Emplacement ;
-
-    RequeteEmplacement.prepare("SELECT Nom FROM emplacement WHERE IdEmplacement=:IdEmplacementDuJeu");
-    RequeteEmplacement.bindValue(":IdEmplacementDuJeu",IdEmplacement);
-    RequeteEmplacement.exec() ;
-    RequeteEmplacement.next();
-
-
-    TxE_Emplacement = (RequeteEmplacement.value(0).toString());
-    ui->TxE_emplacement->setText(TxE_Emplacement);
-
-    //////////////////////////////////////////////////////
-    ///////// Remplissage Label classification //////////
-    ////////////////////////////////////////////////////
-
-    QSqlQuery RequeteClassification;
-    QString Le_Classification ;
-    QString LE_NumClassification ;
-
-    RequeteClassification.prepare("SELECT TypeJeux,Classification FROM typejeux WHERE Classification=:NumDeLaClassifciation");
-    RequeteClassification.bindValue(":NumDeLaClassifciation",Classification);
-    RequeteClassification.exec() ;
-    RequeteClassification.next();
-
-
-    Le_Classification = (RequeteClassification.value(0).toString());
-    ui->Le_classification->setText(Le_Classification);
-    // aligne le curseur à gauche
-    ui->Le_classification->setCursorPosition(0) ;
-    
-    LE_NumClassification = (RequeteClassification.value(1).toString()) ;
-    ui->LE_NumClassification->setText(LE_NumClassification);
-    ui->LE_NumClassification->setCursorPosition(0);
-    
-    ////////////////////////////////////////////////////////
-    ////////////// Chargement Photo //////////////////////////////////
-    //////////////////////////////////////////////////////
-
-    ui->Lb_ImageName->setText(lb_image->ChargerImage(QSize(200,200),ui->Le_code->text()));
-
-    ////////////////////////////////////////////////////////
-    ////////////// Règles //////////////////////////////////
-    //////////////////////////////////////////////////////
-    QString sCheminReglePref;
-    QSqlQuery RequeteCheminReglesJeux;
-    RequeteCheminReglesJeux.exec("SELECT CheminReglesJeux FROM preferences WHERE IdPreferences = 1");
-    // si il y a des préférences
-    RequeteCheminReglesJeux.next();
-    sCheminReglePref = RequeteCheminReglesJeux.value(0).toString();
-
-    QString TypeRegle;
-    AccesFichierParHTTP manager;
-    QString NomFichier;
-    QStringList ListeExtension;
-    ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm";
-    // Retrait des images car rentre en conflit avec les images de jeu <<"jpg"<<"jpeg"<<"png"<<"bmp"<<"gif"<<"xcf";
-    int i=2;
-    //qDebug() << "F_Jeux::AfficherJeu()" << "Code jeu" << this->JeuEnConsultation<< "ReglePref" << sCheminReglePref;
-    // Recherche la première règle
-    if(manager.FichierEtExtensionsExiste( &sCheminFichier, sCheminReglePref, this->JeuEnConsultation , &TypeRegle,ListeExtension))
-    {
-        //qDebug() << "F_Jeux::AfficherJeu()" << "Regles trouvée";
-        ui->Bt_regle->setEnabled(true);
-        i++;
-        NomFichier = this->JeuEnConsultation + "-" + QString::number(2);
-        // Tant qu'il existe des règles avec le même code jeu
-        while( manager.FichierEtExtensionsExiste( &sCheminFichier,sCheminReglePref,NomFichier,&TypeRegle,ListeExtension))
-        {
-           // Nom du prochain fichier à chercher
-           NomFichier = this->JeuEnConsultation + "-" + QString::number(i++);
-        }
-    }
-    else
-    {
-        //qDebug() << "F_Jeux::AfficherJeu()" << "Regles non trouvée, Code :"<<this->JeuEnConsultation;
-        ui->Bt_regle->setEnabled(false);
-    }
-    //qDebug() << "F_Jeux::AfficherJeu()" << "iNbFichier:" << iNbFichier<<" Code : "<<this->JeuEnConsultation;
-}
 
 ////////////////////////////////////////////////////////////
 ///////// Clique sur le bouton Règles du jeu //////////////
@@ -419,11 +185,8 @@ void F_Jeux::AfficherJeu()
  */
 void F_Jeux::on_Bt_regle_clicked()
 {
-    // Ouvre tous les fichiers sauvés dans sCheminFichier
-    for(int i=0;i<sCheminFichier.count();i++)
-    {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(sCheminFichier[i]));
-    }
+    // Ouvre la règle sauvée dans sCheminFichier
+    QDesktopServices::openUrl(QUrl::fromLocalFile(sCheminFichier));
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Clique sur le bouton Valider remarque////
@@ -637,38 +400,6 @@ void F_Jeux::on_TxE_contenu_textChanged()
     ui->Bt_AnnulerContenu->setEnabled(true);
 }
 
-void F_Jeux::AfficherJeux()
-{
-     unsigned int NumeroLigne (0);
-     QSqlQuery RequeteRechercheJeu;
-     NumeroLigne=0;
-
-     RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu FROM jeux");
-
-     if (!RequeteRechercheJeu.exec())
-     {
-         qDebug() << "F_Jeux::AfficherJeux() : RequeteRechercheJeu :" << RequeteRechercheJeu.lastQuery()  ;
-     }
-     //On vide le modèle
-     this->ModelJeu->clear();
-     //Indique le nombres de colones puis leurs noms
-     this->ModelJeu->setColumnCount(2);
-     this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-     this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-     //impose une taille aux colones
-     ui->TbV_NomJeux->setColumnWidth(0,45);
-     ui->TbV_NomJeux->setColumnWidth(1,205);
-
-     //Tant qu'il y a des jeux dans la table jeux,
-     while(RequeteRechercheJeu.next())
-     {
-         //on ajoute une nouvelle ligne du table view
-         this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-         this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-         NumeroLigne++;
-     }
-}
-
 ////////////////////////////////////////////////////////////
 ///////// Remplissage du table view avec recherche ////////
 //////////////////////////////////////////////////////////
@@ -723,8 +454,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     }
     // Reconnexion du défilement du tableau des jeux avec les flèches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
-    this->JeuEnConsultation=this->ModelJeu->index(firstrow, 0).data().toString();
-    AfficherJeu();
+    AfficherJeu(this->ModelJeu->index(firstrow, 0).data().toString());
 }
 
 /**
@@ -734,38 +464,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
  */
 void F_Jeux::on_TbV_NomJeux_clicked(const QModelIndex &index)
 {
-    this->JeuEnConsultation=this->ModelJeu->index(index.row(), 0).data().toString();
-    AfficherJeu() ;
-}
-
-/**
- * @brief Méthode qui actualise la case de recherche par code avec le code du jeu actif
- *
- */
-void F_Jeux::ActualiserJeux()
-{
-    AfficherJeu() ;
-    ui->Le_recherchenom->setFocus();
-}
-
-/**
- * @brief Méthode qui récupère le code du jeu en cour de consultation
- *
- * @return QString
- */
-QString F_Jeux::get_JeuEnConsultation()
-{
-    return this->JeuEnConsultation ;
-}
-
-/**
- * @brief Fixe le code du jeu en cour de consultation
- *
- * @param CodeJeuChoisi Code du jeu
- */
-void F_Jeux::set_JeuEnConsultation(QString CodeJeuChoisi)
-{
-    this->JeuEnConsultation = CodeJeuChoisi ;
+    AfficherJeu(this->ModelJeu->index(index.row(), 0).data().toString());
 }
 
 /**
@@ -791,20 +490,308 @@ void F_Jeux::on_Le_nom_textChanged(const QString &arg1)
 
 void F_Jeux::on_Bt_Gauche_clicked()
 {
-    ui->Lb_ImageName->setText(lb_image->AfficherImagePrecedente());
+    lb_image->AfficherImagePrecedente();
 }
 
 void F_Jeux::on_Bt_Droite_clicked()
 {
-    ui->Lb_ImageName->setText(lb_image->AfficherImageSuivante());
+    lb_image->AfficherImageSuivante();
 }
 
 void F_Jeux::on_Lb_Image_clicked()
 {
-    disconnect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    disconnect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     QDialog *d_image = new D_Image(this,lb_image);
     d_image->showMaximized();
     d_image->exec();
     ui->gridLayout_11->addWidget(lb_image,0,3);
-    connect( lb_image, SIGNAL( clicked() ), this, SLOT( on_Lb_Image_clicked() ) );
+    connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
+}
+
+
+/**
+ * @brief Méthode qui récupère le code du jeu en cours de consultation
+ *
+ * @return QString
+ */
+QString F_Jeux::get_JeuEnConsultation()
+{
+    return this->JeuEnConsultation ;
+}
+
+/**
+ * @brief Fixe le code du jeu en cours de consultation
+ *
+ * @param CodeJeuChoisi Code du jeu
+ */
+void F_Jeux::set_JeuEnConsultation(QString CodeJeuChoisi)
+{
+    this->JeuEnConsultation = CodeJeuChoisi ;
+}
+
+void F_Jeux::SlotRegleTelecharger(QString CheminFichier)
+{
+    sCheminFichier=CheminFichier;
+    ui->Bt_regle->setEnabled(true);
+}
+
+/**
+ * @brief Méthode qui permet d'affiche les informations sur le jeu correspondant à la recherche
+ *
+ */
+void F_Jeux::AfficherJeu(QString Jeu)
+{
+    if(Jeu=="")
+    {
+        return;
+    }
+    this->JeuEnConsultation=Jeu;
+    ui->TxE_contenu->setReadOnly(false);
+    ui->TxE_description->setReadOnly(false);
+    ui->TxE_emplacement->setReadOnly(false);
+    ui->TxE_remarques->setReadOnly(false);
+
+    ///////////////////////////////////////////////////
+    ////////////// Recherche par code ////////////////
+    /////////////////////////////////////////////////
+
+    QSqlQuery RequeteRechercheCode ;
+
+    RequeteRechercheCode.prepare("SELECT NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
+                                 "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
+                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
+    RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
+    if (!RequeteRechercheCode.exec())
+    {
+        qDebug() << "F_Jeux::AfficherJeu() : RequeteRechercheCode :" << RequeteRechercheCode.lastQuery()  ;
+    }
+    RequeteRechercheCode.next();
+
+    QString Le_Nom =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomJeu")).toString() ;
+    QString Le_Code =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("CodeJeu")).toString() ;
+    QString Le_Createur =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomCreateurJeu")).toString() ;
+    QString TxE_Contenu = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("ContenuJeu")).toString() ;
+    QString TxE_Remarques = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Remarque")).toString() ;
+    QString TxE_Description = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("DescriptionJeu")).toString() ;
+    QString Le_AgeMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMin")).toString() ;
+    QString Le_AgeMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMax")).toString() ;
+    QString Le_NbrJoueurMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMin")).toString() ;
+    QString Le_NbrJoueurMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMax")).toString() ;
+    int IdStatut =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("StatutJeux_IdStatutJeux")).toInt());
+    int IdEditeur =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Editeur_IdEditeur")).toInt());
+    int IdEtat =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("EtatsJeu_IdEtatsJeu")).toInt());
+    int IdEmplacement =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Emplacement_IdEmplacement")).toInt());
+    QString Classification =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("TypeJeux_Classification")).toString());
+
+    // Remplir les champs en fonction du jeu choisi.
+    ui->Le_nom->setText(Le_Nom) ;
+
+    // aligne le curseur à gauche
+    ui->Le_nom->setCursorPosition(0) ;
+    ui->Le_code->setText(Le_Code);
+    ui->Le_createur->setText(Le_Createur);
+
+    // aligne le curseur à gauche
+    ui->Le_createur->setCursorPosition(0) ;
+    ui->TxE_contenu->setText(TxE_Contenu);
+    ui->Le_agemin->setText(Le_AgeMin);
+    ui->Le_agemax->setText(Le_AgeMax);
+    ui->Le_nbrejoueursmin->setText(Le_NbrJoueurMin);
+    ui->Le_nbrejoueursmax->setText(Le_NbrJoueurMax);
+    ui->TxE_remarques->setText(TxE_Remarques);
+    ui->TxE_description->setText(TxE_Description);
+
+    // Bloquer certains boutons
+    ui->Bt_ValiderContenu->setEnabled(false);
+    ui->Bt_AnnulerContenu->setEnabled(false);
+    ui->Bt_ValiderRemarques->setEnabled(false);
+    ui->Bt_AnnulerRemarques->setEnabled(false);
+    ui->Bt_ValiderDescription->setEnabled(false);
+    ui->Bt_AnnulerDescription->setEnabled(false);
+
+    //////////////////////////////////////////////////////////
+    /////////// Remplissage label statut /////////////////////
+    ///////////////////////////////////////////////////////////
+    QSqlQuery RequeteStatut;
+    QString Le_Statut ;
+
+    RequeteStatut.prepare("SELECT StatutJeu FROM statutjeux WHERE IdStatutJeux=:IdStatutDuJeu");
+    RequeteStatut.bindValue(":IdStatutDuJeu",IdStatut);
+    RequeteStatut.exec() ;
+    RequeteStatut.next();
+
+    Le_Statut = (RequeteStatut.value(0).toString());
+    ui->Le_statut->setText(Le_Statut);
+    // aligne le curseur à gauche
+    ui->Le_statut->setCursorPosition(0) ;
+    //---------------- MISE EN COULEUR DU STATUT ----------------------------
+    switch (IdStatut)
+    {
+    case 1:  // Disponible en vert
+        ui->Le_statut->setStyleSheet("color: green");
+    break ;
+    case 2: // Emprunté ou emprunt à valider en noir
+    case 3:
+        ui->Le_statut->setStyleSheet("color: blue");
+    break ;
+    case 4: // En réparation en orange
+        ui->Le_statut->setStyleSheet("color: orange");
+    break ;
+    case 5: // Indisponible en rouge
+        ui->Le_statut->setStyleSheet("color: red");
+    break ;
+    default :
+        ui->Le_statut->setStyleSheet("color: black");
+    }
+
+    //////////////////////////////////////////////////////////
+    /////////// Remplissage label Editeur ////////////////////
+    ///////////////////////////////////////////////////////////
+    QSqlQuery RequeteEditeur;
+    QString Le_Editeur ;
+
+    RequeteEditeur.prepare("SELECT NomFournisseur FROM fournisseursediteur WHERE IdFournisseur=:IdFournisseur");
+    RequeteEditeur.bindValue(":IdFournisseur",IdEditeur);
+    RequeteEditeur.exec();
+    if( RequeteEditeur.isValid() )
+    {
+        RequeteEditeur.next();
+        Le_Editeur = (RequeteEditeur.value(0).toString());
+    }
+    else
+    {
+        Le_Editeur = "";
+    }
+
+    ui->Le_editeur->setText(Le_Editeur);
+    // aligne le curseur à gauche
+    ui->Le_statut->setCursorPosition(0) ;
+
+    /////////////////////////////////////////////////////////
+    //////////// Remplissage label Etat Jeu /////////////////
+    /////////////////////////////////////////////////////////
+
+    QSqlQuery RequeteEtat;
+    QString Le_Etat ;
+
+    RequeteEtat.prepare("SELECT Etat FROM etatsjeu WHERE IdEtatsJeu=:IdEtatDuJeu");
+    RequeteEtat.bindValue(":IdEtatDuJeu",IdEtat);
+    RequeteEtat.exec() ;
+    RequeteEtat.next();
+
+
+    Le_Etat = (RequeteEtat.value(0).toString());
+    ui->Le_etat->setText(Le_Etat);
+    // aligne le curseur à gauche
+    ui->Le_etat->setCursorPosition(0) ;
+
+    ////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    ///////// Remplissage TexteEdit Emplacement ////////////
+    ///////////////////////////////////////////////////////
+
+    QSqlQuery RequeteEmplacement;
+    QString TxE_Emplacement ;
+
+    RequeteEmplacement.prepare("SELECT Nom FROM emplacement WHERE IdEmplacement=:IdEmplacementDuJeu");
+    RequeteEmplacement.bindValue(":IdEmplacementDuJeu",IdEmplacement);
+    RequeteEmplacement.exec() ;
+    RequeteEmplacement.next();
+
+
+    TxE_Emplacement = (RequeteEmplacement.value(0).toString());
+    ui->TxE_emplacement->setText(TxE_Emplacement);
+
+    //////////////////////////////////////////////////////
+    ///////// Remplissage Label classification //////////
+    ////////////////////////////////////////////////////
+
+    QSqlQuery RequeteClassification;
+    QString Le_Classification ;
+    QString LE_NumClassification ;
+
+    RequeteClassification.prepare("SELECT TypeJeux,Classification FROM typejeux WHERE Classification=:NumDeLaClassifciation");
+    RequeteClassification.bindValue(":NumDeLaClassifciation",Classification);
+    RequeteClassification.exec() ;
+    RequeteClassification.next();
+
+
+    Le_Classification = (RequeteClassification.value(0).toString());
+    ui->Le_classification->setText(Le_Classification);
+    // aligne le curseur à gauche
+    ui->Le_classification->setCursorPosition(0) ;
+
+    LE_NumClassification = (RequeteClassification.value(1).toString()) ;
+    ui->LE_NumClassification->setText(LE_NumClassification);
+    ui->LE_NumClassification->setCursorPosition(0);
+
+    ////////////////////////////////////////////////////////
+    ////////////// Chargement Photo //////////////////////////////////
+    //////////////////////////////////////////////////////
+
+    QString code=ui->Le_code->text();
+    lb_image->ChargerImage(QSize(200,200),code,Qt::PointingHandCursor);
+    ui->Lb_ImageName->setText("");
+
+    ////////////////////////////////////////////////////////
+    ////////////// Règles //////////////////////////////////
+    //////////////////////////////////////////////////////
+    QString sCheminReglePref;
+    QSqlQuery RequeteCheminReglesJeux;
+    RequeteCheminReglesJeux.exec("SELECT CheminReglesJeux FROM preferences WHERE IdPreferences = 1");
+    // si il y a des préférences
+    RequeteCheminReglesJeux.next();
+    sCheminReglePref = RequeteCheminReglesJeux.value(0).toString();
+
+    delete acces;
+    acces=new AccesFichierParHTTP(this);
+    connect( acces, SIGNAL( SignalFichierTelecharger(QString) ), this, SLOT( SlotRegleTelecharger(QString) ) );
+
+    ui->Bt_regle->setEnabled(false);
+
+    QStringList ListeExtension;
+    ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm";
+    acces->LancerTelechargements(sCheminReglePref,code,ListeExtension);
+}
+
+void F_Jeux::AfficherJeux()
+{
+     unsigned int NumeroLigne (0);
+     QSqlQuery RequeteRechercheJeu;
+     NumeroLigne=0;
+
+     RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu FROM jeux");
+
+     if (!RequeteRechercheJeu.exec())
+     {
+         qDebug() << "F_Jeux::AfficherJeux() : RequeteRechercheJeu :" << RequeteRechercheJeu.lastQuery()  ;
+     }
+     //On vide le modèle
+     this->ModelJeu->clear();
+     //Indique le nombres de colones puis leurs noms
+     this->ModelJeu->setColumnCount(2);
+     this->ModelJeu->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+     this->ModelJeu->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+     //impose une taille aux colones
+     ui->TbV_NomJeux->setColumnWidth(0,45);
+     ui->TbV_NomJeux->setColumnWidth(1,205);
+
+     //Tant qu'il y a des jeux dans la table jeux,
+     while(RequeteRechercheJeu.next())
+     {
+         //on ajoute une nouvelle ligne du table view
+         this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
+         this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
+         NumeroLigne++;
+     }
+}
+
+/**
+ * @brief Méthode qui actualise la case de recherche par code avec le code du jeu actif
+ *
+ */
+void F_Jeux::ActualiserJeux()
+{
+    AfficherJeu(this->JeuEnConsultation);
+    ui->Le_recherchenom->setFocus();
 }

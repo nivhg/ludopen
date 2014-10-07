@@ -12,10 +12,12 @@
 /**
  *  @brief AccesPhotosParHTTP permet la gestion des images stockées sur un serveur HTTP
  */
-class AccesFichierParHTTP:public QNetworkAccessManager
+class AccesFichierParHTTP: public QNetworkAccessManager
 {
   Q_OBJECT
 public:
+    AccesFichierParHTTP( QWidget * parent );
+    ~AccesFichierParHTTP();
     /**
      *  @brief Vérifie l'existence d'une image sur un système de fichier ou en HTTP
      */
@@ -26,7 +28,25 @@ public:
      *          La fonction va rechercher si le fichier existe avec l'extention en minuscule et majuscule
      */
     bool FichierExiste( QStringList *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage);
-
+    void LancerTelechargements( QString sCheminImagePref,QString code_jeu,QStringList ListeExtension);
+    void AnnulerTelechargements();
+public slots:
+    void SlotTelechargementFini();
+private:
+    void PasserFichierSuivant(bool FichierTrouver);
+    QNetworkAccessManager *manager;
+    QStringList ListeExtension;
+    int IndexExtension;
+    QString sCheminImagePref;
+    QString NomFichier;
+    QString CodeJeu;
+    int NumeroFichier;
+    bool PremierFichierTrouver;
+    bool TelechargementAnnuler;
+signals:
+    void SignalFichierTelecharger(QString);
+    void SignalTelechargementsFini();
+    void SignalAnnulerTelechargement();
 };
 
 #endif // ACCESFICHIERPARHTTP_H
