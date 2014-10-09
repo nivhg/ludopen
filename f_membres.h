@@ -16,7 +16,7 @@ using namespace std;
 
 #define MODE_UTILISATEUR 0
 #define MODE_ADMIN 1
-#define MODE_CONTACTS 2
+#define MODE_MEMBRE_ASSOCIE 2
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
 
@@ -243,17 +243,17 @@ private slots:
 
     void on_Bt_SupprimerActivite_clicked();
 
-    void on_Bt_Contact_clicked();
+    void on_Bt_Associe_clicked();
 
-    void on_Bt_AJouterContact_clicked();
+    void on_Bt_AJouterAssocie_clicked();
 
-    void on_Bt_SupprimerContact_clicked();
+    void on_Bt_SupprimerAssocie_clicked();
 
-    void AjouterContact(QList <QStandardItem *> ListStandardItem);
+    void AjouterAssocie(QList <QStandardItem *> ListStandardItem);
 
-    void on_Bt_ValiderContacts_clicked();
+    void on_Bt_ValiderAssocies_clicked();
 
-    void on_Bt_AnnulerContacts_clicked();
+    void on_Bt_AnnulerAssocies_clicked();
 
     void on_CBx_Titre_currentIndexChanged(int index);
 
@@ -264,7 +264,7 @@ private:
     QVector<Membre> VecteurMembres ;///< Vecteur contenant la liste des membres
     QVector<Membre> VecteurRechercheMembres ; ///< Vecteur contenant la liste des membres correspondant à  la recherche
     QStandardItemModel ModeleRechercheMembre;
-    QStandardItemModel ModeleContacts;
+    QStandardItemModel ModeleAssocies;
 
     F_HistoriqueJeux *   pHistoriqueJeux ;   //! Pointeur sur la classe F_HistoriqueJeux
     F_AjouterCotiCarte * pAjouterCotiCarte ; //! Pointeur sur la classe F_AjouterCoticarte
@@ -288,7 +288,7 @@ private:
     QPushButton * Bt_ValiderVille ;          //! Bouton Valider pour la fenêtre d'ajout d'une ville
     QPushButton * Bt_AnnuerVille ;           //! Bouton Annuler pour la fenêtre d'ajout d'une ville
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville
-    F_Membres * pContacts;
+    F_Membres * pAssocies;
 };
 
 #endif // F_MEMBRES_H

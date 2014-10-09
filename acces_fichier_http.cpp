@@ -107,7 +107,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
     QNetworkReply *newreply= manager->get(QNetworkRequest(QUrl(URL)));
     QObject::connect(newreply, SIGNAL(finished()),this, SLOT(SlotTelechargementFini()));
     QObject::connect(this, SIGNAL(SignalAnnulerTelechargement()),newreply, SLOT(abort()));
-    qDebug()<<"URL:"<<URL;
+    //qDebug()<<"URL:"<<URL;
     return;
 }
 

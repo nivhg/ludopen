@@ -15,6 +15,7 @@
 #include <QtSql>
 #include "f_retour.h"
 #include "ui_f_retour.h"
+#include "fonctions_globale.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -244,7 +245,7 @@ void F_Retour::AfficherMembre()
     QSqlQuery Requete;
 
     //Prépare la requête
-    Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises FROM membres WHERE CodeMembre=:CodeDuMembre");
+    Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises,IdMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",this->MembreActif);
 
     if (!Requete.exec())
@@ -290,8 +291,9 @@ void F_Retour::AfficherMembre()
     //Affiche l'état de la cotisation
     //Savoir si le membre à un memmbre assosier
     QSqlQuery RequeteMembreAssocier ;
-    RequeteMembreAssocier.prepare("SELECT MembreAssocie FROM membres WHERE CodeMembre=:CodeDuMembre AND MembreAssocie!=0");
-    RequeteMembreAssocier.bindValue(":CodeDuMembre",this->MembreActif);
+    RequeteMembreAssocier.prepare("SELECT CodeMembre FROM membresassocies,membres WHERE "
+                                  "Membres_IdMembre=:IdMembre AND Membres_IdCollectivite=IdMembre");
+    RequeteMembreAssocier.bindValue(":IdMembre",ObtenirValeurParNom(Requete,"IdMembre").toString());
 
     if (!RequeteMembreAssocier.exec())
     {
@@ -302,7 +304,7 @@ void F_Retour::AfficherMembre()
     if(RequeteMembreAssocier.size() > 0)
     {
         //On Affiche l'état de la cotisation du membre associé au membre actif
-        AfficherEtatCotisation(RequeteMembreAssocier.value(0).toString());
+        AfficherEtatCotisation(ObtenirValeurParNom(RequeteMembreAssocier,"CodeMembre").toString());
     }
     else
     {

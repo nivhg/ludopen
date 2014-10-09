@@ -15,7 +15,7 @@
 #include <QtSql>
 #include "f_reservation.h"
 #include "ui_f_reservation.h"
-
+#include "fonctions_globale.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -49,6 +49,7 @@ F_Reservation::F_Reservation(QWidget *parent) :
     ui->TbV_Recherche->setModel(this->ModelMembre);
    //Met le TableView en lecture seule
     ui->TbV_Recherche->setEditTriggers(0);
+    ui->TbV_Recherche->setSortingEnabled(true);
    //Initialise le tableau avec tous les membres
     on_LE_RechercheMembre_textChanged("");
 
@@ -128,7 +129,7 @@ void F_Reservation::on_LE_RechercheMembre_textChanged(const QString &arg1)
       QSqlQuery RequeteMembre;
       NumeroLigne=0;
 
-      RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres WHERE Nom LIKE (:Nom) GROUP BY CodeMembre");
+      RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres WHERE Nom LIKE (:Nom) GROUP BY Nom");
       RequeteMembre.bindValue(":Nom",Nom);
       RequeteMembre.exec();
 
@@ -159,7 +160,7 @@ void F_Reservation::on_LE_RechercheMembre_textChanged(const QString &arg1)
     {
        QSqlQuery RequeteMembre;
        NumeroLigne =0;
-       RequeteMembre.exec("SELECT  CodeMembre,Nom,Prenom,DateNaissance FROM membres GROUP BY CodeMembre");
+       RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres GROUP BY Nom");
 
        //On vide le modèle
        this->ModelMembre->clear();
@@ -471,7 +472,7 @@ void F_Reservation::AfficherMembre(QString CodeMembre)
     QSqlQuery Requete;
 
 //Prépare la requête
-    Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises FROM membres WHERE CodeMembre=:CodeDuMembre");
+    Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises,IdMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",CodeMembre);
 
 //Execute la requête
@@ -524,15 +525,17 @@ void F_Reservation::AfficherMembre(QString CodeMembre)
 //Affiche l'état de la cotisation
    //Savoir si le membre à un memmbre assosier
    QSqlQuery RequeteMembreAssocier ;
-   RequeteMembreAssocier.prepare("SELECT MembreAssocie FROM membres WHERE CodeMembre=:CodeDuMembre AND MembreAssocie !=0");
-   RequeteMembreAssocier.bindValue(":codeDuMembre",this->MembreActif);
+   RequeteMembreAssocier.prepare("SELECT CodeMembre FROM membresassocies,membres WHERE "
+                                 "Membres_IdMembre=:IdMembre AND Membres_IdCollectivite=IdMembre");
+   RequeteMembreAssocier.bindValue(":IdMembre",ObtenirValeurParNom(Requete,"IdMembre").toString());
+
    RequeteMembreAssocier.exec();
    RequeteMembreAssocier.next();
    //s'i y en a un,
    if(RequeteMembreAssocier.size()>0)
    {
        //On Affiche l'état de la cotisation du membre associé au membre actif
-       AfficherEtatCotisation(RequeteMembreAssocier.value(0).toString());
+       AfficherEtatCotisation(ObtenirValeurParNom(RequeteMembreAssocier,"CodeMembre").toString());
    }
    //Sinon,
    else

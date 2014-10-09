@@ -20,6 +20,7 @@
 // En-tête propre à l'application ----------------------------------------------
 #include "f_detailsjeux.h"
 #include "ui_f_detailsjeux.h"
+#include "fonctions_globale.h"
 
 /**
  * @brief Constructeur de la classe f_detailsjeux
@@ -142,7 +143,7 @@ void F_DetailsJeux::AfficherDetailJeu()
     QSqlQuery RequeteHistoriqueEmprunt;
     JeuEnConsultation = Code ;
 
-    RequeteHistoriqueEmprunt.prepare("SELECT Prenom,Nom,DateEmprunt,DateRetour,Membres_IdMembre FROM emprunts,membres,jeux WHERE Membres_IdMembre=IdMembre AND CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux ORDER BY DateEmprunt DESC");
+    RequeteHistoriqueEmprunt.prepare("SELECT CodeMembre,Nom,Prenom,DateEmprunt,DateRetour,Membres_IdMembre FROM emprunts,membres,jeux WHERE Membres_IdMembre=IdMembre AND CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux ORDER BY DateEmprunt DESC");
     RequeteHistoriqueEmprunt.bindValue(":CodeDuJeu",Code);
     RequeteHistoriqueEmprunt.exec();
     
@@ -150,23 +151,31 @@ void F_DetailsJeux::AfficherDetailJeu()
     this->ModelHistoriqueEmprunts->clear();
     //Indique le nombres de colonnes puis leurs noms
     this->ModelHistoriqueEmprunts->setColumnCount(4);
-    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(0, new QStandardItem("Nom"));
-    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(1, new QStandardItem("Prénom"));
-    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(2, new QStandardItem("Date d'emprunt"));
-    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(3, new QStandardItem("Date de retour"));
+    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(0, new QStandardItem("Code"));
+    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
+    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(3, new QStandardItem("Date d'emprunt"));
+    this->ModelHistoriqueEmprunts->setHorizontalHeaderItem(4, new QStandardItem("Date de retour"));
     
     //Impose une taille aux colonnes
-    ui->TbV_HistoriqueEmprunts->setColumnWidth(0,200);  // Nom
-    ui->TbV_HistoriqueEmprunts->setColumnWidth(1,150);  // Prénom
-    ui->TbV_HistoriqueEmprunts->setColumnWidth(2,100);  // Date d'emprunt
-    ui->TbV_HistoriqueEmprunts->setColumnWidth(3,100);  // Date de retour
+    ui->TbV_HistoriqueEmprunts->setColumnWidth(0,50);  // Code
+    ui->TbV_HistoriqueEmprunts->setColumnWidth(1,200);  // Nom
+    ui->TbV_HistoriqueEmprunts->setColumnWidth(2,150);  // Prénom
+    ui->TbV_HistoriqueEmprunts->setColumnWidth(3,100);  // Date d'emprunt
+    ui->TbV_HistoriqueEmprunts->setColumnWidth(4,100);  // Date de retour
     while(RequeteHistoriqueEmprunt.next())
     {
         //On ajoute une nouvelle ligne du table view avec les données
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 0, new QStandardItem(RequeteHistoriqueEmprunt.value(1).toString() ));
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 1, new QStandardItem(RequeteHistoriqueEmprunt.value(0).toString() ));
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 2, new QStandardItem(RequeteHistoriqueEmprunt.value(2).toDate().toString("dd-MM-yyyy") ));
-        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 3, new QStandardItem(RequeteHistoriqueEmprunt.value(3).toDate().toString("dd-MM-yyyy") ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 0, new QStandardItem(
+                      ObtenirValeurParNom(RequeteHistoriqueEmprunt,"CodeMembre").toString() ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 1, new QStandardItem(
+                      ObtenirValeurParNom(RequeteHistoriqueEmprunt,"Nom").toString() ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 2, new QStandardItem(
+                      ObtenirValeurParNom(RequeteHistoriqueEmprunt,"Prenom").toString() ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 3, new QStandardItem(
+            ObtenirValeurParNom(RequeteHistoriqueEmprunt,"DateEmprunt").toDate().toString("dd-MM-yyyy") ));
+        this->ModelHistoriqueEmprunts->setItem(NumeroLigne, 4, new QStandardItem(
+            ObtenirValeurParNom(RequeteHistoriqueEmprunt,"DateRetour").toDate().toString("dd-MM-yyyy") ));
         NumeroLigne ++ ;
     }
 }

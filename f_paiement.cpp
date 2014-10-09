@@ -189,7 +189,8 @@ void F_Paiement::on_Bt_AjouterCartePaiement_clicked()
 
     ui->TW_PaiementCarte->setItem(this->NombreLignePaiement,0,new QTableWidgetItem (ui->CBx_Cartes->currentText()));
 
-    //Requète perméttant de retrouver la carte choisie, le nombre de crédit restant afain de limiter le SpinBox
+    //Requête permettant de retrouver la carte choisie,
+    // le nombre de crédit restant afin de limiter le SpinBox
     QSqlQuery RequeteCartes;
     RequeteCartes.prepare("SELECT IdAbonnements,CreditRestant,NomCarte "
                           "FROM abonnements,cartesprepayees,membres "

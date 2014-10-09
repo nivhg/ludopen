@@ -23,6 +23,7 @@
 
 #include "f_emprunt.h"
 #include "ui_f_emprunt.h"
+#include "fonctions_globale.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -442,18 +443,19 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         //Affiche l'état de la cotisation
         //Savoir si le membre  a un membre associer
         QSqlQuery RequeteMembreAssocier ;
-        RequeteMembreAssocier.prepare("SELECT MembreAssocie FROM membres WHERE CodeMembre=:CodeDuMembre AND MembreAssocie !=0");
-        RequeteMembreAssocier.bindValue(":codeDuMembre",this->MembreActif);
+        RequeteMembreAssocier.prepare("SELECT CodeMembre FROM membresassocies,membres WHERE "
+                                      "Membres_IdMembre=:IdMembre AND Membres_IdCollectivite=IdMembre");
+        RequeteMembreAssocier.bindValue(":IdMembre",ObtenirValeurParNom(Requete,"IdMembre").toString());
         if ( ! RequeteMembreAssocier.exec() )
         {
             qDebug()<<"F_Emprunt::AfficherMembre => RequeteMembreAssocier " << RequeteMembreAssocier.lastQuery();
         }
-        RequeteMembreAssocier.next();
-        // s'i y a un membre associer,
-        if ( RequeteMembreAssocier.size() > 0 )
+
+        // si il y a un membre associé,
+        if ( RequeteMembreAssocier.next() )
         {
             //On Affiche l'état de la cotisation du membre associé au membre actif
-            this->EtatCotisationMembre= AfficherEtatCotisation(RequeteMembreAssocier.value(0).toString());
+            this->EtatCotisationMembre= AfficherEtatCotisation(ObtenirValeurParNom(RequeteMembreAssocier,"CodeMembre").toString());
         }
         else
         {

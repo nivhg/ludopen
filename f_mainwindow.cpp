@@ -421,6 +421,8 @@ void F_MainWindow::CreerJeux()
         this->pJeux=new F_Jeux (this->ui->Jeu);
         //Jeux
         this->ui->Lay_Jeux->addWidget(this->pJeux);
+        // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné
+        connect( this->pJeux, SIGNAL( Signal_Clic_Reserve( int ) ), this, SLOT( slot_Clic_Reserve(int) )) ;
     }
 }
 
@@ -498,6 +500,18 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
     ui->TbW_Main->setCurrentIndex(2);
 }
 
+/**
+ * Quand clic sur le bouton réservé dans l'onglet Jeux, affiche l'onglet liste des réservation
+ * avec le jeu sélectionné grâce à un signal envoyé par f_jeux
+ * @param CodeJeu
+ */
+void F_MainWindow::slot_Clic_Reserve(int IdReservation)
+{
+    CreerReservations();
+    ui->TbW_Main->setCurrentIndex(6);
+    this->pListeReservations->SelectionnerReservation(IdReservation);
+    // Indiquer à l'onglet jeu quel code jeu afficher
+}
 /**
  * Quand double clic sur un membre dans l'onglet Liste des membres,
  * affiche l'onglet Membres avec le membre concerné pour avoir le détail

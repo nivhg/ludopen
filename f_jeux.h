@@ -141,6 +141,12 @@ private slots:
 
     void SlotRegleTelecharger(QString CheminFichier);
 
+    void on_Bt_Reserve_clicked();
+
+signals:
+    //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé
+    void Signal_Clic_Reserve( int IdReservation);
+
 private:
     //ATTRIBUTS--------------------------------------------------
     Ui::F_Jeux *ui;
@@ -156,6 +162,9 @@ private:
     
     //! Code du jeu actif sur la fenêtre
     QString JeuEnConsultation ;
+
+    //! Id de la réservation
+    int IdReservation ;
 
     //! Model du TableView des jeux
     QStandardItemModel * ModelJeu;

@@ -39,6 +39,8 @@ public:
 
     bool AffichageListe () ;
 
+    void SelectionnerReservation(int IdReservation);
+
 signals:
     void Signal_DoubleClic_ListeMembres( unsigned int nIdMembre ) ;
     

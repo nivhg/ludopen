@@ -1146,9 +1146,9 @@
             <widget class="QLineEdit" name="Le_Code"/>
            </item>
            <item row="1" column="0" colspan="2">
-            <widget class="QPushButton" name="Bt_Contact">
+            <widget class="QPushButton" name="Bt_Associe">
              <property name="text">
-              <string>Contacts...</string>
+              <string>Membres associés...</string>
              </property>
             </widget>
            </item>
@@ -2654,7 +2654,7 @@
       </widget>
      </item>
      <item row="11" column="0" rowspan="3" colspan="3">
-      <layout class="QGridLayout" name="Gl_Contacts"/>
+      <layout class="QGridLayout" name="Gl_Associes"/>
      </item>
      <item row="8" column="0" colspan="3">
       <widget class="QTableView" name="TbW_Recherche">
@@ -2682,7 +2682,7 @@
       <widget class="QLineEdit" name="LE_Nom"/>
      </item>
      <item row="10" column="0" colspan="3">
-      <widget class="QFrame" name="Fr_Contacts">
+      <widget class="QFrame" name="Fr_Associes">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -2691,7 +2691,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_18">
         <item row="0" column="0">
-         <widget class="QPushButton" name="Bt_AJouterContact">
+         <widget class="QPushButton" name="Bt_AJouterAssocie">
           <property name="text">
            <string>Ajouter</string>
           </property>
@@ -2702,7 +2702,7 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QPushButton" name="Bt_SupprimerContact">
+         <widget class="QPushButton" name="Bt_SupprimerAssocie">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -2716,7 +2716,7 @@
          </widget>
         </item>
         <item row="2" column="0" colspan="2">
-         <widget class="QTableView" name="TbW_Contacts">
+         <widget class="QTableView" name="TbW_Associes">
           <property name="alternatingRowColors">
            <bool>true</bool>
           </property>
@@ -2732,14 +2732,14 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="Lb_Contacts_2">
+         <widget class="QLabel" name="Lb_Associes_2">
           <property name="text">
            <string>Contacts :</string>
           </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QPushButton" name="Bt_ValiderContacts">
+         <widget class="QPushButton" name="Bt_ValiderAssocies">
           <property name="text">
            <string>Valider contacts</string>
           </property>
@@ -2750,7 +2750,7 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QPushButton" name="Bt_AnnulerContacts">
+         <widget class="QPushButton" name="Bt_AnnulerAssocies">
           <property name="text">
            <string>Annuler</string>
           </property>
@@ -2764,9 +2764,9 @@
       </widget>
      </item>
      <item row="7" column="0" colspan="3">
-      <widget class="QLabel" name="Lb_Contacts">
+      <widget class="QLabel" name="Lb_Associes">
        <property name="text">
-        <string>Sélectionner un membre à rajouter aux contacts :</string>
+        <string>Sélectionner un membre faisant partie de l'organisme :</string>
        </property>
       </widget>
      </item>

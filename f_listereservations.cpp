@@ -615,3 +615,9 @@ void F_ListeReservations::on_TbW_ListeReservations_doubleClicked(const QModelInd
 {
     emit( this->Signal_DoubleClic_ListeMembres( this->VecteurListeReservations.at( index.row() ) ) ) ;
 }
+
+void F_ListeReservations::SelectionnerReservation(int IdReservation)
+{
+    int index=this->VecteurListeReservations.indexOf(IdReservation);
+    ui->TbW_ListeReservations->selectRow(index);
+}

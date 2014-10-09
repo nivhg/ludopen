@@ -53,6 +53,7 @@ public slots:
     void slot_DoubleClic_ListeJeux(QString CodeJeu);
     void slot_DoubleClic_ListeMembres(uint IdMembre) ;
     void slot_DoubleClic_ListeMembresAdmin(uint IdMembre) ;
+    void slot_Clic_Reserve(int IdReservation);
 
 private slots:
     void on_Bt_Membre_clicked();

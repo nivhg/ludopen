@@ -52,6 +52,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     pDeclarerIntervention=new F_DeclarerIntervention;
     // pas de jeu actuellement choisi
     JeuEnConsultation = "" ;
+    ui->Bt_Reserve->setVisible(false);
 
     /////////////////////////////////////////////////////////
     //////////////////Création table view //////////////////
@@ -557,7 +558,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     QSqlQuery RequeteRechercheCode ;
 
-    RequeteRechercheCode.prepare("SELECT NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
+    RequeteRechercheCode.prepare("SELECT IdJeux,NomJeu,CodeJeu,NomCreateurJeu,ContenuJeu,Remarque,StatutJeux_IdStatutJeux,"
                                  "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
                                  "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
@@ -567,21 +568,21 @@ void F_Jeux::AfficherJeu(QString Jeu)
     }
     RequeteRechercheCode.next();
 
-    QString Le_Nom =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomJeu")).toString() ;
-    QString Le_Code =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("CodeJeu")).toString() ;
-    QString Le_Createur =  RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NomCreateurJeu")).toString() ;
-    QString TxE_Contenu = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("ContenuJeu")).toString() ;
-    QString TxE_Remarques = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Remarque")).toString() ;
-    QString TxE_Description = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("DescriptionJeu")).toString() ;
-    QString Le_AgeMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMin")).toString() ;
-    QString Le_AgeMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("AgeMax")).toString() ;
-    QString Le_NbrJoueurMin = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMin")).toString() ;
-    QString Le_NbrJoueurMax = RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("NbrJoueurMax")).toString() ;
-    int IdStatut =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("StatutJeux_IdStatutJeux")).toInt());
-    int IdEditeur =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Editeur_IdEditeur")).toInt());
-    int IdEtat =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("EtatsJeu_IdEtatsJeu")).toInt());
-    int IdEmplacement =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("Emplacement_IdEmplacement")).toInt());
-    QString Classification =(RequeteRechercheCode.value(RequeteRechercheCode.record().indexOf("TypeJeux_Classification")).toString());
+    QString Le_Nom =  ObtenirValeurParNom(RequeteRechercheCode,"NomJeu").toString() ;
+    QString Le_Code =  ObtenirValeurParNom(RequeteRechercheCode,"CodeJeu").toString() ;
+    QString Le_Createur =  ObtenirValeurParNom(RequeteRechercheCode,"NomCreateurJeu").toString() ;
+    QString TxE_Contenu = ObtenirValeurParNom(RequeteRechercheCode,"ContenuJeu").toString() ;
+    QString TxE_Remarques = ObtenirValeurParNom(RequeteRechercheCode,"Remarque").toString() ;
+    QString TxE_Description = ObtenirValeurParNom(RequeteRechercheCode,"DescriptionJeu").toString() ;
+    QString Le_AgeMin = ObtenirValeurParNom(RequeteRechercheCode,"AgeMin").toString() ;
+    QString Le_AgeMax = ObtenirValeurParNom(RequeteRechercheCode,"AgeMax").toString() ;
+    QString Le_NbrJoueurMin = ObtenirValeurParNom(RequeteRechercheCode,"NbrJoueurMin").toString() ;
+    QString Le_NbrJoueurMax = ObtenirValeurParNom(RequeteRechercheCode,"NbrJoueurMax").toString() ;
+    int IdStatut =(ObtenirValeurParNom(RequeteRechercheCode,"StatutJeux_IdStatutJeux").toInt());
+    int IdEditeur =(ObtenirValeurParNom(RequeteRechercheCode,"Editeur_IdEditeur").toInt());
+    int IdEtat =(ObtenirValeurParNom(RequeteRechercheCode,"EtatsJeu_IdEtatsJeu").toInt());
+    int IdEmplacement =(ObtenirValeurParNom(RequeteRechercheCode,"Emplacement_IdEmplacement").toInt());
+    QString Classification =(ObtenirValeurParNom(RequeteRechercheCode,"TypeJeux_Classification").toString());
 
     // Remplir les champs en fonction du jeu choisi.
     ui->Le_nom->setText(Le_Nom) ;
@@ -612,7 +613,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
     //////////////////////////////////////////////////////////
     /////////// Remplissage label statut /////////////////////
     ///////////////////////////////////////////////////////////
-    QSqlQuery RequeteStatut;
+    QSqlQuery RequeteStatut,RequeteResa;
     QString Le_Statut ;
 
     RequeteStatut.prepare("SELECT StatutJeu FROM statutjeux WHERE IdStatutJeux=:IdStatutDuJeu");
@@ -644,6 +645,25 @@ void F_Jeux::AfficherJeu(QString Jeu)
         ui->Le_statut->setStyleSheet("color: black");
     }
 
+    ///////////////////////////////////////////////////////////
+    /////////// Affichage du bouton réservé ///////////////////
+    ///////////////////////////////////////////////////////////
+    RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
+    RequeteResa.bindValue(":IdDuJeu",ObtenirValeurParNom(RequeteRechercheCode,"IdJeux").toString());
+    ui->Bt_Reserve->setVisible(false);
+    if (!RequeteResa.exec())
+    {
+        qDebug() << "F_Jeux::AfficherJeu() : RequeteResa :" << RequeteResa.lastQuery()  ;
+    }
+    else
+    {
+        RequeteResa.next();
+        if(RequeteResa.size()!=0)
+        {
+            ui->Bt_Reserve->setVisible(true);
+            this->IdReservation=ObtenirValeurParNom(RequeteResa,"idReservation").toInt();
+        }
+    }
     //////////////////////////////////////////////////////////
     /////////// Remplissage label Editeur ////////////////////
     ///////////////////////////////////////////////////////////
@@ -794,4 +814,9 @@ void F_Jeux::ActualiserJeux()
 {
     AfficherJeu(this->JeuEnConsultation);
     ui->Le_recherchenom->setFocus();
+}
+
+void F_Jeux::on_Bt_Reserve_clicked()
+{
+    emit Signal_Clic_Reserve( this->IdReservation );
 }

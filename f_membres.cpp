@@ -32,7 +32,7 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     ui->setupUi( this ) ;
 
     this->nIdCollectivite = nIdCollectivite;
-    //Indique le mode : Administration, utilisation standard ou Contacts
+    //Indique le mode : Administration, utilisation standard ou membres associés
     this->iMode = iMode ;
 
     if(this->iMode!=MODE_ADMIN)
@@ -120,13 +120,13 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     // Faire défiler le tableau des membres avec les flêches du clavier
     connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
 
-    if(this->iMode==MODE_CONTACTS)
+    if(this->iMode==MODE_MEMBRE_ASSOCIE)
     {
-        setWindowTitle("Contacts");
+        setWindowTitle("Membres associés");
         ui->frame->setVisible(false);
         ui->frame_2->setVisible(false);
-        ui->Fr_Contacts->setVisible(true);
-        ui->Lb_Contacts->setVisible(true);
+        ui->Fr_Associes->setVisible(true);
+        ui->Lb_Associes->setVisible(true);
         ui->TbW_Recherche->blockSignals(true);
         QDesktopWidget *desktop = QApplication::desktop();
         QRect geo_d_i = geometry();
@@ -134,47 +134,47 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
         int y = (desktop->height() - geo_d_i.height()) / 2;
         this->setGeometry(x, y, 350, geo_d_i.height());
         this->show();
-        ui->TbW_Contacts->clearSpans() ;
-        ui->TbW_Contacts->setModel(&ModeleContacts) ;
-        ui->TbW_Contacts->setEditTriggers(QAbstractItemView::NoEditTriggers);
-        ui->TbW_Contacts->setSortingEnabled(true);
-        ModeleContacts.setColumnCount(4);
-        ModeleContacts.setRowCount(0);
-        ModeleContacts.setHorizontalHeaderItem(0, new QStandardItem("Id"));
-        ModeleContacts.setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        ModeleContacts.setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        ModeleContacts.setHorizontalHeaderItem(3, new QStandardItem("Ville"));
-        ModeleContacts.setHorizontalHeaderItem(4, new QStandardItem("Code Membre"));
-        ui->TbW_Contacts->setColumnWidth(0,0);
-        QSqlQuery RequeteContact ;
+        ui->TbW_Associes->clearSpans() ;
+        ui->TbW_Associes->setModel(&ModeleAssocies) ;
+        ui->TbW_Associes->setEditTriggers(QAbstractItemView::NoEditTriggers);
+        ui->TbW_Associes->setSortingEnabled(true);
+        ModeleAssocies.setColumnCount(4);
+        ModeleAssocies.setRowCount(0);
+        ModeleAssocies.setHorizontalHeaderItem(0, new QStandardItem("Id"));
+        ModeleAssocies.setHorizontalHeaderItem(1, new QStandardItem("Nom"));
+        ModeleAssocies.setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
+        ModeleAssocies.setHorizontalHeaderItem(3, new QStandardItem("Ville"));
+        ModeleAssocies.setHorizontalHeaderItem(4, new QStandardItem("Code Membre"));
+        ui->TbW_Associes->setColumnWidth(0,0);
+        QSqlQuery RequeteAssocie ;
         //Enregistrement d'un nouveau membre dans la base de données
-        RequeteContact.prepare( "SELECT Membres_IdMembre,Nom,Prenom,Ville,CodeMembre"
+        RequeteAssocie.prepare( "SELECT Membres_IdMembre,Nom,Prenom,Ville,CodeMembre"
             " FROM membresassocies,membres WHERE Membres_IdCollectivite=:IdCollectivite"
             " AND IdMembre=Membres_IdMembre ORDER BY Nom") ;
-        RequeteContact.bindValue(":IdCollectivite",this->nIdCollectivite);
+        RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
         //Exectution de la requête
-        if( !RequeteContact.exec() )
+        if( !RequeteAssocie.exec() )
         {
-            qDebug()<< "F_Membres::on_Bt_ValiderContacts_clicked : RequeteMembre " << RequeteContact.lastQuery() ;
+            qDebug()<< "F_Membres::on_Bt_ValiderAssocies_clicked : RequeteMembre " << RequeteAssocie.lastQuery() ;
         }
         else
         {
             int i=0;
-            while(RequeteContact.next())
+            while(RequeteAssocie.next())
             {
-                ModeleContacts.setItem(i,0,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Membres_IdMembre").toString()));
-                ModeleContacts.setItem(i,1,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Nom").toString()));
-                ModeleContacts.setItem(i,2,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Prenom").toString()));
-                ModeleContacts.setItem(i,3,new QStandardItem(ObtenirValeurParNom(RequeteContact,"Ville").toString()));
-                ModeleContacts.setItem(i,4,new QStandardItem(ObtenirValeurParNom(RequeteContact,"CodeMembre").toString()));
+                ModeleAssocies.setItem(i,0,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"Membres_IdMembre").toString()));
+                ModeleAssocies.setItem(i,1,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"Nom").toString()));
+                ModeleAssocies.setItem(i,2,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"Prenom").toString()));
+                ModeleAssocies.setItem(i,3,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"Ville").toString()));
+                ModeleAssocies.setItem(i,4,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"CodeMembre").toString()));
                 i++;
             }
         }
     }
     else
     {
-        ui->Fr_Contacts->setVisible(false);
-        ui->Lb_Contacts->setVisible(false);
+        ui->Fr_Associes->setVisible(false);
+        ui->Lb_Associes->setVisible(false);
     }
 
     slot_AfficherMembre(this->VecteurRechercheMembres[0].id);
@@ -271,12 +271,7 @@ bool F_Membres::MaJListeMembres()
     this->VecteurMembres.clear() ;
 
     QString requeteSQL;
-    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres";
-    if(this->iMode==MODE_CONTACTS)
-    {
-        requeteSQL+=" WHERE TitreMembre_IdTitreMembre<>2 AND TitreMembre_IdTitreMembre<>3";
-    }
-    requeteSQL+=" ORDER BY Nom ASC";
+    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres ORDER BY Nom ASC";
 
     //Execute une requète sql qui retourne la liste des membres
     //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
@@ -384,11 +379,16 @@ void F_Membres::RechercherParNomEtNumero()
             }
             else
             {
-                if( this->VecteurMembres[i].sNom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                // Retrait des accents pour pouvoir faire des recherches de membres avec accents
+                QString sNom=this->VecteurMembres[i].sNom.toLower().replace(QRegExp("[éèë]"), "e");
+                sNom.replace(QRegExp("[à]"), "a");
+                QString sPrenom=this->VecteurMembres[i].sNom.toLower().replace(QRegExp("[éèë]"), "e");
+                sPrenom.replace(QRegExp("[à]"), "a");
+                if( sNom.indexOf( ui->LE_Nom->text().toLower() ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
-                else if( this->VecteurMembres[i].sPrenom.toUpper().indexOf( ui->LE_Nom->text().toUpper() ) != string::npos )
+                else if( sPrenom.indexOf( ui->LE_Nom->text().toLower() ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
@@ -679,13 +679,20 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     QStandardItemModel * modele = new QStandardItemModel() ;
     ui->LW_JeuxEmpruntes->setModel( modele ) ;
     ui->LW_JeuxEmpruntes->setEditTriggers( 0 ) ;
-    ui->LW_JeuxEmpruntes->setColumnWidth( 0, 200 ) ;  // Jeux
-    ui->LW_JeuxEmpruntes->setColumnWidth( 1, 100 ) ;  // Date d'Emprunt
-    ui->LW_JeuxEmpruntes->setColumnWidth( 2, 100 ) ;  // Date de Retour prévu
+    modele->setHorizontalHeaderItem( 0, new QStandardItem( "Code" ) ) ;
+    modele->setHorizontalHeaderItem( 1, new QStandardItem( "Nom du jeu" ) ) ;
+    modele->setHorizontalHeaderItem( 2, new QStandardItem( "Emprunté le" ) ) ;
+    modele->setHorizontalHeaderItem( 3, new QStandardItem( "Retour prévu le" ) ) ;
+    ui->LW_JeuxEmpruntes->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    /*ui->LW_JeuxEmpruntes->setColumnWidth( 0, 20 ) ;  // Code
+    ui->LW_JeuxEmpruntes->setColumnWidth( 1, 200 ) ;  // Jeu
+    ui->LW_JeuxEmpruntes->setColumnWidth( 2, 100 ) ;  // Date d'Emprunt
+    ui->LW_JeuxEmpruntes->setColumnWidth( 3, 100 ) ;  // Date de Retour prévu*/
 
     //requête permettant d'avoir les jeux empruntés correspondant à l'id du membre
-    RequeteEmprunt.prepare( "SELECT Jeux_IdJeux,DateEmprunt,DateRetourPrevu "
-                            "FROM emprunts WHERE Membres_IdMembre=:nIdMembre AND DateRetour IS NULL" ) ;
+    RequeteEmprunt.prepare( "SELECT CodeJeu,NomJeu,DateEmprunt,DateRetourPrevu "
+                            "FROM emprunts,jeux WHERE Membres_IdMembre=:nIdMembre AND "
+                            "DateRetour IS NULL AND Jeux_IdJeux=IdJeux" ) ;
     RequeteEmprunt.bindValue( ":nIdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -693,29 +700,18 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     {  /*Création des caractéristiques du tableau : -Nom des colonnes
                                                     -Nombre de lignes*/
         modele->setRowCount( RequeteEmprunt.size() ) ;
-        modele->setHorizontalHeaderItem( 0, new QStandardItem( "Nom du jeux" ) ) ;
-        modele->setHorizontalHeaderItem( 1, new QStandardItem( "Emprunté le" ) ) ;
-        modele->setHorizontalHeaderItem( 2, new QStandardItem( "Retour prévu le" ) ) ;
 
         //Remplissage du tableau avec les informations de la table emprunts
         while( RequeteEmprunt.next() )
         {
-            //Requete pour récupérer le nom du jeux
-            RequeteJeux.prepare( "SELECT NomJeu FROM jeux WHERE IdJeux=:nIdJeux" ) ;
-            RequeteJeux.bindValue( ":nIdJeux", RequeteEmprunt.record().value( 0 ).toInt() ) ;
-
-            if( RequeteJeux.exec() )
-            {
-                RequeteJeux.next() ;
-                modele->setItem( i, 0, new QStandardItem( RequeteJeux.record().value( 0 ).toString() ) ) ;
-            }
-            else
-            {
-                qDebug()<< "F_Membres::AfficherJeuxEmpruntes : RequeteJeux " << RequeteJeux.lastQuery() ;
-            }
-
-            modele->setItem( i, 1, new QStandardItem( RequeteEmprunt.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequeteEmprunt.record().value( 2 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            modele->setItem( i, 0, new QStandardItem(
+               ObtenirValeurParNom(RequeteEmprunt,"CodeJeu").toString() ) ) ;
+            modele->setItem( i, 1, new QStandardItem(
+               ObtenirValeurParNom(RequeteEmprunt,"NomJeu").toString() ) ) ;
+            modele->setItem( i, 2, new QStandardItem(
+               ObtenirValeurParNom(RequeteEmprunt,"DateEmprunt").toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            modele->setItem( i, 3, new QStandardItem(
+               ObtenirValeurParNom(RequeteEmprunt,"DateRetourPrevu").toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
 
             // Met en rouge la ligne si le jeu emprunté est rendu en retard, sinon en vert
             // Tient compte du nombre de jour de retard toléré
@@ -731,18 +727,19 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
               // Calculer la date de retour avec la tolérance du nombre de jours
               DateActuelle.addDays(RequeteNbJoursRetardToleres.value(0).toInt() );
             }
+            QColor couleur;
             if ( RequeteEmprunt.value( 2 ).toDate() > DateActuelle )
             {
-                modele->setData( modele->index( i,0 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                modele->setData( modele->index( i,1 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
-                modele->setData( modele->index( i,2 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
+                couleur=Qt::green;
             }
             else
             {
-                modele->setData( modele->index( i,0 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
-                modele->setData( modele->index( i,1 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
-                modele->setData( modele->index( i,2 ),QColor( Qt::red ), Qt::BackgroundColorRole ) ;
+                couleur=Qt::red;
             }
+            modele->setData( modele->index( i,0 ),couleur, Qt::BackgroundColorRole ) ;
+            modele->setData( modele->index( i,1 ),couleur, Qt::BackgroundColorRole ) ;
+            modele->setData( modele->index( i,2 ),couleur, Qt::BackgroundColorRole ) ;
+            modele->setData( modele->index( i,3 ),couleur, Qt::BackgroundColorRole ) ;
             i++ ;
 
         }
@@ -868,8 +865,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->Le_Code->setText( ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString() ) ;
 
-//                ui->LE_MembreAssocie->setText( ObtenirValeurParNom(RequeteMembre,"MembreAssocie").toString() ) ;
-
                 ui->SPx_NbreRetards->setValue( ObtenirValeurParNom(RequeteMembre,"NbreRetard").toInt() ) ;
 
                 this->AfficherJeuxEmpruntes( nIdMembre ) ;
@@ -905,10 +900,10 @@ bool F_Membres::AjouterMembre()
     //Enregistrement d'un nouveau membre dans la base de données
     RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
         "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,"
-        "DateNaissance,Remarque,Ecarte,CodeMembre,MembreAssocie,NbreRetard) "
+        "DateNaissance,Remarque,Ecarte,CodeMembre,NbreRetard) "
         "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
         ":Telephone,:Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,"
-        ":Ecarte,:CodeMembre,:MembreAssocie,:NbreRetard)" ) ;
+        ":Ecarte,:CodeMembre,:NbreRetard)" ) ;
 
     //Titre Membre
     RequeteMembre.bindValue( ":TitreMembre_IdTitreMembre", this->VectorTitre[ui->CBx_Titre->currentIndex()].id ) ;
@@ -962,9 +957,6 @@ bool F_Membres::AjouterMembre()
     //Code Membre
     RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
 
-    //Membre associé
-//    RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text().toInt() ) ;
-
     //Nombre de retards
     RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->text() ) ;
 
@@ -980,7 +972,7 @@ bool F_Membres::AjouterMembre()
         ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
         ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
 
-        AjouterContact(ListStandardItem);
+        AjouterAssocie(ListStandardItem);
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
@@ -1034,8 +1026,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
                                "membres.Email=:Email,membres.NbreJeuxAutorises=:NbreJeuxAutorises,"
                                "membres.DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
                                "DateNaissance=:DateNaissance,membres.Remarque=:Remarque,membres.Ecarte=:Ecarte,"
-                               "membres.CodeMembre=:CodeMembre ,membres.MembreAssocie=:MembreAssocie "
-                               "WHERE membres.IdMembre=:IdMembre" ) ;
+                               "membres.CodeMembre=:CodeMembre WHERE membres.IdMembre=:IdMembre" ) ;
 
         //ID Membre
         RequeteMembre.bindValue( ":IdMembre", this->nIdMembreSelectionne ) ;
@@ -1090,9 +1081,6 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Code Membre
         RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
-
-        //Membre associé
-//        RequeteMembre.bindValue( ":MembreAssocie", ui->LE_MembreAssocie->text() ) ;
 
         //Nombre de retards
         RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->value() ) ;
@@ -1248,7 +1236,6 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->LE_Fax->setReadOnly( bVerrouille ) ;
     ui->LE_Email->setReadOnly( bVerrouille ) ;
     ui->Le_Code->setReadOnly( bVerrouille ) ;
-//    ui->LE_MembreAssocie->setReadOnly( bVerrouille ) ;
     ui->Te_Rue->setReadOnly( bVerrouille ) ;
     ui->Le_CP->setReadOnly( bVerrouille ) ;
     ui->CBx_Ville->setDisabled( bVerrouille ) ;
@@ -1274,7 +1261,6 @@ void F_Membres::EffacerTousLesChamps ()
     ui->LE_Fax->clear() ;
     ui->LE_Email->clear() ;
     ui->Le_Code->clear() ;
-//    ui->LE_MembreAssocie->clear() ;
     ui->Te_Rue->clear() ;
     ui->Le_CP->clear() ;
     ui->CBx_Ville->setCurrentIndex( 0 ) ;
@@ -1524,6 +1510,7 @@ void F_Membres::slot_AfficherMembre( unsigned int nIdMembre )
 {
     this->VerrouillerAbonnements( false ) ;
     this->VerrouillerActivite(false);
+    ui->Bt_Associe->setDisabled(false);
     this->VerrouillerJeux( false ) ;
     this->AfficherMembre( nIdMembre ) ;
 }
@@ -1710,7 +1697,7 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     QDate   DateActuelle ;
     QStandardItemModel * modeleVide ;
 
-    if(this->iMode==MODE_CONTACTS)
+    if(this->iMode==MODE_MEMBRE_ASSOCIE)
     {
         ui->frame->setVisible(true);
         ui->frame_2->setVisible(true);
@@ -1758,6 +1745,8 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     this->VerrouillerActivite( true ) ;
 
+    ui->Bt_Associe->setDisabled(true);
+
     ui->Le_Nom->setFocus();
 }
 //==========================================================================================================
@@ -1802,6 +1791,7 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
                     this->VerrouillerAbonnements( false ) ;
                     this->VerrouillerJeux( false ) ;
                     this->VerrouillerActivite(false);
+                    ui->Bt_Associe->setDisabled(false);
                     //this->VerrouillerInfosPerso( true ) ;
                     //this->AfficherValiderAnnuler( false ) ;
                     this->AfficherAjouterModifierMembre( true ) ;
@@ -2069,14 +2059,14 @@ void F_Membres::on_LE_Nom_textEdited(const QString &arg1)
    ui->TbW_Recherche->selectRow( 0 ) ;
 }
 
-void F_Membres::on_Bt_Contact_clicked()
+void F_Membres::on_Bt_Associe_clicked()
 {
-    pContacts = new F_Membres(MODE_CONTACTS,0,this->nIdMembreSelectionne);
+    pAssocies = new F_Membres(MODE_MEMBRE_ASSOCIE,0,this->nIdMembreSelectionne);
 }
 
-void F_Membres::on_Bt_AJouterContact_clicked()
+void F_Membres::on_Bt_AJouterAssocie_clicked()
 {
-    if(ModeleContacts.findItems(QString::number(this->nIdMembreSelectionne),Qt::MatchExactly,0).count()!=0)
+    if(ModeleAssocies.findItems(QString::number(this->nIdMembreSelectionne),Qt::MatchExactly,0).count()!=0)
     {
         return;
     }
@@ -2088,46 +2078,46 @@ void F_Membres::on_Bt_AJouterContact_clicked()
         ModelIndexList=ui->TbW_Recherche->selectionModel()->selectedRows(i);
         ListStandardItem.append(new QStandardItem(ModelIndexList.first().data().toString()));
     }
-    AjouterContact(ListStandardItem);
+    AjouterAssocie(ListStandardItem);
 }
 
-void F_Membres::AjouterContact(QList <QStandardItem *> ListStandardItem)
+void F_Membres::AjouterAssocie(QList <QStandardItem *> ListStandardItem)
 {
-    ModeleContacts.appendRow(ListStandardItem);
-    ui->TbW_Contacts->selectRow(0);
-    ui->Bt_SupprimerContact->setEnabled(true);
+    ModeleAssocies.appendRow(ListStandardItem);
+    ui->TbW_Associes->selectRow(0);
+    ui->Bt_SupprimerAssocie->setEnabled(true);
 }
 
-void F_Membres::on_Bt_SupprimerContact_clicked()
+void F_Membres::on_Bt_SupprimerAssocie_clicked()
 {
-    ModeleContacts.removeRow(ui->TbW_Contacts->selectionModel()->selectedRows().first().row());
-    if(ModeleContacts.rowCount()==0)
+    ModeleAssocies.removeRow(ui->TbW_Associes->selectionModel()->selectedRows().first().row());
+    if(ModeleAssocies.rowCount()==0)
     {
-        ui->Bt_SupprimerContact->setEnabled(false);
+        ui->Bt_SupprimerAssocie->setEnabled(false);
     }
 }
 
-void F_Membres::on_Bt_ValiderContacts_clicked()
+void F_Membres::on_Bt_ValiderAssocies_clicked()
 {
-    QSqlQuery RequeteContact ;
-    for(int i=0;i<ModeleContacts.rowCount();i++)
+    QSqlQuery RequeteAssocie ;
+    for(int i=0;i<ModeleAssocies.rowCount();i++)
     {
         //Enregistrement d'un nouveau membre dans la base de données
-        RequeteContact.prepare( "INSERT INTO membresassocies "
+        RequeteAssocie.prepare( "INSERT INTO membresassocies "
             "(Membres_IdCollectivite,Membres_IdMembre) VALUES (:IdCollectivite,:IdMembre)");
-        RequeteContact.bindValue(":IdCollectivite",this->nIdCollectivite);
-        RequeteContact.bindValue( ":IdMembre", ModeleContacts.item(i,0)->text() );
+        RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
+        RequeteAssocie.bindValue( ":IdMembre", ModeleAssocies.item(i,0)->text() );
 
         //Exectution de la requête
-        if( !RequeteContact.exec() )
+        if( !RequeteAssocie.exec() )
         {
-            qDebug()<< "F_Membres::on_Bt_ValiderContacts_clicked : RequeteMembre " << RequeteContact.lastQuery() ;
+            qDebug()<< "F_Membres::on_Bt_ValiderAssocies_clicked : RequeteMembre " << RequeteAssocie.lastQuery() ;
         }
     }
     this->close();
 }
 
-void F_Membres::on_Bt_AnnulerContacts_clicked()
+void F_Membres::on_Bt_AnnulerAssocies_clicked()
 {
     this->close();
 
@@ -2155,15 +2145,17 @@ void F_Membres::on_CBx_Titre_currentIndexChanged(int index)
     {
         ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
     }
-    // Si c'est collectivité ou association qui a été choisie
-    if(RecupererEmplacementTitreVecteur(2) == index || RecupererEmplacementTitreVecteur(3) == index )
+    // Si c'est collectivité ou association ou école qui a été choisie
+    if(RecupererEmplacementTitreVecteur(2) == index ||
+            RecupererEmplacementTitreVecteur(3) == index ||
+            RecupererEmplacementTitreVecteur(6) == index )
     {
         ui->Gb_Prenom->setVisible(false);
-        ui->Bt_Contact->setVisible(true);
+        ui->Bt_Associe->setVisible(true);
     }
     else
     {
         ui->Gb_Prenom->setVisible(true);
-        ui->Bt_Contact->setVisible(false);
+        ui->Bt_Associe->setVisible(false);
     }
 }
