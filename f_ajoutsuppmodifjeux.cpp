@@ -44,11 +44,11 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->setupUi(this);
 
     // Création des fenêtres de création de nouveaux éléments
-    this->pEtatAjMod = new F_PopUpCLESTTEM(0);
-    this->pStatutAjMod = new F_PopUpCLESTTEM(1);
-    this->pEmplacementAjMod = new F_PopUpCLESTTEM(2);
-    this->pClassificationAjMod = new F_PopUpCLESTTEM(3);
-    this->pMotCleAjMod = new F_PopUpCLESTTEM(4);
+    this->pEtatAjMod = new F_PopUpCLESTTEM(0,this);
+    this->pStatutAjMod = new F_PopUpCLESTTEM(1,this);
+    this->pEmplacementAjMod = new F_PopUpCLESTTEM(2,this);
+    this->pClassificationAjMod = new F_PopUpCLESTTEM(3,this);
+    this->pMotCleAjMod = new F_PopUpCLESTTEM(4,this);
     this->pAjoutFournisseur=0;
     this->pAjoutEditeur=0;
     //Création de l'objet QLabel pour l'affichage des images

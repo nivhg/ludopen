@@ -43,6 +43,14 @@ F_Reservation::F_Reservation(QWidget *parent) :
       ui->CBx_TypeEmprunt->addItem(TypeEmprunt);
    }
 
+   // Tous les lieux sauf Internet
+   Requete.exec("SELECT NomLieux FROM lieux WHERE IdLieux!=1");
+
+   while(Requete.next())
+   {
+      ui->CBx_Retrait->addItem(ObtenirValeurParNom(Requete,"NomLieux").toString());
+   }
+
    //Création d'un modèle pour le TableView des membres
     this->ModelMembre = new QStandardItemModel() ;
    //Associe le modèl au TableView
@@ -1009,6 +1017,19 @@ if((MembreActif)!=(""))
 
     RequeteIdJeu.next();
 
+    //Recherche de l'id du lieux de retrait
+    //Prépare la requête
+    QSqlQuery RequeteIdLieu;
+    RequeteIdLieu.prepare("SELECT IdLieux FROM lieux WHERE NomLieux=:NomLieux");
+    RequeteIdLieu.bindValue(":NomLieux",ui->CBx_Retrait->currentText());
+
+    //Execute la requête
+    if (!RequeteIdLieu.exec())
+    {
+        qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked"<<RequeteIdLieu.lastQuery();
+    }
+
+    RequeteIdLieu.next();
     //Date de l'emprunt
     QDate DateActuelle;
     DateActuelle=DateActuelle.currentDate();
@@ -1017,15 +1038,18 @@ if((MembreActif)!=(""))
     unsigned int Lieu (2);
     QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
     Lieu=FichierDeConfig.value("Autres/IdLieux", "config").toInt();
-
+    QString id=ObtenirValeurParNom(RequeteIdLieu,"IdLieux").toString();
    //Enregistre la réservation
     //Prépare la requête
     QSqlQuery RequeteReservation;
-    RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour) "
-                               "values (:IdLieu,:IdMembre,:IdJeu,:DateReservation,:DateEmprunt,:DateRetour)");
+    RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
+                               "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,Lieux_IdLieuxRetrait) "
+                               "values (:IdLieu,:IdMembre,:IdJeu,:DateReservation,:DateEmprunt,:DateRetour,"
+                               ":IdLieuRetrait)");
     RequeteReservation.bindValue(":IdLieu",Lieu);
     RequeteReservation.bindValue(":IdMembre",RequeteIdMembre.value(0));
     RequeteReservation.bindValue(":IdJeu",RequeteIdJeu.value(0));
+    RequeteReservation.bindValue(":IdLieuRetrait",ObtenirValeurParNom(RequeteIdLieu,"IdLieux"));
     RequeteReservation.bindValue(":DateReservation",DateActuelle);
     RequeteReservation.bindValue(":DateEmprunt",ui->Cal_DateEmprunt->selectedDate());
     RequeteReservation.bindValue(":DateRetour",ui->Cal_DateRetour->selectedDate());

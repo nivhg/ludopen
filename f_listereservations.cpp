@@ -16,6 +16,7 @@
 
 #include "f_listereservations.h"
 #include "ui_f_listereservations.h"
+#include "fonctions_globale.h"
 
 #include <QtDebug>
 #include <QStandardItem>
@@ -76,23 +77,16 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
     ui->DtE_DateResa_Fin->setDate(QDate::currentDate());
 
+    // Date d'emprunt initialiser à la date du jour
+    ui->DtE_DateEmpruntPrevue_Debut->setDate(QDate::currentDate());
+    ui->DtE_DateEmpruntPrevue_Fin->setDate(QDate::currentDate());
+
     // Cache les widgets qui ne servent pas pour l'instant repris de F_ListeMembre
-    ui->CBx_Retards->setVisible(false);
     ui->CBx_StatutJeu->setVisible(false) ;
-    ui->CBx_Cotisation->setVisible(false) ;
     ui->ChBx_StatutJeu->setVisible(false) ;
-    ui->ChBx_NbreRetard->setVisible(false) ;
-    ui->ChBx_Cotisation->setVisible(false) ;
-    ui->ChBx_DateEmpruntPrevue->setVisible(false) ;
-    ui->ChBx_Cotisation->setVisible(false) ;
-    ui->ChBx_NbreRetard->setVisible(false);
-    ui->ChBx_DateEmpruntPrevue->setVisible(false) ;
-    ui->ChBx_Cotisation->setVisible(false) ;
     ui->Lb_DateInscription->setVisible(false);
     ui->Lb_DateNaissance->setVisible(false) ;
-    ui->SBx_NbreRetard->setVisible(false) ;
-    ui->DtE_DateEmpruntPrevue_Debut->setVisible(false) ;
-    ui->DtE_DateEmpruntPrevue_Fin->setVisible(false);
+    ui->ChBx_NonConfirme->setVisible(false);
     ui->Bt_Exporter->setVisible(false);
 }
 
@@ -106,10 +100,8 @@ void F_ListeReservations::TousSelectionner( bool bSelection )
     ui->ChBx_LieuxDeReservation->setChecked( bSelection ) ;
     ui->ChBx_StatutJeu->setChecked( bSelection ) ;
     ui->ChBx_LieuxDeRetrait->setChecked( bSelection ) ;
-    ui->ChBx_NbreRetard->setChecked( bSelection ) ;
     ui->ChBx_DateReservation->setChecked( bSelection ) ;
     ui->ChBx_DateEmpruntPrevue->setChecked( bSelection ) ;
-    ui->ChBx_Cotisation->setChecked( bSelection ) ;
 }
 
 /** Description détaillée de la méthode
@@ -261,73 +253,44 @@ bool F_ListeReservations::AffichageListe()
     QStandardItem * item ;
 
     // Création de la requête pour filtrer les réservations
-    sRequeteSELECTFROM = "SELECT * FROM reservation" ;
-    sRequeteWHERE = "WHERE" ;
+    sRequeteSELECTFROM = "SELECT CodeJeu,NomJeu,StatutJeu,idReservation, Membres_IdMembre,"
+            "Jeux_IdJeux, DateReservation, Nom, Prenom, "
+            "DatePrevuEmprunt, DatePrevuRetour, JeuEmprunte, JeuMisDeCote, ConfirmationReservation, "
+            "L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait FROM membres,statutjeux,jeux,reservation "
+            "LEFT JOIN lieux as L1 ON L1.IdLieux=Lieux_IdLieuxReservation LEFT JOIN lieux as L2 ON "
+            "L2.IdLieux=Lieux_IdLieuxRetrait ";
+    sRequeteWHERE = "WHERE IdJeux=Jeux_IdJeux AND IdStatutJeux=StatutJeux_IdStatutJeux AND "
+            "IdMembre=Membres_IdMembre AND " ;
 
     if( ui->ChBx_DateReservation->isChecked() )
     {       
-        sRequeteWHERE = sRequeteWHERE + " DateReservation>='" + ui->DtE_DateResa_Debut->dateTime().toString("yyyy-MM-dd") + "' AND " ;
-        sRequeteWHERE = sRequeteWHERE + " DateReservation<='" + ui->DtE_DateResa_Fin->dateTime().toString("yyyy-MM-dd") + "' AND ";
+        sRequeteWHERE += " DateReservation>='" + ui->DtE_DateResa_Debut->dateTime().toString("yyyy-MM-dd") + "' AND " ;
+        sRequeteWHERE += " DateReservation<='" + ui->DtE_DateResa_Fin->dateTime().toString("yyyy-MM-dd") + "' AND ";
     }
 
     if ( ui->ChBx_LieuxDeReservation->isChecked() )
     {
-        sRequeteWHERE = sRequeteWHERE + " Lieux_IdLieuxReservation=" +  sNumero.setNum(this->VectorLieux[ui-> CBx_LieuxDeReservation->currentIndex()].id) + " AND " ;
+        sRequeteWHERE += " Lieux_IdLieuxReservation=" +  sNumero.setNum(this->VectorLieux[ui->CBx_LieuxDeReservation->currentIndex()].id) + " AND " ;
     }
-/*
+
+    if ( ui->ChBx_LieuxDeRetrait->isChecked() )
+    {
+        sRequeteWHERE += " Lieux_IdLieuxRetrait=" +  QString::number(this->VectorLieux[ui->CBx_LieuxDeRetrait->currentIndex()].id) + " AND " ;
+    }
+
     if ( ui->ChBx_StatutJeu->isChecked() )
     {
         sRequeteWHERE = sRequeteWHERE + " StatutDuJeuMembre_IdStatutDuJeuMembre=" + sNumero.setNum(this->VectorStatutDuJeu[ui->CBx_StatutJeu->currentIndex()].id) + " AND " ;
     }
 
-    if( ui->CBx_LieuxDeRetraitt->isChecked() )
-    {
-        sRequeteWHERE =  sRequeteWHERE + " Nom LIKE '%" + ui->LE_NomAdherent->text() + "%' AND" ;
-    }
-
-    if( ui->ChBx_Prenom->isChecked() )
-    {
-        sRequeteWHERE = sRequeteWHERE + " Prenom LIKE '%" + ui->LE_Prenom->text() + "%' AND" ;
-    }
-
-    if( ui->ChBx_NbreRetard->isChecked() )
-    {
-        sRequeteWHERE = sRequeteWHERE + " NbreRetard" + ui->CBx_Retards->currentText() + ui->SBx_NbreRetard->text() + " AND" ;
-    }
-
-    if( ui->ChBx_Retard->isChecked() )
-    {
-        sRequeteSELECTFROM = sRequeteSELECTFROM + ", emprunts" ;
-        sRequeteWHERE = sRequeteWHERE + " emprunts.DateRetour IS NULL AND emprunts.DateRetourPrevu<" + sNumero.setNum( QDateTime::currentDateTime().toTime_t() ) + " AND IDMembre=emprunts.Membres_IdMembre AND" ;
-    }
-
     if( ui->ChBx_DateEmpruntPrevue->isChecked() )
     {
-        sRequeteWHERE = sRequeteWHERE + " DateEmpruntPrevue>='" + ui->DtE_DateEmpruntPrevue_Debut->dateTime().toString("yyyy-MM-dd") + "' AND" ;
-        sRequeteWHERE = sRequeteWHERE + " DateEmpruntPrevue<='" + ui->DtE_DateEmpruntPrevue_Fin->dateTime().toString("yyyy-MM-dd") + "' AND" ;
+        sRequeteWHERE = sRequeteWHERE + " DatePrevuEmprunt>='" + ui->DtE_DateEmpruntPrevue_Debut->dateTime().toString("yyyy-MM-dd") + "' AND" ;
+        sRequeteWHERE = sRequeteWHERE + " DatePrevuRetour<='" + ui->DtE_DateEmpruntPrevue_Fin->dateTime().toString("yyyy-MM-dd") + "' AND " ;
     }
 
-    if( ui->ChBx_Cotisation->isChecked() )
-    {
-        sRequeteSELECTFROM += " ,abonnements" ;
-        switch( ui->CBx_Cotisation->currentIndex() )
-        {
-        case 0 :
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" ) + "' AND IdMembre=Membres_IdMembre AND" ;
-            break ;
+    //sRequeteWHERE = sRequeteWHERE + " ConfirmationReservation="+QString::number(ui->ChBx_NonConfirme->isChecked())+" AND ";
 
-        case 1 :
-            Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )  + "' AND IdMembre=Membres_IdMembre AND" ;
-            break ;
-
-        case 2 :
-            Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" ) + "' AND DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" ) + "' AND IdMembre=Membres_IdMembre AND" ;
-            break ;
-        }
-    }
-*/
     // Vire le dernier mot AND dans la requête WHERE ou le WHERE si requête sans WHERE nécessaire
     sRequeteWHERE.remove( sRequeteWHERE.size()-5 , 5) ;
 
@@ -335,6 +298,8 @@ bool F_ListeReservations::AffichageListe()
     sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdReservation" ;
 
     qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
+
+    ui->Le_SQL->setText(sRequete);
 
     //Exécution de la requête
     if( RequeteDesReservations.exec(sRequete) )
@@ -348,76 +313,41 @@ bool F_ListeReservations::AffichageListe()
         while( RequeteDesReservations.next() )
         {
             // Ajouter au vecteur l'ID de cette réservation (sert pour la suppression des réservations)
-            this->VecteurListeReservations.append( RequeteDesReservations.record().value( 0 ).toInt() ) ;
+            this->VecteurListeReservations.append( ObtenirValeurParNom(RequeteDesReservations,"idReservation").toInt() ) ;
 
             // On place des case à cocher dans la première colonne.
             item = new QStandardItem() ;
             item->setCheckable( true ) ;
             ModeleReservations.setItem( i, 0, item ) ;
 
-            // Récupérer infos sur le jeu réservé
-            RequeteJeu.prepare( "SELECT CodeJeu,NomJeu,StatutJeux_IdStatutJeux FROM jeux WHERE IdJeux=:IdJeu" ) ;
-            RequeteJeu.bindValue( ":IdJeu", RequeteDesReservations.record().value( 3 ).toInt() ) ;
-            if( RequeteJeu.exec() )
-            {
-                if( RequeteJeu.next() )
-                {   // Code du jeu réservé
-                    ModeleReservations.setItem( i, 1, new QStandardItem( RequeteJeu.record().value( 0 ).toString() ) ) ;
-                    // Nom du jeu réservé
-                    ModeleReservations.setItem( i, 2, new QStandardItem( RequeteJeu.record().value( 1 ).toString() ) ) ;
-                    // Statut du jeu
-                    QSqlQuery RequeteStatut ;
-                    RequeteStatut.prepare( "SELECT StatutJeu FROM statutjeux WHERE IdStatutJeux=:IdStatutJeux" ) ;
-                    RequeteStatut.bindValue( ":IdStatutJeux", RequeteJeu.record().value( 2 ).toInt() ) ;
-
-                    if( RequeteStatut.exec() )
-                    {
-
-                        if( RequeteStatut.next() )
-                        {
-                            //qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastQuery() ;
-                            //qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.record().value( 0 ).toString() ;
-                            ModeleReservations.setItem( i, 3, new QStandardItem( RequeteStatut.record().value( 0 ).toString() ) ) ;
-                        }
-                    }
-                    else
-                    {
-                        qDebug() << "F_ListeReservations::AffichageListe => RequeteStatut :" << RequeteStatut.lastQuery()  ;
-                    }
-                }
-            }
-            else
-            {
-                qDebug() << "F_ListeReservations::AffichageListe RequeteJeux=" << RequeteJeu.lastQuery()  ;
-            }
-
-            //Récupérer infos sur le membre qui a réservé
-            QSqlQuery RequeteMembre ;
-            RequeteMembre.prepare( "SELECT Nom,Prenom FROM membres WHERE IdMembre=:IdMembre" ) ;
-            RequeteMembre.bindValue( ":IdMembre", RequeteDesReservations.record().value( 2 ).toInt() ) ;
-            if( RequeteMembre.exec() )
-            {
-                if( RequeteMembre.next() )
-                {
-                    // Nom de l'adhérent qui a réservé
-                    ModeleReservations.setItem( i,4, new QStandardItem( RequeteMembre.record().value( 0 ).toString() ) ) ;
-                    // Prénom de l'adhérent qui a réservé
-                    ModeleReservations.setItem( i,5, new QStandardItem( RequeteMembre.record().value( 1 ).toString() ) ) ;
-                }
-            }
-            else
-            {
-                qDebug() << "F_ListeReservations::AffichageListe => RequeteMembre :" << RequeteMembre.lastQuery()  ;
-            }
-
+            // Code du jeu réservé
+            ModeleReservations.setItem( i, 1, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"CodeJeu").toString() ) ) ;
+            // Nom du jeu réservé
+            ModeleReservations.setItem( i, 2, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"NomJeu").toString() ) ) ;
+            ModeleReservations.setItem( i, 3, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"StatutJeu").toString() ) ) ;
+            // Nom de l'adhérent qui a réservé
+            ModeleReservations.setItem( i,4, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"Nom").toString() ) ) ;
+            // Prénom de l'adhérent qui a réservé
+            ModeleReservations.setItem( i,5, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"Prenom").toString() ) ) ;
             // Date réservation
-            ModeleReservations.setItem( i, 6, new QStandardItem( RequeteDesReservations.record().value( 4 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleReservations.setItem( i, 6, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"DateReservation").toDate().toString("dd-MM-yyyy" ) ) ) ;
             // Date d'emprunt prévue
-            ModeleReservations.setItem( i, 7, new QStandardItem( RequeteDesReservations.record().value( 5 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleReservations.setItem( i, 7, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"DatePrevuEmprunt").toDate().toString("dd-MM-yyyy" ) ) ) ;
             // Date de retour prévue
-            ModeleReservations.setItem( i, 8, new QStandardItem( RequeteDesReservations.record().value( 6 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleReservations.setItem( i, 8, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"DatePrevuRetour").toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Lieu de réservation
-            ModeleReservations.setItem( i, 9, new QStandardItem( RequeteDesReservations.record().value( 1 ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleReservations.setItem( i, 9, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"NomReservation").toString() ) ) ;
+            ModeleReservations.setItem( i, 10, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
 
             i++ ;
         }        
@@ -441,13 +371,12 @@ void F_ListeReservations::on_Bt_RAZ_clicked()
     this->MiseAJourStatutJeu() ;
 
     ui->CBx_LieuxDeRetrait->clear() ;
-    ui->SBx_NbreRetard->clear() ;
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
     ui->DtE_DateResa_Fin->setDate(QDate::currentDate());
-    // Date de naissance
-    ui->DtE_DateEmpruntPrevue_Debut->clear() ;
-    ui->DtE_DateEmpruntPrevue_Fin->clear() ;
+    // Date d'emprunt
+    ui->DtE_DateEmpruntPrevue_Debut->setDate(QDate::currentDate());
+    ui->DtE_DateEmpruntPrevue_Fin->setDate(QDate::currentDate());
 
     this->TousSelectionner( false ) ;
     // Remettre à jour la liste des réservations affichées
@@ -479,13 +408,10 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
                 {
                     qDebug() << "F_ListeReservations::on_Bt_SupprimerListe_clicked => RequeteSupprimer" << RequeteSupprimer.lastQuery()<< endl ;
                 }
-                // Suppression des réservations effectuée. Mettre à jour la liste affichée
-                else
-                {
-                   this->AffichageListe() ;
-                }
             }
         }
+        // Suppression des réservations effectuée. Mettre à jour la liste affichée
+        this->AffichageListe();
     }
 }
 
@@ -620,4 +546,14 @@ void F_ListeReservations::SelectionnerReservation(int IdReservation)
 {
     int index=this->VecteurListeReservations.indexOf(IdReservation);
     ui->TbW_ListeReservations->selectRow(index);
+}
+
+void F_ListeReservations::on_CBx_LieuxDeRetrait_activated(int index)
+{
+    this->AffichageListe();
+}
+
+void F_ListeReservations::on_ChBx_NonConfirme_clicked()
+{
+    this->AffichageListe();
 }

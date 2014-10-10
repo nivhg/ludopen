@@ -47,14 +47,12 @@ using namespace std;
  *  @param parent
  */
 F_PopUpCLESTTEM::F_PopUpCLESTTEM(int nCLESTTEM, QWidget *parent) :
-    QWidget(parent),
+    QDialog(parent),
     ui(new Ui::F_PopUpCLESTTEM)
 {
     ui->setupUi(this);
     this->nCLESTTEM = nCLESTTEM;
 }
-
-
 
 /**
  *  @brief Destructeur de la classe.
@@ -183,7 +181,9 @@ void F_PopUpCLESTTEM::Ajouter()
         break;
     }
 
-    this->show();
+    ui->LE_CLESTTEM->setEnabled(true);
+    ui->LE_Autres->setEnabled(true);
+    this->exec();
 }
 
 /**
@@ -387,7 +387,9 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
         break;
     }
 
-    this->show();
+    ui->LE_CLESTTEM->setEnabled(true);
+    ui->LE_Autres->setEnabled(true);
+    this->exec();
 }
 
 /**

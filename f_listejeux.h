@@ -5,6 +5,7 @@
 // En-têtes standards necessaires dans ce fichier en-tete seulement ------------
 #include <QtWidgets>
 #include <QStandardItemModel>
+#include <QSqlQuery>
 
 namespace Ui {
     class F_ListeJeux;
@@ -23,6 +24,7 @@ class F_ListeJeux : public QWidget
 public:
     explicit F_ListeJeux(QWidget *parent = 0);
     ~F_ListeJeux();
+    void ActualiserModele(QSqlQuery Requete);
 
 private slots:
     //METHODE----------------------------------------------------
@@ -111,6 +113,8 @@ private slots:
     /** @brief Remise ? zéro des crit?res
      */
     void RAZCriteres();
+
+    void on_CBx_Emplacement_activated(int index);
 
 signals:
     //! Signal indiquand qu'un double clic a eu lieu dans la liste des jeux

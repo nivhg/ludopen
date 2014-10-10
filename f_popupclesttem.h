@@ -27,7 +27,7 @@ class F_PopUpCLESTTEM;
  *      -Si 10, il s'agit d'une activité d'un membre.
  *
  */
-class F_PopUpCLESTTEM : public QWidget
+class F_PopUpCLESTTEM : public QDialog
 {
     Q_OBJECT
     

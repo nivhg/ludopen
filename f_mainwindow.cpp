@@ -10,6 +10,15 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->setupUi(this);
     qDebug()<<"Constructeur F_MainWindow = Début";
 
+    // Paramètre la taille de la police de l'appli
+    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
+    QString TaillePolice=FichierDeConfig.value("Autres/TaillePolice", "config").toString();
+
+    // Récupère la taille de la police
+    QFont font=QApplication::font();
+    font.setPointSize(TaillePolice.toInt());
+    QApplication::setFont (font);
+
     ui->centralWidget->setLayout(ui->gridLayout);
 
     ui->menuImprimer->setEnabled(false);
@@ -508,6 +517,7 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
 void F_MainWindow::slot_Clic_Reserve(int IdReservation)
 {
     CreerReservations();
+    this->pListeReservations->TousSelectionner( false ) ;
     ui->TbW_Main->setCurrentIndex(6);
     this->pListeReservations->SelectionnerReservation(IdReservation);
     // Indiquer à l'onglet jeu quel code jeu afficher

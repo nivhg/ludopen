@@ -619,17 +619,17 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
         if(MembreActif!=CodeMembre)
         {
             //On précise le code du membre qui possède la cotisation
-            Cotisation="Cotisation expirée (membre "+ CodeMembre +") depuis le ";
+            Cotisation="<b>Cotisation expirée (membre "+ CodeMembre +") depuis le </b>";
         }
         //Sinon,
         else
         {
             //On affiche juste l'état de la cotisation
-            Cotisation="Cotisation expirée depuis le";
+            Cotisation="<b>Cotisation expirée depuis le </b>";
         }
         ui->Lb_Cotisation->setText(Cotisation);
         ui->Lb_Cotisation->setStyleSheet("QLabel {color:red;}");
-        ui->Lb_CotisationARemplir->setText(RequeteCotisation.value(0).toDate().toString("dd-MM-yyyy"));
+        ui->Lb_CotisationARemplir->setText("<b>"+RequeteCotisation.value(0).toDate().toString("dd-MM-yyyy")+"</b>");
         ui->Lb_CotisationARemplir->setStyleSheet(" QLabel{color:red;}" );
         EtatDeLaCotisation=false;
     }
@@ -640,19 +640,19 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
         if(MembreActif!=CodeMembre)
         {
             //On précise le code du membre qui possède la cotisation
-            Cotisation="Cotisation à jours (membre "+ CodeMembre +")";
+            Cotisation="<b>Cotisation à jours (membre "+ CodeMembre +")</b>";
         }
         //Sinon,
         else
         {
             //On affiche juste l'état de la cotisation
-            Cotisation="Cotisation à jours";
+            Cotisation="<b>Cotisation à jours</b>";
         }
         EtatDeLaCotisation=true;
         QString JourRestant ;
         JourRestant.setNum(NombreJoursRestant);
         ui->Lb_Cotisation->setText(Cotisation);
-        ui->Lb_CotisationARemplir->setText("("+ JourRestant +" jours restant)");
+        ui->Lb_CotisationARemplir->setText("<b>("+ JourRestant +" jours restant)</b>");
         //Si le nombre de jours restants est inférieur à 30 jours, on l'affiche en orange
         if (NombreJoursRestant<31)
         {

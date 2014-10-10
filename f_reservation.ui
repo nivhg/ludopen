@@ -142,11 +142,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QLabel" name="Lb_Nom">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Nom :</string>
            </property>
@@ -175,11 +170,6 @@
        </item>
        <item row="9" column="0" colspan="2">
         <widget class="QLabel" name="Lb_JeuxMembres">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Jeux encore chez le membre :</string>
          </property>
@@ -189,11 +179,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
           <widget class="QLabel" name="Lb_JeuxEmpruntables">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Nombre de jeux empruntables :</string>
            </property>
@@ -212,11 +197,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
           <widget class="QLabel" name="Lb_JeuxReserve">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Jeux réservés :</string>
            </property>
@@ -267,11 +247,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
           <widget class="QLabel" name="Lb_CreditRestant">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Nombre de crédits restants :</string>
            </property>
@@ -290,11 +265,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
           <widget class="QLabel" name="Lb_Retard">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Nombre de retards :</string>
            </property>
@@ -341,11 +311,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_13">
          <item>
           <widget class="QLabel" name="Lb_Prenom">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Prénom :</string>
            </property>
@@ -364,11 +329,6 @@
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <item>
           <widget class="QLabel" name="Lb_Remarques">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
            </property>
@@ -465,15 +425,10 @@
        <property name="spacing">
         <number>2</number>
        </property>
-       <item row="0" column="0" colspan="2">
+       <item row="0" column="0" colspan="3">
         <layout class="QHBoxLayout" name="horizontalLayout_9">
          <item>
           <widget class="QLabel" name="Lb_Titre">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Emprunter </string>
            </property>
@@ -488,15 +443,10 @@
          </item>
         </layout>
        </item>
-       <item row="1" column="0" colspan="2">
+       <item row="1" column="0" colspan="3">
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QLabel" name="Lb_Satut">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Statut du jeu : </string>
            </property>
@@ -511,15 +461,10 @@
          </item>
         </layout>
        </item>
-       <item row="2" column="0" colspan="2">
+       <item row="2" column="0" colspan="3">
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
           <widget class="QLabel" name="Lb_Disponible">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Disponible le :</string>
            </property>
@@ -534,15 +479,10 @@
          </item>
         </layout>
        </item>
-       <item row="3" column="0" colspan="2">
+       <item row="3" column="0" colspan="3">
         <layout class="QHBoxLayout" name="horizontalLayout_10">
          <item>
           <widget class="QLabel" name="Lb_DateEmprunt_2">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Type de l'emprunt :</string>
            </property>
@@ -553,37 +493,27 @@
          </item>
         </layout>
        </item>
-       <item row="4" column="0">
+       <item row="7" column="0">
         <widget class="QLabel" name="Lb_DateEmprunt">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Date prévu de l'emprunt :</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="0" colspan="2">
+       <item row="8" column="0" colspan="3">
         <widget class="QCalendarWidget" name="Cal_DateEmprunt"/>
        </item>
-       <item row="6" column="0">
+       <item row="9" column="0">
         <widget class="QLabel" name="Lb_DateRetour">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
          <property name="text">
           <string>Date de retour :</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="0" colspan="2">
+       <item row="10" column="0" colspan="3">
         <widget class="QCalendarWidget" name="Cal_DateRetour"/>
        </item>
-       <item row="8" column="0">
+       <item row="11" column="0">
         <widget class="QCommandLinkButton" name="Bt_ValiderReservation">
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
@@ -603,7 +533,7 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1">
+       <item row="11" column="2">
         <widget class="QCommandLinkButton" name="Bt_AnnulerReservation">
          <property name="maximumSize">
           <size>
@@ -628,6 +558,26 @@
           </size>
          </property>
         </widget>
+       </item>
+       <item row="6" column="0" colspan="3">
+        <layout class="QHBoxLayout" name="horizontalLayout_12">
+         <item>
+          <widget class="QLabel" name="Lb_Retrait">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>23</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Lieu de retrait :</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="CBx_Retrait"/>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>

@@ -147,11 +147,6 @@
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QLabel" name="Lb_NomJeu">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nom du jeu à rendre: </string>
           </property>
@@ -202,11 +197,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_Etat">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Etat du jeu </string>
           </property>
@@ -233,37 +223,10 @@
         </item>
        </layout>
       </item>
-      <item row="14" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QLabel" name="Lb_TypeProlongation">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Type de prolongation :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="CBx_TypeProlongation"/>
-        </item>
-       </layout>
-      </item>
       <item row="11" column="0" colspan="3">
        <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
          <widget class="QLabel" name="Lb_Caution">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Caution à rendre si jeu rendu en bon état :</string>
           </property>
@@ -300,32 +263,6 @@
         </item>
        </layout>
       </item>
-      <item row="15" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="Lb_Prolonger">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="text">
-           <string>Prolonger jusqu'au </string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDateEdit" name="DtE_Prolonger">
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
       <item row="4" column="0" colspan="3">
        <widget class="QTextEdit" name="TxE_ContenuBoite">
         <property name="maximumSize">
@@ -341,11 +278,6 @@
       </item>
       <item row="3" column="0" colspan="2">
        <widget class="QLabel" name="Lb_Contenu">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Contenu de la boîte de ce jeu : </string>
         </property>
@@ -402,11 +334,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
          <widget class="QLabel" name="Lb_Remarque">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Remarques sur le jeu :</string>
           </property>
@@ -490,11 +417,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_Satut">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Statut du jeu </string>
           </property>
@@ -518,6 +440,44 @@
          <string>Code du jeu à rendre :</string>
         </property>
        </widget>
+      </item>
+      <item row="14" column="0" colspan="3">
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="Lb_TypeProlongation">
+          <property name="text">
+           <string>Type de prolongation :</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="CBx_TypeProlongation"/>
+        </item>
+       </layout>
+      </item>
+      <item row="15" column="0" colspan="3">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <item>
+         <widget class="QLabel" name="Lb_Prolonger">
+          <property name="text">
+           <string>Prolonger jusqu'au </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDateEdit" name="DtE_Prolonger">
+          <property name="calendarPopup">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -556,11 +516,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="Lb_Remarques">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Remarques sur ce membre :</string>
           </property>
@@ -641,11 +596,6 @@
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QLabel" name="Lb_JeuxReserves">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Jeux réservés :</string>
           </property>
@@ -699,13 +649,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_Cotisation">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
           <property name="text">
            <string>Cotisation </string>
           </property>
@@ -716,12 +659,6 @@
         </item>
         <item>
          <widget class="QLabel" name="Lb_CotisationDate">
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
           <property name="text">
            <string>Date</string>
           </property>
@@ -731,11 +668,6 @@
       </item>
       <item row="15" column="0">
        <widget class="QLabel" name="Lb_JeuxARendre">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Jeux à rendre :</string>
         </property>
@@ -779,11 +711,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_NbreJeuxRendre">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nb de jeux à rendre :</string>
           </property>
@@ -821,11 +748,6 @@
        <layout class="QHBoxLayout" name="HLay2">
         <item>
          <widget class="QLabel" name="Lb_Credit">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nb de crédits restants :</string>
           </property>
@@ -869,11 +791,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_JeuxMax">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nb maxi de jeux empruntables :</string>
           </property>
@@ -917,11 +834,6 @@
         </property>
         <item>
          <widget class="QLabel" name="Lb_Retard">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nb de retards connus :</string>
           </property>
@@ -968,11 +880,6 @@
             <height>0</height>
            </size>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Nom :</string>
           </property>
@@ -990,11 +897,6 @@
         </item>
         <item row="1" column="0">
          <widget class="QLabel" name="Lb_Prenom">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="text">
            <string>Prénom :</string>
           </property>

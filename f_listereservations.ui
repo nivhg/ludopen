@@ -55,7 +55,7 @@
         <item row="1" column="0">
          <widget class="QCheckBox" name="ChBx_LieuxDeRetrait">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Lieu de retrait</string>
@@ -79,66 +79,24 @@
         <item row="0" column="0">
          <widget class="QCheckBox" name="ChBx_StatutJeu">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>Statut du jeu</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2">
-         <widget class="QSpinBox" name="SBx_NbreRetard">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QComboBox" name="CBx_Retards">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string>&lt;</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&gt;</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>=</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&lt;=</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>&gt;=</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="ChBx_NbreRetard">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Nbre Retard(s) </string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1" colspan="2">
          <widget class="QComboBox" name="CBx_StatutJeu">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" colspan="3">
+         <widget class="QCheckBox" name="ChBx_NonConfirme">
+          <property name="text">
+           <string>Non confirmé</string>
           </property>
          </widget>
         </item>
@@ -147,15 +105,22 @@
       <item row="0" column="4">
        <layout class="QGridLayout" name="GLay">
         <item row="0" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="HLay4">
-          <item>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
            <widget class="QCheckBox" name="ChBx_DateReservation">
             <property name="text">
              <string>Date de la réservation </string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="Lb_DateInscription">
+            <property name="text">
+             <string>à</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
            <widget class="QDateEdit" name="DtE_DateResa_Debut">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
@@ -165,14 +130,7 @@
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="Lb_DateInscription">
-            <property name="text">
-             <string>à</string>
-            </property>
-           </widget>
-          </item>
-          <item>
+          <item row="0" column="3">
            <widget class="QDateEdit" name="DtE_DateResa_Fin">
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
@@ -182,24 +140,20 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="HLay2">
-          <item>
+          <item row="1" column="0">
            <widget class="QCheckBox" name="ChBx_DateEmpruntPrevue">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="text">
              <string>Date prévue d'emprunt</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="1" column="1">
            <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Debut">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
@@ -209,17 +163,17 @@
             </property>
            </widget>
           </item>
-          <item>
+          <item row="1" column="2">
            <widget class="QLabel" name="Lb_DateNaissance">
             <property name="text">
              <string>à</string>
             </property>
            </widget>
           </item>
-          <item>
+          <item row="1" column="3">
            <widget class="QDateEdit" name="DtE_DateEmpruntPrevue_Fin">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="displayFormat">
              <string>dd/MM/yyyy</string>
@@ -231,43 +185,7 @@
           </item>
          </layout>
         </item>
-        <item row="2" column="0" colspan="2">
-         <layout class="QHBoxLayout" name="HLay3">
-          <item>
-           <widget class="QCheckBox" name="ChBx_Cotisation">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Etat de la cotisation      </string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="CBx_Cotisation">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <item>
-             <property name="text">
-              <string>Expirée</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Expire dans 2 semaine</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>Expire dans un mois</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item row="4" column="0">
+        <item row="2" column="0">
          <layout class="QHBoxLayout" name="HLay">
           <item>
            <widget class="QPushButton" name="Bt_Deselection">
@@ -285,7 +203,7 @@
           </item>
          </layout>
         </item>
-        <item row="3" column="0">
+        <item row="1" column="0">
          <widget class="QPushButton" name="Bt_RAZ">
           <property name="enabled">
            <bool>true</bool>
@@ -299,10 +217,10 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
+        <item row="2" column="1">
          <widget class="QPushButton" name="Bt_Exporter">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="maximumSize">
            <size>
@@ -345,7 +263,7 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="2">
+   <item row="4" column="2">
     <widget class="QCommandLinkButton" name="Bt_SupprimerListe">
      <property name="text">
       <string>Supprimer les réservations sélectionnées</string>
@@ -353,32 +271,6 @@
      <property name="icon">
       <iconset resource="ImagesIcones.qrc">
        <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="Lb_Resultat">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="Lb_NombreResultat">
-     <property name="minimumSize">
-      <size>
-       <width>250</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>130</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Nombre de réservations répondant à vos critères :</string>
      </property>
     </widget>
    </item>
@@ -409,6 +301,35 @@
       <bool>false</bool>
      </attribute>
     </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="Lb_Resultat">
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="Lb_NombreResultat">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>130</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Nombre de réservations répondant à vos critères :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QLineEdit" name="Le_SQL"/>
    </item>
   </layout>
  </widget>

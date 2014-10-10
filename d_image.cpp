@@ -65,7 +65,7 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
 
         // Récupère le chemin de la clé privée de la machine
         QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-        sCheminClePrivee=FichierDeConfig.value("BaseDeDonnees/CheminClePrivee", "config").toString();
+        sCheminClePrivee=FichierDeConfig.value("Autres/CheminClePrivee", "config").toString();
         uploader = new SecureFileUploader(this);
         // Connexion de l'évenement de fin d'opération sur le serveur
         connect( uploader, SIGNAL( SignalOperationFini(bool) ), this, SLOT( slot_OperationFini(bool) ) ) ;

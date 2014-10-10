@@ -91,6 +91,10 @@ private slots:
 
     void on_TbW_ListeReservations_doubleClicked(const QModelIndex &index);
 
+    void on_CBx_LieuxDeRetrait_activated(int index);
+
+    void on_ChBx_NonConfirme_clicked();
+
 private:
     Ui::F_ListeReservations *ui;
     // Modèle pour l'affichage et le tri du tableau des réservations

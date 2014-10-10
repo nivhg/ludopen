@@ -264,7 +264,7 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_Port->setText(FichierDeConfig.value("BaseDeDonnees/Port", "config").toString());
     ui->CBx_LieuOrdi->setCurrentIndex(FichierDeConfig.value("Autres/IdLieux", "config").toInt() - 1);
     ui->LE_ClePrivee->setText(FichierDeConfig.value("Autres/CheminClePrivee", "config").toString());
-
+    ui->SBx_TaillePolice->setValue(FichierDeConfig.value("Autres/TaillePolice", "config").toInt());
 
     RequeteDemarrage.exec("SELECT Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,Email,SiteWeb,"
                           "JeuxAutorises,UniteLocation,JourAvantMail,JourRetard,CheminPhotosJeux,"
@@ -622,6 +622,7 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
         FichierDeConfig.setValue("IdLieux", RequeteCombo.value(0).toInt());
         FichierDeConfig.setValue("NomLieux", RequeteCombo.value(1).toString());
         FichierDeConfig.setValue("CheminClePrivee", ui->LE_ClePrivee->text());
+        FichierDeConfig.setValue("TaillePolice", ui->SBx_TaillePolice->value());
         FichierDeConfig.endGroup();
         // TO DO Ecrire ici tout ce qui doit aller dans le fichier ini
         // string Qt::md5 ( data )

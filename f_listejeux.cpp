@@ -23,7 +23,7 @@
 // EN-TETES UNIQUEMENT UTILISÉS DANS CE FICHIER ---------------------------------
 #include "f_listejeux.h"
 #include "ui_f_listejeux.h"
-
+#include "fonctions_globale.h"
 
 /**
  * @brief Constructeur de la classe f_listejeux
@@ -58,7 +58,8 @@ F_ListeJeux::F_ListeJeux(QWidget *parent) :
     this->ModelJeu->setHorizontalHeaderItem(4, new QStandardItem("Nbr Joueurs Max"));
     this->ModelJeu->setHorizontalHeaderItem(5, new QStandardItem("Age Min"));
     this->ModelJeu->setHorizontalHeaderItem(6, new QStandardItem("Age Max"));
-    this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Date Acquisition"));
+    this->ModelJeu->setHorizontalHeaderItem(7, new QStandardItem("Emplacement"));
+    this->ModelJeu->setHorizontalHeaderItem(8, new QStandardItem("Date Acquisition"));
     //impose une taille aux colones
     ui->TbV_Recherche->setColumnWidth(0,50);
     ui->TbV_Recherche->setColumnWidth(1,200);
@@ -90,40 +91,55 @@ F_ListeJeux::~F_ListeJeux()
 
 void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
 {
-    int NumeroLigne (0);
     QString NomJeu=arg1;
 
     if(NomJeu.size()>= 2)
     {
         NomJeu="%"+NomJeu+"%";
         QSqlQuery RequeteRechercheJeu;
-        NumeroLigne=0;
 
-        RequeteRechercheJeu.prepare("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, DateAchat FROM jeux WHERE NomJeu LIKE (:NomJeu)");
+        RequeteRechercheJeu.prepare("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, "
+                  "NbrJoueurMax, AgeMin, AgeMax, DateAchat,Nom FROM jeux,emplacement WHERE "
+                  "Emplacement_IdEmplacement=IdEmplacement AND NomJeu LIKE (:NomJeu)");
         RequeteRechercheJeu.bindValue(":NomJeu",NomJeu);
         RequeteRechercheJeu.exec();
-
-        //On vide le modèle
-        this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
-
-        //Tant qu'il y a des jeux dans la table jeux,
-        while(RequeteRechercheJeu.next())
-        {
-            //on ajoute une nouvelle ligne du table view
-            this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(RequeteRechercheJeu.value(3).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteRechercheJeu.value(4).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteRechercheJeu.value(5).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteRechercheJeu.value(6).toString() ));
-            this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toDate().toString( "dd-MM-yyyy" ) ));
-            NumeroLigne++;
-         }
-        ui->Lb_Resultat->setNum( NumeroLigne ) ;
+        ActualiserModele(RequeteRechercheJeu);
     }
 
     //RecupererContenuIndex() ;
+}
+
+void F_ListeJeux::ActualiserModele(QSqlQuery Requete)
+{
+    int NumeroLigne=0;
+    //On vide le modèle
+    this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
+
+    //Tant qu'il y a des jeux dans la table jeux,
+    while(Requete.next())
+    {
+        //on ajoute une nouvelle ligne du table view
+        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"CodeJeu").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"NomJeu").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"TypeJeux_Classification").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"NbrJoueurMin").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"NbrJoueurMax").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"AgeMin").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"AgeMax").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"Nom").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 8, new QStandardItem(
+                                ObtenirValeurParNom(Requete,"DateAchat").toDate().toString( "dd-MM-yyyy" ) ));
+        NumeroLigne++;
+     }
+    ui->Lb_Resultat->setNum( NumeroLigne ) ;
 }
 
 /**
@@ -138,7 +154,7 @@ void F_ListeJeux::RecupererContenuIndex()
     QSqlQuery RequeteFiltreJeux ;
     FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin,"
             "NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux,"
-            "TypeJeux_Classification, NomJeu, CodeJeu FROM jeux ";
+            "TypeJeux_Classification, NomJeu, CodeJeu, Nom FROM jeux,emplacement ";
 
     if(ui->CBx_DateAcquisition->currentIndex() != 0)
     {
@@ -279,10 +295,19 @@ void F_ListeJeux::RecupererContenuIndex()
         ListeJeux += " \"%"+ui->LE_Nom->text()+"%\"" ;
         PremierCritere = true ;
     }
-
+    if(ui->CBx_Emplacement->currentText() != "")
+    {
+        if(PremierCritere == true)
+        {
+            ListeJeux += " AND " ;
+        }
+        ListeJeux += " Emplacement_IdEmplacement=" +
+                ui->CBx_Emplacement->itemData(ui->CBx_Emplacement->currentIndex()).toString();
+        PremierCritere = true ;
+    }
     if(PremierCritere == true)
     {
-        FiltreJeux += "WHERE " ;
+        FiltreJeux += "WHERE Emplacement_IdEmplacement=IdEmplacement AND " ;
     }
     
     ListeJeux += " GROUP BY NomJeu " ;
@@ -294,26 +319,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     ui->LE_sql->setText(FiltreJeux);
     
-    int NumeroLigne (0);
-
-    //On vide le modèle
-    this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
-
-    //Tant qu'il y a des jeux dans la table jeux,
-    while(RequeteFiltreJeux.next())
-    {
-        //on ajoute une nouvelle ligne du table view
-        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteFiltreJeux.value(13).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteFiltreJeux.value(12).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteFiltreJeux.value(11).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(RequeteFiltreJeux.value(5).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteFiltreJeux.value(6).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteFiltreJeux.value(7).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteFiltreJeux.value(8).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteFiltreJeux.value(0).toDate().toString( "dd-MM-yyyy" ) ));
-        NumeroLigne++;
-     }
-     ui->Lb_Resultat->setNum( NumeroLigne ) ;
+    ActualiserModele(RequeteFiltreJeux);
 }
 
 /**
@@ -433,6 +439,16 @@ void F_ListeJeux::on_CBx_MotCle3_activated(int index)
     RecupererContenuIndex() ;
 }
 
+/**
+ * @brief Méthode qui récupère le contenu de l'index lors de la  modification du contenu du CBx_Emplacement
+ *
+ * @param index
+ */
+void F_ListeJeux::on_CBx_Emplacement_activated(int index)
+{
+    RecupererContenuIndex() ;
+}
+
 void F_ListeJeux::on_Bt_ExporterListe_clicked()
 {
     int nNombreColonne (0);
@@ -504,6 +520,7 @@ void F_ListeJeux::RAZCriteres()
     ui->CBx_MotCle3->clear();
     ui->CBx_PrixLoc->clear();
     ui->CBx_Statut->clear();
+    ui->CBx_Emplacement->clear();
 
     // Mettre le titre pour chaque liste déroulante
     ui->CBx_AgeMin->addItem("Age mini");
@@ -518,6 +535,7 @@ void F_ListeJeux::RAZCriteres()
     ui->CBx_MotCle3->addItem("Mot clé 3");
     ui->CBx_PrixLoc->addItem("Prix location");
     ui->CBx_Statut->addItem("Statut");
+    ui->CBx_Emplacement->addItem("Emplacement");
 
     ////////////////////////////////////
     //////// Remplir EtatJeu ///////////
@@ -682,32 +700,29 @@ void F_ListeJeux::RAZCriteres()
         QString PrixLoc = (RequetePrixLoc.value(0).toString()) ;
         ui->CBx_PrixLoc->addItem(PrixLoc);
     }
+
+    ////////////////////////////////////
+    ///////// Emplacement /////////////
+    //////////////////////////////////
+    QSqlQuery RequeteEmplacement ;
+
+    RequeteEmplacement.exec("SELECT IdEmplacement,Nom FROM emplacement ORDER BY Nom") ;
+    i=1;
+    while(RequeteEmplacement.next())
+    {
+        QString Emplacement = ObtenirValeurParNom(RequeteEmplacement,"Nom").toString();
+        ui->CBx_Emplacement->addItem(Emplacement);
+        ui->CBx_Emplacement->setItemData(i++,ObtenirValeurParNom(RequeteEmplacement,"IdEmplacement").toString());
+    }
+
     ///////////////////////////////////////////////////
     //     REMPLIR LE TABLEAU AVEC TOUS LES JEUX     //
     ///////////////////////////////////////////////////
     QSqlQuery RequeteRechercheJeu;
-    int NumeroLigne =0;
 
-    RequeteRechercheJeu.exec("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, DateAchat FROM jeux ORDER BY NomJeu");
+    RequeteRechercheJeu.exec("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, NbrJoueurMax,"
+                             "AgeMin, AgeMax, DateAchat, Nom FROM jeux,emplacement WHERE "
+                             "Emplacement_IdEmplacement=IdEmplacement ORDER BY NomJeu");
 
-    //On vide le modèle
-    this->ModelJeu->removeRows(0,this->ModelJeu->rowCount());
-
-    //Tant qu'il y a des jeux dans la table jeux,
-    while(RequeteRechercheJeu.next())
-    {
-        //on ajoute une nouvelle ligne du table view
-        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 3, new QStandardItem(RequeteRechercheJeu.value(3).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 4, new QStandardItem(RequeteRechercheJeu.value(4).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 5, new QStandardItem(RequeteRechercheJeu.value(5).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(RequeteRechercheJeu.value(6).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(RequeteRechercheJeu.value(7).toDate().toString( "dd-MM-yyyy" ) ));
-        NumeroLigne++;
-    }
-
-    ui->Lb_Resultat->setNum( NumeroLigne ) ;
-    //qDebug()<<"F_ListeJeux::RAZCriteres() - Fin";
+    ActualiserModele(RequeteRechercheJeu);
 }

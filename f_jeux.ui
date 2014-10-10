@@ -220,11 +220,6 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_code">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Code :</string>
            </property>
@@ -240,13 +235,6 @@
              <width>110</width>
              <height>16777215</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
            </property>
            <property name="text">
             <string>Classification :</string>
@@ -309,12 +297,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <stylestrategy>PreferDefault</stylestrategy>
-            </font>
-           </property>
            <property name="text">
             <string>Nom : </string>
            </property>
@@ -334,13 +316,6 @@
         <layout class="QGridLayout" name="gridLayout_7">
          <item row="0" column="0">
           <widget class="QLabel" name="label_createur">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
            <property name="text">
             <string>Créateur :</string>
            </property>
@@ -358,13 +333,6 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_editeur">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
            <property name="text">
             <string>Éditeur :</string>
            </property>
@@ -413,11 +381,6 @@
          </property>
          <item row="2" column="0">
           <widget class="QLabel" name="label_age">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Âge maxi :</string>
            </property>
@@ -433,11 +396,6 @@
              <width>16777215</width>
              <height>16777215</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
            </property>
            <property name="text">
             <string>Âge mini :</string>
@@ -467,11 +425,6 @@
              <width>16777215</width>
              <height>16777215</height>
             </size>
-           </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
            </property>
            <property name="text">
             <string>Nb joueurs mini :</string>
@@ -534,11 +487,6 @@
              <height>16777215</height>
             </size>
            </property>
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-            </font>
-           </property>
            <property name="text">
             <string>Nb joueurs maxi :</string>
            </property>
@@ -559,11 +507,6 @@
       </item>
       <item row="8" column="0">
        <widget class="QLabel" name="label_3">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
-        </property>
         <property name="text">
          <string>Remarques sur ce jeu :</string>
         </property>
@@ -667,13 +610,6 @@
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_statut">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
            <property name="text">
             <string>Statut du jeu :</string>
            </property>
@@ -681,13 +617,6 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_etat">
-           <property name="font">
-            <font>
-             <pointsize>10</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
-           </property>
            <property name="text">
             <string>État du jeu :</string>
            </property>
@@ -726,11 +655,6 @@
           <width>16777215</width>
           <height>100</height>
          </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-         </font>
         </property>
         <property name="title">
          <string>Emplacement dans la ludothèque :</string>
