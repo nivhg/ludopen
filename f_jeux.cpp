@@ -116,14 +116,16 @@ void F_Jeux::on_Bt_Reserver_clicked()
 
     if(RequeteJeu.size()==0)
     {
-        QMessageBox::information(this,"Réservation impossible !","Ce jeu n'existe pas\nSélectionnez un jeu valide","Ok");
+        QMessageBox::information(this,"Réservation impossible !","Ce jeu n'existe pas\n"
+                                 "Sélectionnez un jeu valide","Ok");
         return;
     }
     else
     {
-       //Savoir si le jeux est déja réservé
+       //Savoir si le jeu est déja réservé
        QSqlQuery RequeteResa;
-       RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
+       RequeteResa.prepare("SELECT idReservation,ConfirmationReservation FROM reservation "
+                           "WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
        RequeteResa.bindValue(":IdDuJeu",RequeteJeu.value(0));
 
        if (!RequeteResa.exec())
@@ -134,7 +136,15 @@ void F_Jeux::on_Bt_Reserver_clicked()
        {
           if (RequeteResa.size()!=0)
           {
-             QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
+              if(RequeteResa.value(1).toInt()==1)
+              {
+                QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
+              }
+              else
+              {
+                QMessageBox::information(this,"Réservation impossible !",
+                                         "Ce jeu est en attente de confirmation de réservation.","Ok");
+              }
           }
           else
           {

@@ -259,7 +259,8 @@ void F_Reservation::AfficherJeuxEnEmprunt()
    unsigned int NumeroLigne =0;
    RequeteJeuEmprunte.prepare("SELECT DateEmprunt,DateRetourPrevu,NomJeu,CodeJeu "
                               "FROM emprunts,jeux "
-                              "WHERE DateRetour IS NULL AND Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux" );
+                              "WHERE DateRetour IS NULL AND Membres_IdMembre=:IdDuMembre AND "
+                              "IdJeux=Jeux_IdJeux" );
    RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
    if(!RequeteJeuEmprunte.exec())
    {
@@ -326,9 +327,11 @@ void F_Reservation::AfficherJeuxReserve()
 
     QSqlQuery RequeteJeuReserve;
     unsigned int NumeroLigne =0;
-    RequeteJeuReserve.prepare("SELECT DateReservation,DatePrevuEmprunt,DatePrevuRetour,NomLieux,NomJeu,CodeJeu "
+    RequeteJeuReserve.prepare("SELECT DateReservation,DatePrevuEmprunt,DatePrevuRetour,NomLieux,NomJeu,"
+                              "CodeJeu "
                               "FROM reservation,lieux,jeux "
-                              "WHERE JeuEmprunte=1 AND Membres_IdMembre=:IdMembre AND IdLieux=Lieux_IdLieuxReservation AND IdJeux=Jeux_IdJeux" );
+                              "WHERE JeuEmprunte=1 AND Membres_IdMembre=:IdMembre AND "
+                              "IdLieux=Lieux_IdLieuxReservation AND IdJeux=Jeux_IdJeux" );
 
     RequeteJeuReserve.bindValue(":IdMembre",IdDuMembre);
 
@@ -1043,9 +1046,10 @@ if((MembreActif)!=(""))
     //Prépare la requête
     QSqlQuery RequeteReservation;
     RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
-                               "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,Lieux_IdLieuxRetrait) "
+                               "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,"
+                               "Lieux_IdLieuxRetrait,ConfirmationReservation) "
                                "values (:IdLieu,:IdMembre,:IdJeu,:DateReservation,:DateEmprunt,:DateRetour,"
-                               ":IdLieuRetrait)");
+                               ":IdLieuRetrait,1)");
     RequeteReservation.bindValue(":IdLieu",Lieu);
     RequeteReservation.bindValue(":IdMembre",RequeteIdMembre.value(0));
     RequeteReservation.bindValue(":IdJeu",RequeteIdJeu.value(0));

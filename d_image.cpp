@@ -34,7 +34,7 @@
  *  @brief Constructeur de la classe.
  *
  *  @param parent
- *  @param filename : nom et chemin du fichier à afficher
+ *  @param lb_img : Lb_Image du parent
  */
 D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
     QDialog(parent),

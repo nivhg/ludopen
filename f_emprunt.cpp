@@ -1375,7 +1375,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         //Vérifier si ce jeu est réservé
         //Recherche de l'id du membre qui a réservé le jeu
         QSqlQuery RequeteJeuReserve;
-        RequeteJeuReserve.prepare("SELECT Membres_IdMembre FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
+        RequeteJeuReserve.prepare("SELECT Membres_IdMembre,ConfirmationReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
         RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
         if (!RequeteJeuReserve.exec())
         {
@@ -1388,8 +1388,21 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
             //si l'id du membre actuellement sélectionné n'est le même que celui du réserveur,
             if ( RequeteJeuReserve.value(0) != IdDuMembre )
             {
+                QString sMessage;
+                if(RequeteJeuReserve.value(1).toInt()==1)
+                {
+                    sMessage="Ce jeu "+ui->Le_NomJeuARemplir->text()
+                            +" est réservé et ne peut sortir de la ludothèque.";
+                }
+                else
+                {
+                    sMessage="Ce jeu "+ui->Le_NomJeuARemplir->text()+
+                            " est en attente de confirmation de réservation.\n"+
+                            "Soit la personne validera la réservation, "+
+                            "soit celle-ci sera automatiquement supprimée.";
+                }
                 // Le jeu est réservé mais pas par l'adhérent sélectionné actuellement
-                QMessageBox::warning(this,"Jeu réservé !","Ce jeu "+ui->Lb_NomJeu->text()+"est réservé et ne peut sortir de la ludothèque.","Ok");
+                QMessageBox::warning(this,"Jeu réservé !",sMessage,"Ok");
                 return ;  // Mettre fin à cette fonction pour empêcher l'emprunt pour ce jeu
             }
             else

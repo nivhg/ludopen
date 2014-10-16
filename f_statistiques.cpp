@@ -734,7 +734,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmprunt()
     int nNombreLigne (0);
     int nDetail (0);
 
-    Statistique.prepare("SELECT Jeux_IdJeux FROM emprunts WHERE DateEmprunt>=:DateDebut AND DateEmprunt<=:DateFin GROUP BY Jeux_IdJeux");
+    Statistique.prepare("SELECT Jeux_IdJeux,CodeJeu FROM emprunts,jeux WHERE IdJeux=Jeux_IdJeux AND DateEmprunt>=:DateDebut AND DateEmprunt<=:DateFin GROUP BY Jeux_IdJeux");
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
@@ -760,7 +760,7 @@ void F_Statistiques::EffectuerRequeteJeuxEmprunt()
         }
 
         sDetail = QString::number(nDetail);
-        this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
+        this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(1).toString()));
         this->TbStatModele->setItem(nNombreLigne, 2, new QStandardItem(sDetail));
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;

@@ -295,7 +295,7 @@ void F_ListeJeux::RecupererContenuIndex()
         ListeJeux += " \"%"+ui->LE_Nom->text()+"%\"" ;
         PremierCritere = true ;
     }
-    if(ui->CBx_Emplacement->currentText() != "")
+    if(ui->CBx_Emplacement->currentIndex() != 0)
     {
         if(PremierCritere == true)
         {

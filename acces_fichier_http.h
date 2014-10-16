@@ -16,23 +16,32 @@ class AccesFichierParHTTP: public QNetworkAccessManager
 {
   Q_OBJECT
 public:
+    /**
+     *  @brief Constructeur de la classe.
+     */
     AccesFichierParHTTP( QWidget * parent );
+    /**
+     *  @brief Destructeur de la classe.
+     */
     ~AccesFichierParHTTP();
     /**
-     *  @brief Vérifie l'existence d'une image sur un système de fichier ou en HTTP
+     *  @brief Lance le processus de téléchargement
      */
-    bool FichierEtExtensionsExiste( QStringList *returnfile, QString URLorPath, QString file, QString* TypeImage, QStringList extlist);
-
-    /**
-     *  @brief Vérifie l'existence d'un fichier en fonction de l'extention sur un système de fichier ou en HTTP
-     *          La fonction va rechercher si le fichier existe avec l'extention en minuscule et majuscule
-     */
-    bool FichierExiste( QStringList *returnfile, QString URLorPath, QString file, QString ext, QString* TypeImage);
     void LancerTelechargements( QString sCheminImagePref,QString code_jeu,QStringList ListeExtension);
+    /**
+     *  @brief Annule le processus de téléchargement
+     */
     void AnnulerTelechargements();
 public slots:
+    /**
+     *  @brief Traitement des téléchargements : slot de fin de téléchargement et
+     *         lances le prochain téléchargement
+     */
     void SlotTelechargementFini();
 private:
+    /**
+     *  @brief Passe au prochain fichier à télécharger
+     */
     void PasserFichierSuivant(bool FichierTrouver);
     QNetworkAccessManager *manager;
     QStringList ListeExtension;

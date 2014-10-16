@@ -2044,7 +2044,10 @@ void F_Membres::on_TbW_Recherche_doubleClicked(const QModelIndex &index)
  */
 void F_Membres::on_TbW_Recherche_clicked(const QModelIndex &index)
 {
-   slot_AfficherMembre(this->VecteurRechercheMembres[index.row()].id);
+    if(this->VecteurRechercheMembres.count()!=0)
+    {
+        slot_AfficherMembre(this->VecteurRechercheMembres[index.row()].id);
+    }
 }
 
 /** Recherche les membres correspondant au champs chaque fois que le champs est modifié

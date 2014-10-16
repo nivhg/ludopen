@@ -52,9 +52,10 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Retour prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Lieu de retrait" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Confirmé?" ) ) ;
 
     // Règle la largeur des colonnes
-    ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
+    /*ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
     ui->TbW_ListeReservations->setColumnWidth( 1, 60 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 2, 200 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 3, 100 ) ;
@@ -64,7 +65,9 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->TbW_ListeReservations->setColumnWidth( 7, 120 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 8, 120 ) ;
     ui->TbW_ListeReservations->setColumnWidth( 9, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 9, 120 ) ;
+    ui->TbW_ListeReservations->setColumnWidth( 11, 120 ) ;
+    ui->TbW_ListeReservations->setColumnWidth( 12, 60 ) ;*/
+    ui->TbW_ListeReservations->resizeColumnsToContents();
 
     // Permettre le tri des colonnes
     ui->TbW_ListeReservations->setSortingEnabled(true);
@@ -86,7 +89,6 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->ChBx_StatutJeu->setVisible(false) ;
     ui->Lb_DateInscription->setVisible(false);
     ui->Lb_DateNaissance->setVisible(false) ;
-    ui->ChBx_NonConfirme->setVisible(false);
     ui->Bt_Exporter->setVisible(false);
 }
 
@@ -289,7 +291,7 @@ bool F_ListeReservations::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " DatePrevuRetour<='" + ui->DtE_DateEmpruntPrevue_Fin->dateTime().toString("yyyy-MM-dd") + "' AND " ;
     }
 
-    //sRequeteWHERE = sRequeteWHERE + " ConfirmationReservation="+QString::number(ui->ChBx_NonConfirme->isChecked())+" AND ";
+    sRequeteWHERE = sRequeteWHERE + " ConfirmationReservation="+QString::number(!ui->ChBx_NonConfirme->isChecked())+" AND ";
 
     // Vire le dernier mot AND dans la requête WHERE ou le WHERE si requête sans WHERE nécessaire
     sRequeteWHERE.remove( sRequeteWHERE.size()-5 , 5) ;
@@ -308,7 +310,6 @@ bool F_ListeReservations::AffichageListe()
         this->VecteurListeReservations.clear() ;
         // Vidage de la liste à l'écran
         this->ModeleReservations.removeRows(0,this->ModeleReservations.rowCount());
-
         //Remplissage du tableau avec les informations issues des tables jeux et membres
         while( RequeteDesReservations.next() )
         {
@@ -348,9 +349,10 @@ bool F_ListeReservations::AffichageListe()
                  ObtenirValeurParNom(RequeteDesReservations,"NomReservation").toString() ) ) ;
             ModeleReservations.setItem( i, 10, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
-
+            ModeleReservations.setItem( i, 11, new QStandardItem(
+                 (ObtenirValeurParNom(RequeteDesReservations,"ConfirmationReservation").toString()=="1")?"OUI":"NON") );
             i++ ;
-        }        
+        }
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {

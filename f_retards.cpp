@@ -56,10 +56,11 @@ F_Retards::F_Retards(QWidget *parent) :
    QStandardItemModel *Model = new QStandardItemModel(2, 1);
 
    // Liste des champs de la combobox d'export
-   QString* sChamps = new QString[13] { "Nom", "Prénom", "Nb Email envoyé", "Jours de retard", "Amende",
+   QString* sChamps = new QString[12] { "", "", "Nom", "Prénom", "Nb Email envoyé", "Jours de retard", "Amende",
            "Ville", "Email", "Tél. Fixe", "Tél. Mobile", "Jeux en retard" };
    // Ajout des checkboxes dans la combobox d'export
-   for (int r = 0; r < 11; ++r)
+   int i=0;
+   for (int r = 0; r < 12; ++r)
        {
            if(sChamps[r]!="")
            {
@@ -70,7 +71,7 @@ F_Retards::F_Retards(QWidget *parent) :
                item->setData(Qt::Unchecked, Qt::CheckStateRole);
                item->setCheckState(Qt::Checked);
 
-               Model->setItem(r, 0, item);
+               Model->setItem(i++, 0, item);
                this->Items.push_back(item);
            }
            // Création des caractéristiques du tableau : Nombre de colonnes, Nom des colonnes

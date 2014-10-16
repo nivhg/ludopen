@@ -16,7 +16,6 @@
  *  @brief Constructeur de la classe.
  *
  *  @param parent
- *  @param fname : nom et chemin du fichier à afficher
  */
 AccesFichierParHTTP::AccesFichierParHTTP( QWidget * parent )
 {
@@ -30,17 +29,14 @@ AccesFichierParHTTP::~AccesFichierParHTTP()
 
 
 /**
- *  @brief Vérifie l'existence d'un fichier à partir d'une liste d'extension sur un système de fichier ou en HTTP
+ *  @brief Lance le processus de téléchargement
  *
- *  @param url :
- *          en entrée : chemin ou URL de l'image à rechercher
- *          en sortie : chemin du fichier trouvé. Dans le cas d'une image HTTP :
- *              chemin et nom du fichier temporaire où a été téléchargé l'image
- *  @param ext : Extention du fichier à rechercher.
- *  @param TypeImage : Type de fichier image trouvé (JPG, BMP...)
- *  @param extlist : Liste des extensions à vérifier
+ *  @param sCheminImagePref : Chemin ou URL des fichiers à télécharger
+ *  @param code_jeu : Code du jeu correspondant aux fichiers à télécharger
+ *  @param ListeExtension : Liste des extentions des fichiers à traiter
  */
-void AccesFichierParHTTP::LancerTelechargements( QString sCheminImagePref,QString code_jeu,QStringList ListeExtension)
+void AccesFichierParHTTP::LancerTelechargements( QString sCheminImagePref,QString code_jeu,
+                                                 QStringList ListeExtension)
 {
     this->sCheminImagePref=sCheminImagePref;
     this->NomFichier=code_jeu;
@@ -58,6 +54,9 @@ void AccesFichierParHTTP::LancerTelechargements( QString sCheminImagePref,QStrin
     SlotTelechargementFini();
 }
 
+/**
+ *  @brief Annule le processus de téléchargement
+ */
 void AccesFichierParHTTP::AnnulerTelechargements()
 {
     IndexExtension=ListeExtension.count();
@@ -65,6 +64,10 @@ void AccesFichierParHTTP::AnnulerTelechargements()
     emit SignalAnnulerTelechargement();
 }
 
+/**
+ *  @brief Traitement des téléchargements : slot de fin de téléchargement et
+ *         lances le prochain téléchargement
+ */
 void AccesFichierParHTTP::SlotTelechargementFini()
 {
     // Si il ne s'agit pas du premier téléchargement
@@ -72,10 +75,12 @@ void AccesFichierParHTTP::SlotTelechargementFini()
     {
         QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
         QFile tempfile;
+        // Nom du fichier venant d'être téléchargé
         QString NomFichier=reply->request().url().path().split("/").last();
         QFileInfo FichierInfo(NomFichier);
+        // Extention du fichier venant d'être téléchargé
         QString extension=FichierInfo.suffix();
-
+        int err=reply->error();
         switch (reply->error())
         {
             case QNetworkReply::NoError:
@@ -88,6 +93,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
                 tempfile.close();
                 delete reply;
                 emit SignalFichierTelecharger(tempfile.fileName());
+                // On a trouvé l'extension du fichier, on passe au fichier suivant
                 PasserFichierSuivant(true);
                 return;
                 break;
@@ -97,20 +103,26 @@ void AccesFichierParHTTP::SlotTelechargementFini()
                 //GestionTelechargement(tempfile.fileName());
                 break;
         }
+        // Si on a fait toutes les extensions, on passe au fichier suivant si il y en a
         if(IndexExtension==ListeExtension.count())
         {
             PasserFichierSuivant(false);
             return;
         }
     }
+    // URL du prochain téléchargement
     QString URL=sCheminImagePref+NomFichier+"."+ListeExtension.at(IndexExtension++);
     QNetworkReply *newreply= manager->get(QNetworkRequest(QUrl(URL)));
     QObject::connect(newreply, SIGNAL(finished()),this, SLOT(SlotTelechargementFini()));
     QObject::connect(this, SIGNAL(SignalAnnulerTelechargement()),newreply, SLOT(abort()));
-    //qDebug()<<"URL:"<<URL;
     return;
 }
 
+/**
+ *  @brief Passe au prochain fichier à télécharger
+ *
+ *  @param FichierTrouve : Booléen qui indique si le fichier vient d'être trouvé ou pas
+ */
 void AccesFichierParHTTP::PasserFichierSuivant(bool FichierTrouver)
 {
     qDebug()<<"AccesFichierParHTTP::PasserFichierSuivant FichierTrouver : "<<FichierTrouver;
@@ -118,7 +130,8 @@ void AccesFichierParHTTP::PasserFichierSuivant(bool FichierTrouver)
     {
         return;
     }
-    // Si il ne s'agit pas du premier fichier et qu'aucun fichier n'a été trouvé, on sort de la fonction
+    // Si il ne s'agit pas du premier fichier et qu'aucun fichier n'a été trouvé,
+    // on sort de la fonction
     if(NomFichier.indexOf("-")!=-1 && !FichierTrouver)
     {
         emit SignalTelechargementsFini();
