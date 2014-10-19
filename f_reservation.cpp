@@ -10,6 +10,7 @@
  *
  *  Cette classe permet de réserver un jeu pour un membre
  *
+ * test
  */
 
 #include <QtSql>
