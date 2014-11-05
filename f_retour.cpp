@@ -146,6 +146,9 @@ F_Retour::F_Retour(QWidget *parent) :
    ui->TbV_JeuxReserve->setColumnWidth(1,125);
 
    ui->DtE_Prolonger->setDisplayFormat("dd-MM-yyyy");
+
+   ui->LE_Caution->setVisible(false);
+   ui->Lb_Caution->setVisible(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

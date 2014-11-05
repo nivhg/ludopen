@@ -2676,29 +2676,14 @@
         <item row="1" column="0">
          <widget class="QLabel" name="Lb_Associes_2">
           <property name="text">
-           <string>Contacts :</string>
+           <string>Membres associés :</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="0">
+        <item row="3" column="0" colspan="2">
          <widget class="QPushButton" name="Bt_ValiderAssocies">
           <property name="text">
-           <string>Valider contacts</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QPushButton" name="Bt_AnnulerAssocies">
-          <property name="text">
-           <string>Annuler</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+           <string>Fermer</string>
           </property>
          </widget>
         </item>

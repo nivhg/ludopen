@@ -531,13 +531,21 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     unsigned int nIdPreferences;
     RequeteVerification.next();
     nIdPreferences = RequeteVerification.value(0).toInt();
-    if(ui->LE_CheminPhotosJeux->text().at(ui->LE_CheminPhotosJeux->text().count()-1)!=QDir::separator())
+    if(ui->LE_CheminPhotosJeux->text().at(ui->LE_CheminPhotosJeux->text().count()-1)!=QChar('/'))
     {
-        ui->LE_CheminPhotosJeux->setText(ui->LE_CheminPhotosJeux->text().append(QDir::separator()));
+        ui->LE_CheminPhotosJeux->setText(ui->LE_CheminPhotosJeux->text().append("/"));
     }
-    if(ui->LE_CheminRegle->text().at(ui->LE_CheminRegle->text().count()-1)!=QDir::separator())
+    if(ui->LE_CheminRegle->text().at(ui->LE_CheminRegle->text().count()-1)!=QChar('/'))
     {
-        ui->LE_CheminRegle->setText(ui->LE_CheminRegle->text().append(QDir::separator()));
+        ui->LE_CheminRegle->setText(ui->LE_CheminRegle->text().append("/"));
+    }
+    if(ui->LE_CheminReglesServeur->text().at(ui->LE_CheminReglesServeur->text().count()-1)!=QChar('/'))
+    {
+        ui->LE_CheminReglesServeur->setText(ui->LE_CheminReglesServeur->text().append("/"));
+    }
+    if(ui->LE_CheminPhotosServeur->text().at(ui->LE_CheminPhotosServeur->text().count()-1)!=QChar('/'))
+    {
+        ui->LE_CheminPhotosServeur->setText(ui->LE_CheminPhotosServeur->text().append("/"));
     }
     if(nIdPreferences == 0)
     {
@@ -725,37 +733,6 @@ void F_Preferences::on_Bt_Connection_clicked()
     }
 }
 
-// Onglet Membre ------------------------------------------------------------
-/**
- *  @brief  Sélectionne la ligne entière du tableau titre de membre.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_MembresTitre_clicked(const QModelIndex &index)
-{
-    this->sTitreMembre = this->TbMembresTitre->index(index.row(), 0).data().toString();
-}
-
-/**
- *  @brief  Sélectionne la ligne entière du tableau type de membre.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_MembresType_clicked(const QModelIndex &index)
-{
-    this->sTypeMembre = this->TbMembresType->index(index.row(), 0).data().toString();
-}
-
-void F_Preferences::on_TbV_MembresPaiement_clicked(const QModelIndex &index)
-{
-    this->sPaiementMembre = this->TbMembresPaiement->index(index.row(), 0).data().toString();
-}
-
-void F_Preferences::on_TbV_EmpruntType_clicked(const QModelIndex &index)
-{
-    this->sTypeEmprunt = this->TbEmpruntType->index(index.row(), 0).data().toString();
-}
-
 /**
  *  @brief  Permet d'ajouter un titre d'un membre.
  *
@@ -776,7 +753,7 @@ void F_Preferences::on_Bt_ModifierMembreTitre_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT NomTitre FROM titremembre WHERE NomTitre=:NomTitre");
-    RequeteModifier.bindValue(":NomTitre", this->sTitreMembre);
+    RequeteModifier.bindValue(":NomTitre", ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -796,7 +773,7 @@ void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce titre ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM titremembre WHERE NomTitre=:NomTitre");
-        RequeteSupprimer.bindValue(":NomTitre", this->sTitreMembre);
+        RequeteSupprimer.bindValue(":NomTitre", ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -822,7 +799,7 @@ void F_Preferences::on_Bt_ModifierMembreType_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT TypeMembre FROM typemembres WHERE TypeMembre=:TypeMembre");
-    RequeteModifier.bindValue(":TypeMembre", this->sTypeMembre);
+    RequeteModifier.bindValue(":TypeMembre", ui->TbV_MembresType->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -841,7 +818,7 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type de membre ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM typemembres WHERE TypeMembre=:TypeMembre");
-        RequeteSupprimer.bindValue(":TypeMembre", this->sTypeMembre);
+        RequeteSupprimer.bindValue(":TypeMembre", ui->TbV_MembresType->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -859,7 +836,7 @@ void F_Preferences::on_Bt_ModifierMembrePaiement_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT NomPaiement FROM modepaiement WHERE NomPaiement=:NomPaiement");
-    RequeteModifier.bindValue(":NomPaiement", this->sPaiementMembre);
+    RequeteModifier.bindValue(":NomPaiement", ui->TbV_MembresPaiement->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -873,7 +850,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce paiement ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM modepaiement WHERE NomPaiement=:NomPaiement");
-        RequeteSupprimer.bindValue(":NomPaiement", this->sPaiementMembre);
+        RequeteSupprimer.bindValue(":NomPaiement", ui->TbV_MembresPaiement->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -891,7 +868,7 @@ void F_Preferences::on_Bt_ModifierEmpruntType_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT TypeEmprunt FROM typeemprunt WHERE TypeEmprunt=:TypeEmprunt");
-    RequeteModifier.bindValue(":TypeEmprunt", this->sTypeEmprunt);
+    RequeteModifier.bindValue(":TypeEmprunt", ui->TbV_EmpruntType->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -905,32 +882,11 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type d'emprunt ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM typeemprunt WHERE TypeEmprunt=:TypeEmprunt");
-        RequeteSupprimer.bindValue(":TypeEmprunt", this->sTypeEmprunt);
+        RequeteSupprimer.bindValue(":TypeEmprunt", ui->TbV_EmpruntType->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
     this->AfficherTousLesTableaux();
-}
-
-// Onglet Jeux - Partie Type. -----------------------------------------------
-/**
- *  @brief  Sélectionne la ligne entière du tableau type de jeu.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_JeuxType_clicked(const QModelIndex &index)
-{
-    this->sTypeJeux = this->TbJeuxType->index(index.row(), 0).data().toString();
-}
-
-/**
- *  @brief  Sélectionne la ligne entière du tableau état de jeu.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_JeuxEtat_clicked(const QModelIndex &index)
-{
-    this->sEtatJeux = this->TbJeuxEtat->index(index.row(), 0).data().toString();
 }
 
 /**
@@ -940,7 +896,6 @@ void F_Preferences::on_TbV_JeuxEtat_clicked(const QModelIndex &index)
  */
 void F_Preferences::on_TbV_JeuxStatut_clicked(const QModelIndex &index)
 {
-    this->sStatutJeux = this->TbJeuxStatut->index(index.row(), 0).data().toString();
     if(index.row() < 4)
     {
         ui->Bt_ModifierStatut->setEnabled(false);
@@ -951,16 +906,6 @@ void F_Preferences::on_TbV_JeuxStatut_clicked(const QModelIndex &index)
         ui->Bt_ModifierStatut->setEnabled(true);
         ui->Bt_SupprimerStatut->setEnabled(true);
     }
-}
-
-/**
- *  @brief  Sélectionne la ligne entière du tableau emplacement du jeu.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_JeuxEmplacement_clicked(const QModelIndex &index)
-{
-    this->sEmplacementJeux = this->TbJeuxEmplacement->index(index.row(), 0).data().toString();
 }
 
 /**
@@ -981,7 +926,7 @@ void F_Preferences::on_Bt_ModifierJeuxType_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT TypeJeux FROM typejeux WHERE TypeJeux=:TypeJeux");
-    RequeteModifier.bindValue(":TypeJeux", this->sTypeJeux);
+    RequeteModifier.bindValue(":TypeJeux", ui->TbV_JeuxType->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1000,7 +945,7 @@ void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type de jeu ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM typejeux WHERE TypeJeux=:TypeJeux");
-        RequeteSupprimer.bindValue(":NomTitre", this->sTypeJeux);
+        RequeteSupprimer.bindValue(":NomTitre", ui->TbV_JeuxType->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
@@ -1025,7 +970,7 @@ void F_Preferences::on_Bt_ModifierEtat_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT Etat FROM etatsjeu WHERE Etat=:Etat");
-    RequeteModifier.bindValue(":Etat", this->sEtatJeux);
+    RequeteModifier.bindValue(":Etat", ui->TbV_JeuxEtat->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1044,7 +989,7 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cet état de jeu ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM etatsjeu WHERE Etat=:Etat");
-        RequeteSupprimer.bindValue(":Etat", this->sEtatJeux);
+        RequeteSupprimer.bindValue(":Etat", ui->TbV_JeuxEtat->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
@@ -1069,7 +1014,7 @@ void F_Preferences::on_Bt_ModifierStatut_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT StatutJeu FROM statutjeux WHERE StatutJeu=:StatutJeu");
-    RequeteModifier.bindValue(":StatutJeu", this->sStatutJeux);
+    RequeteModifier.bindValue(":StatutJeu", ui->TbV_JeuxStatut->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1088,7 +1033,7 @@ void F_Preferences::on_Bt_SupprimerStatut_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce statut de jeu ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM statutjeux WHERE StatutJeu=:StatutJeu");
-        RequeteSupprimer.bindValue(":StatutJeu", this->sStatutJeux);
+        RequeteSupprimer.bindValue(":StatutJeu", ui->TbV_JeuxStatut->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
@@ -1113,7 +1058,7 @@ void F_Preferences::on_Bt_ModifierEmplacement_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT Nom FROM emplacement WHERE Nom=:Nom");
-    RequeteModifier.bindValue(":Nom", this->sEmplacementJeux);
+    RequeteModifier.bindValue(":Nom", ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1132,7 +1077,7 @@ void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette emplacement de jeu ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM emplacement WHERE Nom=:Nom");
-        RequeteSupprimer.bindValue(":StatutJeu", this->sEmplacementJeux);
+        RequeteSupprimer.bindValue(":StatutJeu", ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
@@ -1166,17 +1111,6 @@ void F_Preferences::on_Bt_ParcourirImage_clicked()
     ui->LE_CheminPhotosJeux->setText(NomCheminImage);
 }
 
-// Onglet Information Ludo. -------------------------------------------------
-/**
- *  @brief  Sélectionne la ligne entière du tableau lieu de l'info ludo.
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_InfoLieux_clicked(const QModelIndex &index)
-{
-    this->sLieuxInfoLudo = this->TbInfoLudoLieux->index(index.row(), 0).data().toString();
-}
-
 /**
  *  @brief  Permet d'ajouter un lieu de l'info ludo.
  *
@@ -1195,7 +1129,7 @@ void F_Preferences::on_Bt_ModifierLieux_clicked()
     QSqlQuery RequeteModifier;
 
     RequeteModifier.prepare("SELECT NomLieux FROM lieux WHERE NomLieux=:NomLieux");
-    RequeteModifier.bindValue(":NomLieux", this->sLieuxInfoLudo);
+    RequeteModifier.bindValue(":NomLieux", ui->TbV_InfoLieux->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1214,7 +1148,7 @@ void F_Preferences::on_Bt_SupprimerLieux_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce lieu de l'info ludo ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM lieux WHERE NomLieux=:NomLieux");
-        RequeteSupprimer.bindValue(":NomLieux", this->sLieuxInfoLudo);
+        RequeteSupprimer.bindValue(":NomLieux", ui->TbV_InfoLieux->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
     }
 
@@ -1260,7 +1194,7 @@ void F_Preferences::on_Bt_AjouterActivite_clicked()
  */
 void F_Preferences::on_Bt_ModifierActivite_clicked()
 {
-    this->pMembresActiviteAjMod->Modifier(this->sMembresActivite);
+    this->pMembresActiviteAjMod->Modifier(ui->TbV_MembresActivite->selectionModel()->selectedRows(0).first().data().toString());
 }
 
 /**
@@ -1276,17 +1210,12 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette activité ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM activite WHERE Activite=:Activite");
-        RequeteSupprimer.bindValue(":Activite", this->sMembresActivite);
+        RequeteSupprimer.bindValue(":Activite", ui->TbV_MembresActivite->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
 
     this->AfficherTousLesTableaux();
-}
-
-void F_Preferences::on_TbV_MembresActivite_clicked(const QModelIndex &index)
-{
-    this->sMembresActivite = this->TbMembresActivite->index(index.row(), 0).data().toString();
 }
 
 //---------------------------------------------------------------------------
@@ -1308,7 +1237,7 @@ void F_Preferences::on_Bt_AjouterMotCle_clicked()
  */
 void F_Preferences::on_Bt_ModifierMotCle_clicked()
 {
-    this->pJeuxMotCleAjMod->Modifier(this->sJeuxMotCle);
+    this->pJeuxMotCleAjMod->Modifier(ui->TbV_JeuxMotCle->selectionModel()->selectedRows(0).first().data().toString());
 }
 
 /**
@@ -1324,22 +1253,12 @@ void F_Preferences::on_Bt_SupprimerMotCle_clicked()
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce mot-clé ?", "Oui", "Non") == 0)
     {
         RequeteSupprimer.prepare("DELETE FROM motscles WHERE MotCle=:MotCle");
-        RequeteSupprimer.bindValue(":MotCle", this->sJeuxMotCle);
+        RequeteSupprimer.bindValue(":MotCle", ui->TbV_JeuxMotCle->selectionModel()->selectedRows(0).first().data().toString());
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
 
     this->AfficherTousLesTableaux();
-}
-
-/**
- *  @brief  Sélectionne la ligne entière du tableau Mot-clé
- *
- *  @param  index
- */
-void F_Preferences::on_TbV_JeuxMotCle_clicked(const QModelIndex &index)
-{
-    this->sJeuxMotCle = this->TbJeuxMotCle->index(index.row(), 0).data().toString();
 }
 
 void F_Preferences::on_Bt_ParcourirClePrivee_clicked()

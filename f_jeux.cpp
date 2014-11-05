@@ -77,6 +77,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     //Initialisation des variables liées à l'affichage des images
     //QCursor Souris(QPixmap(":Loupe.png"));
     lb_image->setCursor(Qt::PointingHandCursor);
+    lb_image->setMaximumSize(330,200);
     ui->gridLayout_11->addWidget(lb_image,0,3);
     // Faire défiler le tableau des jeux avec les flèches du clavier
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
@@ -134,6 +135,7 @@ void F_Jeux::on_Bt_Reserver_clicked()
        }
        else
        {
+          RequeteResa.next();
           if (RequeteResa.size()!=0)
           {
               if(RequeteResa.value(1).toInt()==1)
@@ -218,15 +220,12 @@ void F_Jeux::on_Bt_ValiderRemarques_clicked()
     RequeteValiderRemarque.bindValue(":NouvelRemarque",ui->TxE_remarques->toPlainText());
 
     //Exécute la requête
-    if (!RequeteValiderRemarque.exec())
-    {
-
-    }
+    RequeteValiderRemarque.exec();
 
     //Grise les boutons de modification de le remarque
     ui->Bt_ValiderRemarques->setEnabled(false);
     ui->Bt_AnnulerRemarques->setEnabled(false);
-    ui->TxE_remarques->setReadOnly(true);
+    //ui->TxE_remarques->setReadOnly(true);
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Clique sur le bouton AnnulerRemarques////
@@ -512,9 +511,11 @@ void F_Jeux::on_Bt_Droite_clicked()
 void F_Jeux::on_Lb_Image_clicked()
 {
     disconnect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
+    lb_image->setMaximumSize(16777215,16777215);
     QDialog *d_image = new D_Image(this,lb_image);
     d_image->showMaximized();
     d_image->exec();
+    lb_image->setMaximumSize(330,200);
     ui->gridLayout_11->addWidget(lb_image,0,3);
     connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
 }

@@ -220,7 +220,9 @@ void F_Statistiques::on_Rbt_Jour_clicked()
 void F_Statistiques::on_RBt_Mois_clicked()
 {
     this->nPeriode = 2;
+    ui->DtE_Debut->setDate(QDate(ui->DtE_Debut->date().year(),ui->DtE_Debut->date().month(),1));
     ui->DtE_Debut->setDisplayFormat("MM/yyyy");
+    ui->DtE_Fin->setDate(QDate(ui->DtE_Fin->date().year(),ui->DtE_Fin->date().month(),1));
     ui->DtE_Fin->setDisplayFormat("MM/yyyy");
 }
 
@@ -231,7 +233,9 @@ void F_Statistiques::on_RBt_Mois_clicked()
 void F_Statistiques::on_RBt_Annee_clicked()
 {
     this->nPeriode = 3;
+    ui->DtE_Debut->setDate(QDate(ui->DtE_Debut->date().year(),1,1));
     ui->DtE_Debut->setDisplayFormat("yyyy");
+    ui->DtE_Fin->setDate(QDate(ui->DtE_Fin->date().year(),1,1));
     ui->DtE_Fin->setDisplayFormat("yyyy");
 
 }
@@ -245,10 +249,26 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
 {
     QSqlQuery Statistique;
     int nNombreLigne (0);
+    QDateTime DateFin;
 
-    Statistique.prepare("SELECT Nom,Prenom,CodeMembre FROM membres WHERE DateInscription>=:DateDebut AND DateInscription<=:DateFin AND Ecarte=0 ORDER BY Nom");
+    if(ui->RBt_Mois->isChecked())
+    {
+        DateFin = ui->DtE_Fin->dateTime().addMonths(1);
+    }
+    else if(ui->RBt_Annee->isChecked())
+    {
+        DateFin = ui->DtE_Fin->dateTime().addYears(1);
+    }
+    else
+    {
+        DateFin = ui->DtE_Fin->dateTime();
+    }
+    QString test=DateFin.toString("dd-MM-yyyy");
+    Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+                    "DateSouscription >= :DateDebut AND DateSouscription < :DateFin AND Ecarte=0 AND "
+                    "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre ORDER BY Nom");
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
-    Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
+    Statistique.bindValue(":DateFin", DateFin);
     Statistique.exec();
     ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
@@ -256,7 +276,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
         this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
         this->TbStatModele->setItem(nNombreLigne, 1, new QStandardItem(Statistique.value(1).toString()));
         this->TbStatModele->setItem(nNombreLigne, 2, new QStandardItem(Statistique.value(2).toString()));
-        nNombreLigne = nNombreLigne +1;
+        nNombreLigne++;
     }
     ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
@@ -280,7 +300,10 @@ void F_Statistiques::EffectuerRequeteAdherentInscritJour()
 
     while(sDateDebut.compare(sDateFin) != 0)
     {
-        Statistique.prepare("SELECT * FROM membres WHERE DAY(DateInscription)=:DateJour AND MONTH(DateInscription)=:DateMois AND YEAR(DateInscription)=:DateAnnee AND Ecarte=0");
+        Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+                            "DAY(DateSouscription)=:DateJour AND MONTH(DateSouscription)=:DateMois AND "
+                            "YEAR(DateSouscription)=:DateAnnee AND Ecarte=0 AND "
+                            "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre ORDER BY Nom");
         Statistique.bindValue(":DateJour", this->nJourDebut);
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
@@ -337,7 +360,10 @@ void F_Statistiques::EffectuerRequeteAdherentInscritMois()
 
     while(sDateDebut.compare(sDateFin) != 0)
     {
-        Statistique.prepare("SELECT * FROM membres WHERE MONTH(DateInscription)=:DateMois AND YEAR(DateInscription)=:DateAnnee AND Ecarte=0");
+        Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+                    "MONTH(DateSouscription)=:DateMois AND "
+                    "YEAR(DateSouscription)=:DateAnnee AND Ecarte=0 AND "
+                    "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre ORDER BY Nom");
         Statistique.bindValue(":DateMois", this->nMoisDebut);
         Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
@@ -382,8 +408,10 @@ void F_Statistiques::EffectuerRequeteAdherentInscritAnnee()
 
     while(this->nAnneeDebut <= this->nAnneeFin)
     {
-        Statistique.prepare("SELECT * FROM membres WHERE YEAR(DateInscription)=:DateInscription AND Ecarte=0");
-        Statistique.bindValue(":DateInscription", this->nAnneeDebut);
+        Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+                    "YEAR(DateSouscription)=:DateAnnee AND Ecarte=0 AND "
+                    "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre ORDER BY Nom");
+        Statistique.bindValue(":DateAnnee", this->nAnneeDebut);
         Statistique.exec();
         ui->LE_SQL->setText(Statistique.lastQuery());
         while(Statistique.next())
@@ -1116,7 +1144,7 @@ void F_Statistiques::on_Bt_Exporter_clicked()
             {
                 sCaractere = "";
             }
-            ecrire << "\"" << sCaractere << "\",";
+            ecrire << "\"" << sCaractere << "\";";
         }
         ecrire << "\r\n";
         nNombreColonne = 0;
@@ -1136,7 +1164,7 @@ void F_Statistiques::on_Bt_Exporter_clicked()
                 {
                     sCaractere = "";
                 }
-                ecrire << "\"" << sCaractere << "\",";
+                ecrire << "\"" << sCaractere << "\";";
             }
             ecrire << "\r\n";
             nNombreColonne = 0;

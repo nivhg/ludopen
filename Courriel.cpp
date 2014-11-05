@@ -313,6 +313,7 @@ void Courriel::TraiterEMailSuivant()
       this->sMessage = "To: " + this->sTo + "\n" ;
       this->sMessage.append("From: " + this->sFrom + "\n") ;
       this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+      this->sMessage.append("Content-Type: text/plain; charset=\"UTF-8\"\n\n");
       this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
       this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
       this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;

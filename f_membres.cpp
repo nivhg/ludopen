@@ -22,7 +22,7 @@
 #include <QMessageBox>
 
 /** Initialisation de la classe
- *  @param  F_RechercheMembres * pRechercheMembres
+ *  @param  F_Membres * pRechercheMembres
  *
  */
 F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
@@ -128,6 +128,7 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
         ui->Fr_Associes->setVisible(true);
         ui->Lb_Associes->setVisible(true);
         ui->TbW_Recherche->blockSignals(true);
+        ui->TbW_Recherche->selectRow(0);
         QDesktopWidget *desktop = QApplication::desktop();
         QRect geo_d_i = geometry();
         int x = (desktop->width() - 350) / 2;
@@ -168,6 +169,11 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
                 ModeleAssocies.setItem(i,3,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"Ville").toString()));
                 ModeleAssocies.setItem(i,4,new QStandardItem(ObtenirValeurParNom(RequeteAssocie,"CodeMembre").toString()));
                 i++;
+            }
+            if(i!=0)
+            {
+                ui->TbW_Associes->selectRow(0);
+                ui->Bt_SupprimerAssocie->setEnabled(true);
             }
         }
     }
@@ -382,7 +388,7 @@ void F_Membres::RechercherParNomEtNumero()
                 // Retrait des accents pour pouvoir faire des recherches de membres avec accents
                 QString sNom=this->VecteurMembres[i].sNom.toLower().replace(QRegExp("[éèë]"), "e");
                 sNom.replace(QRegExp("[à]"), "a");
-                QString sPrenom=this->VecteurMembres[i].sNom.toLower().replace(QRegExp("[éèë]"), "e");
+                QString sPrenom=this->VecteurMembres[i].sPrenom.toLower().replace(QRegExp("[éèë]"), "e");
                 sPrenom.replace(QRegExp("[à]"), "a");
                 if( sNom.indexOf( ui->LE_Nom->text().toLower() ) != string::npos )
                 {
@@ -591,7 +597,7 @@ int F_Membres::RecupererEmplacementTypeVecteur( unsigned int nIdType )
 QString F_Membres::ModifierSyntaxeNumTelephone ( QString sNumero )
 {
     QChar cEspace ( ' ' ) ;
-    QRegExp Nombres ( "[^0-9]" ) ;
+    QRegExp Nombres ( "[^0-9()\+]" ) ;
 
     //Suppression des les caractères ormis les chiffres
     sNumero.replace( Nombres, "" ) ;
@@ -920,8 +926,8 @@ bool F_Membres::AjouterMembre()
     //Rue
     RequeteMembre.bindValue( ":Rue", ui->Te_Rue->toPlainText() ) ;
 
-    //Code Postale
-    RequeteMembre.bindValue( ":CP", ui->Le_CP->text().toInt() ) ;
+    //Code Postal
+    RequeteMembre.bindValue( ":CP",  ui->Le_CP->text() ) ;
 
     //Ville
     RequeteMembre.bindValue( ":Ville", ui->CBx_Ville->currentText() ) ;
@@ -946,7 +952,15 @@ bool F_Membres::AjouterMembre()
 
     QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
     //Date Naissance
-    RequeteMembre.bindValue( ":DateNaissance", lineEdit->text() ) ;
+    if(lineEdit->text()=="")
+    {
+        // Si la valeur est vide, on mets le champs à NULL
+        RequeteMembre.bindValue( ":DateNaissance",  QVariant(QVariant::Date) ) ;
+    }
+    else
+    {
+        RequeteMembre.bindValue( ":DateNaissance",  ui->DtE_Naissance->date() ) ;
+    }
 
     //Remarque
     RequeteMembre.bindValue( ":Remarque", ui->TE_Remarque->toPlainText() ) ;
@@ -1047,7 +1061,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.bindValue( ":Rue", ui->Te_Rue->toPlainText() ) ;
 
         //Code Postale
-        RequeteMembre.bindValue( ":CP", ui->Le_CP->text().toInt() ) ;
+        RequeteMembre.bindValue( ":CP", ui->Le_CP->text() ) ;
 
         //Ville
         RequeteMembre.bindValue( ":Ville", ui->CBx_Ville->currentText() ) ;
@@ -2087,13 +2101,38 @@ void F_Membres::on_Bt_AJouterAssocie_clicked()
 void F_Membres::AjouterAssocie(QList <QStandardItem *> ListStandardItem)
 {
     ModeleAssocies.appendRow(ListStandardItem);
+    QSqlQuery RequeteAssocie ;
+    //Enregistrement d'un nouveau membre dans la base de données
+    RequeteAssocie.prepare( "INSERT INTO membresassocies "
+        "(Membres_IdCollectivite,Membres_IdMembre) VALUES (:IdCollectivite,:IdMembre)");
+    RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
+    RequeteAssocie.bindValue( ":IdMembre", ListStandardItem.at(0)->text() );
+
+    //Exectution de la requête
+    if( !RequeteAssocie.exec() )
+    {
+        qDebug()<< "F_Membres::on_Bt_ValiderAssocies_clicked : RequeteMembre " << RequeteAssocie.lastQuery() ;
+    }
     ui->TbW_Associes->selectRow(0);
     ui->Bt_SupprimerAssocie->setEnabled(true);
 }
 
 void F_Membres::on_Bt_SupprimerAssocie_clicked()
 {
-    ModeleAssocies.removeRow(ui->TbW_Associes->selectionModel()->selectedRows().first().row());
+    int row=ui->TbW_Associes->selectionModel()->selectedRows().first().row();
+    QSqlQuery RequeteAssocie ;
+    //Enregistrement d'un nouveau membre dans la base de données
+    RequeteAssocie.prepare( "DELETE FROM membresassocies WHERE Membres_IdCollectivite=:IdCollectivite AND "
+                            "Membres_IdMembre=:IdMembre");
+    RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
+    RequeteAssocie.bindValue( ":IdMembre", ModeleAssocies.index(row, 0 ).data().toString() );
+
+    //Exectution de la requête
+    if( !RequeteAssocie.exec() )
+    {
+        qDebug()<< "F_Membres::on_Bt_ValiderAssocies_clicked : RequeteMembre " << RequeteAssocie.lastQuery() ;
+    }
+    ModeleAssocies.removeRow(row);
     if(ModeleAssocies.rowCount()==0)
     {
         ui->Bt_SupprimerAssocie->setEnabled(false);
@@ -2102,28 +2141,7 @@ void F_Membres::on_Bt_SupprimerAssocie_clicked()
 
 void F_Membres::on_Bt_ValiderAssocies_clicked()
 {
-    QSqlQuery RequeteAssocie ;
-    for(int i=0;i<ModeleAssocies.rowCount();i++)
-    {
-        //Enregistrement d'un nouveau membre dans la base de données
-        RequeteAssocie.prepare( "INSERT INTO membresassocies "
-            "(Membres_IdCollectivite,Membres_IdMembre) VALUES (:IdCollectivite,:IdMembre)");
-        RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
-        RequeteAssocie.bindValue( ":IdMembre", ModeleAssocies.item(i,0)->text() );
-
-        //Exectution de la requête
-        if( !RequeteAssocie.exec() )
-        {
-            qDebug()<< "F_Membres::on_Bt_ValiderAssocies_clicked : RequeteMembre " << RequeteAssocie.lastQuery() ;
-        }
-    }
     this->close();
-}
-
-void F_Membres::on_Bt_AnnulerAssocies_clicked()
-{
-    this->close();
-
 }
 
 //==========================================================================================================

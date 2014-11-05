@@ -50,7 +50,7 @@ class F_Membres : public QWidget
 public:
     // CONSTRUCTEURs et DESTRUCTEURs
     /** Initialisation de la classe
-     *  @param  pRechercheMembres : point sur un F_RechercheMembres, bAdmin : Indique si c'est une fenêtre administration
+     *  @param  pRMembres : point sur un F_Membres, bAdmin : Indique si c'est une fenêtre administration
      *  @test   Voir la procédure dans le fichier associé.
      */
     explicit F_Membres(int iMode = MODE_UTILISATEUR, QWidget *parent = 0,
@@ -252,8 +252,6 @@ private slots:
     void AjouterAssocie(QList <QStandardItem *> ListStandardItem);
 
     void on_Bt_ValiderAssocies_clicked();
-
-    void on_Bt_AnnulerAssocies_clicked();
 
     void on_CBx_Titre_currentIndexChanged(int index);
 

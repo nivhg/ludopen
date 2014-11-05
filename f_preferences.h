@@ -93,67 +93,11 @@ private slots:
     void on_Bt_Annuler_clicked();
 
     /**
-     *  @brief Sélectionne la ligne entière du tableau titre de membre.
-     *
-     *  @param index
-     */
-    void on_TbV_MembresTitre_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau type de membre.
-     *
-     *  @param index
-     */
-    void on_TbV_MembresType_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau paiement de membre.
-     *
-     *  @param index
-     */
-    void on_TbV_MembresPaiement_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau type d'emprunt.
-     *
-     *  @param index
-     */
-    void on_TbV_EmpruntType_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau type de jeu.
-     *
-     *  @param index
-     */
-    void on_TbV_JeuxType_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau etat de jeu.
-     *
-     *  @param index
-     */
-    void on_TbV_JeuxEtat_clicked(const QModelIndex &index);
-
-    /**
      *  @brief Sélectionne la ligne entière du tableau statut de jeu.
      *
      *  @param index
      */
     void on_TbV_JeuxStatut_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau emplacement de jeu.
-     *
-     *  @param index
-     */
-    void on_TbV_JeuxEmplacement_clicked(const QModelIndex &index);
-
-    /**
-     *  @brief Sélectionne la ligne entière du tableau lieux de info ludo.
-     *
-     *  @param index
-     */
-    void on_TbV_InfoLieux_clicked(const QModelIndex &index);
 
     /**
      *  @brief Permet d'ajouter un titre d'un membre.
@@ -367,10 +311,6 @@ private slots:
 
     void on_Bt_SupprimerActivite_clicked();
 
-    void on_TbV_MembresActivite_clicked(const QModelIndex &index);
-
-    void on_TbV_JeuxMotCle_clicked(const QModelIndex &index);
-
     void on_Bt_AjouterMotCle_clicked();
 
     void on_Bt_ModifierMotCle_clicked();
@@ -449,40 +389,6 @@ private:
 
     ///< Creer un modele du tableau pour les lieux de l'info ludo.
     QStandardItemModel * TbJeuxMotCle;
-
-    ///< Récupère la valeur du nom du type membre.
-    QString sTypeMembre;
-
-    ///< Récupère la valeur du titre membre.
-    QString sTitreMembre;
-
-    ///< Récupère la valeur du paiement membre.
-    QString sPaiementMembre;
-
-    ///< Récupère la valeur du type emprunt.
-    QString sTypeEmprunt;
-
-    ///< Récupère la valeur du type jeux.
-    QString sTypeJeux;
-
-    ///< Récupère la valeur de l'état jeux.
-    QString sEtatJeux;
-
-    ///< Récupère la valeur du statut jeux.
-    QString sStatutJeux;
-
-    ///< Récupère la valeur du statut jeux.
-    QString sEmplacementJeux;
-
-    ///< Récupère la valeur du lieu de la ludothèque.
-    QString sLieuxInfoLudo;
-
-    ///< Récupère la valeur d'une activite
-    QString sMembresActivite;
-
-    ///< Récupère la valeur d'une activite
-    QString sJeuxMotCle;
-
 
     // METHODEs -----------------------------------------------------------------
     /**

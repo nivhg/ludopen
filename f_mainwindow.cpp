@@ -2,6 +2,7 @@
 #include "ui_f_mainwindow.h"
 #include "f_imprimeretiquettejeu.h"
 #include "f_imprimerfichecompletejeu.h"
+#include "fonctions_globale.h"
 
 F_MainWindow::F_MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -586,9 +587,11 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
     QMessageBox APropos;
 
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\":LudOpen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
-                  "LudOpen version 2014.09.01<br><br>"
-                  "Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
-                  "<a href='http://code.google.com/p/ludopen'>http://code.google.com/p/ludopen</a><br><br>"
-                  "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
+      "LudOpen version " + QString::fromLocal8Bit(VER) + "<br><br>Date de compilation : " +
+      QString::number(BUILD_DAY) + "-" + QString::number(BUILD_MONTH) + "-" + QString::number(BUILD_YEAR) + " " +
+      QString::number(BUILD_HOUR) + ":" + QString::number(BUILD_MIN) + ":" + QString::number(BUILD_SEC) +
+      "<br><br>Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
+      "<a href='http://code.google.com/p/ludopen'>http://code.google.com/p/ludopen</a><br><br>"
+      "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }

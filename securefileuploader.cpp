@@ -78,6 +78,12 @@ void SecureFileUploader::AjouterCommande( const int &Commande,
  */
 void SecureFileUploader::FaireCommandes()
 {
+    if(m_ListeCommandes.count()==0)
+    {
+        qDebug() << "SecureFileUploader::FaireCommandes(): Aucune commande passée, abandon.";
+        emit SignalOperationFini(true);
+        return;
+    }
     qDebug() << "SecureUploader: Connexion";
 
     connect(m_connexion, SIGNAL(connected()), SLOT(onConnected()));

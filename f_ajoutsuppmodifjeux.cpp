@@ -680,7 +680,8 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
 
            if(!RequeteAjouterJeu.exec())
            {
-              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked()-"<<RequeteAjouterJeu.lastQuery();
+              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked()-"<<RequeteAjouterJeu.lastQuery()
+                       <<"Erreur : "<<RequeteAjouterJeu.lastError();
            }
            RequeteAjouterJeu.next() ;
         }
@@ -776,7 +777,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          RequeteModifTxE.bindValue(":RemarqueDuJeu", ui->TxE_Remarques->toPlainText());
          RequeteModifTxE.bindValue(":ContenuDuJeu", ui->TxE_Contenu->toPlainText());
          RequeteModifTxE.bindValue(":LeSiteWeb1", ui->LE_SiteWeb1->text());
-         RequeteModifTxE.bindValue(":LeSiteWeb2", ui->LE_SiteWeb1->text());
+         RequeteModifTxE.bindValue(":LeSiteWeb2", ui->LE_SiteWeb2->text());
          //Exécute la requête
          if (!RequeteModifTxE.exec())
          {
@@ -1055,6 +1056,7 @@ void F_AjoutSuppModifJeux::VideChamps()
  */
 void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
 {
+    qDebug()<<"F_AjoutSuppModifJeux::BloquerSignalsChamps:"<<etat;
     ui->CBx_Classification->blockSignals(etat);
     ui->CBx_Editeur->blockSignals(etat);
     ui->CBx_Emplacement->blockSignals(etat);
@@ -1802,10 +1804,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //-----------------Remplissage CBx Editeur---------------------------------------------------------------
         QSqlQuery RequeteEditeur ;
         QString IdEditeur = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Editeur_IdEditeur")).toString() ;
-        if(IdEditeur == 0)
-        {
-        }
-        else
+        if(IdEditeur != 0)
         {
             RequeteEditeur.prepare("SELECT NomFournisseur,IdFournisseur,Editeur "
                                    "FROM fournisseursediteur "
@@ -1825,10 +1824,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //-----------------Remplissage CBx Fournisseur---------------------------------------------------------
         QSqlQuery RequeteFournisseur ;
         QString idFournisseur = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Fournisseurs_IdFournisseur")).toString() ;
-        if(idFournisseur == 0)
-        {
-        }
-        else
+        if(idFournisseur != 0)
         {
             RequeteFournisseur.prepare("SELECT NomFournisseur,IdFournisseur,Fournisseur "
                                        "FROM fournisseursediteur "
@@ -1870,10 +1866,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //---------------Remplissage CBx MotCle1-----------------------------------------------------------------------
         QSqlQuery RequeteMotCle1 ;
         QString IdMotCle1 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle1")).toString() ;
-        if(IdMotCle1 == 0)
-        {
-        }
-        else
+        if(IdMotCle1 != 0)
         {
             RequeteMotCle1.prepare("SELECT Id_MotCle,MotCle FROM motscles WHERE Id_MotCle =:IdDeMotCle") ;
             RequeteMotCle1.bindValue(":IdDeMotCle", IdMotCle1);
@@ -1896,10 +1889,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //----------------Remplissage CBx MotCle2--------------------------------------------------------
         QSqlQuery RequeteMotCle2 ;
         QString IdMotCle2 = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("MotCle2")).toString() ;
-        if(IdMotCle2 == 0)
-        {
-        }
-        else
+        if(IdMotCle2 != 0)
         {
             RequeteMotCle2.prepare("SELECT Id_MotCle,MotCle FROM motscles WHERE Id_MotCle =:IdDeMotCle") ;
             RequeteMotCle2.bindValue(":IdDeMotCle", IdMotCle2);
@@ -1922,10 +1912,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         //-------------Remplissage CBx MotCle3----------------------------------------------------------------
         QSqlQuery RequeteMotCle3 ;
         QString IdMotCle3 = ObtenirValeurParNom(RequeteRechercheJeu,"MotCle3").toString() ;
-        if(IdMotCle3 == 0)
-        {
-        }
-        else
+        if(IdMotCle3 != 0)
         {
             RequeteMotCle3.prepare("SELECT Id_MotCle,MotCle FROM motscles WHERE Id_MotCle =:IdDeMotCle") ;
             RequeteMotCle3.bindValue(":IdDeMotCle", IdMotCle3);
@@ -1971,11 +1958,11 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         // Grise les boutons valider et annuler
         // mais autoriser la création d'un nouveau jeu ou la suppression du jeu courant
         ActiveBoutons(false);
-        BloquerSignalsChamps(false);
         ui->Bt_Supprimer->setEnabled(true);
         ui->Bt_Ajouter->setEnabled(true);
         AjoutOuModif = false ;
     }
+    BloquerSignalsChamps(false);
     qDebug() << "F_AjoutSuppModifJeux::on_Bt_OK_clicked() ------------------------------------";
 }
 //###################################################################

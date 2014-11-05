@@ -62,11 +62,11 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
 
     AjoutOuModif = false ;
     if(ui->LE_Nom->text() == "")
-        {
-            ui->Bt_Valider->setDisabled(true);
-            ui->Bt_Annuler->setDisabled(true);
-            ui->Bt_Supprimer->setDisabled(true);
-        }
+    {
+        ui->Bt_Valider->setDisabled(true);
+        ui->Bt_Annuler->setDisabled(true);
+        ui->Bt_Supprimer->setDisabled(true);
+    }
     ui->LE_CodePostal->setDisabled(true);
     ui->LE_Contact->setDisabled(true);
     ui->LE_Email->setDisabled(true);
@@ -99,17 +99,18 @@ F_AjoutSuppModifFournisseursEditeurs::~F_AjoutSuppModifFournisseursEditeurs()
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_LE_Recherche_textChanged(const QString &arg1)
 {
-    QString NomFournisseur = arg1;
+    QString NomFournisseur = "%"+arg1+"%";
 
     QSqlQuery RequeteRechercheFournisseur;
     if(NomFournisseur.size() >= 2)
     {
-        QSqlQuery RequeteRechercheFournisseur;
-
-        RequeteRechercheFournisseur.prepare("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur WHERE NomFournisseur LIKE (:NomFournissseur)");
+        RequeteRechercheFournisseur.prepare("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur"
+                      " WHERE NomFournisseur LIKE \""+NomFournisseur+"\" ORDER BY NomFournisseur ASC");
         RequeteRechercheFournisseur.bindValue(":NomFournissseur",NomFournisseur);
-        RequeteRechercheFournisseur.exec();
-
+        if(!RequeteRechercheFournisseur.exec())
+        {
+            qDebug()<<"F_AjoutSuppModifFournisseursEditeurs::on_LE_Recherche_textChanged"<<RequeteRechercheFournisseur.lastQuery();
+        }
     }
     else
     {

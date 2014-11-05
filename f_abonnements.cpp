@@ -442,7 +442,7 @@ void F_Abonnements::on_Bt_Valider_clicked()
       else
       {
          // savoir s'il s'agit d'un nouvel abonnement ou pas.
-         if(bEstUnNouvelAbo == true)
+         if(bEstUnNouvelAbo)
          {
             // Vérification si cette carte existe dans la BDD
             QSqlQuery RequeteCarteExistante;
@@ -462,23 +462,28 @@ void F_Abonnements::on_Bt_Valider_clicked()
                else  // C'est bien une nouvelle carte
                {
                   this->CreerCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
+                   ui->Bt_Annuler->hide();
+                   ui->Bt_Valider->hide();
+                   ui->Bt_Ajouter->show();
+                   ui->Bt_Modifier->show();
+                   ui->Bt_Supprimer->show();
+                   ui->TbV_Recherche->setEnabled(true);
+                   ui->RBt_CartePrepayee->setEnabled(false);
+                   ui->RBt_Prestation->setEnabled(false);
                }
             }
          }
          else
          {
-            if(bEstUnNouvelAbo == false)
-            {
-               this->MettreAJourCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
-               ui->Bt_Annuler->hide();
-               ui->Bt_Valider->hide();
-               ui->Bt_Ajouter->show();
-               ui->Bt_Modifier->show();
-               ui->Bt_Supprimer->show();
-               ui->TbV_Recherche->setEnabled(true);
-               ui->RBt_CartePrepayee->setEnabled(false);
-               ui->RBt_Prestation->setEnabled(false);
-            }
+           this->MettreAJourCartePrepayee(sTexteValide, nDureeValide, fPrixValide, nCreditValide);
+           ui->Bt_Annuler->hide();
+           ui->Bt_Valider->hide();
+           ui->Bt_Ajouter->show();
+           ui->Bt_Modifier->show();
+           ui->Bt_Supprimer->show();
+           ui->TbV_Recherche->setEnabled(true);
+           ui->RBt_CartePrepayee->setEnabled(false);
+           ui->RBt_Prestation->setEnabled(false);
          }
       }
    }
@@ -495,7 +500,7 @@ void F_Abonnements::on_Bt_Valider_clicked()
          else
          {
             // savoir s'il s'agit d'un nouvel abonnement ou pas.
-            if(bEstUnNouvelAbo == true)
+            if(bEstUnNouvelAbo)
             {
                // Vérification si cette prestation existe dans la BDD
                QSqlQuery RequetePrestationExistante;
@@ -528,18 +533,15 @@ void F_Abonnements::on_Bt_Valider_clicked()
             }
             else
             {
-               if(bEstUnNouvelAbo == false)
-               {
-                  this->MettreAJourPrestation(sTexteValide, nDureeValide, fPrixValide);
-                  ui->Bt_Annuler->hide();
-                  ui->Bt_Valider->hide();
-                  ui->Bt_Ajouter->show();
-                  ui->Bt_Modifier->show();
-                  ui->Bt_Supprimer->show();
-                  ui->TbV_Recherche->setEnabled(true);
-                  ui->RBt_CartePrepayee->setEnabled(false);
-                  ui->RBt_Prestation->setEnabled(false);
-               }
+              this->MettreAJourPrestation(sTexteValide, nDureeValide, fPrixValide);
+              ui->Bt_Annuler->hide();
+              ui->Bt_Valider->hide();
+              ui->Bt_Ajouter->show();
+              ui->Bt_Modifier->show();
+              ui->Bt_Supprimer->show();
+              ui->TbV_Recherche->setEnabled(true);
+              ui->RBt_CartePrepayee->setEnabled(false);
+              ui->RBt_Prestation->setEnabled(false);
             }
          }
       }

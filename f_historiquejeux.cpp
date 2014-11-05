@@ -14,6 +14,7 @@
 // En-tête propre  l'objet ----------------------------------------------------
 #include "f_historiquejeux.h"
 #include "ui_f_historiquejeux.h"
+#include "fonctions_globale.h"
 
 using namespace std ;
 
@@ -61,7 +62,7 @@ void F_HistoriqueJeux::AfficherHistorique( unsigned int nIdMembre )
     QSqlQuery          queryHistorique ;
 
     //Preparation de la requête SQL : Selection des Jeux emprunter par un membre ainsi que leurs date d'emprunt, de retour et leur prolongation
-    queryHistorique.prepare( "SELECT jeux.NomJeu, emprunts.DateEmprunt, emprunts.DateRetour, emprunts.NbrPrologation FROM emprunts, jeux "
+    queryHistorique.prepare( "SELECT NomJeu, DateEmprunt, DateRetour, NbrPrologation FROM emprunts, jeux "
                              "WHERE emprunts.Membres_IdMembre=:IdMembre AND jeux.IdJeux=emprunts.Jeux_IdJeux AND emprunts.DateRetour IS NOT NULL" ) ;
 
     queryHistorique.bindValue( ":IdMembre", nIdMembre ) ;
@@ -73,10 +74,14 @@ void F_HistoriqueJeux::AfficherHistorique( unsigned int nIdMembre )
         {
             // Fixe le nombre de lignes du tableau
             ModeleHistoriqueJeuxEmprunter.setRowCount( queryHistorique.size() ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 0, new QStandardItem( queryHistorique.record().value( 0 ).toString() ) ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 1, new QStandardItem( queryHistorique.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 2, new QStandardItem( queryHistorique.record().value( 2 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
-            ModeleHistoriqueJeuxEmprunter.setItem( i, 3, new QStandardItem( queryHistorique.record().value( 4 ).toInt() ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 0, new QStandardItem(
+                         ObtenirValeurParNom(queryHistorique,"NomJeu").toString() ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 1, new QStandardItem(
+                         ObtenirValeurParNom(queryHistorique,"DateEmprunt" ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 2, new QStandardItem(
+                         ObtenirValeurParNom(queryHistorique,"DateRetour" ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            ModeleHistoriqueJeuxEmprunter.setItem( i, 3, new QStandardItem(
+                         ObtenirValeurParNom(queryHistorique,"NbrPrologation" ).toString() ) ) ;
             i++ ;
         }
     }

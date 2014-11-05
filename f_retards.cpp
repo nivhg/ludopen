@@ -95,39 +95,38 @@ F_Retards::F_Retards(QWidget *parent) :
    if( Requete.exec( "SELECT AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail,Email FROM preferences WHERE IdPreferences=1" ) )
    {
         Requete.next();
-       QString ServeurSMTP =  ObtenirValeurParNom(Requete,"AdresseServeurSMTP").toString();
-       int PortSMTP = ObtenirValeurParNom(Requete,"PortSMTP").toInt();
-       if(ServeurSMTP=="" || PortSMTP==0)
-       {
+        QString ServeurSMTP =  ObtenirValeurParNom(Requete,"AdresseServeurSMTP").toString();
+        int PortSMTP = ObtenirValeurParNom(Requete,"PortSMTP").toInt();
+        if(ServeurSMTP=="" || PortSMTP==0)
+        {
            QMessageBox::critical(this, "Erreur de paramétrage",
                 "Serveur d'envoi de courriel (SMTP) mal paramétré.\n"
                 "Vérifier le paramétrage dans les Préférences->Réseaux et relancer l'application.");
            ui->gridLayout_3->setEnabled(false);
            return;
-       }
-       QString Email=ObtenirValeurParNom(Requete,"Email").toString();
-       if(Email.indexOf("@")==-1)
-       {
+        }
+        QString Email=ObtenirValeurParNom(Requete,"Email").toString();
+        if(Email.indexOf("@")==-1)
+        {
            QMessageBox::critical(this, "Erreur de paramétrage",
                 "Courriel d'envoi de courriel mal formé ou vide.\n"
                 "Vérifier le paramétrage dans les Préférences->Informations et relancer l'application.");
            ui->gridLayout_3->setEnabled(false);
            return;
-       }
-      Requete.next() ;
-      ui->LE_Sujet->setText( ObtenirValeurParNom(Requete,"SujetEmail").toString() ) ;
-      ui->TE_Corps->setPlainText( ObtenirValeurParNom(Requete,"CorpsEmail").toString() ) ;
+        }
+        ui->LE_Sujet->setText( ObtenirValeurParNom(Requete,"SujetEmail").toString() ) ;
+        ui->TE_Corps->setPlainText( ObtenirValeurParNom(Requete,"CorpsEmail").toString() ) ;
 
-      ui->Bt_Enregistrer->setDisabled( true ) ;
-      ui->Bt_Annuler->setDisabled( true ) ;
+        ui->Bt_Enregistrer->setDisabled( true ) ;
+        ui->Bt_Annuler->setDisabled( true ) ;
 
-      //On crée l'objet Courriel qui permettra l'envoi des emails
-      pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
+        //On crée l'objet Courriel qui permettra l'envoi des emails
+        pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
 
-      //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
-      connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
-      connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
-      connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
+        //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
+        connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
+        connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
+        connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
    }
    else
    {

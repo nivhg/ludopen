@@ -120,5 +120,9 @@ FORMS    += \
     d_image.ui \
     d_ajoutsuppmodiffournisseursediteurs.ui
 
+VERSION = "01-11-2014"
+VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
+DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
+
 include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
 LIBS += -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(Botan) -l$$qtLibraryName(QSsh)

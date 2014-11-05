@@ -83,14 +83,15 @@ private slots:
      *  @brief Gestion de l'évenement de fin d'opération
      */
     void onOpfinished(QSsh::SftpJobId job, const QString & error = QString());
+public:
+    // Liste des commandes
+    QList<int> m_ListeCommandes;
 
 private:
     // Liste des fichiers source
     QStringList m_ListeFichierSource;
     // Liste des fichiers destination
     QStringList m_ListeFichierDestination;
-    // Liste des commandes
-    QList<int> m_ListeCommandes;
     // Id de la dernière commande
     int m_DernierIdCommande;
     QSsh::SftpChannel::Ptr m_canal;

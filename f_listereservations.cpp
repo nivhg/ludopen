@@ -104,6 +104,7 @@ void F_ListeReservations::TousSelectionner( bool bSelection )
     ui->ChBx_LieuxDeRetrait->setChecked( bSelection ) ;
     ui->ChBx_DateReservation->setChecked( bSelection ) ;
     ui->ChBx_DateEmpruntPrevue->setChecked( bSelection ) ;
+    ui->ChBx_NonConfirme->setChecked( bSelection ) ;
 }
 
 /** Description détaillée de la méthode
