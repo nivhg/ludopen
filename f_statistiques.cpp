@@ -147,9 +147,9 @@ void F_Statistiques::on_CBx_Stat_currentIndexChanged(int index)
         ui->RBt_Mois->hide();
         ui->RBt_Annee->hide();
         ui->label_3->hide();
-        ui->DtE_Debut->show();
+        ui->DtE_Debut->hide();
         ui->DtE_Fin->show();
-        ui->label_2->show();
+        ui->label_2->hide();
         ui->label_4->show();
         break;
     case 3:
@@ -264,9 +264,10 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
         DateFin = ui->DtE_Fin->dateTime();
     }
     QString test=DateFin.toString("dd-MM-yyyy");
-    Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
-                    "DateSouscription >= :DateDebut AND DateSouscription < :DateFin AND Ecarte=0 AND "
-                    "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre ORDER BY Nom");
+    Statistique.prepare("SELECT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+                    "DateSouscription >= :DateDebut AND DateSouscription <=:DateFin AND Ecarte=0 AND "
+                    "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre AND "
+                    "Prestations_IdPrestation != 5 ORDER BY Nom");
     Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
     Statistique.bindValue(":DateFin", DateFin);
     Statistique.exec();
@@ -624,33 +625,20 @@ void F_Statistiques::EffectuerRequeteAdherentEmpruntAnnee()
 void F_Statistiques::EffectuerRequeteAdherentCommune()
 {
     QSqlQuery Statistique;
-    QSqlQuery StatistiquePlus;
-    QString sDetail;
-    int nNombreLigne (0);
-    int nDetail (0);
+    int nNombreLigne (0),i(0);
 
-    Statistique.prepare("SELECT Ville FROM membres WHERE DateInscription>=:DateDebut AND DateInscription<=:DateFin AND Ecarte=0 GROUP BY Ville");
-    Statistique.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
+    Statistique.prepare("SELECT Ville,count(Ville) FROM membres,abonnements WHERE "
+                        "DateExpiration >= :DateFin AND Ecarte=0 AND "
+                        "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre "
+                        "AND Prestations_IdPrestation != 5 GROUP BY Ville");
     Statistique.bindValue(":DateFin", ui->DtE_Fin->dateTime());
     Statistique.exec();
+    ui->LE_SQL->setText(Statistique.lastQuery());
     while(Statistique.next())
     {
-        StatistiquePlus.prepare("SELECT * FROM membres WHERE DateInscription>=:DateDebut AND DateInscription<=:DateFin AND Ecarte=0 AND Ville=:Ville");
-        StatistiquePlus.bindValue(":DateDebut", ui->DtE_Debut->dateTime());
-        StatistiquePlus.bindValue(":DateFin", ui->DtE_Fin->dateTime());
-        StatistiquePlus.bindValue(":Ville", Statistique.value(0).toString());
-        StatistiquePlus.exec();
-        ui->LE_SQL->setText(StatistiquePlus.lastQuery());
-        while(StatistiquePlus.next())
-        {
-            nDetail = nDetail + 1;
-        }
-
-        sDetail = QString::number(nDetail);
-        this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
-        this->TbStatModele->setItem(nNombreLigne, 1, new QStandardItem(sDetail));
-        nNombreLigne = nNombreLigne + 1;
-        nDetail = 0;
+        this->TbStatModele->setItem(i, 0, new QStandardItem(Statistique.value(0).toString()));
+        this->TbStatModele->setItem(i++, 1, new QStandardItem(Statistique.value(1).toString()));
+        nNombreLigne = nNombreLigne + Statistique.value(1).toInt();
     }
     ui->Lb_Resultat->setNum( nNombreLigne ) ;
 }
