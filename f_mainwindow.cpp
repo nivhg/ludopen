@@ -3,6 +3,7 @@
 #include "f_imprimeretiquettejeu.h"
 #include "f_imprimerfichecompletejeu.h"
 #include "fonctions_globale.h"
+#include "majeur.h"
 
 F_MainWindow::F_MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -11,13 +12,12 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->setupUi(this);
     qDebug()<<"Constructeur F_MainWindow = Début";
 
-    // Paramètre la taille de la police de l'appli
-    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-    QString TaillePolice=FichierDeConfig.value("Autres/TaillePolice", "config").toString();
+    // Création de la fenêtre de choix des préférences du logiciel
+    this->pPreferences=new F_Preferences(this);
 
     // Récupère la taille de la police
     QFont font=QApplication::font();
-    font.setPointSize(TaillePolice.toInt());
+    font.setPointSize(this->pPreferences->ObtenirValeur("TaillePolice").toInt());
     QApplication::setFont (font);
 
     ui->centralWidget->setLayout(ui->gridLayout);
@@ -54,6 +54,11 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     /*****************************************************************************/
 
     this->VerifierConnexionBDD() ;
+    this->pPreferences->ChargerPreferencesBDD();
+
+    MAJeur *MAJ=new MAJeur(this);
+
+    this->setWindowTitle(this->windowTitle()+ " v"+QString::fromLocal8Bit(VER));
 
     qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
@@ -78,15 +83,12 @@ void F_MainWindow::VerifierConnexionBDD()
 
     QSqlDatabase db = QSqlDatabase::addDatabase("QMYSQL");
 
-    // Ouverture du fichier INI.
-    QSettings settings("config.ini", QSettings::IniFormat);
-
     // Recupération des valeurs dans le fichier INI.
-    sNomBDD = settings.value("BaseDeDonnees/NomDeLaBDD", "config").toString();
-    sAdresseIP = settings.value("BaseDeDonnees/AdresseIP", "config").toString();
-    sNomUtilisateur = settings.value("BaseDeDonnees/NomUtilisateur", "config").toString();
-    sMotDePasse = settings.value("BaseDeDonnees/MotDePasse", "config").toString();
-    nPort = settings.value("BaseDeDonnees/Port", "config").toInt();
+    sNomBDD = this->pPreferences->ObtenirValeur("NomDeLaBDD");
+    sAdresseIP = this->pPreferences->ObtenirValeur("AdresseIP");
+    sNomUtilisateur = this->pPreferences->ObtenirValeur("NomUtilisateur");
+    sMotDePasse = this->pPreferences->ObtenirValeur("MotDePasse");
+    nPort = this->pPreferences->ObtenirValeur("Port").toInt();
 
     // Ouverture de la BDD en entrant les valeurs du fichier INI.
     db.setDatabaseName(sNomBDD);
@@ -109,11 +111,10 @@ void F_MainWindow::VerifierConnexionBDD()
         qDebug()<< endl << "La connexion à la BDD " << sNomBDD << " a échouée." << endl;
 
         // Création de la fenêtre de choix des préférences du logiciel
-        F_Preferences f_Preferences;
-        connect( &f_Preferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
-        f_Preferences.exec();
+        connect( pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
+        pPreferences->exec();
         // choisir l'onglet des préférences Réseau de la fenêtre Préférences
-        f_Preferences.SelectionnerOnglet( 1 ) ;
+        pPreferences->SelectionnerOnglet( 1 ) ;
     }
     else
     {
@@ -479,10 +480,8 @@ void F_MainWindow::on_Menu_Fichier_Quitter_triggered()
 
 void F_MainWindow::on_Menu_Edition_Preferences_triggered()
 {
-   // Création de la fenêtre de choix des préférences du logiciel
-   F_Preferences f_Preferences;
-   connect( &f_Preferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
-   f_Preferences.exec();
+   connect( pPreferences, SIGNAL( SignalFermerFenetre() ), this, SLOT( slot_Preferences() ) ) ;
+   pPreferences->exec();
 }
 
 void F_MainWindow::on_Menu_Aide_Aide_triggered()
@@ -585,7 +584,6 @@ void F_MainWindow::on_Menu_Jeux_Imprimer_Fiche_Complete_triggered()
 void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
 {
     QMessageBox APropos;
-
     APropos.about(this, "A propos de ...", "<center><IMG SRC=\":LudOpen.png\" ALIGN=\"MIDDLE\" ALT=\"LudOpen\"></center><br>"
       "LudOpen version " + QString::fromLocal8Bit(VER) + "<br><br>Date de compilation : " +
       QString::number(BUILD_DAY) + "-" + QString::number(BUILD_MONTH) + "-" + QString::number(BUILD_YEAR) + " " +

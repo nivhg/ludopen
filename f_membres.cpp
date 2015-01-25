@@ -17,6 +17,7 @@
 #include "f_membres.h"
 #include "ui_f_membres.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 // En-têtes standards nécessaires dans ce fichier en-tête seulement ------------
 #include <QMessageBox>
@@ -131,9 +132,9 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
         ui->TbW_Recherche->selectRow(0);
         QDesktopWidget *desktop = QApplication::desktop();
         QRect geo_d_i = geometry();
-        int x = (desktop->width() - 350) / 2;
+        int x = (desktop->width() - 400) / 2;
         int y = (desktop->height() - geo_d_i.height()) / 2;
-        this->setGeometry(x, y, 350, geo_d_i.height());
+        this->setGeometry(x, y, 400, geo_d_i.height());
         this->show();
         ui->TbW_Associes->clearSpans() ;
         ui->TbW_Associes->setModel(&ModeleAssocies) ;
@@ -723,16 +724,9 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
             // Tient compte du nombre de jour de retard toléré
             QDate DateActuelle;
             DateActuelle=DateActuelle.currentDate();
-            QSqlQuery RequeteNbJoursRetardToleres;
-            if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
-            {
-               qDebug()<<"F_Membres::AfficherJeuxEmpruntes =>  RequeteNbJoursRetardToleres "<<RequeteNbJoursRetardToleres.lastQuery();
-            }
-            else
-            {
-              // Calculer la date de retour avec la tolérance du nombre de jours
-              DateActuelle.addDays(RequeteNbJoursRetardToleres.value(0).toInt() );
-            }
+            // Calculer la date de retour avec la tolérance du nombre de jours
+            DateActuelle.addDays(F_Preferences::ObtenirValeur("JourRetard").toInt() );
+
             QColor couleur;
             if ( RequeteEmprunt.value( 2 ).toDate() > DateActuelle )
             {
@@ -1085,7 +1079,16 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
 
         //Date Naissance
-        RequeteMembre.bindValue( ":DateNaissance", ui->DtE_Naissance->date() ) ;
+        QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
+        if(lineEdit->text()=="")
+        {
+            // Si la valeur est vide, on mets le champs à NULL
+            RequeteMembre.bindValue( ":DateNaissance",  QVariant(QVariant::Date) ) ;
+        }
+        else
+        {
+            RequeteMembre.bindValue( ":DateNaissance",  ui->DtE_Naissance->date() ) ;
+        }
 
         //Remarque
         RequeteMembre.bindValue( ":Remarque", ui->TE_Remarque->toPlainText() ) ;
@@ -1751,7 +1754,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
 
     //ui->SPx_NbreRetards->setDisabled( true ) ;
 
-    //ui->DtE_Naissance->setDate( QDate( 1920, 1, 1 ) ) ;
     QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
     lineEdit->setText("");
 

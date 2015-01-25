@@ -16,6 +16,7 @@
 #include "f_retour.h"
 #include "ui_f_retour.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -533,28 +534,6 @@ void F_Retour::AfficherJeuxEnEmprunt()
       ui->TbV_JeuxEmprunte->setColumnWidth(1,125);
       ui->TbV_JeuxEmprunte->verticalHeader()->setVisible(false);
 
-      QSqlQuery RequeteNbJoursRetardToleres;
-      if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
-      {
-         qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() =>  RequeteNbJoursRetardToleres "<<RequeteNbJoursRetardToleres.lastQuery();
-      }
-      else
-      {
-         // obtenir le nombre de jours tolérés pour un retard
-         RequeteNbJoursRetardToleres.next();
-      }
-
-      QSqlQuery RequeteAmende;
-      if(!RequeteAmende.exec("SELECT PrixAmende FROM preferences WHERE IdPreferences=1"))
-      {
-         qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() =>  RequeteAmende "<<RequeteAmende.lastQuery();
-      }
-      else
-      {
-         // obtenir le prix de l'amende par semaine de retard
-         RequeteAmende.next();
-      }
-
       unsigned int NumeroLigne = 0;
       QDate DateDeRetourPrevue ;
       unsigned int NbDeSemainesDeRetard = 0;
@@ -575,7 +554,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
          //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Nb de jours =" << DateDeRetourPrevue.daysTo( DateDeRetourToleree );
 
          // Ligne en rouge si retard, sinon en vert
-         if ( DateDeRetourPrevue.daysTo( QDate::currentDate() ) < RequeteNbJoursRetardToleres.value(0).toInt() )
+         if ( DateDeRetourPrevue.daysTo( QDate::currentDate() ) < F_Preferences::ObtenirValeur("JourRetard").toInt() )
          {  // Pas de retard
             this->ModelJeuEmpruntes->setData(ModelJeuEmpruntes->index(NumeroLigne,0),QColor(Qt::green), Qt::BackgroundColorRole);
             this->ModelJeuEmpruntes->setData(ModelJeuEmpruntes->index(NumeroLigne,1),QColor(Qt::green), Qt::BackgroundColorRole);
@@ -591,7 +570,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
 
             // Calculer l'amende à payer
             int NbJours=DateDeRetourPrevue.daysTo( QDate::currentDate() );
-            int JoursToleres=RequeteNbJoursRetardToleres.value(0).toInt();
+            int JoursToleres=F_Preferences::ObtenirValeur("JourRetard").toInt();
             if(JoursToleres==0)
             {
                 NbDeSemainesDeRetard=0;
@@ -600,7 +579,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
             {
                 NbDeSemainesDeRetard = NbJours / JoursToleres ;
             }
-            this->Amende=this->Amende+RequeteAmende.value(0).toFloat() * NbDeSemainesDeRetard ;
+            this->Amende=this->Amende+F_Preferences::ObtenirValeur("PrixAmende").toFloat() * NbDeSemainesDeRetard ;
             //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
          }
          NumeroLigne++;
@@ -1202,18 +1181,11 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         //
         // obtenir le nombre de jours tolérés pour un retard
         DateDeRetourToleree=DateDeRetourToleree.currentDate();
-        QSqlQuery RequeteNbJoursRetardToleres;
         unsigned int NbJoursRetardToleres(0);
-        if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
-        {
-           qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked() => RequeteNbJoursRetardToleres  "<<RequeteNbJoursRetardToleres.lastQuery();
-        }
-        else
-        {
-          // Calculer la date de retour avec la tolérance du nombre de jours
-          NbJoursRetardToleres = RequeteNbJoursRetardToleres.value(0).toInt();
-          qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked() => NbJoursRetardToleres=" << NbJoursRetardToleres ;
-        }
+        // Calculer la date de retour avec la tolérance du nombre de jours
+        NbJoursRetardToleres = F_Preferences::ObtenirValeur("JourRetard").toInt();
+        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked() => NbJoursRetardToleres=" << NbJoursRetardToleres ;
+
         //si la date de retour est supérieure à la date du jour, alors le jeux est rendu en retard
         if(EcartJours > NbJoursRetardToleres)
         {

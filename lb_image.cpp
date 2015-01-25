@@ -25,6 +25,7 @@
 #include "lb_image.h"
 #include "d_image.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 /**
  *  @brief Constructeur de la classe.
@@ -38,12 +39,9 @@ Lb_Image::Lb_Image( QWidget * parent, QLabel * Lb_NomImage) :
     ChargementEnCours=false;
     this->Lb_NomImage=Lb_NomImage;
     iImage=0;
-    QSqlQuery RequeteCheminPhotosJeux;
-    RequeteCheminPhotosJeux.exec("SELECT CheminPhotosJeux FROM preferences WHERE IdPreferences = 1");
-    // si il y a des préférences
-    if ( RequeteCheminPhotosJeux.next() )
+    sCheminImagePref = F_Preferences::ObtenirValeur("CheminPhotosJeux");
+    if ( sCheminImagePref != "" )
     {
-       sCheminImagePref = RequeteCheminPhotosJeux.value(0).toString();
        if(!EstCeURL(sCheminImagePref))
        {
             sCheminImagePref="file://"+sCheminImagePref;
@@ -51,7 +49,6 @@ Lb_Image::Lb_Image( QWidget * parent, QLabel * Lb_NomImage) :
     }
     else   // pas de photo à afficher
     {
-       sCheminImagePref = "";
        setText("Aucune photo disponible pour ce jeu");
     }
     acces=new AccesFichierParHTTP(this);

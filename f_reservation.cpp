@@ -10,12 +10,12 @@
  *
  *  Cette classe permet de réserver un jeu pour un membre
  *
- * test
  */
 
 #include <QtSql>
 #include "f_reservation.h"
 #include "ui_f_reservation.h"
+#include "f_preferences.h"
 #include "fonctions_globale.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1039,9 +1039,7 @@ if((MembreActif)!=(""))
     DateActuelle=DateActuelle.currentDate();
 
     //Lieu de l'emprunt (site ou est le logiciel)
-    unsigned int Lieu (2);
     QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-    Lieu=FichierDeConfig.value("Autres/IdLieux", "config").toInt();
     QString id=ObtenirValeurParNom(RequeteIdLieu,"IdLieux").toString();
    //Enregistre la réservation
     //Prépare la requête
@@ -1051,7 +1049,7 @@ if((MembreActif)!=(""))
                                "Lieux_IdLieuxRetrait,ConfirmationReservation) "
                                "values (:IdLieu,:IdMembre,:IdJeu,:DateReservation,:DateEmprunt,:DateRetour,"
                                ":IdLieuRetrait,1)");
-    RequeteReservation.bindValue(":IdLieu",Lieu);
+    RequeteReservation.bindValue(":IdLieu",F_Preferences::ObtenirValeur("IdLieux").toInt());
     RequeteReservation.bindValue(":IdMembre",RequeteIdMembre.value(0));
     RequeteReservation.bindValue(":IdJeu",RequeteIdJeu.value(0));
     RequeteReservation.bindValue(":IdLieuRetrait",ObtenirValeurParNom(RequeteIdLieu,"IdLieux"));

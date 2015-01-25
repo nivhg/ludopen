@@ -32,6 +32,34 @@
    <property name="spacing">
     <number>2</number>
    </property>
+   <item row="2" column="0" colspan="3">
+    <widget class="QTableView" name="TbW_ListeReservations">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>300</height>
+      </size>
+     </property>
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="horizontalHeaderHighlightSections">
+      <bool>true</bool>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+    </widget>
+   </item>
    <item row="1" column="0" colspan="3">
     <widget class="QFrame" name="frame">
      <property name="minimumSize">
@@ -274,52 +302,20 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="QTableView" name="TbW_ListeReservations">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-     <property name="selectionBehavior">
-      <enum>QAbstractItemView::SelectRows</enum>
-     </property>
-     <attribute name="horizontalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-     <attribute name="horizontalHeaderHighlightSections">
-      <bool>true</bool>
-     </attribute>
-     <attribute name="verticalHeaderVisible">
-      <bool>false</bool>
-     </attribute>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLabel" name="Lb_Resultat">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
+   <item row="3" column="0" colspan="3">
+    <widget class="QLineEdit" name="Le_SQL"/>
    </item>
    <item row="4" column="0">
     <widget class="QLabel" name="Lb_NombreResultat">
      <property name="minimumSize">
       <size>
-       <width>250</width>
+       <width>400</width>
        <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>130</width>
+       <width>400</width>
        <height>16777215</height>
       </size>
      </property>
@@ -328,8 +324,12 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QLineEdit" name="Le_SQL"/>
+   <item row="4" column="1">
+    <widget class="QLabel" name="Lb_Resultat">
+     <property name="text">
+      <string>0</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

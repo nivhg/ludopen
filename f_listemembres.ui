@@ -75,6 +75,13 @@
      </property>
     </widget>
    </item>
+   <item row="4" column="2">
+    <widget class="QPushButton" name="Bt_SelectionListe">
+     <property name="text">
+      <string>Tout sélectionner</string>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="0" colspan="5">
     <widget class="QTableView" name="TbW_ListeMembre">
      <property name="minimumSize">
@@ -106,13 +113,6 @@
      <attribute name="verticalHeaderVisible">
       <bool>false</bool>
      </attribute>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QPushButton" name="Bt_SelectionListe">
-     <property name="text">
-      <string>Tout sélectionner</string>
-     </property>
     </widget>
    </item>
    <item row="1" column="0" colspan="5">
@@ -199,7 +199,13 @@
           </item>
          </widget>
         </item>
-        <item row="4" column="0">
+        <item row="3" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_Activites"/>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_Titre"/>
+        </item>
+        <item row="2" column="1" colspan="2">
          <widget class="QCheckBox" name="ChBx_AncienMembre">
           <property name="layoutDirection">
            <enum>Qt::LeftToRight</enum>
@@ -209,18 +215,15 @@
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Activites"/>
-        </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_Titre"/>
-        </item>
-        <item row="4" column="1" colspan="2">
-         <widget class="QCheckBox" name="ChBx_Abonnements">
+        <item row="4" column="0">
+         <widget class="QCheckBox" name="ChBx_Courriel">
           <property name="text">
-           <string>Aucun abonnement</string>
+           <string>Courriel</string>
           </property>
          </widget>
+        </item>
+        <item row="4" column="1" colspan="2">
+         <widget class="QLineEdit" name="LE_Courriel"/>
         </item>
        </layout>
       </item>

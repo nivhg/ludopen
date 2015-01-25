@@ -19,7 +19,7 @@ public:
     /**
      *  @brief Constructeur de la classe.
      */
-    AccesFichierParHTTP( QWidget * parent );
+    AccesFichierParHTTP( QWidget * parent = 0 );
     /**
      *  @brief Destructeur de la classe.
      */
@@ -32,6 +32,11 @@ public:
      *  @brief Annule le processus de téléchargement
      */
     void AnnulerTelechargements();
+    /**
+     *  @brief Téléchargement synchrone de fichiers
+     */
+    void TelechargementSynchrone(QString URL,QString CheminDestination);
+
 public slots:
     /**
      *  @brief Traitement des téléchargements : slot de fin de téléchargement et

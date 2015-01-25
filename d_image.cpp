@@ -26,6 +26,7 @@
 
 // En-tête propre à  l'application ----------------------------------------------
 #include "d_image.h"
+#include "f_preferences.h"
 #include "lb_image.h"
 #include "ui_d_image.h"
 #include "fonctions_globale.h"
@@ -53,19 +54,8 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
         this->lb_img=lb_img;
         iDecalage=0;
         iInversionDecalage=0;
-        QSqlQuery RequeteConnexionServeur;
-        //Récupères les informations pour la connexion au serveur
-        RequeteConnexionServeur.exec("SELECT CheminPhotosJeux, CheminPhotosServeur,AdresseServeur,LoginServeur FROM preferences WHERE IdPreferences=1") ;
-        RequeteConnexionServeur.next() ;
-        sCheminPhotoJeux = ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosJeux").toString();
-        EstCeLocal=!EstCeURL(sCheminPhotoJeux);
-        sCheminPhotoServeur=ObtenirValeurParNom(RequeteConnexionServeur,"CheminPhotosServeur").toString();
-        sAdresseServeur=ObtenirValeurParNom(RequeteConnexionServeur,"AdresseServeur").toString();
-        sLoginServeur=ObtenirValeurParNom(RequeteConnexionServeur,"LoginServeur").toString();
 
         // Récupère le chemin de la clé privée de la machine
-        QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-        sCheminClePrivee=FichierDeConfig.value("Autres/CheminClePrivee", "config").toString();
         uploader = new SecureFileUploader(this);
         // Connexion de l'évenement de fin d'opération sur le serveur
         connect( uploader, SIGNAL( SignalOperationFini(bool) ), this, SLOT( slot_OperationFini(bool) ) ) ;
@@ -336,7 +326,7 @@ void D_Image::on_Bt_DeplacerGauche_clicked()
     iInversionDecalage=-1;
     // Si l'opération est à faire localement, on exécute slot_OperationFini pour faire les opérations
     // à faire sur l'interface
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         Inverser(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -345,7 +335,9 @@ void D_Image::on_Bt_DeplacerGauche_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur"),
+                       F_Preferences::ObtenirValeur("CheminClePrivee"));
         Inverser(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -361,7 +353,7 @@ void D_Image::on_Bt_DeplacerDroite_clicked()
     iInversionDecalage=1;
     // Si l'opération est à faire localement, on exécute slot_OperationFini pour faire les opérations
     // à faire sur l'interface
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         Inverser(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -370,7 +362,9 @@ void D_Image::on_Bt_DeplacerDroite_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur"),
+                       F_Preferences::ObtenirValeur("sCheminClePrivee"));
         Inverser(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -405,12 +399,12 @@ void D_Image::Inverser(int emplacement)
                                          InfoFichierSource.completeSuffix());
     if(emplacement==EMPLACEMENT_SERVEUR)
     {
-        uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierDestination,
-                                  sCheminPhotoServeur + NomFichierTemporaire);
-        uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierSource,
-                                  sCheminPhotoServeur + NouveauNomFichierDestination);
-        uploader->AjouterCommande(COMMANDE_RENOMMER,sCheminPhotoServeur + NomFichierTemporaire,
-                                  sCheminPhotoServeur + NouveauNomFichierSource);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
+           NomFichierDestination, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NomFichierTemporaire);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
+           NomFichierSource, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierDestination);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
+           NomFichierTemporaire, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierSource);
     }
     else
     {
@@ -426,11 +420,11 @@ void D_Image::Inverser(int emplacement)
         }
         else
         {
-            CheminFichierSource=sCheminPhotoJeux+"/"+NomFichierSource;
-            CheminFichierDestination=sCheminPhotoJeux+"/"+NomFichierDestination;
-            CheminFichierTemporaire=sCheminPhotoJeux+"/"+NomFichierTemporaire;
-            CheminNouveauFichierSource=sCheminPhotoJeux+"/"+NouveauNomFichierSource;
-            CheminNouveauFichierDestination=sCheminPhotoJeux+"/"+NouveauNomFichierDestination;
+            CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierSource;
+            CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierDestination;
+            CheminFichierTemporaire=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierTemporaire;
+            CheminNouveauFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierSource;
+            CheminNouveauFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierDestination;
         }
         QFile FichierSource(CheminFichierSource),
               FichierDestination(CheminFichierDestination);
@@ -482,7 +476,7 @@ void D_Image::on_Bt_Ajouter_clicked()
     {
         return;
     }
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         Ajouter(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -491,7 +485,9 @@ void D_Image::on_Bt_Ajouter_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("sLoginServeur"),
+                       F_Preferences::ObtenirValeur("CheminClePrivee"));
         Ajouter(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -529,7 +525,8 @@ void D_Image::Ajouter(int emplacement)
         i++;
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
-            uploader->AjouterCommande(COMMANDE_TELEVERSEMENT,sNomImageAjoutee,sCheminPhotoServeur+"/"+DestNomFichier);
+            uploader->AjouterCommande(COMMANDE_TELEVERSEMENT,sNomImageAjoutee,
+                                      F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+DestNomFichier);
         }
         else
         {
@@ -542,7 +539,7 @@ void D_Image::Ajouter(int emplacement)
             else
             {
                 // Copie le fichier dans le dossier temporaire pour affichage de l'image
-                DestCheminFichier=sCheminPhotoJeux+"/"+DestNomFichier;
+                DestCheminFichier=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+DestNomFichier;
             }
             QFile FichierSource(sNomImageAjoutee);
             FichierSource.copy(DestCheminFichier);
@@ -565,7 +562,7 @@ void D_Image::on_Bt_Supprimer_clicked()
 {
     qDebug()<<"on_Bt_Supprimer_clicked()";
     iOperationServeur=OP_SUPPRESSION;
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         Suppression(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -574,7 +571,9 @@ void D_Image::on_Bt_Supprimer_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur")
+                       , F_Preferences::ObtenirValeur("CheminClePrivee"));
         Suppression(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -593,7 +592,7 @@ void D_Image::Suppression(int emplacement)
     {
         InfoFichierSource.setFile(NomFichierSource);
         uploader->AjouterCommande(COMMANDE_SUPPRIMER,
-            sCheminPhotoServeur+"/"+InfoFichierSource.fileName(),"");
+            F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+InfoFichierSource.fileName(),"");
     }
     else
     {
@@ -625,8 +624,8 @@ void D_Image::DecalerAGauche(int emplacement)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
             uploader->AjouterCommande(COMMANDE_RENOMMER,
-                sCheminPhotoServeur+"/"+NomFichierSource,
-                sCheminPhotoServeur+"/"+NouveauNomFichierDestination);
+                F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+NomFichierSource,
+                F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+NouveauNomFichierDestination);
         }
         else
         {
@@ -638,8 +637,8 @@ void D_Image::DecalerAGauche(int emplacement)
             }
             else
             {
-                CheminFichierSource=sCheminPhotoJeux+"/"+NomFichierSource;
-                CheminFichierDestination=sCheminPhotoJeux+"/"+NouveauNomFichierDestination;
+                CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierSource;
+                CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierDestination;
             }
             FichierSource.setFileName(CheminFichierSource);
             FichierSource.rename(CheminFichierDestination);
@@ -655,8 +654,10 @@ void D_Image::DecalerAGauche(int emplacement)
         // Si il n'y a plus d'image à droite, on désactive le bouton de droite
         if(iDecalage+3>=sCheminImage.count())
         {
-            // Si il n'y a plus d'image dans la zone sélectionnée, on se décale à gauche
-            if(iDecalage>=sCheminImage.count())
+            // Si il n'y a plus d'image dans la zone sélectionnée,
+            // on se décale à gauche sauf si on est déjà sur
+            // les premieres images
+            if(iDecalage>=sCheminImage.count() && iDecalage > 0)
             {
                 on_Bt_Gauche_clicked();
             }
@@ -672,7 +673,7 @@ void D_Image::on_Bt_Defaut_Ludopen_clicked()
 {
     qDebug()<<"on_Bt_Defaut_Ludopen_clicked():sCheminImage:"<<sCheminImage;
     iOperationServeur=OP_DEFINIR_LUDOPEN;
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         DefinirLudopen(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -681,7 +682,9 @@ void D_Image::on_Bt_Defaut_Ludopen_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur"),
+                       F_Preferences::ObtenirValeur("CheminClePrivee"));
         DefinirLudopen(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -710,8 +713,9 @@ void D_Image::DefinirLudopen(int emplacement)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
             uploader->AjouterCommande(COMMANDE_RENOMMER,
-                sCheminPhotoServeur + InfoFichierSource.fileName(),
-                sCheminPhotoServeur + sCodeJeu+"."+InfoFichierSource.completeSuffix());
+                F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
+                F_Preferences::ObtenirValeur("CheminPhotoServeur") + sCodeJeu+"."+
+                                      InfoFichierSource.completeSuffix());
         }
         else
         {
@@ -724,7 +728,8 @@ void D_Image::DefinirLudopen(int emplacement)
             else
             {
                 NomFichierDestination=
-                        sCheminPhotoJeux+"/"+sCodeJeu+"."+InfoFichierSource.completeSuffix();
+                        F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+sCodeJeu+"."+
+                        InfoFichierSource.completeSuffix();
             }
             FichierSource.setFileName(NomFichierSource);
             FichierSource.rename(NomFichierDestination);
@@ -748,7 +753,7 @@ void D_Image::on_Bt_Defaut_Web_clicked()
 {
     qDebug()<<"on_Bt_Defaut_Web_clicked():sCheminImage:"<<sCheminImage;
     iOperationServeur=OP_DEFINIR_WEB;
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         DefinirWeb(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -757,7 +762,9 @@ void D_Image::on_Bt_Defaut_Web_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur"),
+                       F_Preferences::ObtenirValeur("CheminClePrivee"));
         DefinirWeb(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -793,7 +800,7 @@ void D_Image::on_Bt_Defaut_Deux_clicked()
     qDebug()<<"on_Bt_Defaut_Deux_clicked():sCheminImage"<<sCheminImage<<
          ",m_ListeCommandes"<<uploader->m_ListeCommandes<<",iLbImageSelectionnee:"<<iLbImageSelectionnee;
     iOperationServeur=OP_DEFINIR_DEUX;
-    if(EstCeLocal)
+    if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         DefinirDeux(EMPLACEMENT_LOCAL);
         slot_OperationFini(true);
@@ -802,7 +809,9 @@ void D_Image::on_Bt_Defaut_Deux_clicked()
     {
         ui->dockWidget->setCursor(Qt::WaitCursor);
         uploader->EffacerCommandes();
-        uploader->init(sAdresseServeur, sLoginServeur, sCheminClePrivee);
+        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                       F_Preferences::ObtenirValeur("LoginServeur"),
+                       F_Preferences::ObtenirValeur("CheminClePrivee"));
         DefinirDeux(EMPLACEMENT_SERVEUR);
         uploader->FaireCommandes();
     }
@@ -830,24 +839,24 @@ void D_Image::DefinirDeux(int emplacement)
         {
             // Si on a sélectionné le 1° fichier, on déplace le 2° à la fin
             // et on renomme le 1° fichier en 2° fichier
-            if(iLbImageSelectionnee-iDecalage==0)
+            if(iLbImageSelectionnee-iDecalage==0 && sCheminImage.count() > 1 )
             {
                 QString Chemin2emeFichier=sCheminImage[1];
                 QFileInfo Info2emeFichier(Chemin2emeFichier);
                 QString NouveauNom2emeFichier(sCodeJeu+"-"+QString::number(sCheminImage.count()+1)+
                                                      "."+Info2emeFichier.completeSuffix());                uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    sCheminPhotoServeur + Info2emeFichier.fileName(),
-                    sCheminPhotoServeur + NouveauNom2emeFichier);
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + Info2emeFichier.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNom2emeFichier);
                 QString NomFichierDestination(sCodeJeu+"-2."+InfoFichierSource.completeSuffix());
                 uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    sCheminPhotoServeur + InfoFichierSource.fileName(),
-                    sCheminPhotoServeur + NomFichierDestination);
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NomFichierDestination);
             }
             else
             {
                 uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    sCheminPhotoServeur + InfoFichierSource.fileName(),
-                    sCheminPhotoServeur + NouveauNomFichierDestination);
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierDestination);
                 iInversionDecalage=-iLbImageSelectionnee-iDecalage+1;
             }
         }
@@ -860,7 +869,8 @@ void D_Image::DefinirDeux(int emplacement)
             }
             else
             {
-                CheminNouvelleDestination=sCheminPhotoJeux+"/"+NouveauNomFichierDestination;
+                CheminNouvelleDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+
+                        NouveauNomFichierDestination;
             }
             FichierSource.setFileName(CheminFichierSource);
             FichierSource.rename(CheminNouvelleDestination);
@@ -935,7 +945,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
                 {
                     ui->Bt_Droite->setEnabled(true);
                 }
-                if(!EstCeLocal) Ajouter(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) Ajouter(EMPLACEMENT_TEMP);
                 // Si il y a au moins 2 images, on autorise le déplacement à droite
                 if(sCheminImage.count()>1)
                 {
@@ -944,17 +954,18 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
                 RechargerImages();
                 iLbImageSelectionnee=2;
                 ChangerSelection(lb_image);
+                MontrerLudopenWebDeux(true);
                 break;
             case OP_DEPLACEMENT_DROITE:
-                if(!EstCeLocal) Inverser(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) Inverser(EMPLACEMENT_TEMP);
                 RechargerImages();
                 break;
             case OP_DEPLACEMENT_GAUCHE:
-                if(!EstCeLocal) Inverser(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) Inverser(EMPLACEMENT_TEMP);
                 RechargerImages();
                 break;
             case OP_SUPPRESSION:
-                if(!EstCeLocal) Suppression(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) Suppression(EMPLACEMENT_TEMP);
                 // Si c'était la dernière image, on désactive le bouton Droite
                 if(iDecalage==sCheminImage.count())
                 {
@@ -963,17 +974,18 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
                 RechargerImages();
                 iLbImageSelectionnee=2;
                 ChangerSelection(lb_image);
+                MontrerLudopenWebDeux(true);
                 break;
             case OP_DEFINIR_LUDOPEN:
-                if(!EstCeLocal) DefinirLudopen(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) DefinirLudopen(EMPLACEMENT_TEMP);
                 RechargerImages();
                 break;
             case OP_DEFINIR_WEB:
-                if(!EstCeLocal) DefinirWeb(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) DefinirWeb(EMPLACEMENT_TEMP);
                 RechargerImages();
                 break;
             case OP_DEFINIR_DEUX:
-                if(!EstCeLocal) DefinirDeux(EMPLACEMENT_TEMP);
+                if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux"))) DefinirDeux(EMPLACEMENT_TEMP);
                 RechargerImages();
                 iLbImageSelectionnee=2;
                 ChangerSelection(lb_image);

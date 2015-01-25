@@ -62,10 +62,21 @@ public:
     void closeEvent( QCloseEvent * event ) ;
 
     /**
-     *  @brief Permet de changer d'anglais.
+     *  @brief Permet de changer d'onglet.
      *
      */
     void SelectionnerOnglet( int nOnglet ) ;
+
+    /**
+     *  @brief Permet de récupérer une valeur d'une préférence.
+     *
+     */
+    static QString ObtenirValeur( QString NomChamps ) ;
+    /**
+     *  @brief  Rechargement des préférences à partir de la BDD
+     *
+     */
+    void ChargerPreferencesBDD();
 
 signals:
     void SignalFermerFenetre() ;
@@ -390,6 +401,12 @@ private:
     ///< Creer un modele du tableau pour les lieux de l'info ludo.
     QStandardItemModel * TbJeuxMotCle;
 
+    ///< Nom et valeur des préférences
+    static QMap<QString, QString> TbPreferences;
+
+    ///< Chemin du fichier de config
+    QString sCheminConfig;
+
     // METHODEs -----------------------------------------------------------------
     /**
      *  @brief Le line edit qui récupère cette fonction se met en forme sous le type XX XX XX XX XX.
@@ -410,6 +427,18 @@ private:
      *
      */
     void AfficherTousLesTableaux();
+    /**
+     *  @brief  Permet de sauvegarder une préférence
+     *
+     */
+
+    void SauverPreference(QString NomChamps, QString Valeur, bool BDD=true);
+
+    /**
+     *  @brief  Retourne l'emplacement du fichier de config en fonction des arguments passés à Ludopen
+     *
+     */
+    QString TrouverFichierConfig();
 };
 
 //------------------------------------------------------------------------------

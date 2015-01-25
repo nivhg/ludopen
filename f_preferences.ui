@@ -51,7 +51,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>4</number>
      </property>
      <property name="iconSize">
       <size>
@@ -361,7 +361,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="Lb_AdresseIP">
            <property name="text">
-            <string>Adresse IP :</string>
+            <string>Adresse serveur BDD :</string>
            </property>
           </widget>
          </item>
@@ -449,7 +449,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Serveur :</string>
+            <string>Serveur de fichiers :</string>
            </property>
           </widget>
          </item>
@@ -548,7 +548,7 @@
          <item row="11" column="0">
           <widget class="QLabel" name="Lb_Adresse_Serveur">
            <property name="text">
-            <string>Adresse serveur :</string>
+            <string>Adresse du serveur de fichiers :</string>
            </property>
           </widget>
          </item>
@@ -671,19 +671,6 @@
           <widget class="QLineEdit" name="LE_CheminRegle">
            <property name="text">
             <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="5">
-          <widget class="QLabel" name="Lb_Emplacement">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Emplacement :</string>
            </property>
           </widget>
          </item>
@@ -895,7 +882,7 @@
          <item row="13" column="0" colspan="2">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>Chemin des images sur le serveur</string>
+            <string>Chemin des images sur le serveur :</string>
            </property>
           </widget>
          </item>
@@ -958,7 +945,7 @@
          <item row="11" column="0" colspan="2">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>Chemin des règles sur le serveur</string>
+            <string>Chemin des règles sur le serveur :</string>
            </property>
           </widget>
          </item>
@@ -1090,19 +1077,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
-          <widget class="QLabel" name="Lb_Statut">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Statut :</string>
-           </property>
-          </widget>
-         </item>
          <item row="6" column="4">
           <widget class="QCommandLinkButton" name="Bt_AjouterMotCle">
            <property name="maximumSize">
@@ -1185,6 +1159,32 @@
            </property>
            <property name="selectionBehavior">
             <enum>QAbstractItemView::SelectRows</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="Lb_Statut">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Statut :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="5">
+          <widget class="QLabel" name="Lb_Emplacement">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Emplacement :</string>
            </property>
           </widget>
          </item>

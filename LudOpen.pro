@@ -11,7 +11,7 @@ TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
 # Si je veux que l'application démarre dans une fenêtre de shell
 # pour avoir les messages d'erreur
-CONFIG   += CONSOLE
+#CONFIG   += CONSOLE
 
 INCLUDEPATH = $$PWD/libs/ssh/
 
@@ -50,7 +50,8 @@ SOURCES += \
     d_ajoutsuppmodiffournisseursediteurs.cpp \
     acces_fichier_http.cpp \
     securefileuploader.cpp \
-    fonctions_globale.cpp
+    fonctions_globale.cpp \
+    majeur.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -87,7 +88,8 @@ HEADERS  += \
     d_ajoutsuppmodiffournisseursediteurs.h \
     acces_fichier_http.h \
     securefileuploader.h \
-    fonctions_globale.h
+    fonctions_globale.h \
+    majeur.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -120,7 +122,7 @@ FORMS    += \
     d_image.ui \
     d_ajoutsuppmodiffournisseursediteurs.ui
 
-VERSION = "01-11-2014"
+VERSION = "1.98"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 

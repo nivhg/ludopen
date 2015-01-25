@@ -30,6 +30,7 @@
 
 #include "f_paiement.h"
 #include "ui_f_paiement.h"
+#include "f_preferences.h"
 
 //------------------------------------------------------------------------------
 /** Constructeur de F_Paiement
@@ -45,11 +46,7 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    ui->setupUi(this);
 
-   //Recherche du prix unitaire de la location
-   QSqlQuery RequetePrixunitaire;
-   RequetePrixunitaire.exec("SELECT UniteLocation FROM preferences");
-   RequetePrixunitaire.next();
-   this->PrixCredit=(round(RequetePrixunitaire.value(0).toDouble()*100.0));
+   this->PrixCredit=(round(F_Preferences::ObtenirValeur("UniteLocation").toDouble()*100.0));
 
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;

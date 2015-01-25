@@ -55,7 +55,7 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     this->show();
     
     QSqlQuery RequeteEtiquetteJeu ;
-    RequeteEtiquetteJeu.prepare("SELECT Nom, NumeroTel, Adresse, CodePostal, Ville, NomJeu, CodeJeu, ContenuJeu FROM preferences, jeux WHERE CodeJeu =:CodeDuJeu") ;
+    RequeteEtiquetteJeu.prepare("SELECT NomJeu, CodeJeu, ContenuJeu FROM jeux WHERE CodeJeu =:CodeDuJeu") ;
     RequeteEtiquetteJeu.bindValue(":CodeDuJeu", CodeJeu);
     if(!RequeteEtiquetteJeu.exec())
     {
@@ -63,10 +63,12 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     }
     RequeteEtiquetteJeu.next() ;
     
-    QString InfoLudo = RequeteEtiquetteJeu.value(0).toString() + "\n" + RequeteEtiquetteJeu.value(2).toString() + "\n" + RequeteEtiquetteJeu.value(3).toString()+ "  " + RequeteEtiquetteJeu.value(4).toString() + "\n" + RequeteEtiquetteJeu.value(1).toString() +"\n" ;
-    QString NomJeu = RequeteEtiquetteJeu.value(5).toString() ;
-    QString CodeDuJeu = RequeteEtiquetteJeu.value(6).toString() ;
-    QString ContenuJeu = RequeteEtiquetteJeu.value(7).toString() ;
+    QString InfoLudo = F_Preferences::ObtenirValeur("Nom") + "\n" + F_Preferences::ObtenirValeur("Adresse")
+            + "\n" + F_Preferences::ObtenirValeur("CodePostal") + "  " + F_Preferences::ObtenirValeur("Ville")
+            + "\n" + F_Preferences::ObtenirValeur("NumeroTel") +"\n" ;
+    QString NomJeu = RequeteEtiquetteJeu.value(0).toString();
+    QString CodeDuJeu = RequeteEtiquetteJeu.value(1).toString() ;
+    QString ContenuJeu = RequeteEtiquetteJeu.value(2).toString() ;
     
     ui->Lb_NomJeu->setText(NomJeu);
     ui->Lb_InfoLudo->setText(InfoLudo);

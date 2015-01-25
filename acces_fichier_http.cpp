@@ -74,7 +74,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
     if(IndexExtension!=0)
     {
         QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
-        QFile tempfile;
+        QFile fichierTelecharger;
         // Nom du fichier venant d'être téléchargé
         QString NomFichier=reply->request().url().path().split("/").last();
         QFileInfo FichierInfo(NomFichier);
@@ -86,13 +86,13 @@ void AccesFichierParHTTP::SlotTelechargementFini()
             case QNetworkReply::NoError:
                 // Pas d'erreur
                 // Création du fichier temporaire
-                tempfile.setFileName(QDir::fromNativeSeparators(QDir::tempPath()+"/"+NomFichier));
-                tempfile.open(QIODevice::WriteOnly);
-                //            tempfile->setAutoRemove(false);
-                tempfile.write(reply->readAll());
-                tempfile.close();
+                fichierTelecharger.setFileName(QDir::fromNativeSeparators(QDir::tempPath()+"/"+NomFichier));
+                fichierTelecharger.open(QIODevice::WriteOnly);
+                //            fichierTelecharger->setAutoRemove(false);
+                fichierTelecharger.write(reply->readAll());
+                fichierTelecharger.close();
                 delete reply;
-                emit SignalFichierTelecharger(tempfile.fileName());
+                emit SignalFichierTelecharger(fichierTelecharger.fileName());
                 // On a trouvé l'extension du fichier, on passe au fichier suivant
                 PasserFichierSuivant(true);
                 return;
@@ -100,7 +100,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
             case QNetworkReply::ContentNotFoundError:
                 // 404 Not found
                 delete reply;
-                //GestionTelechargement(tempfile.fileName());
+                //GestionTelechargement(fichierTelecharger.fileName());
                 break;
         }
         // Si on a fait toutes les extensions, on passe au fichier suivant si il y en a
@@ -141,4 +141,42 @@ void AccesFichierParHTTP::PasserFichierSuivant(bool FichierTrouver)
     NomFichier=CodeJeu+"-"+QString::number(NumeroFichier);
     IndexExtension=0;
     SlotTelechargementFini();
+}
+
+void AccesFichierParHTTP::TelechargementSynchrone(QString URL,QString CheminDestination)
+{
+    qDebug()<<"AccesFichierParHTTP::TelechargementSynchrone: URL:"<<URL<<" , CheminDestination: " <<CheminDestination;
+    QNetworkAccessManager m_NetworkMngr;
+    QNetworkReply *reply= m_NetworkMngr.get(QNetworkRequest(
+                          QUrl(URL)));
+    QEventLoop loop;
+    QObject::connect(reply, SIGNAL(finished()),&loop, SLOT(quit()));
+    loop.exec();
+
+    QFile fichierTelecharger;
+    switch (reply->error())
+    {
+        case QNetworkReply::NoError:
+            // Pas d'erreur
+            fichierTelecharger.setFileName(QDir::fromNativeSeparators(CheminDestination));
+            if(fichierTelecharger.exists())
+            {
+                fichierTelecharger.remove();
+            }
+            fichierTelecharger.open(QIODevice::WriteOnly);
+            fichierTelecharger.write(reply->readAll());
+            fichierTelecharger.close();
+
+            delete reply;
+            break;
+        case QNetworkReply::ContentNotFoundError:
+          // 404 Not found
+          /*int httpStatus = reply->attribute(
+            QNetworkRequest::HttpStatusCodeAttribute).toInt();
+          QByteArray httpStatusMessage = reply->attribute(
+            QNetworkRequest::HttpReasonPhraseAttribute).toByteArray();*/
+          delete reply;
+          break;
+    }
+
 }

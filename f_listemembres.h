@@ -121,6 +121,10 @@ private slots:
 
     void on_ChBx_Retard_clicked();
 
+    void on_LE_Courriel_textChanged(const QString &arg1);
+
+    void on_ChBx_Courriel_clicked();
+
 private:
     Ui::F_ListeMembres *ui;
 

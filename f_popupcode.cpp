@@ -23,6 +23,7 @@ using namespace std ;
 // En-tête propre à l'objet ----------------------------------------------------
 #include "f_popupcode.h"
 #include "ui_f_popupcode.h"
+#include "f_preferences.h"
 //------------------------------------------------------------------------------
 
 /**
@@ -55,18 +56,11 @@ F_PopUpCode::~F_PopUpCode()
  */
 void F_PopUpCode::on_Bt_OK_clicked()
 {
-    QSqlQuery RequeteCode;
-    QString sCompare;
     QString sCode;
 
-    RequeteCode.prepare("SELECT CodeAdmin FROM preferences WHERE IdPreferences=1");
-    RequeteCode.exec();
-    RequeteCode.next();
-
-    sCompare = RequeteCode.value(0).toString();
     sCode = ui->LE_Code->text();
 
-    if(sCompare.compare(sCode) == 0)
+    if(F_Preferences::ObtenirValeur("CodeAdmin").compare(sCode) == 0)
     {
         this->close();
         ui->LE_Code->clear();

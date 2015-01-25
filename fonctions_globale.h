@@ -8,6 +8,7 @@
 QVariant ObtenirValeurParNom(QSqlQuery requete,QString NomChamps);
 bool EstCeURL(QString chaine);
 bool EstCeNomFichierContient(QString CheminFichier,QString achercher);
+int ExecuterScriptSql(const QString & nomFichier);
 
 #define COMPUTE_BUILD_YEAR \
     ( \

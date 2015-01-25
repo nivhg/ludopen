@@ -87,6 +87,7 @@ private:
     F_Membres * pAdministrerMembres;
     F_Paiement * pPaiement;
     F_Retards * pRetards;
+    F_Preferences * pPreferences;
     F_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;
     F_ListeReservations * pListeReservations ;

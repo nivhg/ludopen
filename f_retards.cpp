@@ -20,6 +20,7 @@
 #include "f_retards.h"
 #include "ui_f_retards.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 // En-têtes standards ----------------------------------------------------------
 #include <QStandardItemModel>
@@ -35,8 +36,6 @@ F_Retards::F_Retards(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::F_Retards)
 {
-   QSqlQuery Requete ;
-
    ui->setupUi(this);
 
    //Mise à  jour de la liste
@@ -92,46 +91,38 @@ F_Retards::F_Retards(QWidget *parent) :
    ui->Lb_Erreur->setText("");
 
    //Recupération du corps de l'email et des paramètre de connection
-   if( Requete.exec( "SELECT AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail,Email FROM preferences WHERE IdPreferences=1" ) )
-   {
-        Requete.next();
-        QString ServeurSMTP =  ObtenirValeurParNom(Requete,"AdresseServeurSMTP").toString();
-        int PortSMTP = ObtenirValeurParNom(Requete,"PortSMTP").toInt();
-        if(ServeurSMTP=="" || PortSMTP==0)
-        {
-           QMessageBox::critical(this, "Erreur de paramétrage",
-                "Serveur d'envoi de courriel (SMTP) mal paramétré.\n"
-                "Vérifier le paramétrage dans les Préférences->Réseaux et relancer l'application.");
-           ui->gridLayout_3->setEnabled(false);
-           return;
-        }
-        QString Email=ObtenirValeurParNom(Requete,"Email").toString();
-        if(Email.indexOf("@")==-1)
-        {
-           QMessageBox::critical(this, "Erreur de paramétrage",
-                "Courriel d'envoi de courriel mal formé ou vide.\n"
-                "Vérifier le paramétrage dans les Préférences->Informations et relancer l'application.");
-           ui->gridLayout_3->setEnabled(false);
-           return;
-        }
-        ui->LE_Sujet->setText( ObtenirValeurParNom(Requete,"SujetEmail").toString() ) ;
-        ui->TE_Corps->setPlainText( ObtenirValeurParNom(Requete,"CorpsEmail").toString() ) ;
+    QString ServeurSMTP =  F_Preferences::ObtenirValeur("AdresseServeurSMTP");
+    int PortSMTP = F_Preferences::ObtenirValeur("PortSMTP").toInt();
+    if(ServeurSMTP=="" || PortSMTP==0)
+    {
+       QMessageBox::critical(this, "Erreur de paramétrage",
+            "Serveur d'envoi de courriel (SMTP) mal paramétré.\n"
+            "Vérifier le paramétrage dans les Préférences->Réseaux et relancer l'application.");
+       ui->gridLayout_3->setEnabled(false);
+       return;
+    }
+    QString Email=F_Preferences::ObtenirValeur("Email");
+    if(Email.indexOf("@")==-1)
+    {
+       QMessageBox::critical(this, "Erreur de paramétrage",
+            "Courriel d'envoi de courriel mal formé ou vide.\n"
+            "Vérifier le paramétrage dans les Préférences->Informations et relancer l'application.");
+       ui->gridLayout_3->setEnabled(false);
+       return;
+    }
+    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmail")) ;
+    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmail")) ;
 
-        ui->Bt_Enregistrer->setDisabled( true ) ;
-        ui->Bt_Annuler->setDisabled( true ) ;
+    ui->Bt_Enregistrer->setDisabled( true ) ;
+    ui->Bt_Annuler->setDisabled( true ) ;
 
-        //On crée l'objet Courriel qui permettra l'envoi des emails
-        pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
+    //On crée l'objet Courriel qui permettra l'envoi des emails
+    pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
 
-        //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
-        connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
-        connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
-        connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
-   }
-   else
-   {
-      qDebug() << "F_Retards::F_Retards : " << Requete.lastQuery() ;
-   }
+    //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
+    connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
+    connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
+    connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
 }
 
 /**
@@ -164,23 +155,14 @@ void F_Retards::MaJListe()
    QDate DateDeRetourToleree;
    DateDeRetourToleree=DateDeRetourToleree.currentDate();
 
-   if(!RequeteNbJoursRetardToleres.exec("SELECT JourRetard FROM preferences WHERE IdPreferences=1"))
-   {
-      qDebug()<<"F_Retards::MaJListe()=> RequeteNbJoursRetardToleres=" <<RequeteNbJoursRetardToleres.lastQuery();
-   }
-   else
-   {
-      // Calculer la date de retour avec la tolérance du nombre de jours
-      RequeteNbJoursRetardToleres.next();
-      DateDeRetourToleree = DateDeRetourToleree.addDays( -(RequeteNbJoursRetardToleres.value(0).toInt()) ) ;
-      //qDebug()<<"F_Retards::MaJListe()=> DateDeRetourToleree=" << DateDeRetourToleree << "Nb jour retard de la BDD=" << RequeteNbJoursRetardToleres.value(0).toInt();
-   }
+  // Calculer la date de retour avec la tolérance du nombre de jours
+  DateDeRetourToleree = DateDeRetourToleree.addDays( -(F_Preferences::ObtenirValeur("JourRetard").toInt()) ) ;
+  //qDebug()<<"F_Retards::MaJListe()=> DateDeRetourToleree=" << DateDeRetourToleree << "Nb jour retard de la BDD=" << RequeteNbJoursRetardToleres.value(0).toInt();
 
-   RequeteAvecDate="SELECT IdMembre,membres.Nom,Prenom,CodeMembre,membres.Email,membres.Ville,membres.Telephone,Mobile,NbrEMailsEnvoyes "
-                         "FROM preferences,emprunts,membres "
-                             "WHERE IdMembre=Membres_IdMembre "
-                             "AND DateRetourPrevu<='" + DateDeRetourToleree.toString("yyyy-MM-dd")+"' "
-                             "AND DateRetour IS NULL GROUP BY IdMembre" ;
+   RequeteAvecDate="SELECT IdMembre,membres.Nom,Prenom,CodeMembre,membres.Email,membres.Ville,"
+           "membres.Telephone,Mobile,NbrEMailsEnvoyes FROM emprunts,membres "
+           "WHERE IdMembre=Membres_IdMembre AND DateRetourPrevu<='" +
+           DateDeRetourToleree.toString("yyyy-MM-dd")+"' AND DateRetour IS NULL GROUP BY IdMembre" ;
 
    //Requete récupérant la liste des membres ayant des jeux en retards et des jeux correspondants
    if( !RequeteMembre.exec( RequeteAvecDate ) )
@@ -370,16 +352,6 @@ void F_Retards::on_Bt_Envoyer_clicked()
     // effacer les messages d'erreur précédent
     ui->Lb_Erreur->clear() ;
 
-    // On récupère l'email de la ludo, l'adresse du serveur SMPT, le port, le sujet du mail et le corps du mail dans la base de données
-    if ( RequeteConnexion.exec( "SELECT Email,AdresseServeurSMTP,PortSMTP,SujetEmail,CorpsEmail FROM preferences WHERE IdPreferences=1" ) )
-    {
-        RequeteConnexion.next() ;
-    }
-    else
-    {
-        qDebug() << "F_Retards : on_Bt_Enregistrer_clicked() : " << RequeteConnexion.lastQuery() ;
-    }
-
     //On vide le vecteur faisant un lien entre les ids des membres et les adresses des threads d'envoi d'email
     this->ListeEMailAEnvoyer.clear() ;
 
@@ -392,8 +364,8 @@ void F_Retards::on_Bt_Envoyer_clicked()
         {
             bSelection = true ;
             //On met l'objet et le corps du mail recuperé dans la base de données dans des QString
-            sSujetEmail = RequeteConnexion.record().value( 3 ).toString() ;
-            sCorpsEmail = RequeteConnexion.record().value( 4 ).toString() ;
+            sSujetEmail = F_Preferences::ObtenirValeur("SujetEmail") ;
+            sCorpsEmail = F_Preferences::ObtenirValeur("CorpsEmail") ;
 
             //On remplace les sigles par les données définies.
             // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
@@ -409,8 +381,8 @@ void F_Retards::on_Bt_Envoyer_clicked()
             sSujetEmail = sSujetEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8 ) ).toString()) ;
             sCorpsEmail = sCorpsEmail.replace("%destinataire", ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8 ) ).toString()) ;
 
-            sSujetEmail = sSujetEmail.replace("%expediteur", RequeteConnexion.record().value(0).toString() ) ;
-            sCorpsEmail = sCorpsEmail.replace("%expediteur", RequeteConnexion.record().value(0).toString() ) ;
+            sSujetEmail = sSujetEmail.replace("%expediteur", F_Preferences::ObtenirValeur("Email") ) ;
+            sCorpsEmail = sCorpsEmail.replace("%expediteur", F_Preferences::ObtenirValeur("Email") ) ;
 
             sSujetEmail = sSujetEmail.replace("%date", QDate::currentDate().toString( "dd/MM/yyyy" ) ) ;
             sCorpsEmail = sCorpsEmail.replace("%date", QDate::currentDate().toString( "dd/MM/yyyy" ) ) ;
@@ -418,7 +390,7 @@ void F_Retards::on_Bt_Envoyer_clicked()
             //On remplie le vecteur des EMails avec les données de ce membre actuel
             EMailProchainAEnvoyer.sCorps = sCorpsEmail ;
             EMailProchainAEnvoyer.sSujet = sSujetEmail ;
-            EMailProchainAEnvoyer.sFrom = RequeteConnexion.record().value(0).toString() ;
+            EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
             EMailProchainAEnvoyer.sTo = ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8)).toString() ;
             EMailProchainAEnvoyer.IDMembre =  ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,0 )).toUInt() ;
 
@@ -521,21 +493,11 @@ void F_Retards::on_Bt_Enregistrer_clicked()
  */
 void F_Retards::on_Bt_Annuler_clicked()
 {
-    QSqlQuery Requete ;
+    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmail") ) ;
+    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmail") ) ;
 
-    if( Requete.exec( "SELECT SujetEmail, CorpsEmail FROM preferences WHERE IdPreferences=1") )
-    {
-        Requete.next() ;
-        ui->LE_Sujet->setText( Requete.record().value( 0 ).toString() ) ;
-        ui->TE_Corps->setPlainText( Requete.record().value( 1 ).toString() ) ;
-
-        ui->Bt_Enregistrer->setDisabled( true ) ;
-        ui->Bt_Annuler->setDisabled( true ) ;
-    }
-    else
-    {
-        qDebug() << " Erreur :F_Retards::on_Bt_Annuler_clicked() : " << Requete.lastQuery() ;
-    }
+    ui->Bt_Enregistrer->setDisabled( true ) ;
+    ui->Bt_Annuler->setDisabled( true ) ;
 }
 
 /**

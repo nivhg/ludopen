@@ -166,7 +166,7 @@ Nb de jours de retard : %jours</string>
      <item row="1" column="1">
       <widget class="QPushButton" name="Bt_Deselectionner">
        <property name="text">
-        <string>Tous déselectionner</string>
+        <string>Tout déselectionner</string>
        </property>
        <property name="icon">
         <iconset>
@@ -220,7 +220,7 @@ Nb de jours de retard : %jours</string>
      <item row="1" column="0">
       <widget class="QPushButton" name="Bt_Selectionner">
        <property name="text">
-        <string>Tous sélectionner</string>
+        <string>Tout sélectionner</string>
        </property>
       </widget>
      </item>

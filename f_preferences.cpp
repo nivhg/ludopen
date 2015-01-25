@@ -52,6 +52,7 @@ using namespace std;
 #include "fonctions_globale.h"
 //------------------------------------------------------------------------------
 
+QMap<QString, QString> F_Preferences::TbPreferences;
 /**
  *  @brief  Constructeur de la classe.
  *
@@ -161,8 +162,14 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->LE_ConfirmerCode->setEchoMode(QLineEdit::Password);
     ui->LE_MotdePasse->setEchoMode(QLineEdit::Password);
 
-    this->AfficherTousLesTableaux();
-    this->AfficherAutresInformations();
+    sCheminConfig=TrouverFichierConfig();
+    QSettings FichierDeConfig(sCheminConfig, QSettings::IniFormat);
+    FichierDeConfig.beginGroup("Ludopen");
+    QStringList keys = FichierDeConfig.childKeys();
+    foreach (QString key, keys)
+    {
+        TbPreferences[key]=FichierDeConfig.value(key).toString();
+    }
 
     connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
     connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
@@ -179,6 +186,26 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->label_2->hide();
     ui->lineEdit->hide();
     ui->lineEdit_2->hide();
+}
+
+/**
+ *  @brief  Retourne l'emplacement du fichier de config en fonction des arguments passés à Ludopen
+ *
+ */
+QString F_Preferences::TrouverFichierConfig()
+{
+    QStringList arg=QApplication::arguments();
+    QRegExp CheminRegExp("/config:(.*)");
+    int CheminIndex=QApplication::arguments().indexOf(CheminRegExp);
+    if(CheminIndex==-1)
+    {
+        return QDesktopServices::storageLocation(QDesktopServices::DataLocation) +
+                "ludopen" +QDir::separator()+"config.ini";
+    }
+    else
+    {
+        return CheminRegExp.cap(1);
+    }
 }
 
 /**
@@ -206,7 +233,7 @@ void F_Preferences::slot_Valider()
 void F_Preferences::closeEvent( QCloseEvent * event )
 {
     AfficherAutresInformations();
-    on_Bt_Connection_clicked();
+    //on_Bt_Connection_clicked();
     emit( this->SignalFermerFenetre());
     event->accept() ;
 }
@@ -224,6 +251,37 @@ void F_Preferences::SelectionnerOnglet(int nOnglet)
 //---------------------------------------------------------------------------
 // METHODEs PRIVEEs
 //---------------------------------------------------------------------------
+
+/**
+ *  @brief  Rechargement des préférences à partir de la BDD
+ *
+ */
+void F_Preferences::ChargerPreferencesBDD()
+{
+    TbPreferences.clear();
+    QSqlQuery RequeteDemarrage;
+
+    RequeteDemarrage.exec("SELECT NomChamps,Valeur FROM preferences");
+    if ( ! RequeteDemarrage.exec() )
+    {
+       qDebug()<< "F_Preferences::F_Preferences : RequeteDemarrage" << RequeteDemarrage.lastQuery() << endl;
+    }
+    while(RequeteDemarrage.next())
+    {
+        TbPreferences[RequeteDemarrage.value(0).toString()]=RequeteDemarrage.value(1).toString();
+    }
+
+    QSettings FichierDeConfig(sCheminConfig, QSettings::IniFormat);
+    FichierDeConfig.beginGroup("Ludopen");
+    QStringList keys = FichierDeConfig.childKeys();
+    foreach (QString key, keys)
+    {
+        TbPreferences[key]=FichierDeConfig.value(key).toString();
+    }
+    this->AfficherTousLesTableaux();
+    this->AfficherAutresInformations();
+}
+
 /**
  *  @brief  Le line edit qui récupère cette fonction se met en forme sous le type XX XX XX XX XX.
  *
@@ -254,50 +312,40 @@ QString F_Preferences::BlocNumeroTelFax(QString sNumero)
  */
 void F_Preferences::AfficherAutresInformations()
 {
-    QSqlQuery RequeteDemarrage;
-    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-
-    ui->LE_NomBDD->setText(FichierDeConfig.value("BaseDeDonnees/NomDeLaBDD", "config").toString());
-    ui->LE_AdresseIP->setText(FichierDeConfig.value("BaseDeDonnees/AdresseIP", "config").toString());
-    ui->LE_NomUtilisateur->setText(FichierDeConfig.value("BaseDeDonnees/NomUtilisateur", "config").toString());
-    ui->LE_MotdePasse->setText(FichierDeConfig.value("BaseDeDonnees/MotDePasse", "config").toString());
-    ui->LE_Port->setText(FichierDeConfig.value("BaseDeDonnees/Port", "config").toString());
-    ui->CBx_LieuOrdi->setCurrentIndex(FichierDeConfig.value("Autres/IdLieux", "config").toInt() - 1);
-    ui->LE_ClePrivee->setText(FichierDeConfig.value("Autres/CheminClePrivee", "config").toString());
-    ui->SBx_TaillePolice->setValue(FichierDeConfig.value("Autres/TaillePolice", "config").toInt());
-
-    RequeteDemarrage.exec("SELECT Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,Email,SiteWeb,"
-                          "JeuxAutorises,UniteLocation,JourAvantMail,JourRetard,CheminPhotosJeux,"
-                          "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende,NbReservationsMaxi,"
-                          "DelaiConfirmationReservationParEmail, CheminPhotosServeur, CheminReglesServeur,"
-                          "AdresseServeur, LoginServeur FROM preferences WHERE IdPreferences=1");
-    RequeteDemarrage.next();
+    ui->LE_NomBDD->setText(TbPreferences["NomDeLaBDD"]);
+    ui->LE_AdresseIP->setText(TbPreferences["AdresseIP"]);
+    ui->LE_NomUtilisateur->setText(TbPreferences["NomUtilisateur"]);
+    ui->LE_MotdePasse->setText(TbPreferences["MotDePasse"]);
+    ui->LE_Port->setText(TbPreferences["Port"]);
+    ui->CBx_LieuOrdi->setCurrentIndex(TbPreferences["IdLieux"].toInt() - 1);
+    ui->LE_ClePrivee->setText(TbPreferences["CheminClePrivee"]);
+    ui->SBx_TaillePolice->setValue(TbPreferences["TaillePolice"].toInt());
     // ORDRE des champs dans la table préférences
     // 0-Nom,1-Adresse,2-CodePostal,3-Ville,4-NumeroTel,5-NumeroFax,6-Email,7-SiteWeb,
     // 8-JeuxAutorises,9-UniteLocation,10-JourAvantMail,11-JourRetard,12-CheminPhotosJeux,"
     // 13-CheminReglesJeux,14-AdresseServeurSMTP,15-PortSMTP,16-PrixAmende,17-NbReservationsMaxi,
     // 18-DelaiConfirmationReservationParEmail
-    ui->LE_Nom->setText(RequeteDemarrage.value(0).toString());
-    ui->LE_Adresse->setText(RequeteDemarrage.value(1).toString());
-    ui->LE_CodePostal->setText(RequeteDemarrage.value(2).toString());
-    ui->LE_Ville->setText(RequeteDemarrage.value(3).toString());
-    ui->LE_NumeroTel->setText(RequeteDemarrage.value(4).toString());
-    ui->LE_NumeroFax->setText(RequeteDemarrage.value(5).toString());
-    ui->LE_Mail->setText(RequeteDemarrage.value(6).toString());
-    ui->LE_Web->setText(RequeteDemarrage.value(7).toString());
-    ui->SBx_JeuxAutorises->setValue(RequeteDemarrage.value(8).toInt());
-    ui->DSBx_UniteLocation->setValue(RequeteDemarrage.value(9).toFloat());
-    ui->SBx_JourEmail->setValue(RequeteDemarrage.value(10).toInt());
-    ui->SBx_JourRetard->setValue(RequeteDemarrage.value(11).toInt());
-    ui->LE_CheminPhotosJeux->setText(RequeteDemarrage.value(12).toString());
-    ui->LE_CheminRegle->setText(RequeteDemarrage.value(13).toString());
-    ui->LE_AdresseSMTP->setText(RequeteDemarrage.value(14).toString());
-    ui->LE_PortSMTP->setText(RequeteDemarrage.value(15).toString());
-    ui->DSBx_PrixAmende->setValue(RequeteDemarrage.value(16).toFloat());
-    ui->LE_CheminPhotosServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"CheminPhotosServeur").toString());
-    ui->LE_CheminReglesServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"CheminReglesServeur").toString());
-    ui->LE_AdresseServeur->setText(ObtenirValeurParNom(RequeteDemarrage,"AdresseServeur").toString());
-    ui->LE_Login->setText(ObtenirValeurParNom(RequeteDemarrage,"LoginServeur").toString());
+    ui->LE_Nom->setText(TbPreferences["Nom"]);
+    ui->LE_Adresse->setText(TbPreferences["Adresse"]);
+    ui->LE_CodePostal->setText(TbPreferences["CodePostal"]);
+    ui->LE_Ville->setText(TbPreferences["Ville"]);
+    ui->LE_NumeroTel->setText(TbPreferences["NumeroTel"]);
+    ui->LE_NumeroFax->setText(TbPreferences["NumeroFax"]);
+    ui->LE_Mail->setText(TbPreferences["Email"]);
+    ui->LE_Web->setText(TbPreferences["SiteWeb"]);
+    ui->SBx_JeuxAutorises->setValue(TbPreferences["JeuxAutorises"].toInt());
+    ui->DSBx_UniteLocation->setValue(TbPreferences["UniteLocation"].toInt());
+    ui->SBx_JourEmail->setValue(TbPreferences["JourAvantMail"].toInt());
+    ui->SBx_JourRetard->setValue(TbPreferences["JourRetard"].toInt());
+    ui->LE_CheminPhotosJeux->setText(TbPreferences["CheminPhotosJeux"]);
+    ui->LE_CheminRegle->setText(TbPreferences["CheminReglesJeux"]);
+    ui->LE_AdresseSMTP->setText(TbPreferences["AdresseServeurSMTP"]);
+    ui->LE_PortSMTP->setText(TbPreferences["PortSMTP"]);
+    ui->DSBx_PrixAmende->setValue(TbPreferences["PrixAmende"].toInt());
+    ui->LE_CheminPhotosServeur->setText(TbPreferences["CheminPhotosServeur"]);
+    ui->LE_CheminReglesServeur->setText(TbPreferences["CheminReglesServeur"]);
+    ui->LE_AdresseServeur->setText(TbPreferences["AdresseServeur"]);
+    ui->LE_Login->setText(TbPreferences["LoginServeur"]);
 }
 
 /**
@@ -515,22 +563,43 @@ void F_Preferences::AfficherTousLesTableaux()
 }
 
 /**
+ *  @brief  Permet de sauvegarder une préférence
+ *
+ *  @pre    Etre connecté à  la BDD.
+ */
+void F_Preferences::SauverPreference(QString NomChamps, QString Valeur, bool BDD)
+{
+    if(BDD)
+    {
+        QSqlQuery RequeteEnregistrer;
+        RequeteEnregistrer.prepare("INSERT INTO preferences (NomChamps,Valeur) VALUES (:NomChamps,:Valeur)"
+                                   " ON DUPLICATE KEY UPDATE Valeur =:Valeur");
+        RequeteEnregistrer.bindValue(":NomChamps", NomChamps);
+        RequeteEnregistrer.bindValue(":Valeur", Valeur);
+        if ( ! RequeteEnregistrer.exec() )
+        {
+           qDebug()<< "F_Preferences::SauverPreference : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
+        }
+        qDebug()<< "F_Preferences::SauverPreference : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
+    }
+    else
+    {
+        QSettings FichierDeConfig(sCheminConfig, QSettings::IniFormat);
+        FichierDeConfig.setValue("Ludopen/" + NomChamps, Valeur);
+    }
+    this->TbPreferences[NomChamps]=Valeur;
+}
+
+/**
  *  @brief  Permet d'enregistrer les actions effectuées depuis l'ouverture de la F_Preferences.
  *
  *  @pre    Etre connecté à  la BDD.
  */
 void F_Preferences::on_Bt_Enregistrer_clicked()
 {
-    QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
     QSqlQuery RequeteEnregistrer;
     QSqlQuery RequeteCombo;
 
-    // Vérifie si les préférences ont été au moins une fois enregistrée.
-    // Si la table est vide, il faut un INSERT sinon un UPDATE
-    QSqlQuery RequeteVerification ("SELECT IdPreferences FROM preferences");
-    unsigned int nIdPreferences;
-    RequeteVerification.next();
-    nIdPreferences = RequeteVerification.value(0).toInt();
     if(ui->LE_CheminPhotosJeux->text().at(ui->LE_CheminPhotosJeux->text().count()-1)!=QChar('/'))
     {
         ui->LE_CheminPhotosJeux->setText(ui->LE_CheminPhotosJeux->text().append("/"));
@@ -547,92 +616,37 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     {
         ui->LE_CheminPhotosServeur->setText(ui->LE_CheminPhotosServeur->text().append("/"));
     }
-    if(nIdPreferences == 0)
-    {
-        RequeteEnregistrer.prepare("INSERT INTO preferences (IdPreferences,Nom,Adresse,CodePostal,Ville,NumeroTel,NumeroFax,"
-                                   "Email,SiteWeb,JeuxAutorises,UniteLocation,JourRetard,JourAvantMail,CheminPhotosJeux,"
-                                   "CheminReglesJeux,AdresseServeurSMTP,PortSMTP,PrixAmende,CheminPhotosServeur,"
-                                   "CheminReglesServeur, AdresseServeur, LoginServeur) "
-                                   "VALUES (:IdPreferences,:Nom,:Adresse,:CodePostal,:Ville,:NumeroTel,:NumeroFax,:Email,:SiteWeb,"
-                                   ":JeuxAutorises,:UniteLocation,:JourRetard,:JourAvantMail,:CheminPhotosJeux,:CheminReglesJeux,"
-                                   ":AdresseServeurSMTP,:PortSMTP,:PrixAmende,:CheminPhotosServeur,"
-                                   ":CheminReglesServeur,:AdresseServeur, :LoginServeur)");
-        RequeteEnregistrer.bindValue("IdPreferences", 1);
-        RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
-        RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
-        RequeteEnregistrer.bindValue(":CodePostal", ui->LE_CodePostal->text().toInt());
-        RequeteEnregistrer.bindValue(":Ville", ui->LE_Ville->text());
-        RequeteEnregistrer.bindValue(":NumeroTel", ui->LE_NumeroTel->text());
-        RequeteEnregistrer.bindValue(":NumeroFax", ui->LE_NumeroFax->text());
-        RequeteEnregistrer.bindValue(":Email", ui->LE_Mail->text());
-        RequeteEnregistrer.bindValue(":SiteWeb", ui->LE_Web->text());
-        RequeteEnregistrer.bindValue(":JeuxAutorises", ui->SBx_JeuxAutorises->value());
-        RequeteEnregistrer.bindValue(":UniteLocation", ui->DSBx_UniteLocation->value());
-        RequeteEnregistrer.bindValue(":JourRetard", ui->SBx_JourRetard->value());
-        RequeteEnregistrer.bindValue(":JourAvantMail", ui->SBx_JourEmail->value());
-        RequeteEnregistrer.bindValue(":CheminPhotosJeux", ui->LE_CheminPhotosJeux->text());
-        RequeteEnregistrer.bindValue(":CheminReglesJeux", ui->LE_CheminRegle->text());
-        RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
-        RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
-        RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
-        RequeteEnregistrer.bindValue(":CheminPhotosServeur", ui->LE_CheminPhotosServeur->text());
-        RequeteEnregistrer.bindValue(":CheminReglesServeur", ui->LE_CheminReglesServeur->text());
-        RequeteEnregistrer.bindValue(":AdresseServeur", ui->LE_AdresseServeur->text());
-        RequeteEnregistrer.bindValue(":LoginServeur", ui->LE_Login->text());
-        if ( ! RequeteEnregistrer.exec() )
-        {
-           qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
-        }
-    }
-    else
-    {
-        RequeteEnregistrer.prepare("UPDATE preferences SET Nom=:Nom, Adresse=:Adresse, CodePostal=:CodePostal, Ville=:Ville,"
-                                   "NumeroTel=:NumeroTel, NumeroFax=:NumeroFax, Email=:Email, SiteWeb=:SiteWeb,"
-                                   "JeuxAutorises=:JeuxAutorises, UniteLocation=:UniteLocation, JourAvantMail=:JourAvantMail,"
-                                   "JourRetard=:JourRetard, CheminPhotosJeux=:CheminPhotosJeux,"
-                                   "CheminReglesJeux=:CheminReglesJeux, AdresseServeurSMTP=:AdresseServeurSMTP,"
-                                   "PortSMTP=:PortSMTP, PrixAmende=:PrixAmende, CheminPhotosServeur=:CheminPhotosServeur,"
-                                   "CheminReglesServeur=:CheminReglesServeur, AdresseServeur=:AdresseServeur,"
-                                   "LoginServeur=:LoginServeur WHERE IdPreferences = 1");
-        RequeteEnregistrer.bindValue(":Nom", ui->LE_Nom->text());
-        RequeteEnregistrer.bindValue(":Adresse", ui->LE_Adresse->text());
-        RequeteEnregistrer.bindValue(":CodePostal", ui->LE_CodePostal->text().toInt());
-        RequeteEnregistrer.bindValue(":Ville", ui->LE_Ville->text());
-        RequeteEnregistrer.bindValue(":NumeroTel", ui->LE_NumeroTel->text());
-        RequeteEnregistrer.bindValue(":NumeroFax", ui->LE_NumeroFax->text());
-        RequeteEnregistrer.bindValue(":Email", ui->LE_Mail->text());
-        RequeteEnregistrer.bindValue(":SiteWeb", ui->LE_Web->text());
-        RequeteEnregistrer.bindValue(":JeuxAutorises", ui->SBx_JeuxAutorises->value());
-        RequeteEnregistrer.bindValue(":UniteLocation", ui->DSBx_UniteLocation->value());
-        RequeteEnregistrer.bindValue(":JourRetard", ui->SBx_JourRetard->value());
-        RequeteEnregistrer.bindValue(":JourAvantMail", ui->SBx_JourEmail->value());
-        RequeteEnregistrer.bindValue(":CheminPhotosJeux", ui->LE_CheminPhotosJeux->text());
-        RequeteEnregistrer.bindValue(":CheminReglesJeux", ui->LE_CheminRegle->text());
-        RequeteEnregistrer.bindValue(":AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
-        RequeteEnregistrer.bindValue(":PortSMTP", ui->LE_PortSMTP->text().toInt());
-        RequeteEnregistrer.bindValue(":PrixAmende", ui->DSBx_PrixAmende->value());
-        RequeteEnregistrer.bindValue(":CheminPhotosServeur", ui->LE_CheminPhotosServeur->text());
-        RequeteEnregistrer.bindValue(":CheminReglesServeur", ui->LE_CheminReglesServeur->text());
-        RequeteEnregistrer.bindValue(":AdresseServeur", ui->LE_AdresseServeur->text());
-        RequeteEnregistrer.bindValue(":LoginServeur", ui->LE_Login->text());
-        if ( ! RequeteEnregistrer.exec() )
-        {
-           qDebug()<< "F_Preferences::on_Bt_Enregistrer_clicked : RequeteEnregistrer" << RequeteEnregistrer.lastQuery() << endl;
-        }
-    }
+    SauverPreference("Nom", ui->LE_Nom->text());
+    SauverPreference("Adresse", ui->LE_Adresse->text());
+    SauverPreference("CodePostal", ui->LE_CodePostal->text());
+    SauverPreference("Ville", ui->LE_Ville->text());
+    SauverPreference("NumeroTel", ui->LE_NumeroTel->text());
+    SauverPreference("NumeroFax", ui->LE_NumeroFax->text());
+    SauverPreference("Email", ui->LE_Mail->text());
+    SauverPreference("SiteWeb", ui->LE_Web->text());
+    SauverPreference("JeuxAutorises", ui->SBx_JeuxAutorises->text());
+    SauverPreference("UniteLocation", ui->DSBx_UniteLocation->text());
+    SauverPreference("JourRetard", ui->SBx_JourRetard->text());
+    SauverPreference("JourAvantMail", ui->SBx_JourEmail->text());
+    SauverPreference("CheminPhotosJeux", ui->LE_CheminPhotosJeux->text());
+    SauverPreference("CheminReglesJeux", ui->LE_CheminRegle->text());
+    SauverPreference("AdresseServeurSMTP", ui->LE_AdresseSMTP->text());
+    SauverPreference("PortSMTP", ui->LE_PortSMTP->text());
+    SauverPreference("PrixAmende", ui->DSBx_PrixAmende->text());
+    SauverPreference("CheminPhotosServeur", ui->LE_CheminPhotosServeur->text());
+    SauverPreference("CheminReglesServeur", ui->LE_CheminReglesServeur->text());
+    SauverPreference("AdresseServeur", ui->LE_AdresseServeur->text());
+    SauverPreference("LoginServeur", ui->LE_Login->text());
     // écriture de certaines données dans le fichier de configuration config.ini
     RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
     RequeteCombo.bindValue(":NomLieux", ui->CBx_LieuOrdi->currentText());
     RequeteCombo.exec();
     while(RequeteCombo.next())
     {
-        FichierDeConfig.beginGroup("Autres");
-        FichierDeConfig.setValue("IdLieux", RequeteCombo.value(0).toInt());
-        FichierDeConfig.setValue("NomLieux", RequeteCombo.value(1).toString());
-        FichierDeConfig.setValue("CheminClePrivee", ui->LE_ClePrivee->text());
-        FichierDeConfig.setValue("TaillePolice", ui->SBx_TaillePolice->value());
-        FichierDeConfig.endGroup();
-        // TO DO Ecrire ici tout ce qui doit aller dans le fichier ini
+        SauverPreference("IdLieux", RequeteCombo.value(0).toString(),false);
+        SauverPreference("NomLieux", RequeteCombo.value(1).toString(),false);
+        SauverPreference("CheminClePrivee", ui->LE_ClePrivee->text(),false);
+        SauverPreference("TaillePolice", ui->SBx_TaillePolice->text(),false);
         // string Qt::md5 ( data )
     }
 
@@ -715,15 +729,11 @@ void F_Preferences::on_Bt_Connection_clicked()
     {
         ui->Lb_InfoConnexion->setText("<font color=green> La connexion est réussi. </font>");
 
-        QSettings FichierDeConfig("config.ini", QSettings::IniFormat);
-
-        FichierDeConfig.beginGroup("BaseDeDonnees");
-        FichierDeConfig.setValue("NomDeLaBDD", ui->LE_NomBDD->text());
-        FichierDeConfig.setValue("AdresseIP", ui->LE_AdresseIP->text());
-        FichierDeConfig.setValue("NomUtilisateur", ui->LE_NomUtilisateur->text());
-        FichierDeConfig.setValue("MotDePasse", ui->LE_MotdePasse->text());
-        FichierDeConfig.setValue("Port", ui->LE_Port->text());
-        FichierDeConfig.endGroup();
+        SauverPreference("NomDeLaBDD", ui->LE_NomBDD->text(),false);
+        SauverPreference("AdresseIP", ui->LE_AdresseIP->text(),false);
+        SauverPreference("NomUtilisateur", ui->LE_NomUtilisateur->text(),false);
+        SauverPreference("MotDePasse", ui->LE_MotdePasse->text()),false;
+        SauverPreference("Port", ui->LE_Port->text(),false);
     }
     else
     {
@@ -1266,4 +1276,9 @@ void F_Preferences::on_Bt_ParcourirClePrivee_clicked()
     QString NomClePrivee = QFileDialog::getOpenFileName(this, tr("Sélectionner le fichier..."),
                                       QDir::currentPath());
     ui->LE_ClePrivee->setText(NomClePrivee);
+}
+
+QString F_Preferences::ObtenirValeur( QString NomChamps )
+{
+    return TbPreferences[NomChamps];
 }

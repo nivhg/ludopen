@@ -158,13 +158,6 @@ private:
     Lb_Image * lb_image2;
     Lb_Image * lb_image3;
     Lb_Image * lb_img;
-    // Booléen qui indique si les photos sont en locales ou sur un serveur
-    bool EstCeLocal;
-    QString sCheminPhotoJeux;
-    QString sCheminPhotoServeur;
-    QString sAdresseServeur;
-    QString sLoginServeur;
-    QString sCheminClePrivee;
     QString sCodeJeu;
     int iLbImageSelectionnee;
     QStringList sNomImagesAjoutees;

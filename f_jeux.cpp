@@ -24,6 +24,7 @@
 #include "lb_image.h"
 #include "acces_fichier_http.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 // En-têtes standards -----------------------------------------------------------
 #include <QtSql>
@@ -767,12 +768,6 @@ void F_Jeux::AfficherJeu(QString Jeu)
     ////////////////////////////////////////////////////////
     ////////////// Règles //////////////////////////////////
     //////////////////////////////////////////////////////
-    QString sCheminReglePref;
-    QSqlQuery RequeteCheminReglesJeux;
-    RequeteCheminReglesJeux.exec("SELECT CheminReglesJeux FROM preferences WHERE IdPreferences = 1");
-    // si il y a des préférences
-    RequeteCheminReglesJeux.next();
-    sCheminReglePref = RequeteCheminReglesJeux.value(0).toString();
 
     delete acces;
     acces=new AccesFichierParHTTP(this);
@@ -782,7 +777,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     QStringList ListeExtension;
     ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm";
-    acces->LancerTelechargements(sCheminReglePref,code,ListeExtension);
+    acces->LancerTelechargements(F_Preferences::ObtenirValeur("CheminReglesJeux"),code,ListeExtension);
 }
 
 void F_Jeux::AfficherJeux()

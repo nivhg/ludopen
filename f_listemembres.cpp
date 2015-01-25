@@ -116,7 +116,6 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     this->pBt_FermerAbonnements->setText( "Fermer" );
     this->pBt_FermerAbonnements->setGeometry( 100 , 375, 100, 25 ) ;
     this->pBt_FermerAbonnements->show() ;
-    ui->ChBx_Abonnements->setHidden( true ) ;
 
     QStandardItemModel *Model = new QStandardItemModel(2, 1);
 
@@ -165,9 +164,9 @@ void F_ListeMembres::DecocherTout( bool bSelection )
     ui->ChBx_DateInscription->setChecked( bSelection ) ;
     ui->ChBx_DateNaissance->setChecked( bSelection ) ;
     ui->ChBx_Cotisation->setChecked( bSelection ) ;
-    ui->ChBx_Abonnements->setChecked( bSelection ) ;
     ui->ChBx_Retard->setChecked( bSelection );
     ui->ChBx_Activite->setChecked( bSelection );
+    ui->ChBx_Courriel->setChecked( bSelection ) ;
     this->AffichageListe();
 }
 
@@ -391,6 +390,12 @@ bool F_ListeMembres::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " Activite_IdActivite = " + sIdActivite
                 + " AND IdMembre = activitemembre.Membres_IdMembre AND";
     }
+
+    if( ui->ChBx_Courriel->isChecked() )
+    {
+        sRequeteWHERE = sRequeteWHERE + " Email LIKE '%" + ui->LE_Courriel->text() + "%' AND" ;
+    }
+
     if( ui->ChBx_Cotisation->isChecked() && ui->CBx_Cotisation->currentIndex() !=-1)
     {
         switch( ui->CBx_Cotisation->currentIndex() )
@@ -874,6 +879,16 @@ void F_ListeMembres::on_CBx_Activites_currentIndexChanged(int index)
 }
 
 void F_ListeMembres::on_ChBx_Retard_clicked()
+{
+    this->AffichageListe() ;
+}
+
+void F_ListeMembres::on_LE_Courriel_textChanged(const QString &arg1)
+{
+    this->AffichageListe() ;
+}
+
+void F_ListeMembres::on_ChBx_Courriel_clicked()
 {
     this->AffichageListe() ;
 }

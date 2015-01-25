@@ -26,6 +26,7 @@
 #include "f_ajoutsuppmodifjeux.h"
 #include "ui_f_ajoutsuppmodifjeux.h"
 #include "f_ajoutsuppmodiffournisseursediteurs.h"
+#include "f_preferences.h"
 #include "fonctions_globale.h"
 
 //###################################################################
@@ -1522,11 +1523,7 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
     // Vide tous les champs avant l'ajout
     VideChamps();
 
-    QSqlQuery RequetePrixLocation ;
-    //Sélectionne le prix de location par défaut dans la table préférence
-    RequetePrixLocation.exec("SELECT UniteLocation FROM preferences WHERE IdPreferences=1") ;
-    RequetePrixLocation.next() ;
-    ui->SBx_PrixLocation->setValue(RequetePrixLocation.value(0).toFloat() );
+    ui->SBx_PrixLocation->setValue(F_Preferences::ObtenirValeur("UniteLocation").toFloat() );
 
     // Provisoire :
     ui->CBx_Classification->setItemText(0, "Sélectionner une classification");
