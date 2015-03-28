@@ -264,7 +264,7 @@ void F_Statistiques::EffectuerRequeteAdherentInscrit()
         DateFin = ui->DtE_Fin->dateTime();
     }
     QString test=DateFin.toString("dd-MM-yyyy");
-    Statistique.prepare("SELECT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
+    Statistique.prepare("SELECT DISTINCT Nom,Prenom,CodeMembre FROM membres,abonnements WHERE "
                     "DateSouscription >= :DateDebut AND DateSouscription <=:DateFin AND Ecarte=0 AND "
                     "Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre = IdMembre AND "
                     "Prestations_IdPrestation != 5 ORDER BY Nom");

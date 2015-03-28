@@ -92,7 +92,6 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         ui->LE_CreditsRestants->show();
         ui->Lb_CreditsDisponibles->show();
         ui->LE_CreditsDisponibles->show();
-        ui->Bt_Prolonger->hide();
         this->setWindowTitle("Modifier cette carte pré-payée de ce membre...");
 
         RequeteCarte.prepare("SELECT NomCarte,DureeValidite,Prix,CreditDisponible FROM cartesprepayees WHERE IdCarte=:IdCarte");
@@ -135,7 +134,6 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
         ui->LE_CreditsRestants->hide();
         ui->Lb_CreditsDisponibles->hide();
         ui->LE_CreditsDisponibles->hide();
-        ui->Bt_Prolonger->show();
         this->setWindowTitle("Modifier l'adhésion de ce membre...");
 
         RequetePrestation.prepare("SELECT NomPrestation,DureeValidite,Prix FROM prestations WHERE IdPrestation=:IdPrestation");
@@ -178,7 +176,6 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
     this->bNouvelAbo = true;
 
     this->setWindowTitle("Choisir un abonnement pour ce membre...");
-    ui->Bt_Prolonger->hide();
 
     ui->LE_Nom->hide() ;
     ui->Lb_NomPrestation->hide();

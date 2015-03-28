@@ -57,6 +57,18 @@ F_AjoutSuppModifFournisseursEditeurs::F_AjoutSuppModifFournisseursEditeurs(QWidg
     //Supprime le numéro des lignes
     ui->TbV_Recherche->verticalHeader()->setVisible(false);
 
+    this->pPopUpCLESTTEM = new F_PopUpCLESTTEM(this);
+    this->pPopUpCLESTTEM->setWindowModality(Qt::ApplicationModal);
+
+    this->TbCLESTTEM = new QStandardItemModel();
+    this->TbV_CLESTTEM =  new QTableView();
+    this->TbV_CLESTTEM->setModel(this->TbCLESTTEM);
+    this->TbV_CLESTTEM->setEditTriggers(0);
+    this->TbV_CLESTTEM->verticalHeader()->setVisible(false);
+    //Affichage de la BDD dans le tableau titre qui est dans l'onglet Membres/Emprunts de F_Preferences.
+    this->TbCLESTTEM->setColumnCount(2);
+    this->TbCLESTTEM->setRowCount(0);
+
     //Coche automatiquement la Rb "Les deux"
     ui->Rb_Les2->setChecked(true);
 
@@ -251,9 +263,44 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
 {
     if(QMessageBox::warning(this, "Confirmation suppression", "Êtes-vous sur de vouloir le supprimer ?", "Oui", "Non") == 0)
     {
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM  jeux WHERE Fournisseurs_IdFournisseur=:IdFournisseur");
+        RequeteSupprimer.bindValue(":IdFournisseur", IdSelection);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT NomFournisseur,IdFournisseur FROM fournisseursediteur WHERE "
+                              "IdFournisseur!=:IdFournisseur ORDER BY NomFournisseur");
+            RequeteSupprimer.bindValue(":IdFournisseur", IdSelection);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE jeux SET Fournisseurs_IdFournisseur=:IdFournisseur"
+                                   " WHERE Fournisseurs_IdFournisseur=:IdFournisseurPrecedent");
+            QString IdSel=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdFournisseur",IdSel);
+            RequeteSupprimer.bindValue(":IdFournisseurPrecedent", IdSelection);
+            RequeteSupprimer.exec();
+        }
         QSqlQuery RequeteSuppFournOuEdit ;
         RequeteSuppFournOuEdit.prepare("DELETE FROM fournisseursediteur WHERE IdFournisseur =:IdFournisseur") ;
-        RequeteSuppFournOuEdit.bindValue(":IdFournisseur", this->IdSelection);
+        RequeteSuppFournOuEdit.bindValue(":IdFournisseur", IdSelection);
         RequeteSuppFournOuEdit.exec() ;
         RequeteSuppFournOuEdit.next() ;
         ViderChamps();

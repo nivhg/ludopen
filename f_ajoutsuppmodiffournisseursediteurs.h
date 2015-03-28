@@ -14,6 +14,8 @@
 #include <QtWidgets>
 #include <QStandardItemModel>
 
+#include "f_popupclesttem.h"
+
 
 namespace Ui {
     class F_AjoutSuppModifFournisseursEditeurs;
@@ -132,6 +134,15 @@ private:
 
     // Definit le mode de la classe : editeur, fournisseur ou les 2
     char Mode ;
+
+    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
+    F_PopUpCLESTTEM * pPopUpCLESTTEM;
+
+    ///< Creer un modele du tableau pour le table View de la fenêtre de pop-up
+    QStandardItemModel * TbCLESTTEM;
+
+    ///< Creer un modele du tableau pour le table View.
+    QTableView * TbV_CLESTTEM;
 };
 
 //------------------------------------------------------------------------------

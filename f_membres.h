@@ -122,7 +122,7 @@ public:
     void AfficherVilles( QString VilleSelectionne = "" ) ;
 
     //! Mise à jour de la liste des membres
-    bool MaJListeMembres ();
+    bool MaJListeMembres (bool AfficherContact=false);
 
     //! Affichage de la liste des membres
     void AfficherListe() ;//Liste par défaut(this->VecteurMembres)

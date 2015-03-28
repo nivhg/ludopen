@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1079</width>
+    <width>1121</width>
     <height>711</height>
    </rect>
   </property>
@@ -75,7 +75,14 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="1" column="0" colspan="2">
+      <item row="4" column="0">
+       <widget class="QLabel" name="Lb_RechercheMembre">
+        <property name="text">
+         <string>Rechercher un membre :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
        <layout class="QHBoxLayout" name="HLay16">
         <item>
          <widget class="QLineEdit" name="LE_RechercheMembre"/>
@@ -102,21 +109,7 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="Lb_RechercheMembre">
-        <property name="text">
-         <string>Rechercher un membre :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="Lb_CodeMembre">
-        <property name="text">
-         <string>Code Membre :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="2">
+      <item row="7" column="0" colspan="2">
        <widget class="QTableView" name="TbV_Recherche">
         <property name="alternatingRowColors">
          <bool>true</bool>
@@ -128,6 +121,72 @@
          <enum>QAbstractItemView::SelectRows</enum>
         </property>
        </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QLabel" name="Lb_CodeMembre">
+        <property name="text">
+         <string>Code Membre :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="2" column="1">
+         <widget class="QComboBox" name="comboBox">
+          <item>
+           <property name="text">
+            <string>Malle 4 grand jeux</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Malle anniversaire</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Malle 10 jeux</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Malle d'été</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Type de malle : </string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QRadioButton" name="radioButton">
+          <property name="text">
+           <string>Malle</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="radioButton_2">
+          <property name="text">
+           <string>Jeu</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Type d'emprunt :</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -156,6 +215,141 @@
       <property name="spacing">
        <number>2</number>
       </property>
+      <item row="12" column="0">
+       <widget class="QTextEdit" name="TxE_Remarques">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QTableView" name="TbV_JeuxReserves">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QTableView" name="TbV_JeuxMembres">
+        <property name="alternatingRowColors">
+         <bool>true</bool>
+        </property>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="HLay6">
+        <item>
+         <widget class="QLabel" name="Lb_Cotisation">
+          <property name="text">
+           <string>Cotisation </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="Lb_CotisationARemplir">
+          <property name="text">
+           <string>Date</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="0">
+       <layout class="QHBoxLayout" name="HLay7">
+        <item>
+         <widget class="QLabel" name="Lb_JeuxEmpruntables">
+          <property name="minimumSize">
+           <size>
+            <width>200</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Nbre de jeux empruntables</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="Le_NbJeuxEmpruntables">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="Lb_CreditRestant">
+          <property name="text">
+           <string>Nbre de crédits restants</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="Le_CreditRestantARemplir">
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
       <item row="11" column="0">
        <layout class="QHBoxLayout" name="HLay4">
         <item>
@@ -238,101 +432,15 @@
         </item>
        </layout>
       </item>
-      <item row="1" column="0">
-       <layout class="QFormLayout" name="formLayout">
-        <property name="fieldGrowthPolicy">
-         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+      <item row="7" column="0">
+       <widget class="QLabel" name="Lb_JeuxMembres">
+        <property name="text">
+         <string>Jeux encore chez ce membre :</string>
         </property>
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Nom">
-          <property name="minimumSize">
-           <size>
-            <width>53</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Nom :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="Le_NomARemplir">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="Lb_Prenom">
-          <property name="text">
-           <string>Prénom :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="Le_PrenomARemplir">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       </widget>
       </item>
       <item row="6" column="0">
-       <layout class="QHBoxLayout" name="HLay2">
-        <item>
-         <widget class="QLabel" name="Lb_JeuxEmpruntables">
-          <property name="text">
-           <string>Nombre de jeux empruntables :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="Le_NbJeuxEmpruntables">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+       <layout class="QHBoxLayout" name="HLay2"/>
       </item>
       <item row="9" column="0">
        <layout class="QHBoxLayout" name="HLay">
@@ -384,89 +492,80 @@
         </item>
        </layout>
       </item>
-      <item row="8" column="0">
-       <widget class="QTableView" name="TbV_JeuxMembres">
-        <property name="alternatingRowColors">
-         <bool>true</bool>
+      <item row="1" column="0">
+       <layout class="QFormLayout" name="formLayout">
+        <property name="fieldGrowthPolicy">
+         <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
         </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="Lb_JeuxMembres">
-        <property name="text">
-         <string>Jeux encore chez ce membre :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <layout class="QHBoxLayout" name="HLay7">
-        <item>
-         <widget class="QLabel" name="Lb_Retard">
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Nom">
+          <property name="minimumSize">
+           <size>
+            <width>53</width>
+            <height>0</height>
+           </size>
+          </property>
           <property name="text">
-           <string>Nombre de retards :</string>
+           <string>Nom :</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="Le_NomARemplir">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="Lb_Prenom">
+          <property name="text">
+           <string>Prénom :</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLineEdit" name="Le_RetardARemplir">
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="Le_PrenomARemplir">
           <property name="readOnly">
            <bool>true</bool>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLabel" name="Lb_CreditRestant">
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label">
           <property name="text">
-           <string>Nombre de crédits restants :</string>
+           <string>Ville :</string>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLineEdit" name="Le_CreditRestantARemplir">
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_2"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Téléphone :</string>
           </property>
          </widget>
         </item>
-        <item>
-         <spacer name="horizontalSpacer_3">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEdit_3"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Courriel :</string>
           </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
+         </widget>
         </item>
        </layout>
       </item>
@@ -479,50 +578,6 @@
         </property>
         <property name="text">
          <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="0">
-       <widget class="QTextEdit" name="TxE_Remarques">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>100</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <layout class="QHBoxLayout" name="HLay6">
-        <item>
-         <widget class="QLabel" name="Lb_Cotisation">
-          <property name="text">
-           <string>Cotisation </string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="Lb_CotisationARemplir">
-          <property name="text">
-           <string>Date</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="10" column="0">
-       <widget class="QTableView" name="TbV_JeuxReserves">
-        <property name="alternatingRowColors">
-         <bool>true</bool>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-        <property name="selectionBehavior">
-         <enum>QAbstractItemView::SelectRows</enum>
         </property>
        </widget>
       </item>
@@ -553,12 +608,12 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="6" column="0">
-       <layout class="QHBoxLayout" name="HLay9">
+      <item row="2" column="0">
+       <layout class="QHBoxLayout" name="Hlay12">
         <item>
-         <widget class="QLabel" name="Lb_PrixCaution">
+         <widget class="QLabel" name="Lb_StatutJeu">
           <property name="text">
-           <string>Prix de la caution :</string>
+           <string>Statut du jeu :</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -566,19 +621,55 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="Le_PrixCautionARemplir">
+         <widget class="QLineEdit" name="Le_StatutJeuARemplir">
           <property name="readOnly">
            <bool>true</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="Lb_PrixEmprunt">
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
+         <spacer name="HS8">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QComboBox" name="CBx_TypeEmprunt"/>
+        </item>
+       </layout>
+      </item>
+      <item row="1" column="0">
+       <layout class="QHBoxLayout" name="HLay14">
+        <item>
+         <widget class="QLabel" name="Lb_NomJeu">
+          <property name="text">
+           <string>Nom du jeu : </string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="Le_NomJeuARemplir">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="4" column="0">
+       <layout class="QHBoxLayout" name="HLay9">
+        <item>
+         <widget class="QLabel" name="Lb_PrixEmprunt">
           <property name="text">
            <string>Prix de l'emprunt :</string>
           </property>
@@ -596,7 +687,7 @@
         </item>
        </layout>
       </item>
-      <item row="12" column="0">
+      <item row="9" column="0">
        <widget class="QTableView" name="TbV_EmpruntAValider">
         <property name="alternatingRowColors">
          <bool>true</bool>
@@ -608,36 +699,6 @@
          <enum>QAbstractItemView::SelectRows</enum>
         </property>
        </widget>
-      </item>
-      <item row="5" column="0">
-       <layout class="QHBoxLayout" name="HLay10"/>
-      </item>
-      <item row="4" column="0">
-       <layout class="QHBoxLayout" name="HLay13">
-        <item>
-         <widget class="QLabel" name="Lb_EtatJeu">
-          <property name="text">
-           <string>Etat du jeu :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="Le_EtatJeuARemplir">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </item>
       <item row="3" column="0">
        <layout class="QHBoxLayout" name="HLay11">
@@ -685,7 +746,7 @@
         </item>
        </layout>
       </item>
-      <item row="9" column="0">
+      <item row="6" column="0">
        <layout class="QHBoxLayout" name="HLay8">
         <item>
          <widget class="QLabel" name="Lb_RemarquesJeu">
@@ -761,14 +822,7 @@
         </item>
        </layout>
       </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="Lb_ContenuBoite">
-        <property name="text">
-         <string>Contenu de la boîte de ce jeu : </string>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0">
+      <item row="10" column="0">
        <widget class="QCommandLinkButton" name="Bt_ValiderEmprunt">
         <property name="enabled">
          <bool>false</bool>
@@ -795,19 +849,6 @@
        </widget>
       </item>
       <item row="8" column="0">
-       <widget class="QTextEdit" name="TxE_ContenuBoite">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>175</height>
-         </size>
-        </property>
-        <property name="readOnly">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="11" column="0">
        <layout class="QHBoxLayout" name="HLay3">
         <item>
          <widget class="QLabel" name="Lb_NewEmprunt">
@@ -892,7 +933,7 @@
         </item>
        </layout>
       </item>
-      <item row="10" column="0">
+      <item row="7" column="0">
        <widget class="QTextEdit" name="TxE_RemarquesJeu">
         <property name="maximumSize">
          <size>
@@ -989,63 +1030,12 @@
         </item>
        </layout>
       </item>
-      <item row="2" column="0">
-       <layout class="QHBoxLayout" name="Hlay12">
-        <item>
-         <widget class="QLabel" name="Lb_StatutJeu">
-          <property name="text">
-           <string>Statut du jeu :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="Le_StatutJeuARemplir">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="HS8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QComboBox" name="CBx_TypeEmprunt"/>
-        </item>
-       </layout>
-      </item>
-      <item row="1" column="0">
-       <layout class="QHBoxLayout" name="HLay14">
-        <item>
-         <widget class="QLabel" name="Lb_NomJeu">
-          <property name="text">
-           <string>Nom du jeu : </string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="Le_NomJeuARemplir">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+      <item row="5" column="0">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Détails sur ce jeu</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

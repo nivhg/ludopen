@@ -36,5 +36,6 @@
         <file>Loupe.png</file>
         <file>Fleche_bas.png</file>
         <file>Fleche_haut.png</file>
+        <file>Carton_rentrant.png</file>
     </qresource>
 </RCC>

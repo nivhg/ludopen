@@ -68,38 +68,17 @@ F_Preferences::F_Preferences(QWidget *parent) :
     // pour des problèmes de valeur qui n'arrive pas zéro quand on fait des calculs avec des flottants
     fesetround(FE_TOWARDZERO);
 
-    this->pEtatJeuAjMod = new F_PopUpCLESTTEM(0);
-    this->pEtatJeuAjMod->setWindowModality(Qt::ApplicationModal);
+    this->pPopUpCLESTTEM = new F_PopUpCLESTTEM(this);
+    this->pPopUpCLESTTEM->setWindowModality(Qt::ApplicationModal);
 
-    this->pStatutJeuAjMod = new F_PopUpCLESTTEM(1);
-    this->pStatutJeuAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pEmplacementJeuAjMod = new F_PopUpCLESTTEM(2);
-    this->pEmplacementJeuAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pTypeJeuAjMod = new F_PopUpCLESTTEM(3);
-    this->pTypeJeuAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pTypeMembreAjMod = new F_PopUpCLESTTEM(5);
-    this->pTypeMembreAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pTitreMembreAjMod = new F_PopUpCLESTTEM(6);
-    this->pTitreMembreAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pTypeEmpruntAjMod = new F_PopUpCLESTTEM(7);
-    this->pTypeEmpruntAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pLieuxInfoLudoAjMod = new F_PopUpCLESTTEM(8);
-    this->pLieuxInfoLudoAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pPaiementMembreAjMod = new F_PopUpCLESTTEM(9);
-    this->pPaiementMembreAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pMembresActiviteAjMod = new F_PopUpCLESTTEM(10);
-    this->pMembresActiviteAjMod->setWindowModality(Qt::ApplicationModal);
-
-    this->pJeuxMotCleAjMod = new F_PopUpCLESTTEM(11);
-    this->pJeuxMotCleAjMod->setWindowModality(Qt::ApplicationModal);
+    this->TbCLESTTEM = new QStandardItemModel();
+    this->TbV_CLESTTEM =  new QTableView();
+    this->TbV_CLESTTEM->setModel(this->TbCLESTTEM);
+    this->TbV_CLESTTEM->setEditTriggers(0);
+    this->TbV_CLESTTEM->verticalHeader()->setVisible(false);
+    //Affichage de la BDD dans le tableau titre qui est dans l'onglet Membres/Emprunts de F_Preferences.
+    this->TbCLESTTEM->setColumnCount(2);
+    this->TbCLESTTEM->setRowCount(0);
 
     this->TbMembresTitre = new QStandardItemModel();
     ui->TbV_MembresTitre->setModel(this->TbMembresTitre);
@@ -170,18 +149,13 @@ F_Preferences::F_Preferences(QWidget *parent) :
     {
         TbPreferences[key]=FichierDeConfig.value(key).toString();
     }
+    if(TbPreferences["TaillePolice"]==0)
+    {
+        TbPreferences["TaillePolice"]="11";
+    }
 
-    connect(this->pTitreMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pTypeMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pPaiementMembreAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pTypeEmpruntAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pTypeJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pEtatJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pStatutJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pEmplacementJeuAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pLieuxInfoLudoAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pMembresActiviteAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
-    connect(this->pJeuxMotCleAjMod, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+    connect(this->pPopUpCLESTTEM, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
+
     ui->label->hide();
     ui->label_2->hide();
     ui->lineEdit->hide();
@@ -278,6 +252,10 @@ void F_Preferences::ChargerPreferencesBDD()
     {
         TbPreferences[key]=FichierDeConfig.value(key).toString();
     }
+    if(TbPreferences["TaillePolice"]==0)
+    {
+        TbPreferences["TaillePolice"]="11";
+    }
     this->AfficherTousLesTableaux();
     this->AfficherAutresInformations();
 }
@@ -346,6 +324,8 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_CheminReglesServeur->setText(TbPreferences["CheminReglesServeur"]);
     ui->LE_AdresseServeur->setText(TbPreferences["AdresseServeur"]);
     ui->LE_Login->setText(TbPreferences["LoginServeur"]);
+    ui->LE_MAJ->setText(TbPreferences["URLMAJeur"]);
+    ui->LE_MAJLocal->setText(TbPreferences["URLMAJeurLocale"]);
 }
 
 /**
@@ -361,79 +341,79 @@ void F_Preferences::AfficherTousLesTableaux()
     //################################ onglet Membres/Emprunts #################################################
 
     //Affichage de la BDD dans le tableau titre qui est dans l'onglet Membres/Emprunts de F_Preferences.
-    this->TbMembresTitre->setColumnCount(2);
+    this->TbMembresTitre->setColumnCount(3);
     this->TbMembresTitre->setRowCount(nNombreLigne);
     this->TbMembresTitre->setHorizontalHeaderItem(0, new QStandardItem("Titre Membre"));
     this->TbMembresTitre->setHorizontalHeaderItem(1, new QStandardItem("Emprunt"));
     ui->TbV_MembresTitre->setColumnWidth(0, 100);
     ui->TbV_MembresTitre->setColumnWidth(1, 65);
 
-    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntables FROM titremembre");
+    RechercheTableau.exec("SELECT NomTitre, NbrJeuxEmpruntables,IdTitreMembre FROM titremembre");
     while (RechercheTableau.next())
     {
         this->TbMembresTitre->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         this->TbMembresTitre->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbMembresTitre->setItem(nNombreLigne++, 2, new QStandardItem(RechercheTableau.value(2).toString()));
     }
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau type qui est dans l'onglet Membres/Emprunts de F_Preferences.
-    this->TbMembresType->setColumnCount(1);
+    this->TbMembresType->setColumnCount(2);
     this->TbMembresType->setRowCount(nNombreLigne);
     this->TbMembresType->setHorizontalHeaderItem(0, new QStandardItem("Type Membre"));
     ui->TbV_MembresType->setColumnWidth(0, 150);
 
-    RechercheTableau.exec("SELECT TypeMembre FROM typemembres");
+    RechercheTableau.exec("SELECT TypeMembre,IdTypeMembres FROM typemembres");
     while (RechercheTableau.next())
     {
         this->TbMembresType->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbMembresType->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau paiement qui est dans l'onglet Membres/Emprunts de F_Preferences.
-    this->TbMembresPaiement->setColumnCount(1);
+    this->TbMembresPaiement->setColumnCount(2);
     this->TbMembresPaiement->setRowCount(nNombreLigne);
     this->TbMembresPaiement->setHorizontalHeaderItem(0, new QStandardItem("Paiement"));
     ui->TbV_MembresPaiement->setColumnWidth(0, 150);
 
-    RechercheTableau.exec("SELECT NomPaiement FROM modepaiement");
+    RechercheTableau.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement");
     while (RechercheTableau.next())
     {
         this->TbMembresPaiement->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbMembresPaiement->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau type d'emprunt qui est dans l'onglet Membres/Emprunts de F_Preferences.
-    this->TbEmpruntType->setColumnCount(2);
+    this->TbEmpruntType->setColumnCount(3);
     this->TbEmpruntType->setRowCount(nNombreLigne);
     this->TbEmpruntType->setHorizontalHeaderItem(0, new QStandardItem("Type Emprunt"));
     this->TbEmpruntType->setHorizontalHeaderItem(1, new QStandardItem("Durée"));
     ui->TbV_EmpruntType->setColumnWidth(0, 180);
     ui->TbV_EmpruntType->setColumnWidth(1, 90);
 
-    RechercheTableau.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt");
+    RechercheTableau.exec("SELECT TypeEmprunt,DureeEmprunt,IdTypeEmprunt FROM typeemprunt");
     while (RechercheTableau.next())
     {
         this->TbEmpruntType->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
         this->TbEmpruntType->setItem(nNombreLigne, 1, new QStandardItem(RechercheTableau.value(1).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbEmpruntType->setItem(nNombreLigne++, 2, new QStandardItem(RechercheTableau.value(2).toString()));
     }
 
     nNombreLigne = 0;
 
     //Affichage de la BDD dans le tableau type d'emprunt qui est dans l'onglet Membres/Emprunts de F_Preferences.
-    this->TbMembresActivite->setColumnCount(1);
+    this->TbMembresActivite->setColumnCount(2);
     this->TbMembresActivite->setRowCount(nNombreLigne);
     this->TbMembresActivite->setHorizontalHeaderItem(0, new QStandardItem("Activite"));
     ui->TbV_MembresActivite->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT Activite FROM activite");
+    RechercheTableau.exec("SELECT Activite,IdActivite FROM activite");
     while (RechercheTableau.next())
     {
         this->TbMembresActivite->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbMembresActivite->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
@@ -443,11 +423,11 @@ void F_Preferences::AfficherTousLesTableaux()
     this->TbJeuxMotCle->setHorizontalHeaderItem(0, new QStandardItem("Mot-clé"));
     ui->TbV_JeuxMotCle->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT MotCle FROM motscles");
+    RechercheTableau.exec("SELECT MotCle,Id_MotCle FROM motscles");
     while (RechercheTableau.next())
     {
         this->TbJeuxMotCle->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbJeuxMotCle->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
@@ -476,11 +456,11 @@ void F_Preferences::AfficherTousLesTableaux()
     this->TbJeuxEtat->setHorizontalHeaderItem(0, new QStandardItem("Etat"));
     ui->TbV_JeuxEtat->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT Etat FROM etatsjeu");
+    RechercheTableau.exec("SELECT Etat,IdEtatsJeu FROM etatsjeu");
     while (RechercheTableau.next())
     {
         this->TbJeuxEtat->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbJeuxEtat->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
@@ -488,13 +468,12 @@ void F_Preferences::AfficherTousLesTableaux()
     this->TbJeuxStatut->setColumnCount(1);
     this->TbJeuxStatut->setRowCount(nNombreLigne);
     this->TbJeuxStatut->setHorizontalHeaderItem(0, new QStandardItem("Statut"));
-    ui->TbV_JeuxStatut->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT StatutJeu FROM statutjeux");
+    RechercheTableau.exec("SELECT StatutJeu,IdStatutJeux FROM statutjeux");
     while (RechercheTableau.next())
     {
         this->TbJeuxStatut->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbJeuxStatut->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne = 0;
 
@@ -504,27 +483,27 @@ void F_Preferences::AfficherTousLesTableaux()
     this->TbJeuxEmplacement->setHorizontalHeaderItem(0, new QStandardItem("Emplacement"));
     ui->TbV_JeuxEmplacement->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT Nom FROM emplacement");
+    RechercheTableau.exec("SELECT Nom,IdEmplacement FROM emplacement");
     while (RechercheTableau.next())
     {
         this->TbJeuxEmplacement->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbJeuxEmplacement->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
     nNombreLigne=0;
 
     //################################ onglet Info Ludo #################################################
 
     //Affichage de la BDD dans le tableau lieu qui est dans l'onglet Info Ludo de F_Preferences.
-    this->TbInfoLudoLieux->setColumnCount(1);
+    this->TbInfoLudoLieux->setColumnCount(2);
     this->TbInfoLudoLieux->setRowCount(nNombreLigne);
     this->TbInfoLudoLieux->setHorizontalHeaderItem(0, new QStandardItem("Lieu"));
     ui->TbV_InfoLieux->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT NomLieux FROM lieux");
+    RechercheTableau.exec("SELECT NomLieux,IdLieux FROM lieux");
     while (RechercheTableau.next())
     {
         this->TbInfoLudoLieux->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
-        nNombreLigne = nNombreLigne+ 1;
+        this->TbInfoLudoLieux->setItem(nNombreLigne++, 1, new QStandardItem(RechercheTableau.value(1).toString()));
     }
 
     //Affichage de la BDD dans le combo box qui est dans l'onglet Info Ludo de F_Preferences.
@@ -539,19 +518,30 @@ void F_Preferences::AfficherTousLesTableaux()
 
     // Redimensionner les colonnes des tableaux en fonction du contenu des colonnes
     ui->TbV_MembresTitre->resizeColumnsToContents();
+    ui->TbV_MembresTitre->setColumnWidth(2, 0);
     ui->TbV_MembresType->resizeColumnsToContents();
+    ui->TbV_MembresType->setColumnWidth(1, 0);
     //ui->TbV_JeuxType->resizeColumnsToContents();
     ui->TbV_JeuxEtat->resizeColumnsToContents();
     ui->TbV_JeuxStatut->resizeColumnsToContents();
+    ui->TbV_JeuxStatut->setColumnWidth(1, 0);
     ui->TbV_MembresPaiement->resizeColumnsToContents();
+    ui->TbV_MembresPaiement->setColumnWidth(1, 0);
     ui->TbV_EmpruntType->resizeColumnsToContents();
+    ui->TbV_EmpruntType->setColumnWidth(1, 0);
     ui->TbV_InfoLieux->resizeColumnsToContents();
+    ui->TbV_InfoLieux->setColumnWidth(1, 0);
     ui->TbV_JeuxEmplacement->resizeColumnsToContents();
+    ui->TbV_JeuxEmplacement->setColumnWidth(1, 0);
     ui->TbV_MembresActivite->resizeColumnsToContents();
+    ui->TbV_MembresActivite->setColumnWidth(1, 0);
     ui->TbV_JeuxMotCle->resizeColumnsToContents();
+    ui->TbV_JeuxMotCle->setColumnWidth(1, 0);
     ui->TbV_JeuxType->selectRow(0);
     ui->TbV_JeuxEtat->selectRow(0);
-    ui->TbV_JeuxStatut->selectRow(0);
+    ui->TbV_JeuxEtat->setColumnWidth(1, 0);
+    on_TbV_JeuxStatut_clicked(this->TbJeuxStatut->index(0,0));
+    //ui->TbV_JeuxStatut->selectRow(0);
     ui->TbV_JeuxEmplacement->selectRow(0);
     ui->TbV_InfoLieux->selectRow(0);
     ui->TbV_MembresTitre->selectRow(0);
@@ -637,6 +627,8 @@ void F_Preferences::on_Bt_Enregistrer_clicked()
     SauverPreference("CheminReglesServeur", ui->LE_CheminReglesServeur->text());
     SauverPreference("AdresseServeur", ui->LE_AdresseServeur->text());
     SauverPreference("LoginServeur", ui->LE_Login->text());
+    SauverPreference("URLMAJeur", ui->LE_MAJ->text());
+    SauverPreference("URLMAJeurLocale", ui->LE_MAJLocal->text());
     // écriture de certaines données dans le fichier de configuration config.ini
     RequeteCombo.prepare("SELECT * FROM lieux WHERE NomLieux=:NomLieux");
     RequeteCombo.bindValue(":NomLieux", ui->CBx_LieuOrdi->currentText());
@@ -750,7 +742,7 @@ void F_Preferences::on_Bt_Connection_clicked()
  */
 void F_Preferences::on_Bt_AjouterMembreTitre_clicked()
 {
-    this->pTitreMembreAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(6);
 }
 
 /**
@@ -762,12 +754,34 @@ void F_Preferences::on_Bt_ModifierMembreTitre_clicked()
 {
     QSqlQuery RequeteModifier;
 
-    RequeteModifier.prepare("SELECT NomTitre FROM titremembre WHERE NomTitre=:NomTitre");
+    RequeteModifier.prepare("SELECT NbrJeuxEmpruntables FROM titremembre WHERE NomTitre=:NomTitre");
     RequeteModifier.bindValue(":NomTitre", ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
-
-    this->pTitreMembreAjMod->Modifier(RequeteModifier.value(0).toString());
+    int NbrJeuxEmpruntables=RequeteModifier.value(0).toInt();
+    int ret=this->pPopUpCLESTTEM->Modifier(ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString(),6);
+    if(ret==0)
+    {
+        return;
+    }
+    RequeteModifier.prepare("SELECT NbrJeuxEmpruntables,IdTitreMembre FROM titremembre WHERE NomTitre=:NomTitre");
+    RequeteModifier.bindValue(":NomTitre", ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString());
+    RequeteModifier.exec();
+    RequeteModifier.next();
+    if(NbrJeuxEmpruntables != RequeteModifier.value(0).toInt())
+    {
+        if(QMessageBox::question(this, "Modification du nombre de jeux empruntables",
+                                 "Vous avez modifier le nombre de jeux empruntables\n"
+                                 "Voulez-vous modifier les membres existants avec cette nouvelle valeur ?", "Oui", "Non") == 0)
+        {
+            QSqlQuery RequeteSupprimer;
+            RequeteSupprimer.prepare("UPDATE membres SET NbreJeuxAutorises=:NbreJeuxAutorises WHERE "
+                                   "TitreMembre_IdTitreMembre=:IdTitreMembre");
+            RequeteSupprimer.bindValue(":IdTitreMembre", RequeteModifier.value(1).toInt());
+            RequeteSupprimer.bindValue(":NbreJeuxAutorises", RequeteModifier.value(0).toInt());
+            RequeteSupprimer.exec();
+        }
+    }
 }
 
 /**
@@ -778,12 +792,46 @@ void F_Preferences::on_Bt_ModifierMembreTitre_clicked()
  */
 void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
 {
-    QSqlQuery RequeteSupprimer;
-
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce titre ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM titremembre WHERE NomTitre=:NomTitre");
-        RequeteSupprimer.bindValue(":NomTitre", ui->TbV_MembresTitre->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdTitreMembre=ui->TbV_MembresTitre->selectionModel()->selectedRows(2).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM membres WHERE TitreMembre_IdTitreMembre=:IdTitreMembre");
+        RequeteSupprimer.bindValue(":IdTitreMembre", IdTitreMembre);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT NomTitre,IdTitreMembre FROM titremembre WHERE "
+                              "IdTitreMembre!=:IdTitreMembre");
+            RequeteSupprimer.bindValue(":IdTitreMembre", IdTitreMembre);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE membres SET TitreMembre_IdTitreMembre=:IdTitreMembre WHERE "
+                                   "TitreMembre_IdTitreMembre=:IdTitreMembrePrecedent");
+            QString IdTitre=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdTitreMembre",IdTitre);
+            RequeteSupprimer.bindValue(":IdTitreMembrePrecedent", IdTitreMembre);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM titremembre WHERE IdTitreMembre=:IdTitreMembre");
+        RequeteSupprimer.bindValue(":IdTitreMembre", IdTitreMembre);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -797,7 +845,7 @@ void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
  */
 void F_Preferences::on_Bt_AjouterMembreType_clicked()
 {
-    this->pTypeMembreAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(5);
 }
 
 /**
@@ -813,7 +861,7 @@ void F_Preferences::on_Bt_ModifierMembreType_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pTypeMembreAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),5);
 }
 
 /**
@@ -827,8 +875,44 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type de membre ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM typemembres WHERE TypeMembre=:TypeMembre");
-        RequeteSupprimer.bindValue(":TypeMembre", ui->TbV_MembresType->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdTypeMembres=ui->TbV_MembresType->selectionModel()->selectedRows(1).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM membres WHERE TypeMembres_IdTypeMembres=:IdTypeMembres");
+        RequeteSupprimer.bindValue(":IdTypeMembres", IdTypeMembres);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT TypeMembre,IdTypeMembres FROM typemembres WHERE "
+                              "IdTypeMembres!=:IdTypeMembres");
+            RequeteSupprimer.bindValue(":IdTypeMembres", IdTypeMembres);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE membres SET TypeMembres_IdTypeMembres=:IdTypeMembres WHERE "
+                                   "TypeMembres_IdTypeMembres=:IdTypeMembresPrecedent");
+            QString IdType=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdTypeMembres",IdType);
+            RequeteSupprimer.bindValue(":IdTypeMembresPrecedent", IdTypeMembres);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM typemembres WHERE IdTypeMembres=:IdTypeMembres");
+        RequeteSupprimer.bindValue(":IdTypeMembres", IdTypeMembres);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -838,7 +922,7 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
 
 void F_Preferences::on_Bt_AjouterMembrePaiement_clicked()
 {
-    this->pPaiementMembreAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(9);
 }
 
 void F_Preferences::on_Bt_ModifierMembrePaiement_clicked()
@@ -850,7 +934,7 @@ void F_Preferences::on_Bt_ModifierMembrePaiement_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pPaiementMembreAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),9);
 }
 
 void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
@@ -859,8 +943,53 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce paiement ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM modepaiement WHERE NomPaiement=:NomPaiement");
-        RequeteSupprimer.bindValue(":NomPaiement", ui->TbV_MembresPaiement->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdModePaiement=ui->TbV_MembresPaiement->selectionModel()->selectedRows(1).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM abonnements WHERE ModePaiement_IdModePaiement=:IdModePaiement");
+        RequeteSupprimer.bindValue(":IdModePaiement", IdModePaiement);
+        RequeteSupprimer.exec();
+        QSqlQuery RequeteSupprimer2;
+        RequeteSupprimer2.prepare("SELECT * FROM emprunts WHERE ModePaiement_IdModePaiement=:IdModePaiement");
+        RequeteSupprimer2.bindValue(":IdModePaiement", IdModePaiement);
+        RequeteSupprimer2.exec();
+        if(RequeteSupprimer.size()!=0 || RequeteSupprimer2.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT NomPaiement,IdModePaiement FROM modepaiement WHERE "
+                              "IdModePaiement!=:IdModePaiement");
+            RequeteSupprimer.bindValue(":IdModePaiement", IdModePaiement);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE abonnements SET ModePaiement_IdModePaiement=:IdModePaiement"
+                                   " WHERE ModePaiement_IdModePaiement=:IdModePaiementPrecedent");
+            QString IdPaiement=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdModePaiement",IdPaiement);
+            RequeteSupprimer.bindValue(":IdModePaiementPrecedent", IdModePaiement);
+            RequeteSupprimer.exec();
+            RequeteSupprimer.prepare("UPDATE emprunts SET ModePaiement_IdModePaiement=:IdModePaiement"
+                                   " WHERE ModePaiement_IdModePaiement=:IdModePaiementPrecedent");
+            RequeteSupprimer.bindValue(":IdModePaiement",IdPaiement);
+            RequeteSupprimer.bindValue(":IdModePaiementPrecedent", IdModePaiement);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM modepaiement WHERE IdModePaiement=:IdModePaiement");
+        RequeteSupprimer.bindValue(":IdModePaiement", IdModePaiement);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -870,7 +999,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
 
 void F_Preferences::on_Bt_AjouterEmpruntType_clicked()
 {
-    this->pTypeEmpruntAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(7);
 }
 
 void F_Preferences::on_Bt_ModifierEmpruntType_clicked()
@@ -882,7 +1011,7 @@ void F_Preferences::on_Bt_ModifierEmpruntType_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pTypeEmpruntAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),7);
 }
 
 void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
@@ -891,8 +1020,44 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type d'emprunt ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM typeemprunt WHERE TypeEmprunt=:TypeEmprunt");
-        RequeteSupprimer.bindValue(":TypeEmprunt", ui->TbV_EmpruntType->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdTypeEmprunt=ui->TbV_EmpruntType->selectionModel()->selectedRows(2).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM emprunts WHERE TypeEmprunt_IdTypeEmprunt=:IdTypeEmprunt");
+        RequeteSupprimer.bindValue(":IdTypeEmprunt", IdTypeEmprunt);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0 || RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT TypeEmprunt,IdTypeEmprunt FROM typeemprunt WHERE "
+                              "IdTypeEmprunt!=:IdTypeEmprunt");
+            RequeteSupprimer.bindValue(":IdTypeEmprunt", IdTypeEmprunt);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE emprunts SET TypeEmprunt_IdTypeEmprunt=:IdTypeEmprunt"
+                                   " WHERE TypeEmprunt_IdTypeEmprunt=:IdTypeEmpruntPrecedent");
+            QString IdType=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdTypeEmprunt",IdType);
+            RequeteSupprimer.bindValue(":IdTypeEmpruntPrecedent", IdTypeEmprunt);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM typeemprunt WHERE IdTypeEmprunt=:IdTypeEmprunt");
+        RequeteSupprimer.bindValue(":IdTypeEmprunt", IdTypeEmprunt);
         RequeteSupprimer.exec();
     }
 
@@ -919,12 +1084,12 @@ void F_Preferences::on_TbV_JeuxStatut_clicked(const QModelIndex &index)
 }
 
 /**
- *  @brief  Permet d'ajouter un type de jeu.
+ *  @brief  Permet d'ajouter un type de jeu (classification).
  *
  */
 void F_Preferences::on_Bt_AjouterJeuxType_clicked()
 {
-    this->pTypeJeuAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(3);
 }
 
 /**
@@ -940,7 +1105,7 @@ void F_Preferences::on_Bt_ModifierJeuxType_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pTypeJeuAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),3);
 }
 
 /**
@@ -950,12 +1115,48 @@ void F_Preferences::on_Bt_ModifierJeuxType_clicked()
  */
 void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
 {
-    QSqlQuery RequeteSupprimer;
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce type de jeu ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM typejeux WHERE TypeJeux=:TypeJeux");
-        RequeteSupprimer.bindValue(":NomTitre", ui->TbV_JeuxType->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdJeuxType=ui->TbV_JeuxType->selectionModel()->selectedRows(1).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM jeux WHERE TypeJeux_Classification=:Classification");
+        RequeteSupprimer.bindValue(":Classification", IdJeuxType);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT TypeJeux,Classification FROM typejeux WHERE "
+                              "Classification!=:Classification");
+            RequeteSupprimer.bindValue(":Classification", IdJeuxType);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdJeuxType, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE jeux SET TypeJeux_Classification=:Classification WHERE "
+                                   "TypeJeux_Classification=:TypeJeuxPrecedent");
+            RequeteSupprimer.bindValue(":TypeJeux",
+                             this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString());
+            RequeteSupprimer.bindValue(":TypeJeuxPrecedent", IdJeuxType);
+            RequeteSupprimer.exec();
+        }
+
+        RequeteSupprimer.prepare("DELETE FROM typejeux WHERE Classification=:Classification");
+        RequeteSupprimer.bindValue(":Classification", IdJeuxType);
         RequeteSupprimer.exec();
     }
 
@@ -968,7 +1169,7 @@ void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
  */
 void F_Preferences::on_Bt_AjouterEtat_clicked()
 {
-    this->pEtatJeuAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(0);
 }
 
 /**
@@ -984,7 +1185,7 @@ void F_Preferences::on_Bt_ModifierEtat_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pEtatJeuAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),0);
 }
 
 /**
@@ -998,8 +1199,44 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cet état de jeu ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM etatsjeu WHERE Etat=:Etat");
-        RequeteSupprimer.bindValue(":Etat", ui->TbV_JeuxEtat->selectionModel()->selectedRows(0).first().data().toString());
+        QSqlQuery RequeteSupprimer;
+        QString IdEtatJeux=ui->TbV_JeuxEtat->selectionModel()->selectedRows(1).first().data().toString();
+        RequeteSupprimer.prepare("SELECT * FROM jeux WHERE EtatsJeu_IdEtatsJeu=:EtatJeux");
+        RequeteSupprimer.bindValue(":EtatJeux", IdEtatJeux);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT Etat,IdEtatsJeu FROM etatsjeu WHERE "
+                              "IdEtatsJeu!=:IdEtatsJeu");
+            RequeteSupprimer.bindValue(":IdEtatsJeu", IdEtatJeux);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE jeux SET EtatsJeu_IdEtatsJeu=:EtatJeux WHERE "
+                                   "EtatsJeu_IdEtatsJeu=:EtatJeuxPrecedent");
+            QString IdEtat=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":EtatJeux", IdEtat);
+            RequeteSupprimer.bindValue(":EtatJeuxPrecedent", IdEtatJeux);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM etatsjeu WHERE IdEtatsJeu=:IdEtatsJeu");
+        RequeteSupprimer.bindValue(":IdEtatsJeu", IdEtatJeux);
         RequeteSupprimer.exec();
     }
 
@@ -1012,7 +1249,7 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
  */
 void F_Preferences::on_Bt_AjouterStatut_clicked()
 {
-    this->pStatutJeuAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(1);
 }
 
 /**
@@ -1028,7 +1265,7 @@ void F_Preferences::on_Bt_ModifierStatut_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pStatutJeuAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),1);
 }
 
 /**
@@ -1039,11 +1276,47 @@ void F_Preferences::on_Bt_ModifierStatut_clicked()
 void F_Preferences::on_Bt_SupprimerStatut_clicked()
 {
     QSqlQuery RequeteSupprimer;
+    QString IdStatutJeux=ui->TbV_JeuxStatut->selectionModel()->selectedRows(1).first().data().toString();
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce statut de jeu ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM statutjeux WHERE StatutJeu=:StatutJeu");
-        RequeteSupprimer.bindValue(":StatutJeu", ui->TbV_JeuxStatut->selectionModel()->selectedRows(0).first().data().toString());
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM jeux WHERE StatutJeux_IdStatutJeux=:StatutJeux");
+        RequeteSupprimer.bindValue(":StatutJeux", IdStatutJeux);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT StatutJeu,IdStatutJeux FROM statutjeux WHERE "
+                              "IdStatutJeux!=:StatutJeux");
+            RequeteSupprimer.bindValue(":StatutJeux", IdStatutJeux);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdStatutJeux, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=:StatutJeux WHERE "
+                                   "StatutJeux_IdStatutJeux=:StatutJeuxPrecedent");
+            QString IdStatut=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":StatutJeux", IdStatut);
+            RequeteSupprimer.bindValue(":StatutJeuxPrecedent", IdStatutJeux);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM statutjeux WHERE IdStatutJeux =:IdStatutJeux");
+        RequeteSupprimer.bindValue(":IdStatutJeux", IdStatutJeux);
         RequeteSupprimer.exec();
     }
 
@@ -1056,7 +1329,7 @@ void F_Preferences::on_Bt_SupprimerStatut_clicked()
  */
 void F_Preferences::on_Bt_AjouterEmplacement_clicked()
 {
-    this->pEmplacementJeuAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(2);
 }
 
 /**
@@ -1072,7 +1345,7 @@ void F_Preferences::on_Bt_ModifierEmplacement_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pEmplacementJeuAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),2);
 }
 
 /**
@@ -1083,11 +1356,47 @@ void F_Preferences::on_Bt_ModifierEmplacement_clicked()
 void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
 {
     QSqlQuery RequeteSupprimer;
+    QString IdEmplacement=ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(1).first().data().toString();
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette emplacement de jeu ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM emplacement WHERE Nom=:Nom");
-        RequeteSupprimer.bindValue(":StatutJeu", ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(0).first().data().toString());
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM jeux WHERE Emplacement_IdEmplacement=:IdEmplacement");
+        RequeteSupprimer.bindValue(":IdEmplacement", IdEmplacement);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT Nom,IdEmplacement FROM emplacement WHERE "
+                              "IdEmplacement!=:IdEmplacement");
+            RequeteSupprimer.bindValue(":IdEmplacement", IdEmplacement);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdEmplacement, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE jeux SET Emplacement_IdEmplacement=:IdEmplacement WHERE "
+                                   "Emplacement_IdEmplacement=:IdEmplacementPrecedent");
+            QString IdEmp=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdEmplacement", IdEmp);
+            RequeteSupprimer.bindValue(":IdEmplacementPrecedent", IdEmplacement);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM emplacement WHERE IdEmplacement=:IdEmplacement");
+        RequeteSupprimer.bindValue(":IdEmplacement", IdEmplacement);
         RequeteSupprimer.exec();
     }
 
@@ -1127,7 +1436,7 @@ void F_Preferences::on_Bt_ParcourirImage_clicked()
  */
 void F_Preferences::on_Bt_AjouterLieux_clicked()
 {
-    this->pLieuxInfoLudoAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(8);
 }
 
 /**
@@ -1143,7 +1452,7 @@ void F_Preferences::on_Bt_ModifierLieux_clicked()
     RequeteModifier.exec();
     RequeteModifier.next();
 
-    this->pLieuxInfoLudoAjMod->Modifier(RequeteModifier.value(0).toString());
+    this->pPopUpCLESTTEM->Modifier(RequeteModifier.value(0).toString(),8);
 }
 
 /**
@@ -1157,8 +1466,53 @@ void F_Preferences::on_Bt_SupprimerLieux_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce lieu de l'info ludo ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM lieux WHERE NomLieux=:NomLieux");
-        RequeteSupprimer.bindValue(":NomLieux", ui->TbV_InfoLieux->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdLieux=ui->TbV_InfoLieux->selectionModel()->selectedRows(1).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM  emprunts WHERE Lieux_IdLieux=:IdLieux");
+        RequeteSupprimer.bindValue(":IdLieux", IdLieux);
+        RequeteSupprimer.exec();
+        QSqlQuery RequeteSupprimer2;
+        RequeteSupprimer2.prepare("SELECT * FROM  reservation WHERE Lieux_IdLieuxReservation=:IdLieux");
+        RequeteSupprimer2.bindValue(":IdLieux", IdLieux);
+        RequeteSupprimer2.exec();
+        if(RequeteSupprimer.size()!=0 || RequeteSupprimer2.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT NomLieux,IdLieux FROM lieux WHERE IdLieux!=:IdLieux");
+            RequeteSupprimer.bindValue(":IdLieux", IdLieux);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE emprunts SET Lieux_IdLieux=:IdLieux"
+                                   " WHERE Lieux_IdLieux=:IdLieuxPrecedent");
+            QString IdL=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdLieux",IdL);
+            RequeteSupprimer.bindValue(":IdLieuxPrecedent", IdLieux);
+            RequeteSupprimer.exec();
+            RequeteSupprimer.prepare("UPDATE reservation SET Lieux_IdLieuxReservation=:IdLieux"
+                                   " WHERE Lieux_IdLieuxReservation=:IdLieuxPrecedent");
+            QString Idl=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdLieux",Idl);
+            RequeteSupprimer.bindValue(":IdLieuxPrecedent", IdLieux);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM lieux WHERE IdLieux=:IdLieux");
+        RequeteSupprimer.bindValue(":IdLieux", IdLieux);
         RequeteSupprimer.exec();
     }
 
@@ -1188,23 +1542,24 @@ void F_Preferences::on_LE_NumeroFax_textEdited(const QString &arg1)
 //---------------------------------------------------------------------------
 
 /**
- *  @brief  Permet d'ajouter un titre d'un membre.
+ *  @brief  Permet d'ajouter une activité.
  *
  *  @pre    Etre connecté à  la BDD.
  */
 void F_Preferences::on_Bt_AjouterActivite_clicked()
 {
-    this->pMembresActiviteAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(10);
 }
 
 /**
- *  @brief   Permet de modifier un titre d'un membre.
+ *  @brief   Permet de modifier une activité.
  *
  *  @pre    Etre connecté à  la BDD.
  */
 void F_Preferences::on_Bt_ModifierActivite_clicked()
 {
-    this->pMembresActiviteAjMod->Modifier(ui->TbV_MembresActivite->selectionModel()->selectedRows(0).first().data().toString());
+    this->pPopUpCLESTTEM->Modifier(
+        ui->TbV_MembresActivite->selectionModel()->selectedRows(0).first().data().toString(),10);
 }
 
 /**
@@ -1219,8 +1574,44 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
 
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer cette activité ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM activite WHERE Activite=:Activite");
-        RequeteSupprimer.bindValue(":Activite", ui->TbV_MembresActivite->selectionModel()->selectedRows(0).first().data().toString());
+        QString IdActivite=ui->TbV_MembresActivite->selectionModel()->selectedRows(1).first().data().toString();
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM  activitemembre WHERE Activite_IdActivite=:IdActivite");
+        RequeteSupprimer.bindValue(":IdActivite", IdActivite);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT Activite,IdActivite FROM activite WHERE "
+                              "IdActivite!=:IdActivite");
+            RequeteSupprimer.bindValue(":IdActivite", IdActivite);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            RequeteSupprimer.prepare("UPDATE  activitemembre SET Activite_IdActivite=:IdActivite"
+                                   " WHERE Activite_IdActivite=:IdActivitePrecedent");
+            QString IdAct=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.bindValue(":IdActivite",IdAct);
+            RequeteSupprimer.bindValue(":IdActivitePrecedent", IdActivite);
+            RequeteSupprimer.exec();
+        }
+        RequeteSupprimer.prepare("DELETE FROM activite WHERE IdActivite=:IdActivite");
+        RequeteSupprimer.bindValue(":IdActivite", IdActivite);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }
@@ -1237,7 +1628,7 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
  */
 void F_Preferences::on_Bt_AjouterMotCle_clicked()
 {
-    this->pJeuxMotCleAjMod->Ajouter();
+    this->pPopUpCLESTTEM->Ajouter(11);
 }
 
 /**
@@ -1247,7 +1638,8 @@ void F_Preferences::on_Bt_AjouterMotCle_clicked()
  */
 void F_Preferences::on_Bt_ModifierMotCle_clicked()
 {
-    this->pJeuxMotCleAjMod->Modifier(ui->TbV_JeuxMotCle->selectionModel()->selectedRows(0).first().data().toString());
+    this->pPopUpCLESTTEM->Modifier(
+        ui->TbV_JeuxMotCle->selectionModel()->selectedRows(0).first().data().toString(),11);
 }
 
 /**
@@ -1260,10 +1652,55 @@ void F_Preferences::on_Bt_SupprimerMotCle_clicked()
 {
     QSqlQuery RequeteSupprimer;
 
+    QString IdMotCle=ui->TbV_JeuxMotCle->selectionModel()->selectedRows(1).first().data().toString();
     if(QMessageBox::question(this, "Suppression", "Etes-vous sur de vouloir supprimer ce mot-clé ?", "Oui", "Non") == 0)
     {
-        RequeteSupprimer.prepare("DELETE FROM motscles WHERE MotCle=:MotCle");
-        RequeteSupprimer.bindValue(":MotCle", ui->TbV_JeuxMotCle->selectionModel()->selectedRows(0).first().data().toString());
+        QSqlQuery RequeteSupprimer;
+        RequeteSupprimer.prepare("SELECT * FROM jeux WHERE MotCle1=:IdMotCle OR MotCle2=:IdMotCle OR MotCle3=:IdMotCle");
+        RequeteSupprimer.bindValue(":IdMotCle", IdMotCle);
+        RequeteSupprimer.exec();
+        if(RequeteSupprimer.size()!=0)
+        {
+            RequeteSupprimer.prepare("SELECT MotCle,Id_MotCle FROM motscles WHERE Id_MotCle!=:IdMotCle");
+            RequeteSupprimer.bindValue(":IdMotCle", IdMotCle);
+            RequeteSupprimer.exec();
+            int i=0;
+            this->TbCLESTTEM->clear();
+            this->TbCLESTTEM->setHorizontalHeaderItem(0, new QStandardItem("Valeurs"));
+            while(RequeteSupprimer.next())
+            {
+                this->TbCLESTTEM->setItem(i, 0, new QStandardItem(RequeteSupprimer.value(0).toString()));
+                this->TbCLESTTEM->setItem(i++, 1, new QStandardItem(RequeteSupprimer.value(1).toString()));
+            }
+            this->TbV_CLESTTEM->setSelectionMode(QAbstractItemView::SingleSelection);
+            this->TbV_CLESTTEM->setSelectionBehavior(QAbstractItemView::SelectRows);
+            this->TbV_CLESTTEM->resizeColumnsToContents();
+            this->TbV_CLESTTEM->setColumnWidth(1,0);
+            this->TbV_CLESTTEM->selectRow(0);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            if(ret==0)
+            {
+                return;
+            }
+            QString IdMot=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+            RequeteSupprimer.prepare("UPDATE jeux SET MotCle1=:IdMotCle WHERE MotCle1=:IdMotClePrecedent");
+            RequeteSupprimer.bindValue(":IdMotCle", IdMot);
+            RequeteSupprimer.bindValue(":IdMotClePrecedent", IdMotCle);
+            RequeteSupprimer.exec();
+
+            RequeteSupprimer.prepare("UPDATE jeux SET MotCle2=:IdMotCle WHERE MotCle2=:IdMotClePrecedent");
+            RequeteSupprimer.bindValue(":IdMotCle", IdMot);
+            RequeteSupprimer.bindValue(":IdMotClePrecedent", IdMotCle);
+            RequeteSupprimer.exec();
+
+            RequeteSupprimer.prepare("UPDATE jeux SET MotCle3=:IdMotCle WHERE MotCle3=:IdMotClePrecedent");
+            RequeteSupprimer.bindValue(":IdMotCle", IdMot);
+            RequeteSupprimer.bindValue(":IdMotClePrecedent", IdMotCle);
+            RequeteSupprimer.exec();
+        }
+
+        RequeteSupprimer.prepare("DELETE FROM motscles WHERE Id_MotCle=:IdMotCle");
+        RequeteSupprimer.bindValue(":IdMotCle", IdMotCle);
         RequeteSupprimer.exec();
         RequeteSupprimer.next();
     }

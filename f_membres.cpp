@@ -55,10 +55,10 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     // Création des 2 fenêtres d'ajout d'un nouveau titre et type de membre
 
     qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM Code 5";
-    this->pTypeAjMod = new F_PopUpCLESTTEM(5);
+    this->pTypeAjMod = new F_PopUpCLESTTEM();
     this->pTypeAjMod->setWindowModality(Qt::ApplicationModal);
     qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM code 6";
-    this->pTitreAjMod = new F_PopUpCLESTTEM(6);
+    this->pTitreAjMod = new F_PopUpCLESTTEM();
     this->pTitreAjMod->setWindowModality(Qt::ApplicationModal);
 
     this->EffacerTousLesChamps() ;
@@ -111,18 +111,9 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     // TO DO pour trier le tableau, il faudrait que l'on retrouve le membre dans le vecteur
     // ou virer le vecteur en stockant toutes les infos dans le tableau sans afficher les colonnes qu'on ne veut pas
 
-    this->MaJListeMembres() ;
-    this->VecteurRechercheMembres = this->VecteurMembres ;
-    this->AfficherListe(this->VecteurRechercheMembres) ;
-
-    ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
-    ui->TbW_Recherche->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    // Faire défiler le tableau des membres avec les flêches du clavier
-    connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
-
     if(this->iMode==MODE_MEMBRE_ASSOCIE)
     {
+        this->MaJListeMembres(true) ;
         setWindowTitle("Membres associés");
         ui->frame->setVisible(false);
         ui->frame_2->setVisible(false);
@@ -182,7 +173,17 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     {
         ui->Fr_Associes->setVisible(false);
         ui->Lb_Associes->setVisible(false);
+        this->MaJListeMembres();
     }
+
+    this->VecteurRechercheMembres = this->VecteurMembres ;
+    this->AfficherListe(this->VecteurRechercheMembres) ;
+
+    ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
+    ui->TbW_Recherche->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // Faire défiler le tableau des membres avec les flêches du clavier
+    connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
 
     slot_AfficherMembre(this->VecteurRechercheMembres[0].id);
 
@@ -268,7 +269,7 @@ void F_Membres::ChargerActivites(QComboBox * combobox)
  *  @return True si tous c'est passé correctement et false si il y a une erreur
  *  @test   Voir la procédure dans le fichier associé.
  */
-bool F_Membres::MaJListeMembres()
+bool F_Membres::MaJListeMembres(bool AfficherContact)
 {
     QSqlQuery query ;
     Membre Membres ;
@@ -278,7 +279,12 @@ bool F_Membres::MaJListeMembres()
     this->VecteurMembres.clear() ;
 
     QString requeteSQL;
-    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre FROM membres ORDER BY Nom ASC";
+    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres ";
+    if(!AfficherContact)
+    {
+        requeteSQL+="WHERE TypeMembres_IdTypeMembres!=4 ";
+    }
+    requeteSQL+="ORDER BY Nom ASC";
 
     //Execute une requète sql qui retourne la liste des membres
     //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
@@ -851,18 +857,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                     ui->Lb_MembreEcarte->setPalette( palette ) ;
                 }
 
-                QVariant DateNaissance=ObtenirValeurParNom(RequeteMembre,"DateNaissance");
-                // Si la date de naissance est vide, on ne mets rien dans le champs correspondant
-                if(DateNaissance.toString()=="")
-                {
-                    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
-                    lineEdit->setText("");
-                }
-                else
-                {
-                    ui->DtE_Naissance->setDateTime( DateNaissance.toDateTime() ) ;
-                }
-
                 ui->Le_Code->setText( ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString() ) ;
 
                 ui->SPx_NbreRetards->setValue( ObtenirValeurParNom(RequeteMembre,"NbreRetard").toInt() ) ;
@@ -943,18 +937,6 @@ bool F_Membres::AjouterMembre()
 
     //Date d'inscription
     RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
-
-    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
-    //Date Naissance
-    if(lineEdit->text()=="")
-    {
-        // Si la valeur est vide, on mets le champs à NULL
-        RequeteMembre.bindValue( ":DateNaissance",  QVariant(QVariant::Date) ) ;
-    }
-    else
-    {
-        RequeteMembre.bindValue( ":DateNaissance",  ui->DtE_Naissance->date() ) ;
-    }
 
     //Remarque
     RequeteMembre.bindValue( ":Remarque", ui->TE_Remarque->toPlainText() ) ;
@@ -1077,18 +1059,6 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Date d'inscription
         RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
-
-        //Date Naissance
-        QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
-        if(lineEdit->text()=="")
-        {
-            // Si la valeur est vide, on mets le champs à NULL
-            RequeteMembre.bindValue( ":DateNaissance",  QVariant(QVariant::Date) ) ;
-        }
-        else
-        {
-            RequeteMembre.bindValue( ":DateNaissance",  ui->DtE_Naissance->date() ) ;
-        }
 
         //Remarque
         RequeteMembre.bindValue( ":Remarque", ui->TE_Remarque->toPlainText() ) ;
@@ -1260,7 +1230,6 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->SPx_NbreRetards->setReadOnly( bVerrouille ) ;
     ui->TE_Remarque->setReadOnly( bVerrouille ) ;
     ui->DtE_Insritption->setReadOnly( bVerrouille ) ;
-    ui->DtE_Naissance->setReadOnly( bVerrouille ) ;
     ui->ChBx_MembreEcarte->setVisible( !bVerrouille ) ;
 }
 //==========================================================================================================
@@ -1284,7 +1253,6 @@ void F_Membres::EffacerTousLesChamps ()
     ui->SBx_JeuxAutorises->clear() ;
     ui->SPx_NbreRetards->clear() ;
     ui->DtE_Insritption->clear() ;
-    ui->DtE_Naissance->clear() ;
     ui->TE_Remarque->clear() ;
     QStandardItemModel* modeleVide = new QStandardItemModel() ;
     ui->LW_JeuxEmpruntes->setModel( modeleVide ) ;
@@ -1367,6 +1335,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     modele->setHorizontalHeaderItem( 0, new QStandardItem( "Abonnement" ) ) ;
     modele->setHorizontalHeaderItem( 1, new QStandardItem( "Crédit" ) ) ;
     modele->setHorizontalHeaderItem( 2, new QStandardItem( "Date" ) ) ;
+    modele->setHorizontalHeaderItem( 3, new QStandardItem( "EstCeAbo" ) ) ;
 
     ui->LW_Abonnements->setModel( modele ) ;
     ui->LW_Abonnements->setEditTriggers( 0 ) ;
@@ -1375,12 +1344,14 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     ui->LW_Abonnements->setColumnWidth( 0, 138 ) ;  // Abonnement
     ui->LW_Abonnements->setColumnWidth( 1,  40 ) ;  // Crédit
     ui->LW_Abonnements->setColumnWidth( 2, 100 ) ;  // Date
+    ui->LW_Abonnements->setColumnWidth( 3, 0 ) ;  // Est-ce un abonnement ?
 
     //Préparation de la requête
     RequetePrestation.prepare( "SELECT prestations.NomPrestation,abonnements.DateExpiration,abonnements.IdAbonnements "
                                "FROM abonnements,prestations "
                                "WHERE abonnements.Membres_IdMembre=:IdMembre "
-                               "AND prestations.IdPrestation=abonnements.Prestations_IdPrestation" ) ;
+                               "AND prestations.IdPrestation=abonnements.Prestations_IdPrestation AND "
+                               "supprimer=0" ) ;
     RequetePrestation.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -1407,6 +1378,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
                     modele->setData( modele->index( i, 2 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                 }
             }
+            modele->setData( modele->index( i, 3 ),true) ;
 
             i++ ;
         }
@@ -1419,7 +1391,8 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     //Préparation de la requête
     RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte,abonnements.DateExpiration,abonnements.CreditRestant,"
                            "abonnements.IdAbonnements FROM abonnements,cartesprepayees "
-                           "WHERE abonnements.Membres_IdMembre=:IdMembre AND cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte" ) ;
+                           "WHERE abonnements.Membres_IdMembre=:IdMembre AND "
+                           "cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte" ) ;
     RequeteCartes.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -1447,6 +1420,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
                     modele->setData( modele->index( i, 2 ),QColor( Qt::green ), Qt::BackgroundColorRole ) ;
                 }
             }
+            modele->setData( modele->index( i, 3 ),false) ;
 
             i++ ;
         }
@@ -1616,7 +1590,11 @@ void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
  */
 void F_Membres::on_LW_Abonnements_doubleClicked(const QModelIndex &index)
 {
-    this->on_Bt_ModifierAbonnement_clicked();
+    // Si ce n'est pas un abonnement
+    if(!ui->LW_Abonnements->model()->index(index.row(),3).data().toBool())
+    {
+        this->on_Bt_ModifierAbonnement_clicked();
+    }
 }
 //==========================================================================================================
 /** Selectionne une ligne entière dans le tableau LW_Abonnememnt
@@ -1624,8 +1602,16 @@ void F_Membres::on_LW_Abonnements_doubleClicked(const QModelIndex &index)
  */
 void F_Membres::on_LW_Abonnements_clicked( const QModelIndex &index )
 {
-    ui->Bt_ModifierAbonnement->setEnabled( true ) ;
-    ui->Bt_SupprimerAbonnement->setEnabled( true ) ;
+    // Si c'est un abonnement
+    if(ui->LW_Abonnements->model()->index(index.row(),3).data().toBool())
+    {
+        ui->Bt_ModifierAbonnement->setEnabled( false );
+    }
+    else
+    {
+        ui->Bt_ModifierAbonnement->setEnabled( true );
+    }
+    ui->Bt_SupprimerAbonnement->setEnabled( true );
 }
 //==========================================================================================================
 /** Selectionne une ligne entière dans le tableau LW_Empruntes
@@ -1693,7 +1679,7 @@ void F_Membres::on_CBx_Type_activated(int index)
 {
     if( ( this->VectorType.size() - 1 )== index )
     {
-        this->pTypeAjMod->Ajouter() ;
+        this->pTypeAjMod->Ajouter(5) ;
         ui->CBx_Type->setCurrentIndex( 0 ) ;
     }
 }
@@ -1753,9 +1739,6 @@ void F_Membres::on_Bt_AjouterMembre_clicked()
     ui->ChBx_MembreEcarte->hide() ;
 
     //ui->SPx_NbreRetards->setDisabled( true ) ;
-
-    QLineEdit *lineEdit = ui->DtE_Naissance->findChild<QLineEdit*>();
-    lineEdit->setText("");
 
     this->VerrouillerAbonnements( true );
 
@@ -1928,7 +1911,7 @@ void F_Membres::on_Bt_SupprimerAbonnement_clicked()
     if ( QMessageBox::information( this, "Suppression d'un abonnement","Voulez vraiment supprimer cet abonnement ?", "Supprimer", "Garder" )== 0 )
     {
         //Préparation de la requête permettant la suppression dans la table abonnements
-        RequeteSupprimer.prepare( "DELETE FROM abonnements WHERE IdAbonnements=:nIdAbonnement" ) ;
+        RequeteSupprimer.prepare( "UPDATE abonnements SET Supprimer=1 WHERE IdAbonnements=:nIdAbonnement" ) ;
         RequeteSupprimer.bindValue( ":nIdAbonnement", this->VecteurAbonnements.at( ui->LW_Abonnements->currentIndex().row() ) ) ;
 
         //Execution de la requête
@@ -2161,7 +2144,7 @@ void F_Membres::on_CBx_Titre_currentIndexChanged(int index)
     }
     if( ( this->VectorTitre.size() - 1 ) == index )
     {
-        this->pTitreAjMod->Ajouter() ;
+        this->pTitreAjMod->Ajouter(6) ;
         ui->CBx_Titre->setCurrentIndex( 0 ) ;
     }
     else

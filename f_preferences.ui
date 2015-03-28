@@ -51,7 +51,7 @@
    <item row="0" column="0" colspan="4">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>4</number>
+      <number>3</number>
      </property>
      <property name="iconSize">
       <size>
@@ -314,7 +314,102 @@
       <layout class="QGridLayout" name="gridLayout_8">
        <item row="0" column="0">
         <layout class="QGridLayout" name="GL_5">
-         <item row="13" column="0">
+         <item row="2" column="3">
+          <widget class="QLabel" name="Lb_PortSMTP">
+           <property name="text">
+            <string>Numéro de Port :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string>Nom d'utilisateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="Lb_MotdePasse">
+           <property name="text">
+            <string>Mot de passe :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="1" colspan="2">
+          <widget class="QLabel" name="Lb_InfoConnexion">
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>Info connexion</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="1">
+          <widget class="QLineEdit" name="LE_Login"/>
+         </item>
+         <item row="8" column="0" colspan="3">
+          <spacer name="VS_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="Lb_AdresseIP">
+           <property name="text">
+            <string>Adresse serveur BDD :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="1">
+          <widget class="QLineEdit" name="LE_AdresseServeur"/>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="Lb_NomUtilisateur">
+           <property name="text">
+            <string>Nom de l'utilisateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="LE_NomBDD">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <widget class="QLabel" name="Lb_ClePrivee">
+           <property name="text">
+            <string>Chemin clé privée</string>
+           </property>
+          </widget>
+         </item>
+         <item row="10" column="0">
+          <widget class="QLabel" name="Lb_Login">
+           <property name="text">
+            <string>Nom d'utilisateur :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLabel" name="Lb_AdresseSMTP">
+           <property name="text">
+            <string>Adresse du serveur SMTP :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
           <widget class="QLabel" name="Lb_Messagerie">
            <property name="font">
             <font>
@@ -334,8 +429,48 @@
            </property>
           </widget>
          </item>
-         <item row="10" column="1">
-          <widget class="QLineEdit" name="LE_Login"/>
+         <item row="9" column="0">
+          <widget class="QLabel" name="Lb_Serveur">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Serveur de fichiers :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLineEdit" name="LE_NomUtilisateur">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="Lb_Port">
+           <property name="text">
+            <string>Port :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5" rowspan="19">
+          <spacer name="HS_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="12" column="1">
+          <widget class="QLineEdit" name="LE_ClePrivee"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="Lb_NomBDD">
@@ -344,41 +479,37 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="Lb_NomUtilisateur">
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="LE_Port">
            <property name="text">
-            <string>Nom de l'utilisateur :</string>
+            <string/>
            </property>
           </widget>
          </item>
-         <item row="15" column="0">
-          <widget class="QLabel" name="Lb_PortSMTP">
+         <item row="1" column="2">
+          <spacer name="HS_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="12" column="2">
+          <widget class="QPushButton" name="Bt_ParcourirClePrivee">
            <property name="text">
-            <string>Numéro de Port :</string>
+            <string>Parcourir...</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="Lb_AdresseIP">
+         <item row="11" column="0">
+          <widget class="QLabel" name="Lb_AdresseServeur">
            <property name="text">
-            <string>Adresse serveur BDD :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="Lb_MotdePasse">
-           <property name="text">
-            <string>Mot de passe :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="1" colspan="2">
-          <widget class="QLabel" name="Lb_InfoConnexion">
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="text">
-            <string>Info connexion</string>
+            <string>Adresse du serveur de fichiers :</string>
            </property>
           </widget>
          </item>
@@ -402,100 +533,17 @@
            </property>
           </widget>
          </item>
-         <item row="3" column="1">
-          <widget class="QLineEdit" name="LE_NomUtilisateur">
+         <item row="6" column="1">
+          <widget class="QPushButton" name="Bt_Connection">
            <property name="text">
-            <string/>
+            <string>Connexion</string>
            </property>
           </widget>
          </item>
-         <item row="17" column="1">
-          <widget class="QLineEdit" name="lineEdit_2"/>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="LE_NomBDD">
+         <item row="4" column="3">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="Lb_Port">
-           <property name="text">
-            <string>Port :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="LE_Port">
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="16" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>Nom d'utilisateur :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="Lb_Serveur">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string>Serveur de fichiers :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="0" colspan="3">
-          <spacer name="VS_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="6" column="3">
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="15" column="1">
-          <widget class="QLineEdit" name="LE_PortSMTP"/>
-         </item>
-         <item row="10" column="0">
-          <widget class="QLabel" name="Lb_Login">
-           <property name="text">
-            <string>Nom d'utilisateur :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="0">
-          <widget class="QLabel" name="Lb_AdresseSMTP">
-           <property name="text">
-            <string>Adresse du serveur SMTP :</string>
+            <string>Mot de passe :</string>
            </property>
           </widget>
          </item>
@@ -512,78 +560,50 @@
            </property>
           </spacer>
          </item>
-         <item row="16" column="1">
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-         <item row="6" column="2">
-          <widget class="QPushButton" name="Bt_Connection">
-           <property name="text">
-            <string>Connexion</string>
-           </property>
-          </widget>
-         </item>
-         <item row="14" column="1">
+         <item row="1" column="4">
           <widget class="QLineEdit" name="LE_AdresseSMTP"/>
          </item>
-         <item row="1" column="2">
-          <spacer name="HS_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+         <item row="2" column="4">
+          <widget class="QLineEdit" name="LE_PortSMTP"/>
          </item>
-         <item row="17" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Mot de passe :</string>
-           </property>
-          </widget>
+         <item row="3" column="4">
+          <widget class="QLineEdit" name="lineEdit"/>
          </item>
-         <item row="11" column="0">
-          <widget class="QLabel" name="Lb_Adresse_Serveur">
-           <property name="text">
-            <string>Adresse du serveur de fichiers :</string>
-           </property>
-          </widget>
+         <item row="4" column="4">
+          <widget class="QLineEdit" name="lineEdit_2"/>
          </item>
-         <item row="0" column="4" rowspan="19">
-          <spacer name="HS_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="11" column="1">
-          <widget class="QLineEdit" name="LE_AdresseServeur"/>
-         </item>
-         <item row="12" column="1">
-          <widget class="QLineEdit" name="LE_ClePrivee"/>
-         </item>
-         <item row="12" column="0">
+         <item row="5" column="3">
           <widget class="QLabel" name="label_8">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="text">
-            <string>Chemin clé privée</string>
+            <string>Mise à jour :</string>
            </property>
           </widget>
          </item>
-         <item row="12" column="2">
-          <widget class="QPushButton" name="Bt_ParcourirClePrivee">
+         <item row="6" column="3">
+          <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>Parcourir...</string>
+            <string>URL mise à jour :</string>
            </property>
           </widget>
+         </item>
+         <item row="7" column="3">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>URL locale de mise à jour :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="4">
+          <widget class="QLineEdit" name="LE_MAJ"/>
+         </item>
+         <item row="7" column="4">
+          <widget class="QLineEdit" name="LE_MAJLocal"/>
          </item>
         </layout>
        </item>
@@ -637,7 +657,7 @@
          <item row="8" column="6">
           <widget class="QCommandLinkButton" name="Bt_SupprimerEmplacement">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -788,7 +808,7 @@
          <item row="3" column="3">
           <widget class="QCommandLinkButton" name="Bt_SupprimerJeuxType">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -830,7 +850,7 @@
          <item row="3" column="6">
           <widget class="QCommandLinkButton" name="Bt_SupprimerStatut">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -959,7 +979,7 @@
          <item row="8" column="1">
           <widget class="QCommandLinkButton" name="Bt_SupprimerEtat">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1126,7 +1146,7 @@
          <item row="8" column="4">
           <widget class="QCommandLinkButton" name="Bt_SupprimerMotCle">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1297,7 +1317,7 @@
          <item row="4" column="1">
           <widget class="QCommandLinkButton" name="Bt_SupprimerMembreTitre">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1405,7 +1425,7 @@ paiement :</string>
          <item row="4" column="3">
           <widget class="QCommandLinkButton" name="Bt_SupprimerMembreType">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1535,7 +1555,7 @@ paiement :</string>
          <item row="4" column="5">
           <widget class="QCommandLinkButton" name="Bt_SupprimerMembrePaiement">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -1613,7 +1633,7 @@ paiement :</string>
          <item row="9" column="2">
           <widget class="QCommandLinkButton" name="Bt_SupprimerEmpruntType">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1711,7 +1731,7 @@ paiement :</string>
          <item row="9" column="5">
           <widget class="QCommandLinkButton" name="Bt_SupprimerActivite">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximumSize">
             <size>
@@ -1916,7 +1936,7 @@ paiement :</string>
          <item row="4" column="2">
           <widget class="QCommandLinkButton" name="Bt_SupprimerLieux">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Supprimer</string>

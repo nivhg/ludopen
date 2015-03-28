@@ -71,7 +71,7 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     // On affiche pas les crédits restant car la requête qui calcule la SUM(CreditRestant) prend aussi la date d'expiration
     // des cartes pré-payées.
     // TO DO  Séparé la table des cotisations et celles des cartes prépayées !
-    ui->TbW_ListeMembre->setColumnWidth( 13,  0 ) ; // Crédits restant
+    ui->TbW_ListeMembre->setColumnWidth( 13,  50 ) ; // Crédits restant
     ui->TbW_ListeMembre->setColumnWidth( 14, 100 ) ; // Inscription
 
     this->bAdmin = bAdmin ;
@@ -320,9 +320,9 @@ bool F_ListeMembres::AffichageListe()
     QStandardItem * item ;
 
     sRequeteSELECTFROM = "SELECT IdMembre,NomTitre,TypeMembre,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,"
-            "Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant FROM membres,typemembres,"
+            "Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant2 FROM membres,typemembres,"
             "titremembre,abonnements,activitemembre " ;
-    sRequeteWHERE = "WHERE" ;
+    sRequeteWHERE = "WHERE CreditRestant IS NOT NULL AND " ;
 
     if ( ui->ChBx_Type->isChecked() && ui->CBx_Type->currentIndex() != -1)
     {
@@ -402,32 +402,35 @@ bool F_ListeMembres::AffichageListe()
         {
         case 0 : // cotisation expirée
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND "
+                                          + "abonnements.Supprimer=0 AND" ;
             break ;
 
         case 1 : // cotisation expirant dans 2 semaines (14 jours)
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
+                                          + "abonnements.Supprimer=0 AND";
             break ;
 
         case 2 : // cotisation expirant dans 1 mois
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
+                                          + "abonnements.Supprimer=0 AND";
             break ;
         case 3 :  // cotisation à jour
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addYears( 1 ).toString( "yyyy-MM-dd" )
-                                          + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND" ;
+            sRequeteWHERE = sRequeteWHERE + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
+                                          + "abonnements.Supprimer=0 AND";
             break ;
         }
     }
 
-    sRequeteWHERE += " CartesPrepayees_IdCarte IS NULL AND IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
+    sRequeteWHERE += " IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
     sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre " ;
 
     qDebug() << "F_listemembre::AffichageListe() :" << sRequete ;
@@ -504,7 +507,7 @@ bool F_ListeMembres::AffichageListe()
                 }
             }
             //",NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant
-            ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("CreditRestant") ).toInt() ) ) ) ;
+            ModeleMembres.setItem( i, 13, new QStandardItem( sNumero.setNum( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("CreditRestant2") ).toInt() ) ) ) ;
             ModeleMembres.setItem( i, 14, new QStandardItem( RequeteListemembres.record().value( RequeteListemembres.record().indexOf("DateInscription") ).toDate().toString( "dd-MM-yyyy" ) ) ) ;
 
             i++ ;

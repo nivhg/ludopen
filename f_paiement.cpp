@@ -122,17 +122,13 @@ void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre)
     ui->CBx_Cartes->setCurrentIndex(0);
 
     //Vide le TableWidgetDes cartes prépayées
-    for(register unsigned int i=0 ; i < NombreLignePaiement ; i++)
-    {
-        ui->TW_PaiementCarte->removeRow(i);
-    }
+    ui->TW_PaiementCarte->clear();
+    ui->TW_PaiementCarte->setRowCount(0);
     this->NombreLignePaiement=0;
 
     //Vide le TableWidget des autre moyens de paiement
-    for(register unsigned int i=0 ; i < NombreLignePaiementAutre ; i++)
-    {
-        ui->TW_PaiementAutre->removeRow(i);
-    }
+    ui->TW_PaiementAutre->clear();
+    ui->TW_PaiementAutre->setRowCount(0);
     this->NombreLignePaiementAutre=0;
 
     //vider le ComboBox des Cartes Prépayées

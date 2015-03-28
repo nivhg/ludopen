@@ -409,7 +409,7 @@ void F_Retour::AfficherEtatCotisation(QString CodeMembre)
     QSqlQuery RequeteCotisation ;
     RequeteCotisation.prepare("SELECT DateExpiration FROM abonnements, membres"
                              " WHERE Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre=IdMembre"
-                             " AND CodeMembre=:CodeDuMembre ORDER BY DateExpiration DESC ");
+                             " AND CodeMembre=:CodeDuMembre AND supprimer=0 ORDER BY DateExpiration DESC ");
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
 
     if(!RequeteCotisation.exec())

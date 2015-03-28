@@ -41,6 +41,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pListeMembres = 0;
     this->pRetards=0;
     this->pListeReservations = 0;
+    this->pMalles = 0;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -263,6 +264,10 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
     {
         this->pListeMembresAdmin->setVisible(false) ;
     }
+    if(this->pMalles)
+    {
+        this->pMalles->setVisible(false) ;
+    }
     if(w)
     {
         w->setVisible(true);
@@ -272,6 +277,7 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
 //Changement d'onglet
 void F_MainWindow::on_TbW_Main_currentChanged(int index)
 {
+
     switch(index)
     {
     case 0 : //Membre
@@ -323,18 +329,28 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // Remet à jour la liste de membres ayant un retour à faire
         this->pRetour->ActualiserListeEmprunteurs();
         break;
-    case 6 : //Liste Réservations
+    case 6 : //Malles
+        if(!this->pMalles)
+        {
+            qDebug()<<"Création F_Malles";
+            this->pMalles=new F_Malles (this->ui->Malles);
+            //Retards
+            this->ui->Lay_Malles->addWidget(this->pMalles);
+        }
+        //this->pMalles->setVisible(true);
+        break;
+    case 7 : //Liste Réservations
         CreerReservations();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         this->pListeReservations->AffichageListe() ;
         break;
-    case 7 : //retards
+    case 8 : //retards
         CreerRetards();
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
         break;
-    case 8 : //Administration
+    case 9 : //Administration
         //Widget-admin/////////
         CreerAdminMembres();
 
@@ -356,7 +372,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;
         break;
-    case 9 : //PostIt
+    case 10 : //PostIt
         ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
         break;

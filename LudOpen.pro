@@ -41,7 +41,6 @@ SOURCES += \
     f_popupcode.cpp \
     f_postit.cpp \
     f_popupclesttem.cpp \
-    f_clesttem.cpp \
     f_imprimerfichecompletejeu.cpp \
     f_imprimeretiquettejeu.cpp \
     f_listereservations.cpp \
@@ -51,7 +50,8 @@ SOURCES += \
     acces_fichier_http.cpp \
     securefileuploader.cpp \
     fonctions_globale.cpp \
-    majeur.cpp
+    majeur.cpp \
+    f_malles.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -79,7 +79,6 @@ HEADERS  += \
     f_popupcode.h \
     f_postit.h \
     f_popupclesttem.h \
-    f_clesttem.h \
     f_imprimerfichecompletejeu.h \
     f_imprimeretiquettejeu.h \
     f_listereservations.h \
@@ -89,7 +88,8 @@ HEADERS  += \
     acces_fichier_http.h \
     securefileuploader.h \
     fonctions_globale.h \
-    majeur.h
+    majeur.h \
+    f_malles.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -115,12 +115,12 @@ FORMS    += \
     f_popupcode.ui \
     f_postit.ui \
     f_popupclesttem.ui \
-    f_clesttem.ui \
     f_imprimerfichecompletejeu.ui \
     f_imprimeretiquettejeu.ui \
     f_listereservations.ui \
     d_image.ui \
-    d_ajoutsuppmodiffournisseursediteurs.ui
+    d_ajoutsuppmodiffournisseursediteurs.ui \
+    f_malles.ui
 
 VERSION = "1.98"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string

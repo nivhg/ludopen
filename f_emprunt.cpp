@@ -41,6 +41,9 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     MembreActif="";
     JeuActif="";
 
+    ui->Lb_Cotisation->setText("");
+    ui->Lb_CotisationARemplir->setText("");
+
     //Met une date minimum pour le DateEdit du retour (la date du jour)
     QDate DateActuelle;
     DateActuelle=DateActuelle.currentDate();
@@ -184,10 +187,7 @@ void F_Emprunt::ViderJeu()
     ui->Le_NomJeuARemplir->setText("");
     ui->Le_StatutJeuARemplir->setText("");
     ui->Lb_StatutJeu->setStyleSheet("QLabel {color:black;}");
-    ui->Le_EtatJeuARemplir->setText("");
     ui->Le_PrixEmpruntARemplir->setText("");
-    ui->Le_PrixCautionARemplir->setText("");
-    ui->TxE_ContenuBoite->setText("");
     ui->TxE_RemarquesJeu->setText("");
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
@@ -291,9 +291,10 @@ void F_Emprunt::AfficherJeuxReserve()
 
     QSqlQuery RequeteJeuReserve;
     unsigned int  NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
-    RequeteJeuReserve.prepare("SELECT DateReservation,DatePrevuEmprunt,DatePrevuRetour,NomLieux,NomJeu,CodeJeu "
-                              "FROM reservation,lieux,jeux "
-                              "WHERE JeuEmprunte=1 AND Membres_IdMembre=:IdMembre AND IdLieux=Lieux_IdLieuxReservation AND IdJeux=Jeux_IdJeux" );
+    RequeteJeuReserve.prepare("SELECT DateReservation,DatePrevuEmprunt,DatePrevuRetour,NomLieux,NomJeu,"
+                              "CodeJeu FROM reservation,lieux,jeux WHERE JeuEmprunte=1 AND "
+                              "Membres_IdMembre=:IdMembre AND IdLieux=Lieux_IdLieuxReservation AND "
+                              "IdJeux=Jeux_IdJeux" );
 
     RequeteJeuReserve.bindValue(":IdMembre",IdDuMembre);
 
@@ -408,9 +409,6 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
 
         //Récupère le Prénom dans la base de données puis l'affiche
         ui->Le_PrenomARemplir->setText(Requete.value(1).toString());
-
-        //Récupère le nombre de retards dans la base de données  puis l'affiche
-        ui->Le_RetardARemplir->setText(Requete.value(2).toString());
 
         //Regarde dans la base de données si le membre est écarté
         bool MembreEcarte = (Requete.value(3).toBool());
@@ -595,7 +593,8 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
     //Connaitre la date d'expiration de la cotisation anuelle la plus récente
     QSqlQuery RequeteCotisation ;
     RequeteCotisation.prepare("SELECT DateExpiration FROM abonnements,membres "
-                             "WHERE Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre=IdMembre AND CodeMembre=:CodeDuMembre ORDER BY DateExpiration DESC " );
+                             "WHERE Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre=IdMembre "
+                             "AND CodeMembre=:CodeDuMembre AND Supprimer=0 ORDER BY DateExpiration DESC " );
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
     if ( ! RequeteCotisation.exec())
     {
@@ -1432,7 +1431,6 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         Emprunt.DateRetourPrevu= ui->DtE_Retour->date();
         Emprunt.DateEmprunt= DateActuelle;
         Emprunt.idTypeEmprunt= ui->CBx_TypeEmprunt->currentIndex()+1;
-        Emprunt.PrixCaution= ui->Le_PrixCautionARemplir->text().toInt();
         Emprunt.PrixEmprunt= ui->Le_PrixEmpruntARemplir->text().toInt();
         this->NouveauEmprunts.push_back(Emprunt);
 
@@ -1757,14 +1755,8 @@ void F_Emprunt::on_Bt_OK_clicked()
     //Récupère le nom du jeu et l'affiche
     ui->Le_NomJeuARemplir->setText( Requete.value(0).toString() ) ;
 
-    //Récupère le contenu de le boîte et l'affiche
-    ui->TxE_ContenuBoite->setText(Requete.value(1).toString() );
-
     //Récupère le prix de l'emprunt et l'affiche
     ui->Le_PrixEmpruntARemplir->setText(Requete.value(2).toString());
-
-    //Récupère le prix de la caution et l'affiche
-    ui->Le_PrixCautionARemplir->setText(Requete.value(3).toString());
 
     //Récupère la remarque et l'affiche
     ui->TxE_RemarquesJeu->setText(Requete.value(4).toString());
@@ -1893,8 +1885,6 @@ void F_Emprunt::on_Bt_OK_clicked()
         qDebug()<<"F_Emprunt::on_Bt_OK_clicked => RequeteEtat : "<<RequeteEtat.lastQuery() ;
     }
     RequeteEtat.next();
-    //Récupère l'état et l'affiche
-    ui->Le_EtatJeuARemplir->setText(RequeteEtat.value(0).toString());
 
     //met le focus sur le bouton "Ajouter"
     ui->Bt_Ajouter->setFocus(Qt::TabFocusReason);

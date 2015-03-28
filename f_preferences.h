@@ -336,37 +336,7 @@ private:
     Ui::F_Preferences *ui;
 
     ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pTitreMembreAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pTypeMembreAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pPaiementMembreAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pTypeEmpruntAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pTypeJeuAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pEtatJeuAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pStatutJeuAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pEmplacementJeuAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pLieuxInfoLudoAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pMembresActiviteAjMod;
-
-    ///< Pointeur qui contient l'adresse de la fenêtre graphique F_PopUpCLESTTEM.
-    F_PopUpCLESTTEM * pJeuxMotCleAjMod;
+    F_PopUpCLESTTEM * pPopUpCLESTTEM;
 
     ///< Creer un modele du tableau pour les types des membres.
     QStandardItemModel * TbMembresType;
@@ -400,6 +370,12 @@ private:
 
     ///< Creer un modele du tableau pour les lieux de l'info ludo.
     QStandardItemModel * TbJeuxMotCle;
+
+    ///< Creer un modele du tableau pour le table View de la fenêtre de pop-up
+    QStandardItemModel * TbCLESTTEM;
+
+    ///< Creer un modele du tableau pour le table View.
+    QTableView * TbV_CLESTTEM;
 
     ///< Nom et valeur des préférences
     static QMap<QString, QString> TbPreferences;

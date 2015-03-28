@@ -19,6 +19,7 @@
 #include "f_popupcode.h"
 #include "f_postit.h"
 #include "f_listereservations.h"
+#include "f_malles.h"
 
 namespace Ui {
 class F_MainWindow;
@@ -91,6 +92,7 @@ private:
     F_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;
     F_ListeReservations * pListeReservations ;
+    F_Malles * pMalles;
 };
 
 #endif // F_MAINWINDOW_H

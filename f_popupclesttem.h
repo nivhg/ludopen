@@ -40,7 +40,7 @@ public:
      *  @param nCLESTTEM
      *  @param parent
      */
-    explicit F_PopUpCLESTTEM(int nCLESTTEM, QWidget *parent = 0);
+    explicit F_PopUpCLESTTEM(QWidget *parent = 0);
 
     /**
      *  @brief Destructeur de la classe.
@@ -52,14 +52,14 @@ public:
      *  @brief Ouvrir la fenêtre en mode "ajouter".
      *
      */
-    void Ajouter();
+    void Ajouter(int nCLESTTEM);
 
     /**
      *  @brief Ouvrir la fenêtre en mode "modifier".
      *
      *  @param sCLESTTEM
      */
-    void Modifier(QString sCLESTTEM);
+    int Modifier(QString sCLESTTEM,int nCLESTTEM, QTableView * TbV_CLESTTEM=0);
 
 signals:
     // METHODEs ----------------------------------------------------------------
@@ -112,6 +112,9 @@ private:
 
     ///< Récupère la valeur du champs du tableau pour le mode "modifier".
     QString sCLESTTEM;
+
+    ///< QTableView
+    QTableView * TbV_CLESTTEM;
 };
 
 //------------------------------------------------------------------------------

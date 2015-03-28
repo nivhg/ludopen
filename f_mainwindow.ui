@@ -48,11 +48,8 @@
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
       <property name="currentIndex">
-       <number>8</number>
+       <number>6</number>
       </property>
       <property name="iconSize">
        <size>
@@ -151,6 +148,21 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="Lay_Retour"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Malles">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Carton_rentrant.png</normalon>
+        </iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Malles</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Malles"/>
         </item>
        </layout>
       </widget>
@@ -431,7 +443,7 @@ Cotisations</string>
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">

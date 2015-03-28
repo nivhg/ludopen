@@ -585,7 +585,7 @@ void F_Reservation::AfficherEtatCotisation(QString CodeMembre)
                               "FROM abonnements,membres "
                                  "WHERE Prestations_IdPrestation IS NOT NULL "
                                  "AND Membres_IdMembre=IdMembre "
-                                 "AND CodeMembre=:CodeDuMembre "
+                                 "AND CodeMembre=:CodeDuMembre AND supprimer=0"
                                  "ORDER BY DateExpiration DESC" );
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
 

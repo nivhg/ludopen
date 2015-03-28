@@ -45,11 +45,11 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     ui->setupUi(this);
 
     // Création des fenêtres de création de nouveaux éléments
-    this->pEtatAjMod = new F_PopUpCLESTTEM(0,this);
-    this->pStatutAjMod = new F_PopUpCLESTTEM(1,this);
-    this->pEmplacementAjMod = new F_PopUpCLESTTEM(2,this);
-    this->pClassificationAjMod = new F_PopUpCLESTTEM(3,this);
-    this->pMotCleAjMod = new F_PopUpCLESTTEM(4,this);
+    this->pEtatAjMod = new F_PopUpCLESTTEM(this);
+    this->pStatutAjMod = new F_PopUpCLESTTEM(this);
+    this->pEmplacementAjMod = new F_PopUpCLESTTEM(this);
+    this->pClassificationAjMod = new F_PopUpCLESTTEM(this);
+    this->pMotCleAjMod = new F_PopUpCLESTTEM(this);
     this->pAjoutFournisseur=0;
     this->pAjoutEditeur=0;
     //Création de l'objet QLabel pour l'affichage des images
@@ -217,12 +217,13 @@ F_AjoutSuppModifJeux::~F_AjoutSuppModifJeux()
 void F_AjoutSuppModifJeux::slot_ValiderClassification()
 {
     this->ActualiserCBx_Classification();
+    ui->CBx_Classification->setCurrentIndex(ui->CBx_Classification->count() - 2);
 }
 //###################################################################
 void F_AjoutSuppModifJeux::slot_ValiderEmplacement()
 {
     this->ActualiserCBx_Emplacement();
-    ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->count() - 2);
+    ui->CBx_Emplacement->setCurrentIndex(ui->CBx_Emplacement->count() - 2);
 }
 //###################################################################
 void F_AjoutSuppModifJeux::slot_ValiderEtat()
@@ -234,7 +235,6 @@ void F_AjoutSuppModifJeux::slot_ValiderEtat()
 void F_AjoutSuppModifJeux::slot_ValiderMotCle()
 {
     this->ActualiserCBx_MotCle();
-    ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->count() - 2);
 }
 //###################################################################
 void F_AjoutSuppModifJeux::slot_ValiderStatut()
@@ -362,7 +362,7 @@ void F_AjoutSuppModifJeux::on_CBx_Emplacement_activated(int index)
     //Si l'élément sélectionné est le dernier : ajouter un emplacement
     if(index == ui->CBx_Emplacement->count() -1)
     {
-        this->pEmplacementAjMod->Ajouter();
+        this->pEmplacementAjMod->Ajouter(2);
         //this->ActualiserCBx_Emplacement();
     }
 }
@@ -414,7 +414,7 @@ void F_AjoutSuppModifJeux::on_CBx_Statut_activated(int index)
     //Si l'élément séléctionné est le dernier : ajouter un statut
     if(index == ui->CBx_Statut->count() -1)
     {
-        this->pStatutAjMod->Ajouter();
+        this->pStatutAjMod->Ajouter(1);
     }
 }
 //###################################################################
@@ -440,7 +440,7 @@ void F_AjoutSuppModifJeux::on_CBx_Classification_activated(int index)
    //Si l'élément sélectionné est le dernier, on veut ajouter un code de classification
    if(index == ui->CBx_Classification->count() -1)
    {
-      this->pClassificationAjMod->Ajouter();
+      this->pClassificationAjMod->Ajouter(3);
    }
 }
 //###################################################################
@@ -454,7 +454,7 @@ void F_AjoutSuppModifJeux::on_CBx_Etat_activated(int index)
     //Si l'élément séléctionné est le dernier : ajouter un emplacement
     if(index == ui->CBx_Etat->count() -1)
     {
-        this->pEtatAjMod->Ajouter();
+        this->pEtatAjMod->Ajouter(0);
     }
 }
 //###################################################################
@@ -468,7 +468,7 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle1_activated(int index)
     //Si l'élément séléctionné est le dernier : ajouter un mot clé
     if(index == ui->CBx_MotCle1->count() -1)
     {
-        this->pMotCleAjMod->Ajouter();
+        this->pMotCleAjMod->Ajouter(4);
     }
 }
 //###################################################################
@@ -482,7 +482,7 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle2_activated(int index)
     //Si l'élément séléctionné est le dernier : ajouter un mot clé
     if(index == ui->CBx_MotCle2->count() -1)
     {
-        this->pMotCleAjMod->Ajouter();
+        this->pMotCleAjMod->Ajouter(4);
     }
 }
 //###################################################################
@@ -496,7 +496,7 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle3_activated(int index)
     //Si l'élément séléctionné est le dernier : ajouter un mot clé
     if(index == ui->CBx_MotCle3->count() -1)
     {
-        this->pMotCleAjMod->Ajouter();
+        this->pMotCleAjMod->Ajouter(4);
     }
 }
 
@@ -1771,17 +1771,16 @@ void F_AjoutSuppModifJeux::AfficherJeu()
 
         //--------------Remplissage CBx Statut----------------------------------------------------------------------------
         QSqlQuery RequeteStatut ;
-        QString IdStatut = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("StatutJeux_IdStatutJeux")).toString() ;
-
-        RequeteStatut.prepare("SELECT StatutJeu,IdStatutJeux FROM statutjeux WHERE IdStatutJeux =:IdStatutDuJeu") ;
+        QString IdStatut = RequeteRechercheJeu.value(RequeteRechercheJeu.record().
+                                                     indexOf("StatutJeux_IdStatutJeux")).toString() ;
+        /*RequeteStatut.prepare("SELECT StatutJeu,IdStatutJeux FROM statutjeux WHERE IdStatutJeux =:IdStatutDuJeu") ;
         RequeteStatut.bindValue(":IdStatutDuJeu", IdStatut);
         if(!RequeteStatut.exec())
         {
             qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() : RequeteStatut="<<RequeteStatut.lastQuery() ;
         }
-        RequeteStatut.next() ;
-
-        ui->CBx_Statut->setCurrentIndex(RequeteStatut.value(1).toInt());
+        RequeteStatut.next() ;*/
+        ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->findData(IdStatut)+1);
 
         TableauPositionIndex[1] = ui->CBx_Statut->currentIndex() ;
 
@@ -2030,13 +2029,14 @@ void F_AjoutSuppModifJeux::ActualiserCBx_Statut()
 
     QSqlQuery RequeteStatut ;
 
-    RequeteStatut.exec("SELECT DISTINCT StatutJeu FROM statutjeux") ;
+    RequeteStatut.exec("SELECT IdStatutJeux,StatutJeu FROM statutjeux") ;
     ui->CBx_Statut->addItem("Sélectionner un statut");
-
+    int i=0;
     while(RequeteStatut.next())
     {
-        QString NomStatut = (RequeteStatut.value(0).toString()) ;
+        QString NomStatut = RequeteStatut.value(1).toString();
         ui->CBx_Statut->addItem(NomStatut);
+        ui->CBx_Statut->setItemData(i++,RequeteStatut.value(0).toString());
     }
 
     ui->CBx_Statut->addItem("Ajouter un statut");

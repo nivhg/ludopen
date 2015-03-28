@@ -46,12 +46,12 @@ using namespace std;
  *  @param nCLESTTEM
  *  @param parent
  */
-F_PopUpCLESTTEM::F_PopUpCLESTTEM(int nCLESTTEM, QWidget *parent) :
+F_PopUpCLESTTEM::F_PopUpCLESTTEM(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::F_PopUpCLESTTEM)
 {
     ui->setupUi(this);
-    this->nCLESTTEM = nCLESTTEM;
+    this->TbV_CLESTTEM=0;
 }
 
 /**
@@ -67,9 +67,15 @@ F_PopUpCLESTTEM::~F_PopUpCLESTTEM()
  *  @brief Ouvrir la fenêtre en mode "ajouter".
  *
  */
-void F_PopUpCLESTTEM::Ajouter()
+void F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
 {
+    this->nCLESTTEM = nCLESTTEM;
     this->bCLESTTEM = true;
+    ui->Lb_CLESTTEM->show();
+    ui->LE_CLESTTEM->show();
+    ui->Lb_Autres->show();
+    ui->LE_Autres->show();
+    ui->TbV_CLESTTEM->hide();
 
     switch(this->nCLESTTEM)
     {
@@ -191,10 +197,13 @@ void F_PopUpCLESTTEM::Ajouter()
  *
  *  @param sCLESTTEM
  */
-void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
+int F_PopUpCLESTTEM::Modifier(QString sCLESTTEM, int nCLESTTEM, QTableView * TbV_CLESTTEM)
 {
     QSqlQuery Recherche;
     this->bCLESTTEM = false;
+    this->nCLESTTEM = nCLESTTEM;
+    ui->TbV_CLESTTEM->hide();
+    int i=0;
 
     switch(this->nCLESTTEM)
     {
@@ -205,13 +214,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT Etat FROM etatsjeu WHERE Etat=:Etat");
-            Recherche.bindValue(":Etat", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 1: // Statut Jeu.
@@ -221,13 +225,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT StatutJeu FROM statutjeux WHERE StatutJeu=:StatutJeu");
-            Recherche.bindValue(":StatutJeu", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 2: // Emplacement Jeu.
@@ -237,13 +236,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT Nom FROM emplacement WHERE Nom=:Nom");
-            Recherche.bindValue(":Nom", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 3: // Classification Jeu.
@@ -271,13 +265,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT MotCle FROM motscles WHERE MotCle=:MotCle");
-            Recherche.bindValue(":MotCle", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 5: // Type Membre.
@@ -287,13 +276,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT TypeMembre FROM typemembres WHERE TypeMembre=:TypeMembre");
-            Recherche.bindValue(":TypeMembre", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 6: // Titre Membre.
@@ -339,13 +323,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT NomLieux FROM lieux WHERE NomLieux=:NomLieux");
-            Recherche.bindValue(":NomLieux", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 9: // Paiement Membre.
@@ -355,13 +334,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             ui->LE_Autres->hide();
             ui->LE_Autres->clear();
 
-            Recherche.prepare("SELECT NomPaiement FROM modepaiement WHERE NomPaiement=:NomPaiement");
-            Recherche.bindValue(":NomPaiement", sCLESTTEM);
-            Recherche.exec();
-            Recherche.next();
-
-            this->sCLESTTEM = Recherche.value(0).toString();
-            ui->LE_CLESTTEM->setText(Recherche.value(0).toString());
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
         break;
 
         case 10: // Activité d'un membre.
@@ -382,6 +356,21 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
             this->sCLESTTEM = sCLESTTEM;
         break;
 
+        case 12: // Suppression d'une valeur toujours utilisée : choix d'une autre valeur à donner
+            ui->Lb_TitreFenetre->setText("La valeur est toujours utilisée par des élements. \n"
+                                         "Choisir la nouvelle valeur à donner pour ces élements :");
+            ui->Lb_CLESTTEM->hide();
+            ui->LE_CLESTTEM->hide();
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->TbV_CLESTTEM->hide();
+            ui->GL->addWidget(TbV_CLESTTEM,6,0,1,4);
+            this->TbV_CLESTTEM=TbV_CLESTTEM;
+            ui->LE_Autres->clear();
+            ui->Bt_Valider->setEnabled(true);
+            this->sCLESTTEM = sCLESTTEM;
+        break;
+
         default: // Erreur création fenêtre.
             qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
         break;
@@ -389,7 +378,7 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
 
     ui->LE_CLESTTEM->setEnabled(true);
     ui->LE_Autres->setEnabled(true);
-    this->exec();
+    return this->exec();
 }
 
 /**
@@ -399,6 +388,8 @@ void F_PopUpCLESTTEM::Modifier(QString sCLESTTEM)
 void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
 {
     QSqlQuery RequeteValider;
+    QString requete;
+    QVariant test;
     switch(this->nCLESTTEM)
     {
         case 0: // Etat Jeu.
@@ -618,7 +609,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                 RequeteValider.bindValue(":Activite", ui->LE_CLESTTEM->text());
                 RequeteValider.bindValue(":ActivitePrecedent", this->sCLESTTEM);
                 RequeteValider.exec();
-                QString requete=RequeteValider.lastQuery();
+                requete=RequeteValider.lastQuery();
             }
         break;
 
@@ -635,8 +626,12 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                 RequeteValider.bindValue(":MotCle", ui->LE_CLESTTEM->text());
                 RequeteValider.bindValue(":MotClePrecedent", this->sCLESTTEM);
                 RequeteValider.exec();
-                QString requete=RequeteValider.lastQuery();
+                requete=RequeteValider.lastQuery();
             }
+        break;
+
+        case 12: // Suppression
+
         break;
 
         default: // Erreur création fenêtre.
@@ -645,6 +640,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
     }
 
     emit(this->SignalValider());
+    this->done(1);
     this->close();
 }
 
@@ -654,6 +650,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
  */
 void F_PopUpCLESTTEM::on_Bt_Annuler_clicked()
 {
+    this->done(0);
     this->close();
 }
 
