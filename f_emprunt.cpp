@@ -21,9 +21,11 @@
 #include <QStandardItemModel>
 #include <QMessageBox>
 
+#include "searchbox.h"
 #include "f_emprunt.h"
 #include "ui_f_emprunt.h"
 #include "fonctions_globale.h"
+#include "f_preferences.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -31,7 +33,7 @@
 /** Description détaillée du CONSTRUCTEUR
  *  @pre    Connexion  à la base de données, existance de la table Emprunt et de ses champs
  */
-F_Emprunt::F_Emprunt(QWidget *parent) :
+F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::F_Emprunt)
 {
@@ -40,14 +42,46 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     pPaiement=new F_Paiement;
     MembreActif="";
     JeuActif="";
-
+    //ui->TbV_Recherche->setVisible(false);
     ui->Lb_Cotisation->setText("");
     ui->Lb_CotisationARemplir->setText("");
+    ui->Lb_MembreEcarte->setText("");
 
     //Met une date minimum pour le DateEdit du retour (la date du jour)
     QDate DateActuelle;
     DateActuelle=DateActuelle.currentDate();
     ui->DtE_Retour->setMinimumDate(DateActuelle);
+
+    //Met une date minimum pour le DateEdit du départ (la date du jour)
+    ui->DtE_Depart->setMinimumDate(DateActuelle);
+    ui->DtE_Depart->setDate(DateActuelle);
+
+    MaJListeMembres();
+
+    SearchMembre = new SearchBox(this);
+    SearchMembre->MAJResults(this->VecteurMembres,3);
+    SearchMembre->show();
+    ui->horizontalLayout->addWidget(SearchMembre);
+
+    connect(SearchMembre,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchMembre_MembreTrouve()));
+
+    SearchJeux = new SearchBox(this);
+    this->iMode=iMode;
+    if(iMode!=MODE_RESAMALLES)
+    {
+        SearchMembre->MAJResults(MaJListeJeux(),2);
+        ui->Bt_Reservation->setText("Réserver Malle");
+        ui->Bt_ValiderEmprunt->setVisible(false);
+    }
+    else
+    {
+        ui->Bt_Reservation->setText("Réserver Jeux");
+    }
+    SearchJeux->show();
+    ui->Hlay16->addWidget(SearchJeux);
+
+    connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
+    connect(SearchJeux,SIGNAL(returnPressed()),this,SLOT(on_LE_SearchJeux_returnPressed()));
 
     QSqlQuery Requete;
     QString TypeEmprunt;
@@ -64,27 +98,12 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
         ui->CBx_TypeEmprunt->addItem(TypeEmprunt);
     }
 
-    /*
-    //Création du table view des jeux réservés
-    ui->TbV_JeuxReserves= new MonTableView(this,ui->bt_JeuxReserves);
-    ui->TbV_JeuxReserves->setLayout(ui->Layout_JeuReserves);
-     ui->TbV_JeuxReserves->setGeometry(11,380,369,175);
-    ui->TbV_JeuxReserves->setVisible(true);
-
-    connect(ui->TbV_JeuxReserves,SIGNAL(clicked(QModelIndex)),this,SLOT(on_TbV_JeuxReserves_clicked()));
-     */
-
-    //Création d'un model pour le TableView des membres
-    this->ModeleListeDesMembres = new QStandardItemModel() ;
-    //Associe le modèle au TableView
-    ui->TbV_Recherche->setModel(this->ModeleListeDesMembres);
-    //Met le TableView en lecture seule*/
-    ui->TbV_Recherche->setEditTriggers(0);
-    // Autorise le tri pour ce tableau
-    ui->TbV_Recherche->setSortingEnabled(true);
-
-    //Initialise le tableau avec tous les membres
-    on_LE_RechercheMembre_textChanged("");
+    // On rend visible les composants de réservation de malle si on est dans l'onglet correspondant
+    if(iMode==MODE_RESAMALLES)
+    {
+        RendreVisibleMalle(true);
+        SearchJeux->setEnabled(false);
+    }
 
     //Création d'un modèle pour le TableView des nouveaux emprunts
     this->ModeleEmpruntsAValider = new QStandardItemModel() ;
@@ -98,7 +117,7 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleEmpruntsAValider->setColumnCount(4);
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(1, new QStandardItem("Nom du jeu ou de la malle"));
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(2, new QStandardItem("Date Retour"));
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(3, new QStandardItem("Prix"));
     ui->TbV_EmpruntAValider->setColumnWidth(0,40);
@@ -127,11 +146,11 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     //Création d'un modèle pour le TableView des jeux empruntés
     this->ModeleJeuxReserves = new QStandardItemModel() ;
     //Associe le modèle au TableView
-    ui->TbV_JeuxReserves->setModel(this->ModeleJeuxReserves);
+    ui->Tv_JeuxReserves->setModel(this->ModeleJeuxReserves);
     //Met le TableView en lecture seule
-    ui->TbV_JeuxReserves->setEditTriggers(0);
+    ui->Tv_JeuxReserves->setEditTriggers(0);
     // Autorise le tri pour ce tableau
-    ui->TbV_JeuxReserves->setSortingEnabled(true);
+    ui->Tv_JeuxReserves->setSortingEnabled(true);
 
     //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleJeuxReserves->setColumnCount(5);
@@ -141,13 +160,12 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     this->ModeleJeuxReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
-    ui->TbV_JeuxReserves->setColumnWidth(0,40);
-    ui->TbV_JeuxReserves->setColumnWidth(1,125);
+    ui->Tv_JeuxReserves->setColumnWidth(0,40);
+    ui->Tv_JeuxReserves->setColumnWidth(1,125);
 
     // Bloque la saisie de code jeu à emprunter et du bouton OK tant que pas d'adhérent sélectionné
-    ui->LE_CodeJeu->setEnabled(false);
-    ui->Bt_OK->setDisabled(true);
     ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy");
+    ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -159,14 +177,101 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
 F_Emprunt::~F_Emprunt()
 {
     delete ui;
-    delete this->ModeleListeDesMembres;
-    this->ModeleListeDesMembres=NULL;
     delete this->ModeleEmpruntsAValider;
     this->ModeleEmpruntsAValider=NULL;
     delete this->ModeleJeuxEmpruntes;
     this->ModeleJeuxEmpruntes=NULL;
     delete this->ModeleJeuxReserves;
     this->ModeleJeuxReserves=NULL;
+}
+
+/**   Mise  jour de la liste des membres
+ *  @pre    Accès à  la base de données
+ *  @retval bool
+ *  @return True si tous c'est passé correctement et false si il y a une erreur
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+bool F_Emprunt::MaJListeMembres(bool AfficherContact)
+{
+    QSqlQuery query ;
+    QVector<QString> Membres ;
+    bool bRetourner = true ;
+
+    //Vidange du vecteur
+    this->VecteurMembres.clear() ;
+
+    QString requeteSQL;
+    requeteSQL="SELECT Nom, Prenom, Email,Ville,IdMembre,CodeMembre FROM membres ";
+    if(!AfficherContact)
+    {
+        requeteSQL+="WHERE TypeMembres_IdTypeMembres!=4 ";
+    }
+    requeteSQL+="ORDER BY Nom ASC";
+
+    //Execute une requète sql qui retourne la liste des membres
+    //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
+    if(query.exec(requeteSQL))
+    {
+        while(query.next())
+        {
+            for(int i=0;i<query.record().count();i++)
+            {
+                Membres.append(query.value(i).toString()) ;
+            }
+            this->VecteurMembres.push_back(Membres) ;
+            Membres.clear();
+        }
+    }
+    else //Sinon on affiche un message d'erreur et on retourne Faux
+    {
+        qDebug()<< "F_Emprunt::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
+        bRetourner = false ;
+    }
+    return bRetourner ;
+}
+
+/**   Mise  jour de la liste des membres
+ *  @pre    Accès à  la base de données
+ *  @retval bool
+ *  @return True si tous c'est passé correctement et false si il y a une erreur
+ *  @test   Voir la procédure dans le fichier associé.
+ */
+QVector<QVector <QString> > F_Emprunt::MaJListeJeux(QString filtre)
+{
+    QSqlQuery query ;
+    QVector<QString> Jeux ;
+
+    //Vidange du vecteur
+    this->VecteurJeux.clear() ;
+
+    QSqlQuery Requete;
+    //Prépare la requête
+    if(filtre!="")
+    {
+        filtre=" WHERE "+filtre;
+    }
+    Requete.prepare("SELECT NomJeu,CodeJeu FROM jeux"+filtre);
+
+    //Execute une requète sql qui retourne la liste des jeux
+    //Si la requète est correcte -> Remplissage du veteur VecteurJeux
+    // avec le résultat de la requête et on retourne vrai.
+    if(Requete.exec())
+    {
+        while(Requete.next())
+        {
+            for(int i=0;i<Requete.record().count();i++)
+            {
+                Jeux.append(Requete.value(i).toString()) ;
+            }
+            this->VecteurJeux.push_back(Jeux) ;
+            Jeux.clear();
+        }
+    }
+    else //Sinon on affiche un message d'erreur et on retourne Faux
+    {
+        qDebug()<< "F_Emprunt::MaJListeJeux() : Erreur de connexion avec la base de donnée !" << endl ;
+    }
+    return this->VecteurJeux;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +288,6 @@ F_Emprunt::~F_Emprunt()
  */
 void F_Emprunt::ViderJeu()
 {
-    ui->LE_CodeJeu->setText("");
     ui->Le_NomJeuARemplir->setText("");
     ui->Le_StatutJeuARemplir->setText("");
     ui->Lb_StatutJeu->setStyleSheet("QLabel {color:black;}");
@@ -227,14 +331,46 @@ void F_Emprunt::CalculerDateRetour()
     if ( ! Requete.exec() )
     {
         qDebug()<<"F_Emprunt::CalculerDateRetour => Requete "<<Requete.lastQuery();
+        return;
     }
     Requete.next();
 
     DateRetour=DateRetour.addDays(Requete.value(0).toInt());
 
     ui->DtE_Retour->setDate(DateRetour);
+
 }
 
+//! Actualise le combobox des types de malles
+void F_Emprunt::ActualiserTypeMalle(int iTitreMembre)
+{
+    //On prépare et exécute la requête qui permet de récupérer la durée dy type d'emprunt
+    QSqlQuery Requete;
+
+    Requete.prepare("SELECT * FROM typemalle WHERE TitreMembre_IdTitreMembre=:titremembre");
+    Requete.bindValue(":titremembre",iTitreMembre);
+    Requete.exec();
+    if ( ! Requete.exec() )
+    {
+        qDebug()<<"F_Emprunt::ActualiserTypeMalle => Requete "<<Requete.lastQuery();
+        return;
+    }
+    ui->CBx_TypeMalle->clear();
+    ui->CBx_TypeMalle->addItem("");
+    QHash<QString, int> HashRecord;
+    while(Requete.next())
+    {
+        for(int i=0;i<Requete.record().count();i++)
+        {
+            QString tmp=Requete.record().fieldName(i);
+            int valeur=Requete.value(i).toInt();
+            HashRecord[Requete.record().fieldName(i)]=Requete.value(i).toInt();
+            HashTypeMalle[ObtenirValeurParNom(Requete,"IdTypeMalle").toInt()]=HashRecord;
+        }
+        ui->CBx_TypeMalle->addItem(ObtenirValeurParNom(Requete,"NomTypeMalle").toString(),
+                                   ObtenirValeurParNom(Requete,"IdTypeMalle").toInt());
+    }
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////Actualise les informations du jeu////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -251,8 +387,8 @@ void F_Emprunt::ActualiserJeu()
 {
     if (this->JeuActif != "")
     {
-        ui->LE_CodeJeu->setText(this->JeuActif);
-        on_Bt_OK_clicked();
+        SearchJeux->setText(this->JeuActif);
+        on_LE_SearchJeux_jeuTrouve();
     }
 }
 
@@ -313,9 +449,8 @@ void F_Emprunt::AfficherJeuxReserve()
     this->ModeleJeuxReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
-    ui->TbV_JeuxReserves->setColumnWidth(0,40);
-    ui->TbV_JeuxReserves->setColumnWidth(1,125);
-    ui->TbV_JeuxReserves->verticalHeader()->setVisible(false);
+    ui->Tv_JeuxReserves->setColumnWidth(0,40);
+    ui->Tv_JeuxReserves->setColumnWidth(1,125);
 
     //Tant qu'il y a des membres dans la table membres,
     while(RequeteJeuReserve.next())
@@ -386,17 +521,13 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
 
     if(CodeMembre != "")
     {
-        // Autorise la saisie de code jeu et du bouton ok
-        ui->LE_CodeJeu->setEnabled(true);
-        ui->Bt_OK->setEnabled(true);
-
         //Grise les boutons de modification des remarques du membre
         ui->Bt_ValiderRemarques->setEnabled(false);
         ui->Bt_AnnulerRemarques->setEnabled(false);
 
         //Prépare la requête
         QSqlQuery Requete;
-        Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises,IdMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
+        Requete.prepare("SELECT Nom,Prenom,NbreRetard,Ecarte,Remarque,NbreJeuxAutorises,IdMembre,TitreMembre_IdTitreMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
         Requete.bindValue(":CodeDuMembre",CodeMembre);
         if ( ! Requete.exec() )
         {
@@ -468,6 +599,8 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         CalculerCreditsRestants();
         // Affiche en bas à droite le nombre d'emprunt
         AfficherNbEmpruntsEnCours();
+        ui->CBx_TypeMalle->setEnabled(true);
+        ActualiserTypeMalle(ObtenirValeurParNom(Requete,"TitreMembre_IdTitreMembre").toInt());
     }
 }
 
@@ -745,7 +878,9 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
 
     QSqlQuery RequeteJeuEmprunte;
     unsigned int  NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
-    RequeteJeuEmprunte.prepare("SELECT DateEmprunt,DateRetourPrevu,NomJeu,CodeJeu FROM emprunts,jeux WHERE Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND DateRetour IS NULL");
+    RequeteJeuEmprunte.prepare("SELECT DateEmprunt,DateRetourPrevu,NomJeu,CodeJeu FROM emprunts,jeux "
+                               "WHERE Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND "
+                               "DateRetour IS NULL");
     RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
     if( ! RequeteJeuEmprunte.exec())
     {
@@ -795,11 +930,22 @@ void F_Emprunt::AfficherJeuxEnEmprunt()
 void F_Emprunt::AfficherNbEmpruntsEnCours()
 {
     QString NbEmpruntPossibleAujourdhui ;
-    NbEmpruntPossibleAujourdhui.setNum(ui->Le_NbJeuxEmpruntables->text().toInt() - this->ModeleJeuxEmpruntes->rowCount());
+    NbEmpruntPossibleAujourdhui.setNum(ui->Le_NbJeuxEmpruntables->text().toInt() -
+                                       this->ModeleJeuxEmpruntes->rowCount());
     QString NbNouveauxEmprunts;
     NbNouveauxEmprunts.setNum( this->ModeleEmpruntsAValider->rowCount() );
     ui->Lb_NbNouveauEmprunt->setText( NbNouveauxEmprunts );
     ui->Lb_NbEmpruntPossibleAujourdhui->setText( NbEmpruntPossibleAujourdhui );
+}
+
+/** Affiche ou cache les composants liés aux malles
+ *  @pre
+ *  @post
+ */
+void F_Emprunt::RendreVisibleMalle(bool booleen)
+{
+    ui->Lb_TypeMalle->setVisible(booleen);
+    ui->CBx_TypeMalle->setVisible(booleen);
 }
 
 //#######################################################################################################
@@ -820,106 +966,13 @@ void F_Emprunt::AfficherNbEmpruntsEnCours()
  */
 void F_Emprunt::on_LE_CodeJeu_returnPressed()
 {
-    on_Bt_OK_clicked();
+    on_LE_SearchJeux_jeuTrouve();
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Rechercher un membre avec son nom//////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données
- *  @post   Table membres remplie
- *  @see    ModeleListeDesMembres
- */
-void F_Emprunt::on_LE_RechercheMembre_textChanged(const QString &arg1)
+void F_Emprunt::on_LE_SearchMembre_MembreTrouve()
 {
-    unsigned int  NbrTotalDeJeuxDejaSurCeCompteAdherent (0);
-    QString Nom=arg1;
-
-    //Si il y plus de 2 caractères dans le nom du membre recherché, alors
-    if(Nom.size()>=2)
-    {
-        Nom="%"+Nom+"%";
-
-        QSqlQuery RequeteMembre;
-        NbrTotalDeJeuxDejaSurCeCompteAdherent=0;
-
-        //Rechercher dans la table membres, les membres qui contiennent dans leur nom le suite de caractères présente dans le line édit du nom
-        RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom FROM membres WHERE Nom LIKE (:Nom) ORDER BY Nom ASC");
-        RequeteMembre.bindValue(":Nom",Nom);
-        if( ! RequeteMembre.exec())
-        {
-            qDebug()<<"F_Emprunt::AfficherJeuxEnEmprunt => RequeteMembre : "<<RequeteMembre.lastQuery();
-        }
-        //On vide le modèle
-        this->ModeleListeDesMembres->clear();
-        //Indique le nombes de colones puis leurs noms
-        this->ModeleListeDesMembres->setColumnCount(3);
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        //Impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,40);
-
-        //Tant qu'il y a des membres dans la table membres,
-        while(RequeteMembre.next())
-        {
-            //on ajoute une nouvelle ligne du table view et la remplie avec les informations du membre
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-             NbrTotalDeJeuxDejaSurCeCompteAdherent++;
-        }
-    }
-    else
-    {
-        //On Affiche tous les membres :
-        QSqlQuery RequeteMembre;
-        NbrTotalDeJeuxDejaSurCeCompteAdherent =0;
-        if ( ! RequeteMembre.exec("SELECT CodeMembre,Nom,Prenom FROM membres ORDER BY Nom ASC") )
-        {
-            qDebug()<<"F_Emprunt::F_Emprunt => RequeteMembre "<<RequeteMembre.lastQuery();
-        }
-        //On vide le modèle
-        this->ModeleListeDesMembres->clear();
-        //Indique le nombes de colones puis leurs noms
-        this->ModeleListeDesMembres->setColumnCount(3);
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(0, new QStandardItem("Code"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(1, new QStandardItem("Nom"));
-        this->ModeleListeDesMembres->setHorizontalHeaderItem(2, new QStandardItem("Prénom"));
-        //impose une taille aux colones
-        ui->TbV_Recherche->setColumnWidth(0,40);
-        ui->TbV_Recherche->setColumnWidth(3,40);
-        ui->TbV_Recherche->verticalHeader()->setVisible(false);
-
-        //Tant qu'il y a des membres dans la table membres,
-        while(RequeteMembre.next())
-        {
-            //on ajoute une nouvelle ligne du table view et la emplie avec le membre
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 0, new QStandardItem(RequeteMembre.value(0).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 1, new QStandardItem(RequeteMembre.value(1).toString() ));
-            this->ModeleListeDesMembres->setItem( NbrTotalDeJeuxDejaSurCeCompteAdherent, 2, new QStandardItem(RequeteMembre.value(2).toString() ));
-            NbrTotalDeJeuxDejaSurCeCompteAdherent++;
-        }
-    }
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Pression sur entrée pour le code membre////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
-*  @pre    Connexion avec la base de données, line édit du code membre rempli
-*  @post
-*  @param
-*  @retval
-*  @return
-*  @test
-*  @see
-*/
-void F_Emprunt::on_LE_CodeMembre_returnPressed()
-{
-    //"clic" sur la recherche du membre
-    on_Bt_RechercheOK_clicked();
+    QRect geo=ui->gridLayout_3->geometry();
+    this->AfficherMembre(SearchMembre->text());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -996,27 +1049,6 @@ void F_Emprunt::on_TbV_JeuxMembres_clicked(const QModelIndex &index)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////Clic sur un membre dans le tableau//////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données, tableau des membre remplie
- *  @post
- *  @param
- *  @retval
- *  @return
- *  @test
- *  @see    ModeleListeDesMembres
- */
-void F_Emprunt::on_TbV_Recherche_clicked(const QModelIndex &index)
-{
-    //Met le code du membre sellectionné dans le line édit du code du membre
-    ui->LE_CodeMembre->setText(this->ModeleListeDesMembres->index(index.row(),0).data().toString());
-    //clic sur la recherche du membre
-    on_Bt_RechercheOK_clicked();
-    ui->TbV_Recherche->selectRow(index.row());
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////Clic sur un jeu réservé dans le tableau//////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -1028,14 +1060,14 @@ void F_Emprunt::on_TbV_Recherche_clicked(const QModelIndex &index)
  *  @test
  *  @see    ModeleJeuxReserves
  */
-void F_Emprunt::on_TbV_JeuxReserves_clicked(const QModelIndex &index)
+void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
 {
-    ui->TbV_JeuxReserves->selectRow(index.row());
+    //ui->Tv_JeuxReserves->selectRow(index.row());
     ui->Bt_SupprimerReservation->setEnabled(true);
     //Met le code du jeu sellectionné dans le line édit du code du membre
-    ui->LE_CodeJeu->setText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
+    SearchJeux->setText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
     //clic sur la recherche du jeu
-    on_Bt_OK_clicked();
+    on_LE_SearchJeux_jeuTrouve();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1238,7 +1270,7 @@ void F_Emprunt::on_Bt_SupprimerReservation_clicked()
     //Récupération de l'id du jeu avec son code
     QSqlQuery RequeteIdJeu;
     RequeteIdJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    RequeteIdJeu.bindValue(":CodeDuJeu",(this->ModeleJeuxReserves->index(ui->TbV_JeuxReserves->currentIndex().row(),0).data().toString()));
+    RequeteIdJeu.bindValue(":CodeDuJeu",(this->ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),0).data().toString()));
 
     if ( ! RequeteIdJeu.exec() )
     {
@@ -1247,7 +1279,7 @@ void F_Emprunt::on_Bt_SupprimerReservation_clicked()
     RequeteIdJeu.next();
 
     // Demander confirmation pour la suppression de cette réservation
-    if( ! QMessageBox::warning(this,"Suppression d'une réservation !","Voulez-vous supprimer cette réservation ?\nNom du jeu :"+this->ModeleJeuxReserves->index(ui->TbV_JeuxReserves->currentIndex().row(),1).data().toString(),"Supprimer cette réservation","Laisser") )
+    if( ! QMessageBox::warning(this,"Suppression d'une réservation !","Voulez-vous supprimer cette réservation ?\nNom du jeu :"+this->ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),1).data().toString(),"Supprimer cette réservation","Laisser") )
     {
         //suppression de la réservation
         QSqlQuery RequeteSupp;
@@ -1298,21 +1330,26 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         }
     }
 
-    //Savoir combien de jeux sont en cours d'emprunt :
-    QSqlQuery RequeteNbJeuEmprunte;
     int  NbrTotalDeJeuxDejaSurCeCompteAdherent = 0;
-    RequeteNbJeuEmprunte.prepare("SELECT Jeux_IdJeux FROM emprunts,membres "
-                                 "WHERE DateRetour IS NULL AND Membres_IdMembre=IdMembre AND CodeMembre=:CodeDuMembre" );
-    RequeteNbJeuEmprunte.bindValue(":CodeDuMembre",this->MembreActif);
-    if(!RequeteNbJeuEmprunte.exec())
-    {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked() => RequeteNbJeuEmprunte "<<RequeteNbJeuEmprunte.lastQuery();
-    }
 
-    //Tant qu'il y a des jeux
-    while(RequeteNbJeuEmprunte.next())
+    if(iMode!=MODE_RESAMALLES)
     {
-         NbrTotalDeJeuxDejaSurCeCompteAdherent++;
+        //Savoir combien de jeux sont en cours d'emprunt :
+        QSqlQuery RequeteNbJeuEmprunte;
+        RequeteNbJeuEmprunte.prepare("SELECT Jeux_IdJeux FROM emprunts,membres "
+                                     "WHERE DateRetour IS NULL AND Membres_IdMembre=IdMembre AND "
+                                     "CodeMembre=:CodeDuMembre" );
+        RequeteNbJeuEmprunte.bindValue(":CodeDuMembre",this->MembreActif);
+        if(!RequeteNbJeuEmprunte.exec())
+        {
+            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked() => RequeteNbJeuEmprunte "<<RequeteNbJeuEmprunte.lastQuery();
+        }
+
+        //Tant qu'il y a des jeux
+        while(RequeteNbJeuEmprunte.next())
+        {
+             NbrTotalDeJeuxDejaSurCeCompteAdherent++;
+        }
     }
 
     //on ajoute le nombre de nouveaux emprunts
@@ -1324,8 +1361,8 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     QSqlQuery RequeteIdJeu;
     unsigned int IdDuJeu (0);
 
-    //Prépare le requête pour récupérer l'id du jeu
-    RequeteIdJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
+    //Prépare le requête pour récupérer l'id du jeu et son prix
+    RequeteIdJeu.prepare("SELECT * FROM jeux WHERE CodeJeu=:CodeDuJeu");
     RequeteIdJeu.bindValue(":CodeDuJeu",this->JeuActif);
 
     //Exécute la requête
@@ -1337,7 +1374,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     RequeteIdJeu.next();
 
     //Récupère l'es remarques'id dans la base de données
-    IdDuJeu=RequeteIdJeu.value(0).toInt();
+    IdDuJeu=ObtenirValeurParNom(RequeteIdJeu,"IdJeux").toInt();
 
     QSqlQuery RequeteIdMembre;
     unsigned int IdDuMembre (0);
@@ -1356,16 +1393,44 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
     //Récupère l'id dans la base de données
     IdDuMembre=RequeteIdMembre.value(0).toInt();
+    // Nombre de jeux spéciaux a valider
+    int NbJeuxSpeciauxAValider=0;
+    // Nombre d'autres jeux a valider
+    int NbAutresJeuxAValider=0;
 
-    //Si le jeux est disponible
+    //Si le jeu est disponible
     if (ui->Le_StatutJeuARemplir->text()=="Disponible")
     {
+        bool Verification;
+        if(iMode==MODE_RESAMALLES)
+        {
+            int row=ModeleEmpruntsAValider->rowCount();
+            for(int i=0;i<ModeleEmpruntsAValider->rowCount();i++)
+            {
+                bool test=ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0)).toBool();
+                if(ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0)).toBool())
+                {
+                    NbJeuxSpeciauxAValider++;
+                }
+                else
+                {
+                    NbAutresJeuxAValider++;
+                }
+            }
+        }
+        else
+        {
+            Verification=ui->Le_NbJeuxEmpruntables->text().toInt()<
+                    NbrTotalDeJeuxDejaSurCeCompteAdherent+1;
+        }
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
-        if(ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1)
+        if(Verification)
         {
             QString Message ;
-            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
-            if (QMessageBox::question(this,"Nombre maximum de jeux dépassé !",Message,"Autoriser","Refuser")==1)
+            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+
+                    " jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
+            if (QMessageBox::question(this,"Nombre maximum de jeux dépassé !",Message,
+                                      "Autoriser","Refuser")==1)
             {
                 return;  // Mettre fin à cette fonction pour empêcher l'emprunt
             }
@@ -1422,22 +1487,31 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
         Emprunts Emprunt;
         //Récupération de la date du jour
-        QDate DateActuelle;
-        DateActuelle=DateActuelle.currentDate();
+        QDateTime DateActuelle;
+        DateActuelle=DateActuelle.currentDateTime();
 
         //Remplissage de l'emprunt dans le Vecteur Emprunt
         Emprunt.idJeu= IdDuJeu;
         Emprunt.idMembre= IdDuMembre;
+        Emprunt.idTypeEmprunt= ui->CBx_TypeEmprunt->currentIndex()+1;
         Emprunt.DateRetourPrevu= ui->DtE_Retour->date();
         Emprunt.DateEmprunt= DateActuelle;
-        Emprunt.idTypeEmprunt= ui->CBx_TypeEmprunt->currentIndex()+1;
         Emprunt.PrixEmprunt= ui->Le_PrixEmpruntARemplir->text().toInt();
+        Emprunt.PrixCaution= PrixCaution;
         this->NouveauEmprunts.push_back(Emprunt);
 
-        ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(ui->LE_CodeJeu->text()));
+        ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(SearchJeux->text()));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,1, new QStandardItem(ui->Le_NomJeuARemplir->text()));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("dd-MM-yyyy") ));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,3, new QStandardItem(ui->Le_PrixEmpruntARemplir->text()));
+
+        // Stocke l'info de savoir si le jeu est un jeu spécial ou pas
+        QString valeur=ObtenirValeurParNom(RequeteIdJeu,
+                                           F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")).toString();
+        ModeleEmpruntsAValider->setData(ModeleEmpruntsAValider->index(this->NbLignesEmpruntsAValider,0),
+                                  QVariant(ObtenirValeurParNom(RequeteIdJeu,
+                                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")).toString()==
+                                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")));
 
         this->NbLignesEmpruntsAValider++;
 
@@ -1476,7 +1550,8 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         ui->Lb_CreditRestant->setStyleSheet("QLabel {color:black;}");
     }
     // Prêt pour permettre un autre emprunt pour cette personne
-    ui->LE_CodeJeu->setFocus();
+    SearchJeux->setFocus();
+    ui->CBx_TypeMalle->setEnabled(false);
     this->ViderJeu();
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
@@ -1526,6 +1601,7 @@ void F_Emprunt::on_Bt_ValiderEmprunt_clicked()
             ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:black;}");
             ui->Lb_CreditRestant->setStyleSheet("QLabel {color:black;}");
         }
+        ui->CBx_TypeMalle->setEnabled(true);
     }
 }
 
@@ -1584,50 +1660,15 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     //Supprime la ligne du tableau
     this->ModeleEmpruntsAValider->removeRow(ui->TbV_EmpruntAValider->currentIndex().row());
 
-    //Grise le bouton de suppression des nouveau emprunts
-    ui->Bt_SupprimerEmpruntAValider->setEnabled(false);
     // Si plus de nouvel emprunt car tous supprimés,
     if ( this->NouveauEmprunts.count() == 0)
     {
         //Grise le bouton de validation des nouveaux emprunts
         ui->Bt_ValiderEmprunt->setEnabled(false);
+        ui->CBx_TypeMalle->setEnabled(true);
     }
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Clic sur le bouton OK du code membre///////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données, line édit du code membre rempli
- *  @post
- *  @param
- *  @retval
- *  @return
- *  @test
- *  @see    ModeleListeDesMembres
- */
-void F_Emprunt::on_Bt_RechercheOK_clicked()
-{
-    //S'il y a encore des emprunts à valider
-    if (this->NbLignesEmpruntsAValider != 0)
-    {
-        // affichage d'un message d'erreur
-        QMessageBox::warning(this,"Emprunt non validé !","Vous ne pouvez changer d'adhérent car \nvous n'avez pas encore valider les emprunts.","Ok");
-        ui->LE_CodeMembre->setText(this->MembreActif);
-        return;
-    }
-    QString CodeMembre =ui->LE_CodeMembre->text();
-
-    // Actualise l'attribut MembreActif avec le code du membre que l'on affiche
-    MembreActif=CodeMembre;
-    //Affiche les informations du membre
-    this->AfficherMembre(CodeMembre);
-
-    //Vide les informations du jeu et met l'attribut "jeux actif" a vide
-    ViderJeu();
-    this->JeuActif="";
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1699,6 +1740,15 @@ void F_Emprunt::on_Bt_AnnulerRemarques_clicked()
     ui->Bt_AnnulerRemarques->setEnabled(false);
 }
 
+void F_Emprunt::on_LE_SearchJeux_returnPressed()
+{
+    if(SearchJeux->text()!="")
+    {
+        on_Bt_Ajouter_clicked();
+        SearchJeux->setText("");
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////Valider Jeu et l'afficher dans le volet de droite////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1711,7 +1761,7 @@ void F_Emprunt::on_Bt_AnnulerRemarques_clicked()
  *  @test
  *  @see    JeuActif, MembreActif
  */
-void F_Emprunt::on_Bt_OK_clicked()
+void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
 {
     //Vérification qu'il y a un membre sélectionné.
     QSqlQuery RequeteMembre;
@@ -1731,7 +1781,7 @@ void F_Emprunt::on_Bt_OK_clicked()
     }
 
     //Récupère le code du jeu qui a été saisi
-    this->JeuActif= ui->LE_CodeJeu->text();
+    this->JeuActif= SearchJeux->text();
 
     //Si le code entré est nul
     if(this->JeuActif=="")
@@ -1743,7 +1793,8 @@ void F_Emprunt::on_Bt_OK_clicked()
 
     QSqlQuery Requete;
     //Prépare la requête et entre ses valeurs
-    Requete.prepare("SELECT NomJeu,ContenuJeu,PrixLoc,Caution,Remarque,StatutJeux_IdStatutJeux,EtatsJeu_idEtatsJeu,IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
+    Requete.prepare("SELECT NomJeu,ContenuJeu,PrixLoc,Caution,Remarque,StatutJeux_IdStatutJeux,"
+                    "EtatsJeu_idEtatsJeu,IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
     Requete.bindValue(":CodeDuJeu",this->JeuActif);
     if (!Requete.exec())
     {
@@ -1755,6 +1806,9 @@ void F_Emprunt::on_Bt_OK_clicked()
     //Récupère le nom du jeu et l'affiche
     ui->Le_NomJeuARemplir->setText( Requete.value(0).toString() ) ;
 
+    //Récupère le prix de la caution et l'enregistre dans PrixCaution
+    PrixCaution=Requete.value(1).toInt();
+
     //Récupère le prix de l'emprunt et l'affiche
     ui->Le_PrixEmpruntARemplir->setText(Requete.value(2).toString());
 
@@ -1764,6 +1818,54 @@ void F_Emprunt::on_Bt_OK_clicked()
     //Grise les boutons de modification de la remarque du jeu
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
+
+    QDate DateActuelle;
+    DateActuelle= DateActuelle.currentDate();
+    ui->DtE_Depart->setDate(DateActuelle);
+
+    //Savoir si le jeu est déja réservé
+    QCalendarWidget * Calendrier=new QCalendarWidget();
+    QCalendarWidget * Calendrier2=new QCalendarWidget();
+    QSqlQuery RequeteResa;
+    RequeteResa.prepare("SELECT idReservation,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour "
+                        "FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux "
+                        "WHERE CodeJeu=:CodeJeu AND JeuEmprunte=1");
+    RequeteResa.bindValue(":CodeJeu",this->JeuActif);
+
+    if (!RequeteResa.exec())
+    {
+        qDebug() << "F_Emprunt::AfficherJeu : RequeteResa :" << RequeteResa.lastQuery()  ;
+    }
+    else
+    {
+       if(RequeteResa.size()!=0)
+       {
+           QMessageBox::warning(this, "Attention !",
+               "Une ou plusieurs réservations ont déjà été faite sur ce jeu.\n"
+               "Merci de prévenir l'adhérent que le jeu risque de ne pas être disponible "
+               "à la date souhaitée.");
+       }
+       while(RequeteResa.next())
+       {
+           QDate date = ObtenirValeurParNom(RequeteResa,"DatePrevuEmprunt").toDate();
+           QDate dateRetour = ObtenirValeurParNom(RequeteResa,"DatePrevuRetour").toDate().addDays(1);
+           while(date!=dateRetour)
+           {
+               QTextCharFormat cf = Calendrier->dateTextFormat(date);
+               cf.setFontStrikeOut(true);
+               Calendrier->setDateTextFormat( date, cf );
+
+               QTextCharFormat cf2 = Calendrier2->dateTextFormat(date);
+               cf2.setFontStrikeOut(true);
+               Calendrier2->setDateTextFormat( date, cf2 );
+
+               date=date.addDays(1);
+           }
+       }
+    }
+
+    ui->DtE_Depart->setCalendarWidget(Calendrier);
+    ui->DtE_Retour->setCalendarWidget(Calendrier2);
 
     //Récupère l'id de l'état
     unsigned int IdEtat =(Requete.value(6).toInt());
@@ -1887,8 +1989,8 @@ void F_Emprunt::on_Bt_OK_clicked()
     RequeteEtat.next();
 
     //met le focus sur le bouton "Ajouter"
-    ui->Bt_Ajouter->setFocus(Qt::TabFocusReason);
-    ui->Bt_Ajouter->setFocusPolicy(Qt::StrongFocus);
+    //ui->Bt_Ajouter->setFocus(Qt::TabFocusReason);
+    //ui->Bt_Ajouter->setFocusPolicy(Qt::StrongFocus);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1957,4 +2059,29 @@ void F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked()
     //grise les boutons de modification des remarques du jeu
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
+}
+
+void F_Emprunt::on_CBx_TypeMalle_currentIndexChanged(int index)
+{
+    SearchJeux->setEnabled(index!=0);
+    QString ArgMAJListeJeux;
+
+    // Si il n'y a pas de jeux spéciaux empruntable, on les exclue de la requête
+    if(HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]["NbJeuxSpeciauxEmpruntable"]==0)
+    {
+        ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
+    }
+    // Si il n'y a pas des jeux autres que les jeux spéciaux empruntable, on les exclue de la requête
+    else if(HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]["NbAutresJeuxEmpruntable"]==0)
+    {
+        ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
+    }
+    SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux),2);
+    //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
+    QString TotalJeuxEmpruntable=QString::number(HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]
+                             ["TotalJeuxEmpruntable"]);
+    ui->Lb_NbEmpruntPossibleAujourdhui->setText(TotalJeuxEmpruntable );
+    ui->Le_NbJeuxEmpruntables->setText(TotalJeuxEmpruntable);
 }

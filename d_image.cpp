@@ -399,12 +399,12 @@ void D_Image::Inverser(int emplacement)
                                          InfoFichierSource.completeSuffix());
     if(emplacement==EMPLACEMENT_SERVEUR)
     {
-        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
-           NomFichierDestination, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NomFichierTemporaire);
-        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
-           NomFichierSource, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierDestination);
-        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotoServeur") +
-           NomFichierTemporaire, F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierSource);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotosServeur") +
+           NomFichierDestination, F_Preferences::ObtenirValeur("CheminPhotosServeur") + NomFichierTemporaire);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotosServeur") +
+           NomFichierSource, F_Preferences::ObtenirValeur("CheminPhotosServeur") + NouveauNomFichierDestination);
+        uploader->AjouterCommande(COMMANDE_RENOMMER,F_Preferences::ObtenirValeur("CheminPhotosServeur") +
+           NomFichierTemporaire, F_Preferences::ObtenirValeur("CheminPhotosServeur") + NouveauNomFichierSource);
     }
     else
     {
@@ -420,11 +420,11 @@ void D_Image::Inverser(int emplacement)
         }
         else
         {
-            CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierSource;
-            CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierDestination;
-            CheminFichierTemporaire=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierTemporaire;
-            CheminNouveauFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierSource;
-            CheminNouveauFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierDestination;
+            CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NomFichierSource;
+            CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NomFichierDestination;
+            CheminFichierTemporaire=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NomFichierTemporaire;
+            CheminNouveauFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NouveauNomFichierSource;
+            CheminNouveauFichierDestination=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NouveauNomFichierDestination;
         }
         QFile FichierSource(CheminFichierSource),
               FichierDestination(CheminFichierDestination);
@@ -526,7 +526,7 @@ void D_Image::Ajouter(int emplacement)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
             uploader->AjouterCommande(COMMANDE_TELEVERSEMENT,sNomImageAjoutee,
-                                      F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+DestNomFichier);
+                                      F_Preferences::ObtenirValeur("CheminPhotosServeur")+"/"+DestNomFichier);
         }
         else
         {
@@ -539,7 +539,7 @@ void D_Image::Ajouter(int emplacement)
             else
             {
                 // Copie le fichier dans le dossier temporaire pour affichage de l'image
-                DestCheminFichier=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+DestNomFichier;
+                DestCheminFichier=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+DestNomFichier;
             }
             QFile FichierSource(sNomImageAjoutee);
             FichierSource.copy(DestCheminFichier);
@@ -592,7 +592,7 @@ void D_Image::Suppression(int emplacement)
     {
         InfoFichierSource.setFile(NomFichierSource);
         uploader->AjouterCommande(COMMANDE_SUPPRIMER,
-            F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+InfoFichierSource.fileName(),"");
+            F_Preferences::ObtenirValeur("CheminPhotosServeur")+"/"+InfoFichierSource.fileName(),"");
     }
     else
     {
@@ -624,8 +624,8 @@ void D_Image::DecalerAGauche(int emplacement)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
             uploader->AjouterCommande(COMMANDE_RENOMMER,
-                F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+NomFichierSource,
-                F_Preferences::ObtenirValeur("CheminPhotoServeur")+"/"+NouveauNomFichierDestination);
+                F_Preferences::ObtenirValeur("CheminPhotosServeur")+"/"+NomFichierSource,
+                F_Preferences::ObtenirValeur("CheminPhotosServeur")+"/"+NouveauNomFichierDestination);
         }
         else
         {
@@ -637,8 +637,8 @@ void D_Image::DecalerAGauche(int emplacement)
             }
             else
             {
-                CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NomFichierSource;
-                CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+NouveauNomFichierDestination;
+                CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NomFichierSource;
+                CheminFichierDestination=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+NouveauNomFichierDestination;
             }
             FichierSource.setFileName(CheminFichierSource);
             FichierSource.rename(CheminFichierDestination);
@@ -713,8 +713,8 @@ void D_Image::DefinirLudopen(int emplacement)
         if(emplacement==EMPLACEMENT_SERVEUR)
         {
             uploader->AjouterCommande(COMMANDE_RENOMMER,
-                F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
-                F_Preferences::ObtenirValeur("CheminPhotoServeur") + sCodeJeu+"."+
+                F_Preferences::ObtenirValeur("CheminPhotosServeur") + InfoFichierSource.fileName(),
+                F_Preferences::ObtenirValeur("CheminPhotosServeur") + sCodeJeu+"."+
                                       InfoFichierSource.completeSuffix());
         }
         else
@@ -728,7 +728,7 @@ void D_Image::DefinirLudopen(int emplacement)
             else
             {
                 NomFichierDestination=
-                        F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+sCodeJeu+"."+
+                        F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+sCodeJeu+"."+
                         InfoFichierSource.completeSuffix();
             }
             FichierSource.setFileName(NomFichierSource);
@@ -845,18 +845,18 @@ void D_Image::DefinirDeux(int emplacement)
                 QFileInfo Info2emeFichier(Chemin2emeFichier);
                 QString NouveauNom2emeFichier(sCodeJeu+"-"+QString::number(sCheminImage.count()+1)+
                                                      "."+Info2emeFichier.completeSuffix());                uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + Info2emeFichier.fileName(),
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNom2emeFichier);
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + Info2emeFichier.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + NouveauNom2emeFichier);
                 QString NomFichierDestination(sCodeJeu+"-2."+InfoFichierSource.completeSuffix());
                 uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NomFichierDestination);
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + InfoFichierSource.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + NomFichierDestination);
             }
             else
             {
                 uploader->AjouterCommande(COMMANDE_RENOMMER,
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + InfoFichierSource.fileName(),
-                    F_Preferences::ObtenirValeur("CheminPhotoServeur") + NouveauNomFichierDestination);
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + InfoFichierSource.fileName(),
+                    F_Preferences::ObtenirValeur("CheminPhotosServeur") + NouveauNomFichierDestination);
                 iInversionDecalage=-iLbImageSelectionnee-iDecalage+1;
             }
         }
@@ -869,7 +869,7 @@ void D_Image::DefinirDeux(int emplacement)
             }
             else
             {
-                CheminNouvelleDestination=F_Preferences::ObtenirValeur("CheminPhotoJeux")+"/"+
+                CheminNouvelleDestination=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+
                         NouveauNomFichierDestination;
             }
             FichierSource.setFileName(CheminFichierSource);

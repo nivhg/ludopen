@@ -829,6 +829,8 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->SBx_JeuxAutorises->setValue( ObtenirValeurParNom(RequeteMembre,"NbreJeuxAutorises").toInt() ) ;
 
+                ui->SBx_NbrePersonne->setValue( ObtenirValeurParNom(RequeteMembre,"NbrePersonne").toInt() ) ;
+
                 ui->DtE_Insritption->setDateTime( ObtenirValeurParNom(RequeteMembre,"DateInscription").toDateTime() ) ;
 
                 ui->TE_Remarque->setPlainText( ObtenirValeurParNom(RequeteMembre,"Remarque").toString() ) ;
@@ -894,10 +896,10 @@ bool F_Membres::AjouterMembre()
     //Enregistrement d'un nouveau membre dans la base de données
     RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
         "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,"
-        "DateNaissance,Remarque,Ecarte,CodeMembre,NbreRetard) "
+        "DateNaissance,Remarque,Ecarte,CodeMembre,NbreRetard,NbrePersonne) "
         "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
         ":Telephone,:Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,"
-        ":Ecarte,:CodeMembre,:NbreRetard)" ) ;
+        ":Ecarte,:CodeMembre,:NbreRetard,:NbrePersonne)" ) ;
 
     //Titre Membre
     RequeteMembre.bindValue( ":TitreMembre_IdTitreMembre", this->VectorTitre[ui->CBx_Titre->currentIndex()].id ) ;
@@ -934,6 +936,9 @@ bool F_Membres::AjouterMembre()
 
     //Nombre de jeux Autorisés
     RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
+
+    //Nombre de personne
+    RequeteMembre.bindValue( ":NbrePersonne", ui->SBx_NbrePersonne->text().toInt() ) ;
 
     //Date d'inscription
     RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
@@ -1009,14 +1014,15 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
     if( nIdMembre != 0 )
     {
         //Mise à des nouvelles informations sur le membre sélectionné dans la base de données
-        RequeteMembre.prepare( "UPDATE membres SET membres.TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre,"
-                               "membres.TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,membres.Nom=:Nom,"
-                               "membres.Prenom=:Prenom,membres.Rue=:Rue,membres.CP=:CP,membres.Ville=:Ville,"
-                               "membres.Telephone=:Telephone,membres.Mobile=:Mobile,membres.Fax=:Fax,"
-                               "membres.Email=:Email,membres.NbreJeuxAutorises=:NbreJeuxAutorises,"
-                               "membres.DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
-                               "DateNaissance=:DateNaissance,membres.Remarque=:Remarque,membres.Ecarte=:Ecarte,"
-                               "membres.CodeMembre=:CodeMembre WHERE membres.IdMembre=:IdMembre" ) ;
+        RequeteMembre.prepare( "UPDATE membres SET TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre,"
+                               "TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,Nom=:Nom,"
+                               "Prenom=:Prenom,Rue=:Rue,CP=:CP,Ville=:Ville,"
+                               "Telephone=:Telephone,Mobile=:Mobile,Fax=:Fax,"
+                               "Email=:Email,NbreJeuxAutorises=:NbreJeuxAutorises,"
+                               "DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
+                               "DateNaissance=:DateNaissance,Remarque=:Remarque,"
+                               "NbrePersonne=:NbrePersonne,Ecarte=:Ecarte,CodeMembre=:CodeMembre "
+                               "WHERE IdMembre=:IdMembre" ) ;
 
         //ID Membre
         RequeteMembre.bindValue( ":IdMembre", this->nIdMembreSelectionne ) ;
@@ -1056,6 +1062,9 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Nombre de jeux Autorisés
         RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
+
+        //Nombre de personne
+        RequeteMembre.bindValue( ":NbrePersonne", ui->SBx_NbrePersonne->text().toInt() ) ;
 
         //Date d'inscription
         RequeteMembre.bindValue( ":DateInscription", ui->DtE_Insritption->date() ) ;
@@ -1227,6 +1236,7 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->Le_CP->setReadOnly( bVerrouille ) ;
     ui->CBx_Ville->setDisabled( bVerrouille ) ;
     ui->SBx_JeuxAutorises->setReadOnly( bVerrouille ) ;
+    ui->SBx_NbrePersonne->setReadOnly( bVerrouille ) ;
     ui->SPx_NbreRetards->setReadOnly( bVerrouille ) ;
     ui->TE_Remarque->setReadOnly( bVerrouille ) ;
     ui->DtE_Insritption->setReadOnly( bVerrouille ) ;
@@ -1251,6 +1261,7 @@ void F_Membres::EffacerTousLesChamps ()
     ui->Le_CP->clear() ;
     ui->CBx_Ville->setCurrentIndex( 0 ) ;
     ui->SBx_JeuxAutorises->clear() ;
+    ui->SBx_NbrePersonne->clear() ;
     ui->SPx_NbreRetards->clear() ;
     ui->DtE_Insritption->clear() ;
     ui->TE_Remarque->clear() ;
@@ -1259,7 +1270,6 @@ void F_Membres::EffacerTousLesChamps ()
     ui->LW_Abonnements->setModel( modeleVide ) ;
     ui->Tw_activites->clearContents();
     ui->Tw_activites->setRowCount(0);
-    ui->SBx_JeuxAutorises->clear() ;
 
     ui->Lb_MembreEcarte->setHidden( true ) ;
 }

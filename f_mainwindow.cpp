@@ -41,7 +41,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pListeMembres = 0;
     this->pRetards=0;
     this->pListeReservations = 0;
-    this->pMalles = 0;
+    this->pReservationMalles = 0;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -59,7 +59,13 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
     MAJeur *MAJ=new MAJeur(this);
 
-    this->setWindowTitle(this->windowTitle()+ " v"+QString::fromLocal8Bit(VER));
+    QString sCheminConfig=" " + this->pPreferences->ObtenirsCheminConfig();
+    if(sCheminConfig.indexOf("config.ini",0,Qt::CaseInsensitive)!=-1)
+    {
+        sCheminConfig="";
+    }
+
+    this->setWindowTitle(this->windowTitle()+ " v" + QString::fromLocal8Bit(VER) + sCheminConfig);
 
     qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
@@ -264,9 +270,9 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
     {
         this->pListeMembresAdmin->setVisible(false) ;
     }
-    if(this->pMalles)
+    if(this->pReservationMalles)
     {
-        this->pMalles->setVisible(false) ;
+        this->pReservationMalles->setVisible(false) ;
     }
     if(w)
     {
@@ -322,22 +328,21 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         CreerRetour();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
-        // actualise les infos afficher sur le membre sélectionné actuellement
+        // actualise les infos affichée sur le membre sélectionné actuellement
         this->pRetour->ActualiserMembre();
         // actualise les jeux à retourner pour le membre sélectionné actuellement
         this->pRetour->ActualiserJeu();
         // Remet à jour la liste de membres ayant un retour à faire
         this->pRetour->ActualiserListeEmprunteurs();
         break;
-    case 6 : //Malles
-        if(!this->pMalles)
+    case 6 : //Réservation Malles
+        if(!this->pReservationMalles)
         {
-            qDebug()<<"Création F_Malles";
-            this->pMalles=new F_Malles (this->ui->Malles);
-            //Retards
-            this->ui->Lay_Malles->addWidget(this->pMalles);
+            qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
+            this->pReservationMalles=new F_Emprunt (MODE_RESAMALLES, this->ui->ReservationMalles);
+            this->ui->Lay_ReservationMalles->addWidget(this->pReservationMalles);
         }
-        //this->pMalles->setVisible(true);
+        this->pReservationMalles->setVisible(true);
         break;
     case 7 : //Liste Réservations
         CreerReservations();
@@ -472,7 +477,7 @@ void F_MainWindow::CreerEmprunt()
     if(!this->pEmprunt)
     {
         qDebug()<<"Création F_Emprunt";
-        this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
+        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this->ui->Emprunt);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
     }

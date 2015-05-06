@@ -92,7 +92,7 @@ private:
     F_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;
     F_ListeReservations * pListeReservations ;
-    F_Malles * pMalles;
+    F_Emprunt * pReservationMalles;
 };
 
 #endif // F_MAINWINDOW_H

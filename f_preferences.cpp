@@ -163,6 +163,15 @@ F_Preferences::F_Preferences(QWidget *parent) :
 }
 
 /**
+ *  @brief  Retourne l'emplacement du fichier de config trouvé par TrouverFichierConfig
+ *
+ */
+QString F_Preferences::ObtenirsCheminConfig()
+{
+    return sCheminConfig;
+}
+
+/**
  *  @brief  Retourne l'emplacement du fichier de config en fonction des arguments passés à Ludopen
  *
  */

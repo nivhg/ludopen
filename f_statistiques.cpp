@@ -727,13 +727,15 @@ void F_Statistiques::EffectuerRequeteJeuxPopularite()
             this->TbStatModele->setItem(nNombreLigne, 1, new QStandardItem(StatistiquePlusPlus.value(0).toString()));
         }
 
-        sDetail = QString::number(nDetail);
         this->TbStatModele->setItem(nNombreLigne, 0, new QStandardItem(Statistique.value(0).toString()));
-        this->TbStatModele->setItem(nNombreLigne, 2, new QStandardItem(sDetail));
+        QStandardItem *item = new QStandardItem();
+        item->setData(QVariant(nDetail), Qt::DisplayRole);
+        this->TbStatModele->setItem(nNombreLigne, 2, item);
         nNombreLigne = nNombreLigne + 1;
         nDetail = 0;
     }
     ui->Lb_Resultat->setNum( nNombreLigne ) ;
+    this->TbStatModele->sort(2,Qt::DescendingOrder);
 }
 
 /**

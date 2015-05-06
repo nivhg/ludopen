@@ -393,6 +393,45 @@ void F_Reservation::AfficherJeuxReserve()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Reservation::AfficherJeu()
 {
+
+    //Savoir si le jeu est déja réservé
+    QSqlQuery RequeteResa;
+    RequeteResa.prepare("SELECT idReservation,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour "
+                        "FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux "
+                        "WHERE CodeJeu=:CodeJeu AND JeuEmprunte=1");
+    RequeteResa.bindValue(":CodeJeu",this->JeuActif);
+
+    if (!RequeteResa.exec())
+    {
+        qDebug() << "F_Reservation::AfficherJeu : RequeteResa :" << RequeteResa.lastQuery()  ;
+    }
+    else
+    {
+       if(RequeteResa.size()!=0)
+       {
+           QMessageBox::warning(this, "Attention !",
+               "Une ou plusieurs réservations ont déjà été faite sur ce jeu.\n"
+               "Merci de prévenir l'adhérent que le jeu risque de ne pas être disponible "
+               "à la date souhaitée.");
+       }
+       while(RequeteResa.next())
+       {
+           QDate date = ObtenirValeurParNom(RequeteResa,"DatePrevuEmprunt").toDate();
+           QDate dateRetour = ObtenirValeurParNom(RequeteResa,"DatePrevuRetour").toDate().addDays(1);
+           while(date!=dateRetour)
+           {
+               QTextCharFormat cf = ui->Cal_DateEmprunt->dateTextFormat(date);
+               cf.setFontStrikeOut(true);
+               ui->Cal_DateEmprunt->setDateTextFormat( date, cf );
+
+               QTextCharFormat cf2 = ui->Cal_DateRetour->dateTextFormat(date);
+               cf2.setFontStrikeOut(true);
+               ui->Cal_DateRetour->setDateTextFormat( date, cf2 );
+
+               date=date.addDays(1);
+           }
+       }
+    }
    //met le type d'emprunt au type par défaut
    ui->CBx_TypeEmprunt->setCurrentIndex(0);
 
@@ -917,25 +956,18 @@ void F_Reservation::CalculerDateRetour()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Reservation::ColorierJours()
 {
-
 //Colorie les jours concernés par l'emprunt.
-    QTextCharFormat formatDate;
-    QDate DateRetour;
-    QDate DateEmprunt;
 
-    DateEmprunt=ui->Cal_DateEmprunt->selectedDate();
-    DateRetour=ui->Cal_DateRetour->selectedDate();
+    QDate date=ui->Cal_DateEmprunt->selectedDate();
+    QDate DateRetour=ui->Cal_DateRetour->selectedDate();
 
-    unsigned int JourEmprunt;
-    JourEmprunt=DateEmprunt.daysTo(DateRetour);
-
-    formatDate.setBackground(QBrush(Qt::green, Qt::SolidPattern));
-    ui->Cal_DateRetour->setDateTextFormat(DateRetour,formatDate);
-    for (unsigned int i=0;i<JourEmprunt;i++)
+    while(date!=DateRetour)
     {
-        ui->Cal_DateRetour->setDateTextFormat(DateEmprunt.addDays(i),formatDate);
+        QTextCharFormat formatDate = ui->Cal_DateRetour->dateTextFormat(date);
+        formatDate.setBackground(QBrush(Qt::green, Qt::SolidPattern));
+        ui->Cal_DateRetour->setDateTextFormat( date, formatDate );
+        date=date.addDays(1);
     }
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -944,16 +976,15 @@ void F_Reservation::ColorierJours()
 void F_Reservation::DecolorierJours()
 {
 //Décolorie les jours coloriés.
-    QTextCharFormat formatDate;
+    QDate date=ui->Cal_DateEmprunt->selectedDate();
+    QDate DateRetour=ui->Cal_DateRetour->selectedDate();
 
-    unsigned int JourEmprunt;
-    JourEmprunt=this->DateEmprunt.daysTo(this->DateRetour);
-
-    formatDate.setBackground(QBrush(Qt::white, Qt::SolidPattern));
-    ui->Cal_DateRetour->setDateTextFormat(this->DateRetour,formatDate);
-    for (unsigned int i=0;i<JourEmprunt;i++)
+    while(date!=DateRetour)
     {
-        ui->Cal_DateRetour->setDateTextFormat(this->DateEmprunt.addDays(i),formatDate);
+        QTextCharFormat formatDate = ui->Cal_DateRetour->dateTextFormat(date);
+        formatDate.setBackground(QBrush(Qt::white, Qt::SolidPattern));
+        ui->Cal_DateRetour->setDateTextFormat( date, formatDate );
+        date=date.addDays(1);
     }
 }
 

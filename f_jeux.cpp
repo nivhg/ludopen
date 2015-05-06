@@ -124,39 +124,10 @@ void F_Jeux::on_Bt_Reserver_clicked()
     }
     else
     {
-       //Savoir si le jeu est déja réservé
-       QSqlQuery RequeteResa;
-       RequeteResa.prepare("SELECT idReservation,ConfirmationReservation FROM reservation "
-                           "WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
-       RequeteResa.bindValue(":IdDuJeu",RequeteJeu.value(0));
-
-       if (!RequeteResa.exec())
-       {
-           qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteResa :" << RequeteResa.lastQuery()  ;
-       }
-       else
-       {
-          RequeteResa.next();
-          if (RequeteResa.size()!=0)
-          {
-              if(RequeteResa.value(1).toInt()==1)
-              {
-                QMessageBox::information(this,"Réservation impossible !","Ce jeu est déjà réservé.","Ok");
-              }
-              else
-              {
-                QMessageBox::information(this,"Réservation impossible !",
-                                         "Ce jeu est en attente de confirmation de réservation.","Ok");
-              }
-          }
-          else
-          {
-             pReservation->setWindowModality(Qt::ApplicationModal);
-             pReservation->set_JeuActif(this->JeuEnConsultation);
-             pReservation->AfficherJeu();
-             pReservation->show();
-          }
-       }
+         pReservation->setWindowModality(Qt::ApplicationModal);
+         pReservation->set_JeuActif(this->JeuEnConsultation);
+         pReservation->AfficherJeu();
+         pReservation->show();
     }
 }
 ////////////////////////////////////////////////////////////
@@ -786,7 +757,7 @@ void F_Jeux::AfficherJeux()
      QSqlQuery RequeteRechercheJeu;
      NumeroLigne=0;
 
-     RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu FROM jeux");
+     RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu FROM jeux ORDER BY NomJeu");
 
      if (!RequeteRechercheJeu.exec())
      {

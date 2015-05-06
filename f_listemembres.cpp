@@ -431,7 +431,7 @@ bool F_ListeMembres::AffichageListe()
     }
 
     sRequeteWHERE += " IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
-    sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre " ;
+    sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre ORDER BY Nom" ;
 
     qDebug() << "F_listemembre::AffichageListe() :" << sRequete ;
     ui->LE_sql->setText(sRequete);

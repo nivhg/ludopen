@@ -49,7 +49,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>4</number>
       </property>
       <property name="iconSize">
        <size>
@@ -124,7 +124,7 @@
         </iconset>
        </attribute>
        <attribute name="title">
-        <string>Emprunts</string>
+        <string>Emprunts/Réservations</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
@@ -151,18 +151,17 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Malles">
+      <widget class="QWidget" name="ReservationMalles">
        <attribute name="icon">
-        <iconset>
-         <normalon>:/Carton_rentrant.png</normalon>
-        </iconset>
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Carton_rentrant.png</normaloff>:/Carton_rentrant.png</iconset>
        </attribute>
        <attribute name="title">
-        <string>Malles</string>
+        <string>Réservation malles</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
+       <layout class="QGridLayout" name="gridLayout_12">
         <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Lay_Malles"/>
+         <layout class="QHBoxLayout" name="Lay_ReservationMalles"/>
         </item>
        </layout>
       </widget>

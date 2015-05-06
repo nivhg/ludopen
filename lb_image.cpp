@@ -230,6 +230,14 @@ QStringList Lb_Image::ObtenirsCheminImage()
 }
 
 /**
+ *  @brief Renvoie le tableau sNomImage
+ */
+QStringList Lb_Image::ObtenirsNomImage()
+{
+    return sNomImage;
+}
+
+/**
  *  @brief Définie le tableau sCheminImage
  */
 void Lb_Image::DefinirsCheminImage(QStringList sCheminImage)
@@ -248,7 +256,8 @@ void Lb_Image::DefiniriImage(int iImage)
 void Lb_Image::SlotFichierTelecharger(QString Fichier)
 {
     this->setCursor(SauvegardeCurseur.shape());
-    sCheminImage.append(Fichier);
+    sCheminImage.append(QDir::tempPath()+"/"+Fichier);
+    sNomImage.append(Fichier);
     AfficherImage(QSize(width(),height()));
 }
 

@@ -92,7 +92,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
                 fichierTelecharger.write(reply->readAll());
                 fichierTelecharger.close();
                 delete reply;
-                emit SignalFichierTelecharger(fichierTelecharger.fileName());
+                emit SignalFichierTelecharger(NomFichier);
                 // On a trouvé l'extension du fichier, on passe au fichier suivant
                 PasserFichierSuivant(true);
                 return;

@@ -35,6 +35,10 @@ public:
      */
     QStringList ObtenirsCheminImage();
 
+    /** @brief Récupère les noms des fichiers téléchargés
+     */
+    QStringList ObtenirsNomImage();
+
     /** @brief Définit les chemins des fichiers téléchargés
      */
     void DefinirsCheminImage(QStringList sCheminImage);
@@ -69,6 +73,9 @@ private:
 
     //! Chemin vers les fichiers images du jeu en cours
     QStringList sCheminImage;
+
+    //! Nom des fichiers images du jeu en cours
+    QStringList sNomImage;
 
     //! Numéro de l'image en cours d'affichage
     int iImage;

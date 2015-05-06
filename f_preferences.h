@@ -72,11 +72,18 @@ public:
      *
      */
     static QString ObtenirValeur( QString NomChamps ) ;
+
     /**
      *  @brief  Rechargement des préférences à partir de la BDD
      *
      */
     void ChargerPreferencesBDD();
+
+    /**
+     *  @brief  Retourne l'emplacement du fichier de config trouvé par TrouverFichierConfig
+     *
+     */
+    QString ObtenirsCheminConfig();
 
 signals:
     void SignalFermerFenetre() ;

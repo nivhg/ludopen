@@ -7,9 +7,16 @@ class F_Emprunt;
 #include <QStandardItem>
 #include <QDate>
 #include <QtWidgets>
-#include "f_paiement.h"
-//#include "montableview.h"
+#include <QVector>
+#include <QHash>
 
+#include "f_paiement.h"
+#include "f_membres.h"
+#include "searchbox.h"
+
+
+#define MODE_EMPRUNT 0
+#define MODE_RESAMALLES 1
 
 /** @struct Emprunt
  *  @brief Structure d'un emprunt
@@ -23,11 +30,10 @@ struct Emprunts
     unsigned int idTypeEmprunt; ///< Id du type de l'emprunt
     unsigned int PrixCaution;   ///< prix de la caution
     unsigned int PrixEmprunt;   ///< prix de l'emprunt (en crédits)
-    QDate DateEmprunt;          ///< date de l'emprunt
+    QDateTime DateEmprunt;          ///< date de l'emprunt
     QDate DateRetourPrevu;      ///< date du retour
 
 };
-
 
 namespace Ui {
     class F_Emprunt;
@@ -39,7 +45,7 @@ class F_Emprunt : public QWidget
 
 public:
     //! Constructeur
-    explicit F_Emprunt(QWidget *parent = 0);
+    explicit F_Emprunt(int iMode=0, QWidget *parent = 0);
     //! Destructeur
     ~F_Emprunt();
     /** @brief affiche les informations du membre
@@ -76,11 +82,19 @@ public:
      */
     void AfficherNbEmpruntsEnCours() ;
 
+    //! Mise à jour de la liste des membres
+    bool MaJListeMembres (bool AfficherContact=false);
+
+    //! Mise à jour de la liste des jeux
+    QVector<QVector <QString> > MaJListeJeux(QString filtre="");
+
+    //! Affiche ou cache les composants liés aux malles
+    void RendreVisibleMalle(bool booleen);
+
+    //! Actualise le combobox des types de malles
+    void ActualiserTypeMalle(int iTitreMembre);
+
 private slots:
-    void on_Bt_OK_clicked();
-
-    void on_Bt_RechercheOK_clicked();
-
     void on_TxE_Remarques_textChanged();
 
     void on_Bt_ValiderRemarques_clicked();
@@ -97,19 +111,19 @@ private slots:
 
     void on_Bt_Ajouter_clicked();
 
-    void on_LE_RechercheMembre_textChanged(const QString &arg1);
-
     void on_Bt_ValiderEmprunt_clicked();
 
     void on_LE_CodeJeu_returnPressed();
 
-    void on_LE_CodeMembre_returnPressed();
+    void on_LE_SearchMembre_MembreTrouve();
 
-    void on_TbV_Recherche_clicked(const QModelIndex &index);
+    void on_LE_SearchJeux_returnPressed();
+
+    void on_LE_SearchJeux_jeuTrouve();
 
     void on_TbV_JeuxMembres_clicked(const QModelIndex &index);
 
-    void on_TbV_JeuxReserves_clicked(const QModelIndex &index);
+    void on_Tv_JeuxReserves_clicked(const QModelIndex &index);
 
     void on_TbV_EmpruntAValider_clicked(const QModelIndex &index);
 
@@ -117,17 +131,15 @@ private slots:
 
     void on_Bt_SupprimerEmpruntAValider_clicked();
 
+    void on_CBx_TypeMalle_currentIndexChanged(int index);
+
 private:
     Ui::F_Emprunt *ui;
 
-////! Attribut du table view des emprunts
-    //MonTableView* TbV_JeuxReserves;
 //! Code du membre actif sur la fenêtre
     QString MembreActif;
 //! Code du jeu actif sur la fenêtre
     QString JeuActif;
-//! modèle du TableView des membres
-    QStandardItemModel * ModeleListeDesMembres;
 //! Vecteur des nouveau emprunts
     QVector <Emprunts> NouveauEmprunts;
 //! modèle du TableView des nouveaux emprunts
@@ -143,9 +155,26 @@ private:
 //! Pointeur qui pointe sur la fenêtre du paiement
     F_Paiement * pPaiement;
 
+//! Liste des membres
+    QVector<QVector <QString> > VecteurMembres;
 
+//! Liste des jeux
+    QVector<QVector <QString> > VecteurJeux;
 
+//! Prix de la caution du jeu
+    int PrixCaution;
 
+//! LineEdit SearchBox pour la recherche de membre
+    SearchBox *SearchMembre;
+
+//! LineEdit SearchBox pour la recherche de jeux
+    SearchBox *SearchJeux;
+
+//! Indique le mode dans lequel se trouve la classe (emprunt ou résa malles)
+    int iMode;
+
+//! Tableau associatif pour stocker la table TypeMalle
+    QHash< int, QHash<QString, int> > HashTypeMalle;
 };
 
 #endif // F_EMPRUNT_H

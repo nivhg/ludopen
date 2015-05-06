@@ -241,6 +241,9 @@ private:
 
     //! Label Image
     Lb_Image* lb_image;
+
+    //! Booléen indiquant si le chargement des images est fini
+    bool ChargementImageFini;
 };
 
 //------------------------------------------------------------------------------

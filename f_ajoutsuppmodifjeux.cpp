@@ -974,7 +974,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
  */
 void F_AjoutSuppModifJeux::ActiveBoutons(bool etat)
 {
-    qDebug()<<"Activation boutons:" <<etat;
     ui->Bt_Valider->setEnabled(etat);
     ui->Bt_Annuler->setEnabled(etat);
 }
@@ -1571,6 +1570,12 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
  */
 void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
 {
+    if(!ChargementImageFini)
+    {
+        QMessageBox::information(this, "Erreur", "Merci d'attendre la fin de chargement des photos avant supprimer un jeu.") ;
+        return;
+    }
+
     QSqlQuery RequeteJeuEmprunte ;
     //Si aucun jeu n'a été sélectionné alors un message d'erreur s'affiche
     if(ui->LE_Nom->text() == "" && ui->LE_Code->text() == "")
@@ -1590,6 +1595,20 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
                 //Test permettant de savoir quel bouton a été appuyé, entre dans cette méthode si le bouton oui a été cliqué
                 if((QMessageBox::information(this, "Confirmation suppression","Voulez-vous vraiment supprimer le jeu "+ui->LE_Nom->text()+"?","Oui", "Non")) == 0)
                 {
+                    // Récupère le chemin de la clé privée de la machine
+                    SecureFileUploader * uploader = new SecureFileUploader(this);
+
+                    uploader->EffacerCommandes();
+                    uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                                   F_Preferences::ObtenirValeur("LoginServeur"),
+                                   F_Preferences::ObtenirValeur("CheminClePrivee"));
+                    foreach(QString nom, lb_image->ObtenirsNomImage())
+                    {
+                        uploader->AjouterCommande(COMMANDE_SUPPRIMER,
+                            F_Preferences::ObtenirValeur("CheminPhotosServeur") + "/" + nom,"");
+                       }
+                    uploader->FaireCommandes();
+
                     // Sélection de l'Id correspondant au code //
                     QSqlQuery RequeteSelectionJeux ;
                     RequeteSelectionJeux.prepare("SELECT IdJeux, CodeJeu FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
@@ -1676,6 +1695,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
     qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() ++++++++++++++++++++++++++++++++++++" ;
     // Débloque tous les champs de saisie en vue d'une modification possible
     ActiveChamps(true);
+    ChargementImageFini=false;
     BloquerSignalsChamps(true);
 
     // Vérifie si un jeu n'est pas en cours de modification
@@ -2220,4 +2240,5 @@ void F_AjoutSuppModifJeux::slot_ActiverClicImage()
     //Gestion de l'évenement MousePress
     connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     lb_image->setCursor(Qt::CrossCursor);
+    ChargementImageFini=true;
 }

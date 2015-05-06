@@ -51,7 +51,9 @@ SOURCES += \
     securefileuploader.cpp \
     fonctions_globale.cpp \
     majeur.cpp \
-    f_malles.cpp
+    f_malles.cpp \
+    suggest.cpp \
+    searchbox.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -89,7 +91,9 @@ HEADERS  += \
     securefileuploader.h \
     fonctions_globale.h \
     majeur.h \
-    f_malles.h
+    f_malles.h \
+    suggest.h \
+    searchbox.h
 
 FORMS    += \
     f_statistiques.ui \
