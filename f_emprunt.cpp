@@ -48,13 +48,13 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     ui->Lb_MembreEcarte->setText("");
 
     //Met une date minimum pour le DateEdit du retour (la date du jour)
-    QDate DateActuelle;
-    DateActuelle=DateActuelle.currentDate();
-    ui->DtE_Retour->setMinimumDate(DateActuelle);
+    QDateTime DateActuelle;
+    DateActuelle=DateActuelle.currentDateTime();
+    ui->DtE_Retour->setMinimumDate(DateActuelle.date());
 
     //Met une date minimum pour le DateEdit du départ (la date du jour)
-    ui->DtE_Depart->setMinimumDate(DateActuelle);
-    ui->DtE_Depart->setDate(DateActuelle);
+    ui->DtE_Depart->setMinimumDate(DateActuelle.date());
+    ui->DtE_Depart->setDate(DateActuelle.date());
 
     MaJListeMembres();
 
@@ -1819,9 +1819,9 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
 
-    QDate DateActuelle;
-    DateActuelle= DateActuelle.currentDate();
-    ui->DtE_Depart->setDate(DateActuelle);
+    QDateTime DateActuelle;
+    DateActuelle= DateActuelle.currentDateTime();
+    ui->DtE_Depart->setDate(DateActuelle.date());
 
     //Savoir si le jeu est déja réservé
     QCalendarWidget * Calendrier=new QCalendarWidget();
