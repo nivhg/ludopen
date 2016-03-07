@@ -143,7 +143,7 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
         //Enregistrement d'un nouveau membre dans la base de données
         RequeteAssocie.prepare( "SELECT Membres_IdMembre,Nom,Prenom,Ville,CodeMembre"
             " FROM membresassocies,membres WHERE Membres_IdCollectivite=:IdCollectivite"
-            " AND IdMembre=Membres_IdMembre ORDER BY Nom") ;
+            " AND IdMembre=Membres_IdMembre AND Ecarte=0 ORDER BY Nom") ;
         RequeteAssocie.bindValue(":IdCollectivite",this->nIdCollectivite);
         //Exectution de la requête
         if( !RequeteAssocie.exec() )
@@ -279,10 +279,10 @@ bool F_Membres::MaJListeMembres(bool AfficherContact)
     this->VecteurMembres.clear() ;
 
     QString requeteSQL;
-    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres ";
+    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres WHERE Ecarte=0 ";
     if(!AfficherContact)
     {
-        requeteSQL+="WHERE TypeMembres_IdTypeMembres!=4 ";
+        requeteSQL+="AND TypeMembres_IdTypeMembres!=4 ";
     }
     requeteSQL+="ORDER BY Nom ASC";
 
