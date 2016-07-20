@@ -335,27 +335,18 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         // Remet à jour la liste de membres ayant un retour à faire
         this->pRetour->ActualiserListeEmprunteurs();
         break;
-    case 6 : //Réservation Malles
-        if(!this->pReservationMalles)
-        {
-            qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
-            this->pReservationMalles=new F_Emprunt (MODE_RESAMALLES, this->ui->ReservationMalles);
-            this->ui->Lay_ReservationMalles->addWidget(this->pReservationMalles);
-        }
-        this->pReservationMalles->setVisible(true);
-        break;
-    case 7 : //Liste Réservations
+    case 6 : //Liste Réservations
         CreerReservations();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         this->pListeReservations->AffichageListe() ;
         break;
-    case 8 : //retards
+    case 7 : //retards
         CreerRetards();
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
         break;
-    case 9 : //Administration
+    case 8 : //Administration
         //Widget-admin/////////
         CreerAdminMembres();
 
@@ -377,7 +368,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;
         break;
-    case 10 : //PostIt
+    case 9 : //PostIt
         ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
         break;
@@ -477,7 +468,7 @@ void F_MainWindow::CreerEmprunt()
     if(!this->pEmprunt)
     {
         qDebug()<<"Création F_Emprunt";
-        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this->ui->Emprunt);
+        this->pEmprunt=new F_Emprunt (this->ui->Emprunt);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
     }

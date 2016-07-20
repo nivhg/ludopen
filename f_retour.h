@@ -16,7 +16,6 @@
 #include <QtWidgets>
 #include <QStandardItem>
 #include "f_paiement.h"
-#include "searchbox.h"
 
 namespace Ui {
     class F_Retour;
@@ -66,16 +65,10 @@ public:
      */
     void CalculerCreditsRestants();
 
-    //! Mise à jour de la liste des membres
-    bool MaJListeMembres (bool AfficherContact=false);
-
-    //! Mise à jour de la liste des jeux
-    bool MaJListeJeux();
-
 private slots:
-    void on_LE_SearchMembre_returnPressed();
+    void on_Bt_RechercheOK_clicked();
 
-    void on_LE_SearchJeux_returnPressed();
+    void on_Bt_CodeJeuOK_clicked();
 
     void on_Bt_ValiderRemarqueMembre_clicked();
 
@@ -87,6 +80,8 @@ private slots:
 
     void on_Bt_AnnulerRemarqueMembre_clicked();
 
+    void on_LE_RechercheMembre_textChanged(const QString &arg1);
+
     void on_TxE_RemarquesJeu_textChanged();
 
     void on_LE_CodeMembre_returnPressed();
@@ -95,7 +90,9 @@ private slots:
 
     void on_Bt_RendreJeu_clicked();
 
-    void on_Tv_JeuxEmprunte_clicked(const QModelIndex &index);
+    void on_TbV_Recherche_clicked(const QModelIndex &index);
+
+    void on_TbV_JeuxEmprunte_clicked(const QModelIndex &index);
 
     void on_TbV_JeuxReserve_clicked(const QModelIndex &index);
 
@@ -105,8 +102,6 @@ private slots:
 
     void on_Bt_Prolonger_clicked();
 
-    void on_Bt_ToutSelectionner_clicked();
-
 private:
     Ui::F_Retour *ui;
 
@@ -114,24 +109,14 @@ private:
     QString MembreActif;
     //! Code du jeu actif sur la fenêtre
     QString JeuActif;
+    //! modèle du TableView des membres
+    QStandardItemModel * ModelMembre;
     //! modèle du TableView des jeux réservés
     QStandardItemModel * ModelJeuReserves;
     //! modèle du TableView des jeux empruntés
     QStandardItemModel * ModelJeuEmpruntes;
     //! Amende calculée pour jours de retard
     float Amende ;
-    //! LineEdit SearchBox pour la recherche de membre
-    SearchBox *SearchMembre;
-
-    //! LineEdit SearchBox pour la recherche de jeux
-    SearchBox *SearchJeux;
-
-    //! Liste des membres
-        QVector<QVector <QString> > VecteurMembres;
-
-    //! Liste des jeux
-        QVector<QVector <QString> > VecteurJeux;
-
 };
 
 #endif // F_RETOUR_H
