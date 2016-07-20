@@ -9,6 +9,7 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 
+// Fonction de redirection des messages de déboggage dans un fichier
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QByteArray localMsg = msg.toLocal8Bit();
@@ -45,6 +46,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 
 int main(int argc, char *argv[])
 {   
+    // Handler pour rediriger les messages de déboggage dans un fichier
     qInstallMessageHandler(myMessageOutput);
     QApplication a(argc, argv);
     // pour que tous les Qstring de Qt utilisent par défaut l'encodage UTF8
