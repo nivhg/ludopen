@@ -47,7 +47,7 @@ F_ListeMembres::F_ListeMembres(bool bAdmin, QWidget *parent) :
     ModeleMembres.setHorizontalHeaderItem( 7, new QStandardItem( "Code" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 8, new QStandardItem( "Téléphone" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 9, new QStandardItem( "Mobile" ) ) ;
-    ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "eMail" ) ) ;
+    ModeleMembres.setHorizontalHeaderItem( 10, new QStandardItem( "Courriel" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 11, new QStandardItem( "Retards" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 12, new QStandardItem( "Fin Cotisation" ) ) ;
     ModeleMembres.setHorizontalHeaderItem( 13, new QStandardItem( "Crédits" ) ) ;
@@ -322,7 +322,7 @@ bool F_ListeMembres::AffichageListe()
     sRequeteSELECTFROM = "SELECT IdMembre,NomTitre,TypeMembre,Nom,Prenom,Ville,CodeMembre,Telephone,Mobile,"
             "Email,NbreRetard,DateInscription,DateExpiration,SUM(CreditRestant) as CreditRestant2 FROM membres,typemembres,"
             "titremembre,abonnements,activitemembre " ;
-    sRequeteWHERE = "WHERE CreditRestant IS NOT NULL AND " ;
+    sRequeteWHERE = "WHERE CartesPrepayees_IdCarte IS NULL AND " ;
 
     if ( ui->ChBx_Type->isChecked() && ui->CBx_Type->currentIndex() != -1)
     {
@@ -402,30 +402,26 @@ bool F_ListeMembres::AffichageListe()
         {
         case 0 : // cotisation expirée
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND "
-                                          + "abonnements.Supprimer=0 AND" ;
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND abonnements.Supprimer=0 AND " ;
             break ;
 
         case 1 : // cotisation expirant dans 2 semaines (14 jours)
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND abonnements.Supprimer=0 AND ";
             break ;
 
         case 2 : // cotisation expirant dans 1 mois
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND abonnements.Supprimer=0 AND ";
             break ;
         case 3 :  // cotisation à jour
             Date = Date.currentDate() ;
-            sRequeteWHERE = sRequeteWHERE + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+            sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND abonnements.Supprimer=0 AND ";
             break ;
         }
     }

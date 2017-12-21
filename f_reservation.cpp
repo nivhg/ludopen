@@ -624,7 +624,7 @@ void F_Reservation::AfficherEtatCotisation(QString CodeMembre)
                               "FROM abonnements,membres "
                                  "WHERE Prestations_IdPrestation IS NOT NULL "
                                  "AND Membres_IdMembre=IdMembre "
-                                 "AND CodeMembre=:CodeDuMembre AND supprimer=0"
+                                 "AND CodeMembre=:CodeDuMembre AND supprimer=0 "
                                  "ORDER BY DateExpiration DESC" );
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
 
@@ -1079,11 +1079,11 @@ if((MembreActif)!=(""))
                                "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,"
                                "Lieux_IdLieuxRetrait,ConfirmationReservation) "
                                "values (:IdLieu,:IdMembre,:IdJeu,:DateReservation,:DateEmprunt,:DateRetour,"
-                               ":IdLieuRetrait,1)");
+                               ":IdLRetrait,1)");
     RequeteReservation.bindValue(":IdLieu",F_Preferences::ObtenirValeur("IdLieux").toInt());
     RequeteReservation.bindValue(":IdMembre",RequeteIdMembre.value(0));
     RequeteReservation.bindValue(":IdJeu",RequeteIdJeu.value(0));
-    RequeteReservation.bindValue(":IdLieuRetrait",ObtenirValeurParNom(RequeteIdLieu,"IdLieux"));
+    RequeteReservation.bindValue(":IdLRetrait",ObtenirValeurParNom(RequeteIdLieu,"IdLieux").toInt());
     RequeteReservation.bindValue(":DateReservation",DateActuelle);
     RequeteReservation.bindValue(":DateEmprunt",ui->Cal_DateEmprunt->selectedDate());
     RequeteReservation.bindValue(":DateRetour",ui->Cal_DateRetour->selectedDate());
@@ -1091,7 +1091,7 @@ if((MembreActif)!=(""))
     //Execute la requête
     if(!RequeteReservation.exec())
     {
-        qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked "<< RequeteReservation.lastQuery();
+        qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked "<< getLastExecutedQuery(RequeteReservation);
     }
 
     this->hide();

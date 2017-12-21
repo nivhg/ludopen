@@ -174,9 +174,9 @@ void F_ListeReservations::MaJLieux ()
     //Exécution de la requête qui sélectionne le contenu de la table titremembres
     if( RequeteDesReservations.exec( "SELECT * FROM lieux" ) )
     {
-        oLieux.id = 0 ;
-        oLieux.sType = "" ;
-        this->VectorLieux.push_back( oLieux ) ;
+//        oLieux.id = 0 ;
+//        oLieux.sType = "" ;
+//        this->VectorLieux.push_back( oLieux ) ;
 
         //Remplissage du vecteur avec ce que retourne la requête
         while( RequeteDesReservations.next() )
@@ -278,6 +278,7 @@ bool F_ListeReservations::AffichageListe()
 
     if ( ui->ChBx_LieuxDeRetrait->isChecked() )
     {
+        qDebug()<<ui->CBx_LieuxDeRetrait->currentIndex();
         sRequeteWHERE += " Lieux_IdLieuxRetrait=" +  QString::number(this->VectorLieux[ui->CBx_LieuxDeRetrait->currentIndex()].id) + " AND " ;
     }
 
@@ -368,12 +369,12 @@ bool F_ListeReservations::AffichageListe()
 void F_ListeReservations::on_Bt_RAZ_clicked()
 {
     ui-> CBx_LieuxDeReservation->clear() ;
+    ui->CBx_LieuxDeRetrait->clear() ;
     this->MaJLieux() ;
 
     ui->CBx_StatutJeu->clear() ;
     this->MiseAJourStatutJeu() ;
 
-    ui->CBx_LieuxDeRetrait->clear() ;
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
     ui->DtE_DateResa_Fin->setDate(QDate::currentDate());

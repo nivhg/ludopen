@@ -1360,8 +1360,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     RequetePrestation.prepare( "SELECT prestations.NomPrestation,abonnements.DateExpiration,abonnements.IdAbonnements "
                                "FROM abonnements,prestations "
                                "WHERE abonnements.Membres_IdMembre=:IdMembre "
-                               "AND prestations.IdPrestation=abonnements.Prestations_IdPrestation AND "
-                               "supprimer=0" ) ;
+                               "AND prestations.IdPrestation=abonnements.Prestations_IdPrestation AND Supprimer=0" ) ;
     RequetePrestation.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête
@@ -1402,7 +1401,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
     RequeteCartes.prepare( "SELECT cartesprepayees.NomCarte,abonnements.DateExpiration,abonnements.CreditRestant,"
                            "abonnements.IdAbonnements FROM abonnements,cartesprepayees "
                            "WHERE abonnements.Membres_IdMembre=:IdMembre AND "
-                           "cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte" ) ;
+                           "cartesprepayees.IdCarte=abonnements.CartesPrepayees_IdCarte AND Supprimer=0" ) ;
     RequeteCartes.bindValue( ":IdMembre", nIdMembre ) ;
 
     //Exectution de la requête

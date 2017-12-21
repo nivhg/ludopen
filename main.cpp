@@ -47,7 +47,7 @@ void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QS
 int main(int argc, char *argv[])
 {   
     // Handler pour rediriger les messages de déboggage dans un fichier
-    qInstallMessageHandler(myMessageOutput);
+    //qInstallMessageHandler(myMessageOutput);
     QApplication a(argc, argv);
     // pour que tous les Qstring de Qt utilisent par défaut l'encodage UTF8
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));
