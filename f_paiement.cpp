@@ -31,6 +31,7 @@
 #include "f_paiement.h"
 #include "ui_f_paiement.h"
 #include "f_preferences.h"
+#include "fonctions_globale.h"
 
 //------------------------------------------------------------------------------
 /** Constructeur de F_Paiement
@@ -46,14 +47,15 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    ui->setupUi(this);
 
-   this->PrixCredit=(round(F_Preferences::ObtenirValeur("UniteLocation").toDouble()*100.0));
+   QLocale french(QLocale::French);
+   this->PrixCredit=(round(french.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
 
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;
-   RequeteMode.exec("SELECT NomPaiement FROM modepaiement");
+   RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
    while (RequeteMode.next())
    {
-     ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString());
+     ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
    }
 
    //Initialise le tableau des Cartes prépayées
@@ -70,9 +72,10 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    //Initialise le tableau des Autres moyens de paiement
    this->NombreLignePaiementAutre=0;
-   ui->TW_PaiementAutre->setColumnCount(2);
+   ui->TW_PaiementAutre->setColumnCount(3);
    ui->TW_PaiementAutre->setHorizontalHeaderItem(0,new QTableWidgetItem ("Moyens de paiement"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(1,new QTableWidgetItem ("Somme"));
+   ui->TW_PaiementAutre->setColumnWidth(2,0);
    ui->TW_PaiementAutre->verticalHeader()->hide();
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::Stretch );
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
@@ -249,7 +252,9 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
     DoubleSpinBox->setMaximum(this->Prix*this->PrixCredit);
     DoubleSpinBox->setValue(ui->LE_ResteAPayer->text().toFloat());
 
-    ui->TW_PaiementAutre->setItem(this->NombreLignePaiementAutre,0,new QTableWidgetItem (ui->CBx_ModePaiement->currentText()));
+    QTableWidgetItem* Item=new QTableWidgetItem (ui->CBx_ModePaiement->currentText());
+    Item->setData(Qt::UserRole,ui->CBx_ModePaiement->currentData());
+    ui->TW_PaiementAutre->setItem(this->NombreLignePaiementAutre,0,Item);
     ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,1,DoubleSpinBox);
     this->NombreLignePaiementAutre++;
 
@@ -402,6 +407,28 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
       RequeteMajCredit.bindValue(":Credit",CreditRestant);
       RequeteMajCredit.bindValue(":IdAbonnement",((QTableWidgetItem* )ui->TW_PaiementCarte->item(i,2))->data(0).toInt());
       RequeteMajCredit.exec();
+
+   }
+
+   for(register unsigned int i=0 ; i < NombreLignePaiementAutre ; i++)
+   {
+       //Retrouve le montant
+       QSpinBox* SpinBox;
+       SpinBox = (QSpinBox*) ui->TW_PaiementAutre->cellWidget(i,1);
+       //ui->TW_PaiementAutre->item(i,3)->data();
+       //Ajoute les infos du paiement dans la table paiementHorsAb(onnement
+       QSqlQuery RequeteAjoutPaiement;
+       RequeteAjoutPaiement.prepare("INSERT INTO paiementhorsabonnements (DatePaiement,Membres_IdMembre,ModePaiement_IdModePaiement,Montant,TypeVentilation_IdTypeVentilation) "
+                                    "SELECT :DatePaiement,IdMembre,:IdModePaiement,:Montant,1 FROM membres WHERE CodeMembre=:CodeMembre");
+       RequeteAjoutPaiement.bindValue(":DatePaiement",QDate::currentDate().toString("yyyy-MM-dd"));
+       RequeteAjoutPaiement.bindValue(":CodeMembre",this->MembreActif);
+       RequeteAjoutPaiement.bindValue(":IdModePaiement",ui->TW_PaiementAutre->item(i,0)->data(Qt::UserRole));
+       RequeteAjoutPaiement.bindValue(":Montant",SpinBox->value());
+
+       RequeteAjoutPaiement.exec();
+
+       qDebug()<<getLastExecutedQuery(RequeteAjoutPaiement);
+
    }
    //Cacher la fenêtre du paiement
    this->hide();

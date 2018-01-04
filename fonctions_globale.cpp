@@ -54,7 +54,7 @@ QString getLastExecutedQuery(const QSqlQuery& query)
  while (it.hasNext())
  {
   it.next();
-  str.replace(it.key(),it.value().toString());
+  str.replace(it.key(),""""+it.value().toString()+"""");
  }
  return str;
 }

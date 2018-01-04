@@ -60,6 +60,9 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM code 6";
     this->pTitreAjMod = new F_PopUpCLESTTEM();
     this->pTitreAjMod->setWindowModality(Qt::ApplicationModal);
+    qDebug()<< "F_Membres::Creation F_PopUpCLESTTEM Code 12";
+    this->pDomaineEmailAjMod = new F_PopUpCLESTTEM();
+    this->pDomaineEmailAjMod->setWindowModality(Qt::ApplicationModal);
 
     this->EffacerTousLesChamps() ;
 
@@ -90,15 +93,17 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     //Connect--------------------------------------------------------------------------------------------------
     connect( this->pTitreAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauTitre() ) ) ;
     connect( this->pTypeAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauType() ) ) ;
+    connect( this->pDomaineEmailAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauDomaineEmail() ) ) ;
     connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( slot_ActualiserAbonnements() ) ) ;
     connect( this->Bt_ValiderVille, SIGNAL( clicked() ), this, SLOT( slot_ValiderAjoutVille() ) ) ;
     connect( this->Bt_AnnuerVille, SIGNAL( clicked() ), this, SLOT(slot_AnnulerAjoutVille()) ) ;
     // Connecte l'évenement textEdited à la fonction toUpper
     connect(ui->Le_Nom, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
 
-    //Initialisation de la liste de titres et de types
+    //Initialisation de la liste de titres, de types et des domaines d'email
     this->MaJTitre() ;
     this->MaJType() ;
+    this->MaJDomaineEmail() ;
 
     // Autorise le tri des colonnes pour le tableau Abonnement souscrit par le membre
     //ui->LW_Abonnements->setSortingEnabled(true);
@@ -215,6 +220,11 @@ F_Membres::~F_Membres()
     if(this->pTypeAjMod)
     {
         delete this->pTypeAjMod;
+    }
+
+    if(this->pDomaineEmailAjMod)
+    {
+        delete this->pDomaineEmailAjMod;
     }
 
     delete ui ;
@@ -545,6 +555,58 @@ void F_Membres::MaJType ()
         qDebug()<< "F_Membres::MaJType (): Erreur bdd :" <<  Requete.lastQuery() <<  endl ;
     }
 }
+
+//==========================================================================================================
+/**  Met a jour la liste des domaines d'email depuis la base de données
+ *  @pre    Accès à la base de données
+ *  @test
+ */
+void F_Membres::MaJDomaineEmail ()
+{
+    qDebug()<< "F_Membres::MaJDomaineEmail";
+
+     int i( 0 ) ;
+     QSqlQuery Requete ;
+     Type oDomaineEmail ;
+
+     //Suppression du contenu du vecteur de la combobox CBx_DomaineEmail
+     this->VectorDomaineEmail.clear() ;
+     ui->CBx_DomaineEmail->clear() ;
+
+     //Exécution de la requête qui sélectionne le contenu de la table tytremembres
+     if( Requete.exec( "SELECT * FROM domaineemail" ) )
+     {
+         oDomaineEmail.id = 0 ;
+         oDomaineEmail.sType = "" ;
+         this->VectorDomaineEmail.push_back( oDomaineEmail ) ;
+
+         //Remplissage du vecteur avec ce que retourne la requête
+         while( Requete.next() )
+         {
+             oDomaineEmail.id = Requete.value( 0 ).toInt() ;
+             oDomaineEmail.sType = Requete.value( 1 ).toString() ;
+
+             this->VectorDomaineEmail.push_back( oDomaineEmail ) ;
+         }
+
+         //Création d'un choix permettant de créer un nouveau titre
+         oDomaineEmail.id = 0 ;
+         oDomaineEmail.sType = "Créer domaine ..." ;
+
+         this->VectorDomaineEmail.push_back( oDomaineEmail ) ;
+
+         //Remplissage de la combobox grace au vecteur
+         for( i = 0 ; i < VectorDomaineEmail.size() ; i ++ )
+         {
+             ui->CBx_DomaineEmail->insertItem( i, VectorDomaineEmail[ i ].sType ) ;
+         }
+     }
+     else //Sinon on affiche un message d'erreur et on retourne Faux
+     {
+         qDebug()<< "F_Membres::MaJDomaineEmail (): Erreur bdd :" <<  Requete.lastQuery() <<  endl ;
+     }
+}
+
 //==========================================================================================================
 /** Recupere l'emplacement d'un titre dans un vecteur en fonction de son id
  *  @pre    Combobox remplie avec le vecteur
@@ -594,6 +656,33 @@ int F_Membres::RecupererEmplacementTypeVecteur( unsigned int nIdType )
 
     return nEmplacementType ;
 }
+
+//==========================================================================================================
+/** Recupere l'emplacement d'un domaine d'email dans un vecteur en fonction de son id
+ *  @pre    Combobox remplie avec le vecteur
+ *  @param  unsigned int nIdDomaineEmail
+ *  @retval int
+ *  @return L'emplacement du domaine d'email dans le vecteur par rapport à l'id ( 0 par défaut )
+ *
+ */
+int F_Membres::RecupererEmplacementDomaineEmailVecteur( unsigned int nIdDomaineEmail )
+{
+    int nEmplacementDomaine ( 0 ) ;
+    int nBoucle          ( 0 ) ;
+
+    //Recherche de l'id dans le vecteur tant que l'on a pas fini de parcours le vecteur
+    while( nBoucle < this->VectorDomaineEmail.size()&& nEmplacementDomaine == 0 && nIdDomaineEmail != 0 )
+    {
+        if( this->VectorDomaineEmail[ nBoucle ].id == nIdDomaineEmail )
+        {
+            nEmplacementDomaine = nBoucle ;
+        }
+        nBoucle ++ ;
+    }
+
+    return nEmplacementDomaine ;
+}
+
 //==========================================================================================================
 /** Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractères dans un string
  *  @param QString sNumero
@@ -791,7 +880,8 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
     if( nIdMembre != 0 )
     {
         //requête permettant de récuperer tous les informations d'un membre grâce à son Id
-        RequeteMembre.prepare( "SELECT * FROM membres WHERE IdMembre=:id" ) ;
+        RequeteMembre.prepare( "SELECT *,MID(Email,1,LOCATE('@',Email)-1) as Email2 FROM membres "
+                               "LEFT JOIN domaineemail ON DomaineEmail_IdDomaineEmail=IdDomaineEmail WHERE IdMembre=:id" ) ;
         RequeteMembre.bindValue( ":id", nIdMembre ) ;
 
         //Execution de la requête
@@ -805,6 +895,9 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->CBx_Type->setCurrentIndex( this->RecupererEmplacementTypeVecteur(
                                ObtenirValeurParNom(RequeteMembre,"TypeMembres_IdTypeMembres").toInt()));
+
+                ui->CBx_DomaineEmail->setCurrentIndex( this->RecupererEmplacementDomaineEmailVecteur(
+                               ObtenirValeurParNom(RequeteMembre,"DomaineEMail_IdDomaineEMail").toInt()));
 
                 ui->Le_Nom->setText( ObtenirValeurParNom(RequeteMembre,"Nom").toString() ) ;
 
@@ -825,7 +918,7 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                 ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone(
                                      ObtenirValeurParNom(RequeteMembre,"Fax").toString() ) ) ;
 
-                ui->LE_Email->setText( ObtenirValeurParNom(RequeteMembre,"Email").toString() ) ;
+                ui->LE_Email->setText( ObtenirValeurParNom(RequeteMembre,"Email2").toString() ) ;
 
                 ui->SBx_JeuxAutorises->setValue( ObtenirValeurParNom(RequeteMembre,"NbreJeuxAutorises").toInt() ) ;
 
@@ -895,10 +988,10 @@ bool F_Membres::AjouterMembre()
 
     //Enregistrement d'un nouveau membre dans la base de données
     RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
-        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,NbreJeuxAutorises,DateInscription,"
-        "DateNaissance,Remarque,Ecarte,CodeMembre,NbreRetard,NbrePersonne) "
-        "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
-        ":Telephone,:Mobile,:Fax,:Email,:NbreJeuxAutorises,:DateInscription,:DateNaissance,:Remarque,"
+        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,DomaineEmail_IdDomaineEmail,NbreJeuxAutorises,DateInscription,"
+        "Remarque,Ecarte,CodeMembre,NbreRetard,NbrePersonne) "
+        "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,"
+        ":Ville,:Telephone,:Mobile,:Fax,:Email,:DomaineEmail_IdDomaineEmail,:NbreJeuxAutorises,:DateInscription,:Remarque,"
         ":Ecarte,:CodeMembre,:NbreRetard,:NbrePersonne)" ) ;
 
     //Titre Membre
@@ -906,6 +999,9 @@ bool F_Membres::AjouterMembre()
 
     //Type Membre
     RequeteMembre.bindValue( ":TypeMembres_IdTypeMembres", this->VectorType[ui->CBx_Type->currentIndex()].id ) ;
+
+    //Domaine Email
+    RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id ) ;
 
     //Nom
     RequeteMembre.bindValue( ":Nom", ui->Le_Nom->text() ) ;
@@ -932,7 +1028,7 @@ bool F_Membres::AjouterMembre()
     RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
     //Email
-    RequeteMembre.bindValue( ":Email", ui->LE_Email->text() ) ;
+    RequeteMembre.bindValue( ":Email", QString(ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText()) ) ;
 
     //Nombre de jeux Autorisés
     RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
@@ -971,7 +1067,8 @@ bool F_Membres::AjouterMembre()
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
+        qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << getLastExecutedQuery(RequeteMembre) << "\nRaison:"
+                << RequeteMembre.lastError()<< endl ;
         bRetourne = false ;
     }
 
@@ -1018,7 +1115,8 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
                                "TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,Nom=:Nom,"
                                "Prenom=:Prenom,Rue=:Rue,CP=:CP,Ville=:Ville,"
                                "Telephone=:Telephone,Mobile=:Mobile,Fax=:Fax,"
-                               "Email=:Email,NbreJeuxAutorises=:NbreJeuxAutorises,"
+                               "Email=:Email,DomaineEmail_IdDomaineEmail=:DomaineEmail_IdDomaineEmail,"
+                               "NbreJeuxAutorises=:NbreJeuxAutorises,"
                                "DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
                                "DateNaissance=:DateNaissance,Remarque=:Remarque,"
                                "NbrePersonne=:NbrePersonne,Ecarte=:Ecarte,CodeMembre=:CodeMembre "
@@ -1032,6 +1130,9 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Type Membre
         RequeteMembre.bindValue( ":TypeMembres_IdTypeMembres", this->VectorType[ui->CBx_Type->currentIndex()].id ) ;
+
+        //Domaine Email
+        RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id ) ;
 
         //Nom
         RequeteMembre.bindValue( ":Nom", ui->Le_Nom->text() ) ;
@@ -1058,7 +1159,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
         //Email
-        RequeteMembre.bindValue( ":Email", ui->LE_Email->text() ) ;
+        RequeteMembre.bindValue( ":Email", QString(ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText()) ) ;
 
         //Nombre de jeux Autorisés
         RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
@@ -1223,6 +1324,7 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
 {
     ui->CBx_Type->setDisabled( bVerrouille ) ;
     ui->CBx_Titre->setDisabled( bVerrouille ) ;
+    ui->CBx_DomaineEmail->setDisabled( bVerrouille );
 
 
     ui->Le_Nom->setReadOnly( bVerrouille ) ;
@@ -1249,6 +1351,7 @@ void F_Membres::EffacerTousLesChamps ()
 {
     ui->CBx_Type->setCurrentIndex( 0 ) ;
     ui->CBx_Titre->setCurrentIndex( 0 ) ;
+    ui->CBx_DomaineEmail->setCurrentIndex( 0 ) ;
 
     ui->Le_Nom->clear() ;
     ui->Le_Prenom->clear() ;
@@ -1369,7 +1472,7 @@ void F_Membres::AfficherAbonnements( int nIdMembre )
         while( RequetePrestation.next() )
         {
             modele->setItem( i, 0, new QStandardItem( RequetePrestation.record().value( 0 ).toString() ) ) ;
-            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString( "dd-MM-yyyy" ) ) ) ;
+            modele->setItem( i, 2, new QStandardItem( RequetePrestation.record().value( 1 ).toDateTime().toString(   ) ) ) ;
             this->VecteurAbonnements.append( RequetePrestation.record().value( 2 ).toInt() ) ;
 
             if ( RequetePrestation.value( 1 ).toDate()< QDate::currentDate() )
@@ -1523,6 +1626,15 @@ void F_Membres::slot_ChoisirNouveauType ()
     this->MaJType() ;
     ui->CBx_Type->setCurrentIndex( this->VectorType.size()- 2 ) ;
 }
+//==========================================================================================================
+/** Permet l'ajout d'un type
+ */
+void F_Membres::slot_ChoisirNouveauDomaineEmail ()
+{
+    this->MaJDomaineEmail() ;
+    ui->CBx_DomaineEmail->setCurrentIndex( this->VectorDomaineEmail.size()- 2 ) ;
+}
+
 //==========================================================================================================
 /** Permet l'ajout d'un titre
  */
@@ -2172,5 +2284,36 @@ void F_Membres::on_CBx_Titre_currentIndexChanged(int index)
     {
         ui->Gb_Prenom->setVisible(true);
         ui->Bt_Associe->setVisible(false);
+    }
+}
+
+void F_Membres::on_LE_Email_textEdited(const QString &arg1)
+{
+    ui->LE_Email->setText( this->ModifierSyntaxeEmail( arg1 ) ) ;
+}
+
+//==========================================================================================================
+/** Efface tous ce qui n'est pas autorisé dans une adresse email
+ *  @param QString sNumero
+ *  @retval QString
+ *  @return Retourne un QString ne contenant plus de lettre ou caractêres speciaux. Un espace est ajouté tous les 2 caractères
+ *
+ */
+QString F_Membres::ModifierSyntaxeEmail( QString sEmail )
+{
+    QRegExp CaracteresAutorises ( "[^\\+0-9a-zA-Z_-]" ) ;
+
+    //Suppression des les caractères ormis les chiffres
+    sEmail.replace( CaracteresAutorises, "" ) ;
+
+    return sEmail ;
+}
+
+void F_Membres::on_CBx_DomaineEmail_currentIndexChanged(int index)
+{
+    if( ( this->VectorDomaineEmail.size() - 1 )== index )
+    {
+        this->pDomaineEmailAjMod->Ajouter(12) ;
+        ui->CBx_DomaineEmail->setCurrentIndex( 0 ) ;
     }
 }

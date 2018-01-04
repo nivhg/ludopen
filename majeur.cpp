@@ -8,7 +8,7 @@ MAJeur::MAJeur(QWidget *parent)
 {
 // Si mode debug, on sort
 #ifndef QT_NO_DEBUG
-// return;
+    return;
 #endif
     sURLMAJeur= F_Preferences::ObtenirValeur("URLMAJeur");
     QString CheminDestination=QDir::tempPath()+"/derniereVersion.ini";

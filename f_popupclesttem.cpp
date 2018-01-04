@@ -21,6 +21,7 @@
  *      -Si 9, il s'agit d'un Paiement Membre.
  *      -Si 10, il s'agit d'une activité d'un membre.
  *      -Si 11, il s'agit d'un mot-clé d'un jeu.
+ *      -Si 12, il s'agit d'un domaine d'email
  *
  *  Fabrication   Qt Creator, projet    .pro
  *
@@ -176,6 +177,14 @@ void F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
 
         case 11: // Mot-clé d'un jeu.
             ui->Lb_TitreFenetre->setText("Création d'un mot-clé");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+        break;
+
+        case 12: // Domaine d'email.
+            ui->Lb_TitreFenetre->setText("Création d'un domaine d'email");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
@@ -356,7 +365,18 @@ int F_PopUpCLESTTEM::Modifier(QString sCLESTTEM, int nCLESTTEM, QTableView * TbV
             this->sCLESTTEM = sCLESTTEM;
         break;
 
-        case 12: // Suppression d'une valeur toujours utilisée : choix d'une autre valeur à donner
+        case 12: // Domaine d'email.
+            ui->Lb_TitreFenetre->setText("Modification d'un domaine d'email");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->hide();
+            ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
+        break;
+
+        case 255: // Suppression d'une valeur toujours utilisée : choix d'une autre valeur à donner
             ui->Lb_TitreFenetre->setText("La valeur est toujours utilisée par des élements. \n"
                                          "Choisir la nouvelle valeur à donner pour ces élements :");
             ui->Lb_CLESTTEM->hide();
@@ -630,7 +650,24 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 12: // Suppression
+        case 12: // Domaine d'email.
+            if(this->bCLESTTEM)
+            {
+                RequeteValider.prepare("INSERT INTO domaineemail (NomDomaine) VALUES (:NomDomaine)");
+                RequeteValider.bindValue(":NomDomaine", ui->LE_CLESTTEM->text());
+                RequeteValider.exec();
+            }
+            else
+            {
+                RequeteValider.prepare("UPDATE domaineemail SET NomDomaine=:NomDomaine WHERE NomDomaine=:NomDomainePrecedent");
+                RequeteValider.bindValue(":NomDomaine", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":NomDomainePrecedent", this->sCLESTTEM);
+                RequeteValider.exec();
+                requete=RequeteValider.lastQuery();
+            }
+        break;
+
+        case 255: // Suppression
 
         break;
 

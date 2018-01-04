@@ -31,6 +31,14 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
     // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
     ui->DtE_DateSouscription->setDisplayFormat("dd/MM/yyyy");
 
+    //Remplir le ComboBox des modes de paiements
+    QSqlQuery RequeteMode;
+    RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
+    while (RequeteMode.next())
+    {
+      ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
+    }
+
 }
 //======================================================================================================
 /** Détruit l'objet ui
@@ -338,9 +346,10 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
                 nIdCarte = query.record().value( 0 ).toInt() ;
             }
 
-            query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
+            query.prepare("INSERT INTO abonnements (ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
                           "DateExpiration,CreditRestant) "
-                          "VALUES (:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
+                          "VALUES (:ModePaiement_IdModePaiement,:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
+            query.bindValue(":ModePaiement_IdModePaiement", ui->CBx_ModePaiement->currentData());
             query.bindValue(":CartesPrepayees_IdCarte", nIdCarte);
             query.bindValue(":Membres_IdMembre", this->nIDMembre);
             query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;

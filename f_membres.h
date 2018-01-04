@@ -66,6 +66,9 @@ public:
     int RecupererEmplacementTitreVecteur (unsigned int nIdTitre) ;
     //! Recupere l'emplacement d'un type dans un vecteur en fonction de son id
     int RecupererEmplacementTypeVecteur (unsigned int nIdType) ;
+    //! Recupere l'emplacement d'un domaine d'email dans un vecteur en fonction de son id
+    int RecupererEmplacementDomaineEmailVecteur( unsigned int nIdDomaineEmail );
+
 
     //! Permet d'ajouter un membre
     bool AjouterMembre () ;
@@ -78,6 +81,9 @@ public:
 
     //! Met à  jour la liste des Types depuis la base de données
     void MaJType () ;
+
+    //! Met à  jour la liste des domaine d'email depuis la base de données
+    void MaJDomaineEmail ();
 
     //! Affiche les jeux empruntés dans le tableau TbW_Emprunt
     void AfficherJeuxEmpruntes (unsigned int nIdMembre) ;
@@ -115,6 +121,9 @@ public:
     //! Efface tous ce qui n'est pas un chiffre et ajoute un espace tous les 2 caractéres dans un string
     QString ModifierSyntaxeNumTelephone ( QString sNum) ;
 
+    //! Efface tous ce qui n'est autorisé dans une adresse email
+    QString ModifierSyntaxeEmail( QString sEmail );
+
     //! Affiche les abonnements dans le tableview abonnement
     void AfficherAbonnements( int nIdMembre ) ;
 
@@ -147,6 +156,9 @@ public slots:
 
     //! Permet l'ajout d'un titre
     void slot_ChoisirNouveauTitre () ;
+
+    //! Permet l'ajout d'un domaine d'email
+    void slot_ChoisirNouveauDomaineEmail () ;
 
     //! Recupere l'id d'un membre pour l'afficher
     void slot_AfficherMembre (unsigned int nIdMembre) ;
@@ -255,6 +267,10 @@ private slots:
 
     void on_CBx_Titre_currentIndexChanged(int index);
 
+    void on_LE_Email_textEdited(const QString &arg1);
+
+    void on_CBx_DomaineEmail_currentIndexChanged(int index);
+
 private:
 
     // ATTRIBUTs ----------------------------------------------------------------
@@ -267,11 +283,14 @@ private:
     F_HistoriqueJeux *   pHistoriqueJeux ;   //! Pointeur sur la classe F_HistoriqueJeux
     F_AjouterCotiCarte * pAjouterCotiCarte ; //! Pointeur sur la classe F_AjouterCoticarte
 
-    F_PopUpCLESTTEM * pTypeAjMod ;      //! Pointeur sur la classe F_AjouterTitreType avec comme paramètre (0)
-    F_PopUpCLESTTEM * pTitreAjMod ;     //! Pointeur sur la classe F_AjouterTitreType avec comme paramètre (1)
+    F_PopUpCLESTTEM * pTypeAjMod ;          //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (5)
+    F_PopUpCLESTTEM * pTitreAjMod ;         //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (6)
+    F_PopUpCLESTTEM * pDomaineEmailAjMod;   //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (12)
+
 
     QVector<Type>    VectorType ;            //! Vecteur contenant la liste des types (id, nom)
     QVector<Titre>   VectorTitre ;           //! Vecteur contenant la liste des titres (id, nom)
+    QVector<Type>    VectorDomaineEmail;     //! Vecteur contenant la liste des domaine d'email(id, nom)
     QVector<QString> VecteurVille ;          //! Vecteur contenant la liste des villes
     QVector<int>     VecteurAbonnements ;    //! Vecteur contenant la liste des des Id des abonnements présent dans le tableau
 

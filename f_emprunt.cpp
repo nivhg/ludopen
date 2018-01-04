@@ -22,6 +22,7 @@
 #include <QMessageBox>
 
 #include "f_emprunt.h"
+#include "f_preferences.h"
 #include "ui_f_emprunt.h"
 #include "fonctions_globale.h"
 
@@ -50,7 +51,7 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     ui->DtE_Retour->setMinimumDate(DateActuelle);
 
     QSqlQuery Requete;
-    QString TypeEmprunt;
+    QString TypeEmprunt,TypeEmpruntDefaut;
 
     if ( !  Requete.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt") )
     {
@@ -60,9 +61,16 @@ F_Emprunt::F_Emprunt(QWidget *parent) :
     while(Requete.next())
     {
         //on entre un nouveau Item au ComboBox avec le nom du type d'emprunt
-        TypeEmprunt=(Requete.value(0).toString())+" ("+(Requete.value(1).toString())+"jours)";
+        TypeEmprunt=(Requete.value(0).toString())+" ("+(Requete.value(1).toString())+" jours)";
         ui->CBx_TypeEmprunt->addItem(TypeEmprunt);
+        qDebug()<<F_Preferences::ObtenirValeur("TypeEmpruntDefaut");
+        if(Requete.value(0).toString()==F_Preferences::ObtenirValeur("TypeEmpruntDefaut"))
+        {
+            TypeEmpruntDefaut=TypeEmprunt;
+        }
     }
+//
+    ui->CBx_TypeEmprunt->setCurrentText(TypeEmpruntDefaut);
 
     /*
     //Création du table view des jeux réservés

@@ -824,7 +824,7 @@ void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -905,7 +905,7 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -977,7 +977,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1050,7 +1050,7 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1148,7 +1148,7 @@ void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdJeuxType, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdJeuxType, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1229,7 +1229,7 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1309,7 +1309,7 @@ void F_Preferences::on_Bt_SupprimerStatut_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdStatutJeux, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdStatutJeux, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1389,7 +1389,7 @@ void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdEmplacement, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdEmplacement, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1499,7 +1499,7 @@ void F_Preferences::on_Bt_SupprimerLieux_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1604,7 +1604,7 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1683,7 +1683,7 @@ void F_Preferences::on_Bt_SupprimerMotCle_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
