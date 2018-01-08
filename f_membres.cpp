@@ -2301,7 +2301,7 @@ void F_Membres::on_LE_Email_textEdited(const QString &arg1)
  */
 QString F_Membres::ModifierSyntaxeEmail( QString sEmail )
 {
-    QRegExp CaracteresAutorises ( "[^\\+0-9a-zA-Z_-]" ) ;
+    QRegExp CaracteresAutorises ( "[^\\+0-9a-zA-Z_.-]" ) ;
 
     //Suppression des les caractères ormis les chiffres
     sEmail.replace( CaracteresAutorises, "" ) ;
