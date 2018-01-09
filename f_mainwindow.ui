@@ -49,7 +49,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>6</number>
       </property>
       <property name="iconSize">
        <size>
@@ -151,17 +151,17 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ReservationMalles">
+      <widget class="QWidget" name="Malles">
        <attribute name="icon">
         <iconset resource="ImagesIcones.qrc">
          <normaloff>:/Carton_rentrant.png</normaloff>:/Carton_rentrant.png</iconset>
        </attribute>
        <attribute name="title">
-        <string>Réservation malles</string>
+        <string>Malles</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_12">
         <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Lay_ReservationMalles"/>
+         <layout class="QHBoxLayout" name="Lay_Malles"/>
         </item>
        </layout>
       </widget>
@@ -442,7 +442,7 @@ Cotisations</string>
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>25</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFichier">
@@ -450,7 +450,7 @@ Cotisations</string>
      <bool>true</bool>
     </property>
     <property name="title">
-     <string>Fichier</string>
+     <string>Fic&amp;hier</string>
     </property>
     <addaction name="Menu_Fichier_Quitter"/>
    </widget>
@@ -471,7 +471,7 @@ Cotisations</string>
    </widget>
    <widget class="QMenu" name="menu_Edition">
     <property name="title">
-     <string>Configuration</string>
+     <string>Confi&amp;guration</string>
     </property>
     <addaction name="Menu_Edition_Preferences"/>
    </widget>
@@ -482,32 +482,32 @@ Cotisations</string>
   </widget>
   <action name="Menu_Fichier_Quitter">
    <property name="text">
-    <string>Quitter</string>
+    <string>&amp;Quitter</string>
    </property>
   </action>
   <action name="Menu_Aide_Propos_LudOpen">
    <property name="text">
-    <string>A propos de LudOpen ...</string>
+    <string>A &amp;propos de LudOpen ...</string>
    </property>
   </action>
   <action name="Menu_Jeux_Imprimer_Etiquette">
    <property name="text">
-    <string>Imprimer étiquette </string>
+    <string>&amp;Imprimer étiquette </string>
    </property>
   </action>
   <action name="Menu_Jeux_Imprimer_Fiche_Complete">
    <property name="text">
-    <string>Imprimer fiche complète</string>
+    <string>Imprimer &amp;fiche complète</string>
    </property>
   </action>
   <action name="Menu_Edition_Preferences">
    <property name="text">
-    <string>Préférences</string>
+    <string>&amp;Préférences</string>
    </property>
   </action>
   <action name="Menu_Aide_Aide">
    <property name="text">
-    <string>Aide</string>
+    <string>&amp;Aide</string>
    </property>
   </action>
   <action name="actionAjouter_un_post_it">

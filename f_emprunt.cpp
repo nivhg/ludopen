@@ -67,9 +67,9 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
 
     SearchJeux = new SearchBox(this);
     this->iMode=iMode;
-    if(iMode!=MODE_RESAMALLES)
+    if(iMode==MODE_MALLES)
     {
-        SearchMembre->MAJResults(MaJListeJeux(),2);
+        SearchJeux->MAJResults(MaJListeJeux(),2);
         ui->Bt_Reservation->setText("Réserver Malle");
         ui->Bt_ValiderEmprunt->setVisible(false);
     }
@@ -83,26 +83,28 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
     connect(SearchJeux,SIGNAL(returnPressed()),this,SLOT(on_LE_SearchJeux_returnPressed()));
 
-    QSqlQuery Requete;
-    QString TypeEmprunt;
-
-    if ( !  Requete.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt") )
-    {
-        qDebug()<<"F_Emprunt::F_Emprunt => Requete "<<Requete.lastQuery();
-    }
-    //Tant qu'il y a des types d'emprunt dans la table TupesEmprunt,
-    while(Requete.next())
-    {
-        //on entre un nouveau Item au ComboBox avec le nom du type d'emprunt
-        TypeEmprunt=(Requete.value(0).toString())+" ("+(Requete.value(1).toString())+"jours)";
-        ui->CBx_TypeEmprunt->addItem(TypeEmprunt);
-    }
-
     // On rend visible les composants de réservation de malle si on est dans l'onglet correspondant
-    if(iMode==MODE_RESAMALLES)
+    if(iMode==MODE_MALLES)
     {
         RendreVisibleMalle(true);
         SearchJeux->setEnabled(false);
+    }
+    else
+    {
+        QSqlQuery Requete;
+        QString TypeEmprunt;
+
+        if ( !  Requete.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt") )
+        {
+            qDebug()<<"F_Emprunt::F_Emprunt => Requete "<<Requete.lastQuery();
+        }
+        //Tant qu'il y a des types d'emprunt dans la table TypesEmprunt,
+        while(Requete.next())
+        {
+            //on entre un nouveau Item au ComboBox avec le nom du type d'emprunt
+            TypeEmprunt=(Requete.value(0).toString())+" ("+(Requete.value(1).toString())+" jours)";
+            ui->CBx_TypeEmprunt->addItem(TypeEmprunt);
+        }
     }
 
     //Création d'un modèle pour le TableView des nouveaux emprunts
@@ -342,22 +344,22 @@ void F_Emprunt::CalculerDateRetour()
 }
 
 //! Actualise le combobox des types de malles
-void F_Emprunt::ActualiserTypeMalle(int iTitreMembre)
+void F_Emprunt::ActualiserTypeMalles(int iTitreMembre)
 {
     //On prépare et exécute la requête qui permet de récupérer la durée dy type d'emprunt
     QSqlQuery Requete;
 
-    Requete.prepare("SELECT * FROM typemalle WHERE TitreMembre_IdTitreMembre=:titremembre");
+    Requete.prepare("SELECT * FROM typemalles WHERE TitreMembre_IdTitreMembre=:titremembre");
     Requete.bindValue(":titremembre",iTitreMembre);
     Requete.exec();
     if ( ! Requete.exec() )
     {
-        qDebug()<<"F_Emprunt::ActualiserTypeMalle => Requete "<<Requete.lastQuery();
+        qDebug()<<"F_Emprunt::ActualiserTypeMalles => Requete "<<Requete.lastQuery();
         return;
     }
     ui->CBx_TypeMalle->clear();
     ui->CBx_TypeMalle->addItem("");
-    QHash<QString, int> HashRecord;
+    QHash<QString, QVariant> HashRecord;
     while(Requete.next())
     {
         for(int i=0;i<Requete.record().count();i++)
@@ -365,10 +367,10 @@ void F_Emprunt::ActualiserTypeMalle(int iTitreMembre)
             QString tmp=Requete.record().fieldName(i);
             int valeur=Requete.value(i).toInt();
             HashRecord[Requete.record().fieldName(i)]=Requete.value(i).toInt();
-            HashTypeMalle[ObtenirValeurParNom(Requete,"IdTypeMalle").toInt()]=HashRecord;
+            HashTypeMalle[ObtenirValeurParNom(Requete,"IdTypeMalles").toInt()]=HashRecord;
         }
-        ui->CBx_TypeMalle->addItem(ObtenirValeurParNom(Requete,"NomTypeMalle").toString(),
-                                   ObtenirValeurParNom(Requete,"IdTypeMalle").toInt());
+        ui->CBx_TypeMalle->addItem(ObtenirValeurParNom(Requete,"NomTypeMalles").toString(),
+                                   ObtenirValeurParNom(Requete,"IdTypeMalles").toInt());
     }
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -600,7 +602,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         // Affiche en bas à droite le nombre d'emprunt
         AfficherNbEmpruntsEnCours();
         ui->CBx_TypeMalle->setEnabled(true);
-        ActualiserTypeMalle(ObtenirValeurParNom(Requete,"TitreMembre_IdTitreMembre").toInt());
+        ActualiserTypeMalles(ObtenirValeurParNom(Requete,"TitreMembre_IdTitreMembre").toInt());
     }
 }
 
@@ -1332,7 +1334,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
     int  NbrTotalDeJeuxDejaSurCeCompteAdherent = 0;
 
-    if(iMode!=MODE_RESAMALLES)
+    if(iMode!=MODE_MALLES)
     {
         //Savoir combien de jeux sont en cours d'emprunt :
         QSqlQuery RequeteNbJeuEmprunte;
@@ -1350,10 +1352,9 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         {
              NbrTotalDeJeuxDejaSurCeCompteAdherent++;
         }
+        //on ajoute le nombre de nouveaux emprunts
+        NbrTotalDeJeuxDejaSurCeCompteAdherent =  NbrTotalDeJeuxDejaSurCeCompteAdherent+NouveauEmprunts.size();
     }
-
-    //on ajoute le nombre de nouveaux emprunts
-    NbrTotalDeJeuxDejaSurCeCompteAdherent =  NbrTotalDeJeuxDejaSurCeCompteAdherent+NouveauEmprunts.size();
 
     //Met le bouton "Valider les emprunts" en cliquable
     ui->Bt_ValiderEmprunt->setEnabled(true);
@@ -1397,18 +1398,21 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     int NbJeuxSpeciauxAValider=0;
     // Nombre d'autres jeux a valider
     int NbAutresJeuxAValider=0;
+    // Nombre de crédit à demander
+    int NbCredits (0);
 
     //Si le jeu est disponible
     if (ui->Le_StatutJeuARemplir->text()=="Disponible")
     {
         bool Verification;
-        if(iMode==MODE_RESAMALLES)
+        QString Message ;
+        if(iMode==MODE_MALLES)
         {
             int row=ModeleEmpruntsAValider->rowCount();
+
             for(int i=0;i<ModeleEmpruntsAValider->rowCount();i++)
             {
-                bool test=ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0)).toBool();
-                if(ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0)).toBool())
+                if(ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0),Qt::UserRole).toBool())
                 {
                     NbJeuxSpeciauxAValider++;
                 }
@@ -1416,20 +1420,40 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
                 {
                     NbAutresJeuxAValider++;
                 }
+                NbCredits+=ui->Le_PrixEmpruntARemplir->text().toInt();
             }
+            if(NbJeuxSpeciauxAValider!=0 && NbJeuxSpeciauxAValider>=
+                    HashTypeMalle[ui->CBx_TypeMalle->currentData().toInt()]["NbJeuxSpeciauxEmpruntable"].toInt())
+            {
+                Verification=true;
+                Message ="Déjà "+Message.setNum( NbJeuxSpeciauxAValider )+" "+
+                        F_Preferences::ObtenirValeur("LibelleJeuxSpeciaux")+
+                        " dans le panier!\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
+            }
+            else if(NbAutresJeuxAValider!=0 && NbAutresJeuxAValider>=
+                    HashTypeMalle[ui->CBx_TypeMalle->currentData().toInt()]["NbAutresJeuxEmpruntable"].toInt())
+            {
+                Verification=true;
+                Message ="Déjà "+Message.setNum( NbAutresJeuxAValider )+" "+
+                        F_Preferences::ObtenirValeur("LibelleAutresJeux")+
+                        " dans le panier!\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
+            }
+            else if(NbCredits>=HashTypeMalle[ui->CBx_TypeMalle->currentData().toInt()]["TotalCreditsMalle"].toInt())
+            {
+                Verification=true;
+                Message ="Déjà "+Message.setNum( NbCredits )+" crédits dans le panier!\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
+            }
+
         }
         else
         {
-            Verification=ui->Le_NbJeuxEmpruntables->text().toInt()<
-                    NbrTotalDeJeuxDejaSurCeCompteAdherent+1;
+            Verification=ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1;
+            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
         }
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
         if(Verification)
         {
-            QString Message ;
-            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+
-                    " jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
-            if (QMessageBox::question(this,"Nombre maximum de jeux dépassé !",Message,
+            if (QMessageBox::question(this,"Nombre maximum de jeux/crédits dépassé !",Message,
                                       "Autoriser","Refuser")==1)
             {
                 return;  // Mettre fin à cette fonction pour empêcher l'emprunt
@@ -1499,20 +1523,15 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         Emprunt.PrixEmprunt= ui->Le_PrixEmpruntARemplir->text().toInt();
         Emprunt.PrixCaution= PrixCaution;
         this->NouveauEmprunts.push_back(Emprunt);
-
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(SearchJeux->text()));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,1, new QStandardItem(ui->Le_NomJeuARemplir->text()));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("dd-MM-yyyy") ));
         ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,3, new QStandardItem(ui->Le_PrixEmpruntARemplir->text()));
-
         // Stocke l'info de savoir si le jeu est un jeu spécial ou pas
-        QString valeur=ObtenirValeurParNom(RequeteIdJeu,
-                                           F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")).toString();
         ModeleEmpruntsAValider->setData(ModeleEmpruntsAValider->index(this->NbLignesEmpruntsAValider,0),
                                   QVariant(ObtenirValeurParNom(RequeteIdJeu,
                                 F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")).toString()==
-                                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")));
-
+                                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")),Qt::UserRole);
         this->NbLignesEmpruntsAValider++;
 
         //Mettre le statut du jeux à "Emprunt à valider"
@@ -1527,7 +1546,6 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     }
 
     //Calcule du nombre de crédits à demander
-    int NbCredits (0);
     for(register int i=0 ; i <= this->NbLignesEmpruntsAValider ; i++)
     {
         // certains jeux coutent plus de crédit que d'autres pour être empruntés
@@ -2080,8 +2098,19 @@ void F_Emprunt::on_CBx_TypeMalle_currentIndexChanged(int index)
     }
     SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux),2);
     //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
-    QString TotalJeuxEmpruntable=QString::number(HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]
-                             ["TotalJeuxEmpruntable"]);
+    QString TotalJeuxEmpruntable=HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]["TotalJeuxEmpruntable"].toString();
     ui->Lb_NbEmpruntPossibleAujourdhui->setText(TotalJeuxEmpruntable );
     ui->Le_NbJeuxEmpruntables->setText(TotalJeuxEmpruntable);
+
+    int duree=HashTypeMalle[ui->CBx_TypeMalle->itemData(index).toInt()]["DureePret"].toInt();
+
+    ui->CBx_TypeEmprunt->clear();
+    ui->CBx_TypeEmprunt->addItem(QString::number(duree)+" jours");
+    //ui->CBx_TypeEmprunt->setDisabled(true);
+    QDate DateRetour;
+    //DateRetour prend la date actuelle
+    DateRetour=DateRetour.currentDate();
+    DateRetour=DateRetour.addDays(duree);
+
+    ui->DtE_Retour->setDate(DateRetour);
 }

@@ -16,7 +16,7 @@ class F_Emprunt;
 
 
 #define MODE_EMPRUNT 0
-#define MODE_RESAMALLES 1
+#define MODE_MALLES 1
 
 /** @struct Emprunt
  *  @brief Structure d'un emprunt
@@ -92,7 +92,7 @@ public:
     void RendreVisibleMalle(bool booleen);
 
     //! Actualise le combobox des types de malles
-    void ActualiserTypeMalle(int iTitreMembre);
+    void ActualiserTypeMalles(int iTitreMembre);
 
 private slots:
     void on_TxE_Remarques_textChanged();
@@ -174,7 +174,7 @@ private:
     int iMode;
 
 //! Tableau associatif pour stocker la table TypeMalle
-    QHash< int, QHash<QString, int> > HashTypeMalle;
+    QHash< int, QHash<QString, QVariant> > HashTypeMalle;
 };
 
 #endif // F_EMPRUNT_H

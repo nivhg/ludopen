@@ -41,7 +41,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pListeMembres = 0;
     this->pRetards=0;
     this->pListeReservations = 0;
-    this->pReservationMalles = 0;
+    this->pMalles = 0;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -270,9 +270,9 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
     {
         this->pListeMembresAdmin->setVisible(false) ;
     }
-    if(this->pReservationMalles)
+    if(this->pMalles)
     {
-        this->pReservationMalles->setVisible(false) ;
+        this->pMalles->setVisible(false) ;
     }
     if(w)
     {
@@ -336,13 +336,13 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pRetour->ActualiserListeEmprunteurs();
         break;
     case 6 : //Réservation Malles
-        if(!this->pReservationMalles)
+        if(!this->pMalles)
         {
             qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
-            this->pReservationMalles=new F_Emprunt (MODE_RESAMALLES, this->ui->ReservationMalles);
-            this->ui->Lay_ReservationMalles->addWidget(this->pReservationMalles);
+            this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
+            this->ui->Lay_Malles->addWidget(this->pMalles);
         }
-        this->pReservationMalles->setVisible(true);
+        this->pMalles->setVisible(true);
         break;
     case 7 : //Liste Réservations
         CreerReservations();
