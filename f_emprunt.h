@@ -11,6 +11,7 @@ class F_Emprunt;
 #include <QHash>
 
 #include "f_paiement.h"
+#include "f_malles.h"
 #include "f_membres.h"
 #include "searchbox.h"
 
@@ -51,15 +52,19 @@ public:
     /** @brief affiche les informations du membre
      */
     void AfficherMembre(QString CodeMembre);
-    /** @briefcalcule la date du retour
+    /** @brief Ajoute un jeu à valider
      */
-    void CalculerDateRetour();
+    void AjouterJeuAValider(int iIdMembre, int iIdJeu,int iCodeJeu,int iTypeEmprunt,QDate dDateRetourPrevu,
+                            int iPrixEmprunt,QString sNomJeu,bool bJeuSpecial);
     /** @brief Affiche les jeux empruntés par le membre
      */
     void AfficherJeuxEnEmprunt();
     /** @brief Affiche les jeux réservés par le membre
      */
     void AfficherJeuxReserve();
+    /** @brief Affiche les jeux réservés par le membre dans une malle
+     */
+    void AfficherMalle(int iIdMalle);
     /** @brief Vide le formilaire du jeu
      */
     void ViderJeu();
@@ -88,11 +93,14 @@ public:
     //! Mise à jour de la liste des jeux
     QVector<QVector <QString> > MaJListeJeux(QString filtre="");
 
-    //! Affiche ou cache les composants liés aux malles
-    void RendreVisibleMalle(bool booleen);
+    //! Actualise le combobox des types d'emprunt
+    void ActualiserTypeEmprunt(int iTitreMembre);
 
-    //! Actualise le combobox des types de malles
-    void ActualiserTypeMalles(int iTitreMembre);
+    //! Efface le tableau des jeux à valider
+    void EffacerJeuAValider();
+
+    //! Affiche l'état de paiement de la malle
+    void AfficherEtatPaiement();
 
 private slots:
     void on_TxE_Remarques_textChanged();
@@ -121,7 +129,7 @@ private slots:
 
     void on_LE_SearchJeux_jeuTrouve();
 
-    void on_TbV_JeuxMembres_clicked(const QModelIndex &index);
+    void on_Tv_JeuxMembres_clicked(const QModelIndex &index);
 
     void on_Tv_JeuxReserves_clicked(const QModelIndex &index);
 
@@ -131,7 +139,12 @@ private slots:
 
     void on_Bt_SupprimerEmpruntAValider_clicked();
 
-    void on_CBx_TypeMalle_currentIndexChanged(int index);
+    void on_Bt_Reservation_clicked();
+
+    void on_Bt_CalendrierMalles_clicked();
+
+public slots:
+    void slot_Clic_Emprunter(int iIdMalle);
 
 private:
     Ui::F_Emprunt *ui;
@@ -140,6 +153,10 @@ private:
     QString MembreActif;
 //! Code du jeu actif sur la fenêtre
     QString JeuActif;
+//! Id de la malle active sur la fenêtre
+    int iMalleActive;
+//! Booléen qui indique si la malle active a été payée ou non
+    bool bRegle;
 //! Vecteur des nouveau emprunts
     QVector <Emprunts> NouveauEmprunts;
 //! modèle du TableView des nouveaux emprunts
@@ -152,8 +169,10 @@ private:
     bool EtatCotisationMembre ;
 //! Nombre de ligne dans le tableau des nouveau emprunts
     int NbLignesEmpruntsAValider ;
-//! Pointeur qui pointe sur la fenêtre du paiement
+//! Pointeur vers la fenêtre du paiement
     F_Paiement * pPaiement;
+//! Pointeur vers la fenêtre de calendrier des malles
+    F_Malles * pMalles;
 
 //! Liste des membres
     QVector<QVector <QString> > VecteurMembres;
@@ -174,7 +193,7 @@ private:
     int iMode;
 
 //! Tableau associatif pour stocker la table TypeMalle
-    QHash< int, QHash<QString, QVariant> > HashTypeMalle;
+    QHash< int, QHash<QString, QVariant> > HashTypeEmprunt;
 };
 
 #endif // F_EMPRUNT_H

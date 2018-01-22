@@ -1091,7 +1091,7 @@ if((MembreActif)!=(""))
     //Execute la requête
     if(!RequeteReservation.exec())
     {
-        qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked "<< RequeteReservation.lastQuery();
+        qDebug()<<"F_Reservation::on_Bt_ValiderReservation_clicked "<< getLastExecutedQuery(RequeteReservation);
     }
 
     this->hide();

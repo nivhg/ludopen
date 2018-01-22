@@ -321,14 +321,15 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_Mail->setText(TbPreferences["Email"]);
     ui->LE_Web->setText(TbPreferences["SiteWeb"]);
     ui->SBx_JeuxAutorises->setValue(TbPreferences["JeuxAutorises"].toInt());
-    ui->DSBx_UniteLocation->setValue(TbPreferences["UniteLocation"].toInt());
+    QLocale french(QLocale::French);
+    ui->DSBx_UniteLocation->setValue(french.toDouble(TbPreferences["UniteLocation"]));
     ui->SBx_JourEmail->setValue(TbPreferences["JourAvantMail"].toInt());
     ui->SBx_JourRetard->setValue(TbPreferences["JourRetard"].toInt());
     ui->LE_CheminPhotosJeux->setText(TbPreferences["CheminPhotosJeux"]);
     ui->LE_CheminRegle->setText(TbPreferences["CheminReglesJeux"]);
     ui->LE_AdresseSMTP->setText(TbPreferences["AdresseServeurSMTP"]);
     ui->LE_PortSMTP->setText(TbPreferences["PortSMTP"]);
-    ui->DSBx_PrixAmende->setValue(TbPreferences["PrixAmende"].toInt());
+    ui->DSBx_PrixAmende->setValue(french.toDouble(TbPreferences["PrixAmende"]));
     ui->LE_CheminPhotosServeur->setText(TbPreferences["CheminPhotosServeur"]);
     ui->LE_CheminReglesServeur->setText(TbPreferences["CheminReglesServeur"]);
     ui->LE_AdresseServeur->setText(TbPreferences["AdresseServeur"]);
@@ -537,7 +538,7 @@ void F_Preferences::AfficherTousLesTableaux()
     ui->TbV_MembresPaiement->resizeColumnsToContents();
     ui->TbV_MembresPaiement->setColumnWidth(1, 0);
     ui->TbV_EmpruntType->resizeColumnsToContents();
-    ui->TbV_EmpruntType->setColumnWidth(1, 0);
+    ui->TbV_EmpruntType->setColumnWidth(2, 0);
     ui->TbV_InfoLieux->resizeColumnsToContents();
     ui->TbV_InfoLieux->setColumnWidth(1, 0);
     ui->TbV_JeuxEmplacement->resizeColumnsToContents();
@@ -687,10 +688,7 @@ void F_Preferences::on_Bt_ValiderCode_clicked()
     {
         ui->Lb_VerifCode->setText("<font color=green> Le nouveau mot de passe est confirmé. </font>");
 
-        RequeteMDP.prepare("UPDATE preferences SET CodeAdmin=:CodeAdmin WHERE IdPreferences = 1");
-        RequeteMDP.bindValue(":CodeAdmin", ui->LE_ConfirmerCode->text());
-        RequeteMDP.exec();
-        RequeteMDP.next();
+        SauverPreference("CodeAdmin", ui->LE_ConfirmerCode->text());
     }
     else
     {
@@ -827,7 +825,7 @@ void F_Preferences::on_Bt_SupprimerMembreTitre_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -908,7 +906,7 @@ void F_Preferences::on_Bt_SupprimerMembreType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -980,7 +978,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1053,7 +1051,7 @@ void F_Preferences::on_Bt_SupprimerEmpruntType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1151,7 +1149,7 @@ void F_Preferences::on_Bt_SupprimerJeuxType_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdJeuxType, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdJeuxType, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1232,7 +1230,7 @@ void F_Preferences::on_Bt_SupprimerEtat_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1312,7 +1310,7 @@ void F_Preferences::on_Bt_SupprimerStatut_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdStatutJeux, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdStatutJeux, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1392,7 +1390,7 @@ void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(IdEmplacement, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(IdEmplacement, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1502,7 +1500,7 @@ void F_Preferences::on_Bt_SupprimerLieux_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1607,7 +1605,7 @@ void F_Preferences::on_Bt_SupprimerActivite_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;
@@ -1686,7 +1684,7 @@ void F_Preferences::on_Bt_SupprimerMotCle_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;

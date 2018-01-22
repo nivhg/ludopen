@@ -17,6 +17,7 @@
 #include "ui_f_retour.h"
 #include "fonctions_globale.h"
 #include "f_preferences.h"
+#include "f_paiement.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -78,7 +79,7 @@ F_Retour::F_Retour(QWidget *parent) :
    while(RequeteTypeEmprunt.next())
    {
        //on entre un nouveau Item au ComboBox avec le nom du type d'emprunt
-       TypeEmprunt=(RequeteTypeEmprunt.value(0).toString())+" ("+(RequeteTypeEmprunt.value(1).toString())+"jours)";
+       TypeEmprunt=(RequeteTypeEmprunt.value(0).toString())+" ("+(RequeteTypeEmprunt.value(1).toString())+" jours)";
        ui->CBx_TypeProlongation->addItem(TypeEmprunt);
    }
 
@@ -952,7 +953,7 @@ void F_Retour::on_Bt_Prolonger_clicked()
     int nResultat (0);
     // Création de la fenêtre du paiement
     F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(RequeteCredit.value(0).toInt(),this->MembreActif);
+    FenetrePaiement.AfficherPaiement(RequeteCredit.value(0).toInt(),this->MembreActif,true,VENTILATION_PRET);
     nResultat = FenetrePaiement.exec();
     if (nResultat==1)
     {

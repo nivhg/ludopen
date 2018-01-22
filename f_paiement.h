@@ -6,6 +6,9 @@
 #include <QAbstractButton>
 #include <QtWidgets>
 
+#define VENTILATION_PRET 1
+#define VENTILATION_MALLES 5
+
 namespace Ui
 {
     class F_Paiement;
@@ -22,7 +25,7 @@ public:
     ~F_Paiement();
     /** @brief affiche les informations du paiement
      */
-    void AfficherPaiement(unsigned int Somme,QString CodeMembre);
+    void AfficherPaiement(unsigned int Somme,QString CodeMembre,bool EurosOuCredits, int TypeVentilation);
 
 private slots:
     void on_Bt_AjouterCartePaiement_clicked();
@@ -48,6 +51,8 @@ private:
     QString MembreActif;
     //! Prix unitaire du crédit
     int PrixCredit ;
+    //! Type de ventilation
+    int TypeVentilation;
 };
 
 #endif // F_PAIEMENT_H

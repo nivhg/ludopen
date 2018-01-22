@@ -36,10 +36,10 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->setupUi(this);
 
     // Création du tableau pour afficher les réservations
-    ui->TbW_ListeReservations->setModel(&ModeleReservations) ;
-    ui->TbW_ListeReservations->setEditTriggers(QAbstractItemView::SelectedClicked);
+    ui->Tv_ListeReservations->setModel(&ModeleReservations) ;
+    ui->Tv_ListeReservations->setEditTriggers(QAbstractItemView::SelectedClicked);
     //Affiche les noms des colonnes dans le tableau
-    ui->TbW_ListeReservations->horizontalHeader()->setVisible(true);
+    //ui->Tv_ListeReservations->horizontalHeader()->setVisible(true);
     // Création des caractétiques du tableau : Nom des colonnes
     ModeleReservations.setHorizontalHeaderItem( 0, new QStandardItem( "" ) ) ;  // case à cocher pour la suppression
     ModeleReservations.setHorizontalHeaderItem( 1, new QStandardItem( "Code jeu" ) ) ;
@@ -53,24 +53,25 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Lieu de retrait" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Confirmé?" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 12, new QStandardItem( "Type de malle" ) ) ;
 
     // Règle la largeur des colonnes
-    /*ui->TbW_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
-    ui->TbW_ListeReservations->setColumnWidth( 1, 60 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 2, 200 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 3, 100 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 4, 150 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 5, 150 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 6, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 7, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 8, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 9, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 11, 120 ) ;
-    ui->TbW_ListeReservations->setColumnWidth( 12, 60 ) ;*/
-    ui->TbW_ListeReservations->resizeColumnsToContents();
+    /*ui->Tv_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
+    ui->Tv_ListeReservations->setColumnWidth( 1, 60 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 2, 200 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 3, 100 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 4, 150 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 5, 150 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 6, 120 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 7, 120 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 8, 120 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 9, 120 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 11, 120 ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 12, 60 ) ;*/
+    //ui->Tv_ListeReservations->resizeColumnsToContents();
 
     // Permettre le tri des colonnes
-    ui->TbW_ListeReservations->setSortingEnabled(true);
+    ui->Tv_ListeReservations->setSortingEnabled(true);
 
     //Initialisation de la liste de lieux de réservation et de retrait
     //this->MiseAJourStatutJeu() ;
@@ -256,14 +257,17 @@ bool F_ListeReservations::AffichageListe()
     QStandardItem * item ;
 
     // Création de la requête pour filtrer les réservations
-    sRequeteSELECTFROM = "SELECT CodeJeu,NomJeu,StatutJeu,idReservation, Membres_IdMembre,"
-            "Jeux_IdJeux, DateReservation, Nom, Prenom, "
-            "DatePrevuEmprunt, DatePrevuRetour, JeuEmprunte, JeuMisDeCote, ConfirmationReservation, "
-            "L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait FROM membres,statutjeux,jeux,reservation "
-            "LEFT JOIN lieux as L1 ON L1.IdLieux=Lieux_IdLieuxReservation LEFT JOIN lieux as L2 ON "
+    sRequeteSELECTFROM = "SELECT CodeJeu,NomJeu,StatutJeu,idReservation, r.Membres_IdMembre,Jeux_IdJeux, "
+            "r.DateReservation, Nom, Prenom, r.DatePrevuEmprunt, r.DatePrevuRetour, JeuEmprunte, JeuMisDeCote, "
+            "ConfirmationReservation, L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait, "
+            "IFNULL(TypeEmprunt,'Aucune') as TypeEmprunt, IdMalle "
+            "FROM membres,statutjeux,jeux,reservation as r "
+            "LEFT JOIN lieux as L1 ON L1.IdLieux=Lieux_IdLieuxReservation "
+            "LEFT JOIN malles as m ON m.IdMalle=r.Malles_IdMalle "
+            "LEFT JOIN typeemprunt as t ON t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt LEFT JOIN lieux as L2 ON "
             "L2.IdLieux=Lieux_IdLieuxRetrait ";
     sRequeteWHERE = "WHERE IdJeux=Jeux_IdJeux AND IdStatutJeux=StatutJeux_IdStatutJeux AND "
-            "IdMembre=Membres_IdMembre AND " ;
+            "IdMembre=r.Membres_IdMembre AND " ;
 
     if( ui->ChBx_DateReservation->isChecked() )
     {       
@@ -352,6 +356,8 @@ bool F_ListeReservations::AffichageListe()
                  ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
             ModeleReservations.setItem( i, 11, new QStandardItem(
                  (ObtenirValeurParNom(RequeteDesReservations,"ConfirmationReservation").toString()=="1")?"OUI":"NON") );
+            ModeleReservations.setItem( i, 12, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"TypeEmprunt").toString() ) );
             i++ ;
         }
     }
@@ -368,12 +374,13 @@ bool F_ListeReservations::AffichageListe()
 void F_ListeReservations::on_Bt_RAZ_clicked()
 {
     ui-> CBx_LieuxDeReservation->clear() ;
+    ui->CBx_LieuxDeRetrait->clear() ;
+
     this->MaJLieux() ;
 
     ui->CBx_StatutJeu->clear() ;
     this->MiseAJourStatutJeu() ;
 
-    ui->CBx_LieuxDeRetrait->clear() ;
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
     ui->DtE_DateResa_Fin->setDate(QDate::currentDate());
@@ -399,10 +406,10 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
     //Vérification que la personne veut bien supprimer les réservations choisies
     if ( QMessageBox::information( this, "Suppression de réservations","Voulez vous vraiment supprimer toutes les réservations sélectionnées ?", "Supprimer", "Garder" ) == 0 )
     {
-        for (register int i (0) ; i < ui->TbW_ListeReservations->model()->columnCount() ; i++ )
+        for (register int i (0) ; i < ui->Tv_ListeReservations->model()->columnCount() ; i++ )
         {
             //Si le checkbox est "check" dans la liste des résa, on vire cette résa
-            if(ui->TbW_ListeReservations->model()->data( ui->TbW_ListeReservations->model()->index(i ,0), Qt::CheckStateRole).toBool() )
+            if(ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0), Qt::CheckStateRole).toBool() )
             {
                 //Préparation de la requête permettant la suppression dans la table reservation
                 RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
@@ -430,11 +437,11 @@ void F_ListeReservations::on_Bt_Exporter_clicked()
     fichier.open(QIODevice::WriteOnly);
 
     ecrire << "Nom, Prenom, Ville, Code Membre, Telephone, Email, Nombre de retard \r\n\r\n" ;
-    for(nNombreLigne = 0; nNombreLigne<ui->TbW_ListeReservations->model()->rowCount(); nNombreLigne++)
+    for(nNombreLigne = 0; nNombreLigne<ui->Tv_ListeReservations->model()->rowCount(); nNombreLigne++)
     {
-        for(nNombreColonne = 1; nNombreColonne<ui->TbW_ListeReservations->model()->columnCount(); nNombreColonne++)
+        for(nNombreColonne = 1; nNombreColonne<ui->Tv_ListeReservations->model()->columnCount(); nNombreColonne++)
         {
-            sCaractere = ui->TbW_ListeReservations->model()->data( ui->TbW_ListeReservations->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
+            sCaractere = ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index( nNombreLigne, nNombreColonne ) ).toString() ;
             // On rejete les valeurs à  caractère unique et on le remplace par un champs vide
             sCaractere.replace(" ", "\ ") ;
             if(sCaractere == "-" || sCaractere == "_" || sCaractere == ".")
@@ -536,11 +543,11 @@ void F_ListeReservations::on_CBx_Cotisation_currentIndexChanged(int index)
     this->AffichageListe() ;
 }
 
-void F_ListeReservations::on_TbW_ListeReservations_clicked(const QModelIndex &index)
+void F_ListeReservations::on_Tv_ListeReservations_clicked(const QModelIndex &index)
 {
 }
 
-void F_ListeReservations::on_TbW_ListeReservations_doubleClicked(const QModelIndex &index)
+void F_ListeReservations::on_Tv_ListeReservations_doubleClicked(const QModelIndex &index)
 {
     emit( this->Signal_DoubleClic_ListeMembres( this->VecteurListeReservations.at( index.row() ) ) ) ;
 }
@@ -548,7 +555,7 @@ void F_ListeReservations::on_TbW_ListeReservations_doubleClicked(const QModelInd
 void F_ListeReservations::SelectionnerReservation(int IdReservation)
 {
     int index=this->VecteurListeReservations.indexOf(IdReservation);
-    ui->TbW_ListeReservations->selectRow(index);
+    //ui->Tv_ListeReservations->selectRow(index);
 }
 
 void F_ListeReservations::on_CBx_LieuxDeRetrait_activated(int index)

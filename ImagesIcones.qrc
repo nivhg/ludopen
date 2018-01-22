@@ -37,5 +37,6 @@
         <file>Fleche_bas.png</file>
         <file>Fleche_haut.png</file>
         <file>Carton_rentrant.png</file>
+        <file>Calendrier.png</file>
     </qresource>
 </RCC>

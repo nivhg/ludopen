@@ -286,7 +286,7 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
             this->TbV_CLESTTEM->resizeColumnsToContents();
             this->TbV_CLESTTEM->setColumnWidth(1,0);
             this->TbV_CLESTTEM->selectRow(0);
-            int ret=this->pPopUpCLESTTEM->Modifier(0, 12, this->TbV_CLESTTEM);
+            int ret=this->pPopUpCLESTTEM->Modifier(0, 255, this->TbV_CLESTTEM);
             if(ret==0)
             {
                 return;

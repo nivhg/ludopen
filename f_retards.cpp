@@ -471,19 +471,23 @@ void F_Retards::on_Bt_Enregistrer_clicked()
 {
     QSqlQuery Requete ;
 
-    Requete.prepare( "UPDATE preferences SET SujetEmail=:Sujet, CorpsEmail=:Corps WHERE IdPreferences=1" ) ;
-    Requete.bindValue( ":Sujet", ui->LE_Sujet->text() ) ;
-    Requete.bindValue( ":Corps", ui->TE_Corps->toPlainText() ) ;
+    Requete.prepare( "UPDATE preferences SET Valeur=? WHERE NomChamps=?" ) ;
+    QVariantList valeurs;
+    valeurs << ui->LE_Sujet->text() << ui->TE_Corps->toPlainText();
+    Requete.addBindValue(valeurs);
 
+    QVariantList nomChamps;
+    nomChamps << "SujetEmail" << "CorpsEmail";
+    Requete.addBindValue(nomChamps);
 
-    if( Requete.exec() )
+    if( Requete.execBatch() )
     {
         ui->Bt_Enregistrer->setDisabled( true ) ;
         ui->Bt_Annuler->setDisabled( true ) ;
     }
     else
     {
-        qDebug() << " Erreur : F_Retards::on_Bt_Enregistrer_clicked() : " << Requete.lastQuery() ;
+        qDebug() << " Erreur : F_Retards::on_Bt_Enregistrer_clicked() : " << Requete.lastQuery()  << Requete.lastError();
     }
 }
 
