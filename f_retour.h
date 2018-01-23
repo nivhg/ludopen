@@ -17,6 +17,7 @@
 #include <QStandardItem>
 #include "f_paiement.h"
 #include "searchbox.h"
+#include "f_emprunt.h"
 
 namespace Ui {
     class F_Retour;
@@ -97,7 +98,7 @@ private slots:
 
     void on_Tv_JeuxEmprunte_clicked(const QModelIndex &index);
 
-    void on_TbV_JeuxReserve_clicked(const QModelIndex &index);
+    void on_Tv_JeuxReserve_clicked(const QModelIndex &index);
 
     void on_bt_SuppReservation_clicked();
 
@@ -119,7 +120,7 @@ private:
     //! modèle du TableView des jeux empruntés
     QStandardItemModel * ModelJeuEmpruntes;
     //! Amende calculée pour jours de retard
-    float Amende ;
+    //float Amende ;
     //! LineEdit SearchBox pour la recherche de membre
     SearchBox *SearchMembre;
 

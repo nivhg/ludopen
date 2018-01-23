@@ -4,12 +4,15 @@
 #include <QVariant>
 #include <QSqlQuery>
 #include <QSqlRecord>
+#include <QStandardItemModel>
+#include <QTreeView>
 
 QVariant ObtenirValeurParNom(QSqlQuery requete,QString NomChamps);
 bool EstCeURL(QString chaine);
 bool EstCeNomFichierContient(QString CheminFichier,QString achercher);
 int ExecuterScriptSql(const QString & nomFichier);
 QString getLastExecutedQuery(const QSqlQuery& query);
+void resizeColumnsToContents( QStandardItemModel *Modele,QTreeView *TreeView );
 
 #define COMPUTE_BUILD_YEAR \
     ( \

@@ -58,3 +58,11 @@ QString getLastExecutedQuery(const QSqlQuery& query)
  }
  return str;
 }
+
+void resizeColumnsToContents( QStandardItemModel *Modele,QTreeView *TreeView )
+{
+    for(int i=0;i<Modele->columnCount();i++)
+    {
+        TreeView->resizeColumnToContents(i);
+    }
+}

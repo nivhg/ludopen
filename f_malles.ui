@@ -181,7 +181,7 @@ de retour :</string>
         <enum>Qt::LeftToRight</enum>
        </property>
        <property name="text">
-        <string>Modifier/Emprunter</string>
+        <string>Emprunter</string>
        </property>
        <property name="icon">
         <iconset resource="ImagesIcones.qrc">

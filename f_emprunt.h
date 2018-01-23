@@ -58,10 +58,12 @@ public:
                             int iPrixEmprunt,QString sNomJeu,bool bJeuSpecial);
     /** @brief Affiche les jeux empruntés par le membre
      */
-    void AfficherJeuxEnEmprunt();
+    static void AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
+                               bool bRetour,QString *NbreJeuxRendre,QString *AmendeAPayer);
     /** @brief Affiche les jeux réservés par le membre
      */
-    void AfficherJeuxReserve();
+    static void AfficherJeuxReserve(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
+                              bool bRetour);
     /** @brief Affiche les jeux réservés par le membre dans une malle
      */
     void AfficherMalle(int iIdMalle);

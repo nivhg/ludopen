@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1062</width>
+    <width>1105</width>
     <height>650</height>
    </rect>
   </property>
@@ -29,79 +29,257 @@
    <property name="spacing">
     <number>2</number>
    </property>
-   <item row="0" column="0" rowspan="4">
-    <widget class="QFrame" name="frame_7">
-     <property name="maximumSize">
-      <size>
-       <width>400</width>
-       <height>16777215</height>
-      </size>
-     </property>
+   <item row="2" column="3">
+    <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
-      <property name="spacing">
-       <number>2</number>
-      </property>
       <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBox">
+       <widget class="QGroupBox" name="groupBox_5">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>400</width>
           <height>0</height>
          </size>
         </property>
-        <property name="title">
-         <string>Recherche</string>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QLabel" name="Lb_CodeMembre">
-           <property name="text">
-            <string>Par membre (Nom,prénom ou code) :</string>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox  {color: red;}
+QGroupBox::indicator {
+    width: 32px;
+    height: 32px;
+}
+QGroupBox::indicator:checked {
+    image: url(:/Reservations.png);
+}</string>
+        </property>
+        <property name="title">
+         <string>Jeux réservés par le &amp;membre</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item row="4" column="1">
+          <widget class="QTreeView" name="Tv_JeuxReserve">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>150</height>
+            </size>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
-          <layout class="QHBoxLayout" name="Hlay11"/>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="Lb_CodeJeu">
-           <property name="text">
-            <string>Par jeu (Code ou Nom) :</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0">
-          <layout class="QHBoxLayout" name="HLay9"/>
+         <item row="2" column="1" rowspan="2">
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label">
+             <property name="text">
+              <string>Jeux/Malles réservés par ce membre :</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCommandLinkButton" name="bt_SuppReservation">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>15</width>
+               <height>15</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QGroupBox" name="groupBox_2">
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2" rowspan="3">
+    <widget class="QFrame" name="frame_5">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_11">
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox  {color: green;}
+QGroupBox::indicator {
+    width: 32px;
+    height: 32px;
+}
+QGroupBox::indicator:checked {
+    image: url(:/Download.png);
+}</string>
+        </property>
         <property name="title">
-         <string>Membre</string>
+         <string>&amp;Jeux empruntés</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="2" column="1">
+          <widget class="QPushButton" name="Bt_ToutSelectionner">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Tout sélectionner</string>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="Lb_AmendeAPayer">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QTreeView" name="Tv_JeuxEmprunte">
+           <property name="editTriggers">
+            <set>QAbstractItemView::NoEditTriggers</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Minimum</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>10</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="3" rowspan="2">
+    <widget class="QFrame" name="frame_3">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_9">
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox_2">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox  {color: cyan;}
+QGroupBox::indicator {
+    width: 32px;
+    height: 32px;
+}
+QGroupBox::indicator:checked {
+    image: url(:/Adherent_info.png);
+}</string>
+        </property>
+        <property name="title">
+         <string>Mem&amp;bre</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
           <layout class="QFormLayout" name="formLayout">
+           <property name="topMargin">
+            <number>10</number>
+           </property>
            <item row="7" column="0" colspan="2">
             <layout class="QHBoxLayout" name="HLay">
              <property name="spacing">
@@ -109,6 +287,12 @@
              </property>
              <item>
               <widget class="QLabel" name="Lb_JeuxMax">
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Nb maxi de jeux empruntables :</string>
                </property>
@@ -119,11 +303,20 @@
              </item>
              <item>
               <widget class="QLineEdit" name="LE_JeuxMaxARemplir">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
                <property name="maximumSize">
                 <size>
                  <width>50</width>
                  <height>16777215</height>
                 </size>
+               </property>
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
                </property>
                <property name="readOnly">
                 <bool>true</bool>
@@ -139,6 +332,12 @@
              </property>
              <item>
               <widget class="QLabel" name="Lb_NbreJeuxRendre">
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Nb de jeux à rendre :</string>
                </property>
@@ -163,6 +362,12 @@
             <layout class="QHBoxLayout" name="HLay2">
              <item>
               <widget class="QLabel" name="Lb_Credit">
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Nb de crédits restants :</string>
                </property>
@@ -194,6 +399,12 @@
                <height>0</height>
               </size>
              </property>
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Nom :</string>
              </property>
@@ -204,6 +415,9 @@
            </item>
            <item row="0" column="1">
             <widget class="QLineEdit" name="LE_NomARemplir">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
              <property name="readOnly">
               <bool>true</bool>
              </property>
@@ -218,6 +432,12 @@
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="Lb_Prenom">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
              <property name="text">
               <string>Prénom :</string>
              </property>
@@ -231,6 +451,8 @@
              <property name="font">
               <font>
                <pointsize>10</pointsize>
+               <weight>50</weight>
+               <bold>false</bold>
               </font>
              </property>
              <property name="text">
@@ -242,6 +464,12 @@
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
               <widget class="QLabel" name="Lb_Remarques">
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Remarques sur ce membre :</string>
                </property>
@@ -333,6 +561,12 @@
                  <height>40</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Cotisation </string>
                </property>
@@ -355,6 +589,12 @@
                  <height>40</height>
                 </size>
                </property>
+               <property name="font">
+                <font>
+                 <weight>50</weight>
+                 <bold>false</bold>
+                </font>
+               </property>
                <property name="text">
                 <string>Date</string>
                </property>
@@ -370,400 +610,427 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1" rowspan="4">
-    <widget class="QFrame" name="frame_5">
+   <item row="0" column="0">
+    <widget class="QFrame" name="frame_2">
      <property name="minimumSize">
       <size>
-       <width>400</width>
+       <width>0</width>
        <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>200</height>
       </size>
      </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0">
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
-      <property name="spacing">
-       <number>2</number>
-      </property>
-      <item row="15" column="0" rowspan="2" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_8">
-        <item>
-         <widget class="QLabel" name="Lb_JeuxARendre">
-          <property name="text">
-           <string>Jeux à rendre :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="Bt_ToutSelectionner">
-          <property name="text">
-           <string>Tout sélectionner</string>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="12" column="0" colspan="2">
-       <widget class="QTableView" name="TbV_JeuxReserve">
-        <property name="maximumSize">
+     <layout class="QGridLayout" name="gridLayout_8">
+      <item row="0" column="0">
+       <widget class="QGroupBox" name="groupBox">
+        <property name="minimumSize">
          <size>
-          <width>16777215</width>
-          <height>150</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
-       </widget>
-      </item>
-      <item row="16" column="1">
-       <widget class="QLabel" name="Lb_AmendeAPayer">
         <property name="font">
          <font>
           <weight>75</weight>
           <bold>true</bold>
          </font>
         </property>
-        <property name="text">
-         <string/>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox  {color: yellow;}
+QGroupBox::indicator {
+    width: 32px;
+    height: 32px;
+}
+QGroupBox::indicator:checked {
+    image: url(:/Postit.png);
+}</string>
         </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        <property name="title">
+         <string>Saisie</string>
         </property>
-       </widget>
-      </item>
-      <item row="11" column="0" colspan="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_5">
-        <item>
-         <widget class="QLabel" name="Lb_JeuxReserves">
-          <property name="text">
-           <string>Jeux réservés :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="bt_SuppReservation">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>15</width>
-            <height>15</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="17" column="0" colspan="2">
-       <widget class="QTreeView" name="Tv_JeuxEmprunte">
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QLabel" name="Lb_CodeMembre">
+           <property name="text">
+            <string>Par membre (Nom,prénom ou code) :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <layout class="QHBoxLayout" name="Hlay11"/>
+         </item>
+         <item row="6" column="0">
+          <layout class="QHBoxLayout" name="HLay9"/>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="Lb_CodeJeu">
+           <property name="text">
+            <string>Par jeu (Code ou Nom) :</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="2" rowspan="4">
-    <widget class="QFrame" name="frame_6">
+   <item row="1" column="0" rowspan="2">
+    <widget class="QFrame" name="frame_4">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
+      <enum>QFrame::Raised</enum>
      </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
-      <property name="spacing">
-       <number>2</number>
-      </property>
-      <item row="15" column="0" colspan="2">
-       <widget class="QCommandLinkButton" name="Bt_RendreJeu">
-        <property name="enabled">
-         <bool>false</bool>
+     <layout class="QGridLayout" name="gridLayout_10">
+      <item row="0" column="1">
+       <widget class="QGroupBox" name="groupBox_6">
+        <property name="font">
+         <font>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
+        <property name="styleSheet">
+         <string notr="true">QGroupBox  {color: white;}
+QGroupBox::indicator {
+    width: 32px;
+    height: 32px;
+}
+QGroupBox::indicator:checked {
+    image: url(:/De_6_faces.png);
+}</string>
         </property>
-        <property name="text">
-         <string>Rendre le jeu</string>
+        <property name="title">
+         <string>Jeu</string>
         </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Rendre.png</normaloff>:/Rendre.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0" colspan="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_6">
-        <item>
-         <widget class="QLabel" name="Lb_TypeProlongation">
-          <property name="text">
-           <string>Type de prolongation :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="CBx_TypeProlongation"/>
-        </item>
-       </layout>
-      </item>
-      <item row="15" column="2">
-       <widget class="QCommandLinkButton" name="Bt_Prolonger">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="cursor">
-         <cursorShape>PointingHandCursor</cursorShape>
-        </property>
-        <property name="text">
-         <string>Prolonger l'emprunt</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/RAZ.png</normaloff>:/RAZ.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="14" column="0" colspan="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_4">
-        <item>
-         <widget class="QLabel" name="Lb_Prolonger">
-          <property name="text">
-           <string>Prolonger jusqu'au </string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDateEdit" name="DtE_Prolonger">
-          <property name="calendarPopup">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="10" column="0" colspan="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_3">
-        <item>
-         <widget class="QLabel" name="Lb_Caution">
-          <property name="text">
-           <string>Caution à rendre si jeu rendu en bon état :</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="LE_Caution">
-          <property name="maximumSize">
-           <size>
-            <width>50</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_8">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0" colspan="3">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <widget class="QLabel" name="Lb_NomJeu">
-          <property name="text">
-           <string>Nom du jeu à rendre: </string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="LE_NomJeuARemplir">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="4" column="0" colspan="3">
-       <widget class="QTextEdit" name="TxE_ContenuBoite">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>300</height>
-         </size>
-        </property>
-        <property name="readOnly">
+        <property name="checkable">
          <bool>true</bool>
         </property>
-       </widget>
-      </item>
-      <item row="11" column="0" colspan="3">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="Lb_Remarque">
-          <property name="text">
-           <string>Remarques sur le jeu :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer_2">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="Bt_ValiderRemarqueJeu">
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>15</width>
-            <height>15</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="Bt_AnnulerRemarqueJeu">
-          <property name="maximumSize">
-           <size>
-            <width>30</width>
-            <height>30</height>
-           </size>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>15</width>
-            <height>15</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="12" column="0" colspan="3">
-       <widget class="QTextEdit" name="TxE_RemarquesJeu">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>150</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="2">
-       <widget class="QLabel" name="Lb_Contenu">
-        <property name="text">
-         <string>Contenu de la boîte de ce jeu : </string>
-        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>2</number>
+         </property>
+         <property name="topMargin">
+          <number>2</number>
+         </property>
+         <property name="rightMargin">
+          <number>2</number>
+         </property>
+         <property name="bottomMargin">
+          <number>2</number>
+         </property>
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item row="13" column="0" colspan="2">
+          <widget class="QCommandLinkButton" name="Bt_RendreJeu">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="text">
+            <string>Rendre le jeu</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/Rendre.png</normaloff>:/Rendre.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="11" column="0" colspan="3">
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <widget class="QLabel" name="Lb_TypeProlongation">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Type de prolongation :</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QComboBox" name="CBx_TypeProlongation"/>
+           </item>
+          </layout>
+         </item>
+         <item row="13" column="2">
+          <widget class="QCommandLinkButton" name="Bt_Prolonger">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="text">
+            <string>Prolonger l'emprunt</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/RAZ.png</normaloff>:/RAZ.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0" colspan="3">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="Lb_Prolonger">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Prolonger jusqu'au </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QDateEdit" name="DtE_Prolonger">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="calendarPopup">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="8" column="0" colspan="3">
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="Lb_Caution">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Caution à rendre si jeu rendu en bon état :</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LE_Caution">
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="topMargin">
+            <number>20</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="Lb_NomJeu">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Nom du jeu à rendre: </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="LE_NomJeuARemplir">
+             <property name="readOnly">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="2" column="0" colspan="3">
+          <widget class="QTextEdit" name="TxE_ContenuBoite">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>300</height>
+            </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="0" colspan="3">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <widget class="QLabel" name="Lb_Remarque">
+             <property name="font">
+              <font>
+               <weight>50</weight>
+               <bold>false</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Remarques sur le jeu :</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QCommandLinkButton" name="Bt_ValiderRemarqueJeu">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>15</width>
+               <height>15</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCommandLinkButton" name="Bt_AnnulerRemarqueJeu">
+             <property name="maximumSize">
+              <size>
+               <width>30</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>15</width>
+               <height>15</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="10" column="0" colspan="3">
+          <widget class="QTextEdit" name="TxE_RemarquesJeu">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>150</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="2">
+          <widget class="QLabel" name="Lb_Contenu">
+           <property name="font">
+            <font>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>Contenu de la boîte de ce jeu : </string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
