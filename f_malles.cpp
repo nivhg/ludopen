@@ -9,7 +9,6 @@ F_Malles::F_Malles(QWidget *parent) :
     this->ModeleMalle = new QStandardItemModel() ;
     //Affiche le nom de la fenêtre
     this->setWindowTitle("Calendrier des grands jeux");
-    ui->Bt_EmpruntResa->setIcon(QIcon());
 }
 
 F_Malles::~F_Malles()
@@ -23,8 +22,20 @@ F_Malles::~F_Malles()
  *  @param  Somme : Pris à payer en nombre de crédits , CodeMembre : code du membre qui emprunte
  *  @retval Valeurs de retour
  */
-void F_Malles::AfficherCalendrier()
+void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
 {
+    QDesktopWidget desk;
+    QRect screenres = desk.screenGeometry(0);
+    //this->setGeometry(QRect(screenres.x(),screenres.y(),screenres.width(),screenres.height()));
+    /*this->setWindowState(this->windowState() | Qt::WindowNoState);
+    this->setWindowState(this->windowState() | Qt::WindowActive);
+    this->setWindowState(this->windowState() | Qt::WindowMaximized);*/
+    if(ParentGeometry!=QRect())
+    {
+        this->setGeometry(ParentGeometry);
+    }
+    qDebug()<<this->geometry();
+    qDebug()<<this->maximumSize();
     int i;
     QStandardItem *item;
     // Calcul le dernier jour du mois
@@ -71,7 +82,7 @@ void F_Malles::AfficherCalendrier()
     }
     this->ModeleMalle->setRowCount(i) ;
     //Prépare le requête pour récupérer les grands jeux avec le type d'emprunt (malle), la date en cours
-    Requete.prepare("SELECT t.TypeEmprunt,me.Nom as NomMembre, m.IdMalle, Jeux_IdJeux,r.DatePrevuEmprunt as DateEmprunt,"
+    Requete.prepare("SELECT t.TypeEmprunt,me.Nom as NomMembre,me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,r.DatePrevuEmprunt as DateEmprunt,"
                     "DAY(r.DatePrevuEmprunt) as JourEmprunt,r.DatePrevuRetour as DateRetour,0 as emprunt FROM reservation as r "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
@@ -79,7 +90,7 @@ void F_Malles::AfficherCalendrier()
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(m.DatePrevuEmprunt)="+
                     QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(m.DatePrevuEmprunt)="+ui->CBx_Annee->currentText()+
-                    " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
+                    " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
                     "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt FROM emprunts as e "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
@@ -92,7 +103,7 @@ void F_Malles::AfficherCalendrier()
     {
         qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
+//    qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     int iCouleur=Qt::red;
     int iCptMalle=0;
     Requete.next();
@@ -192,6 +203,7 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
         ui->TbV_CalendrierMalles->setSelectionModel(selModel);
         ui->TbV_CalendrierMalles->setModel(this->ModeleMalle);
         QHash<QString, QVariant> list=vList[2].value<QHash<QString, QVariant> >();
+        //this->ModeleMalle->item(index.row(),index.column())->setToolTip(list["NomMembre"].toString()+" "+list["PrenomMembre"].toString()+"\nType de malle:"+list["TypeEmprunt"].toString());
         ui->Le_NomMembre->setText(list["NomMembre"].toString());
         ui->Le_NomMembre->setProperty("IdMalle",list["IdMalle"]);
         ui->Le_TypeEmprunt->setText(list["TypeEmprunt"].toString());
@@ -200,15 +212,13 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
         ui->Bt_SupprimerMalle->setEnabled(true);
         if(list["emprunt"].toBool())
         {
-            ui->Bt_EmpruntResa->setText("Emprunté");
-            ui->Bt_EmpruntResa->setIcon(QIcon(":/Valider.png"));
+            ui->Lb_EmpruntResa->setText("<img width=32 src="":/Valider.png"">Emprunté</img>");
             ui->Bt_EmprunterMalle->setEnabled(false);
             ui->Bt_SupprimerMalle->setEnabled(false);
         }
         else
         {
-            ui->Bt_EmpruntResa->setText("Réservé");
-            ui->Bt_EmpruntResa->setIcon(QIcon(":/Download.png"));
+            ui->Lb_EmpruntResa->setText("<img width=32 src="":/Download.png"">Réservé</img>");
             ui->Bt_EmprunterMalle->setEnabled(true);
             ui->Bt_SupprimerMalle->setEnabled(true);
         }
@@ -222,8 +232,7 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
         ui->DtE_Depart->clear();
         ui->DtE_Retour->clear();
         ui->Bt_SupprimerMalle->setEnabled(false);
-        ui->Bt_EmpruntResa->setText("");
-        ui->Bt_EmpruntResa->setIcon(QIcon());
+        ui->Lb_EmpruntResa->setText("");
     }
 }
 

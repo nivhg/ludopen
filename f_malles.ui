@@ -99,6 +99,9 @@
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QTableView" name="TbV_CalendrierMalles">
+     <property name="styleSheet">
+      <string notr="true">QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }</string>
+     </property>
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
      </property>
@@ -172,6 +175,46 @@ de retour :</string>
    </item>
    <item row="4" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="1">
+      <widget class="QCommandLinkButton" name="Bt_SupprimerMalle">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Supprimer</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="Lb_TypeEmprunt">
+       <property name="maximumSize">
+        <size>
+         <width>120</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Type d'emprunt</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLineEdit" name="Le_TypeEmprunt">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QCommandLinkButton" name="Bt_EmprunterMalle">
        <property name="enabled">
@@ -189,53 +232,20 @@ de retour :</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
-      <widget class="QLineEdit" name="Le_TypeEmprunt">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QCommandLinkButton" name="Bt_SupprimerMalle">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Supprimer</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ImagesIcones.qrc">
-         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="2">
-      <widget class="QCommandLinkButton" name="Bt_EmpruntResa">
-       <property name="enabled">
-        <bool>false</bool>
+      <widget class="QLabel" name="Lb_EmpruntResa">
+       <property name="styleSheet">
+        <string notr="true">border: 1px solid;
+border-color: red;</string>
        </property>
        <property name="text">
         <string/>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="Lb_TypeEmprunt">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
        </property>
-       <property name="text">
-        <string>Type d'emprunt</string>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>

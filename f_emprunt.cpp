@@ -351,7 +351,7 @@ void F_Emprunt::ActualiserJeu()
 {
     if (this->JeuActif != "")
     {
-        SearchJeux->setText(this->JeuActif);
+        SearchJeux->setCurrentText(this->JeuActif);
         on_LE_SearchJeux_jeuTrouve();
     }
 }
@@ -1171,7 +1171,7 @@ void F_Emprunt::on_LE_CodeJeu_returnPressed()
 
 void F_Emprunt::on_LE_SearchMembre_MembreTrouve()
 {
-    this->AfficherMembre(SearchMembre->text());
+    this->AfficherMembre(SearchMembre->currentText());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1294,7 +1294,7 @@ void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
     //ui->Tv_JeuxReserves->selectRow(index.row());
     ui->Bt_SupprimerReservation->setEnabled(true);
     //Met le code du jeu sellectionné dans le line édit du code du membre
-    SearchJeux->setText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
+    SearchJeux->setCurrentText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
     //clic sur la recherche du jeu
     on_LE_SearchJeux_jeuTrouve();
 }
@@ -2137,10 +2137,10 @@ void F_Emprunt::on_Bt_AnnulerRemarques_clicked()
 
 void F_Emprunt::on_LE_SearchJeux_returnPressed()
 {
-    if(SearchJeux->text()!="")
+    if(SearchJeux->currentText()!="")
     {
         on_Bt_Ajouter_clicked();
-        SearchJeux->setText("");
+        SearchJeux->setCurrentText("");
     }
 }
 
@@ -2176,7 +2176,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     }
 
     //Récupère le code du jeu qui a été saisi
-    this->JeuActif= SearchJeux->text();
+    this->JeuActif= SearchJeux->currentText();
 
     //Si le code entré est nul
     if(this->JeuActif=="")
@@ -2455,7 +2455,7 @@ void F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked()
 void F_Emprunt::on_Bt_CalendrierMalles_clicked()
 {
     pMalles->setWindowModality(Qt::NonModal);
-    pMalles->AfficherCalendrier();
+    pMalles->AfficherCalendrier(this->geometry());
     int nResultat (0);
 
     nResultat = pMalles->exec();

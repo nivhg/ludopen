@@ -21,7 +21,7 @@ class F_Malles : public QDialog
 
 public:
     explicit F_Malles(QWidget *parent = 0);
-    void AfficherCalendrier();
+    void AfficherCalendrier(QRect ParentGeometry);
     ~F_Malles();
 
 private slots:
@@ -43,7 +43,6 @@ private:
     Ui::F_Malles *ui;
     //! Tableau associatif pour stocker la table TypeMalle
     QStandardItemModel * ModeleMalle;
-    //! Pointeur vers la fenêtre de calendrier des malles
 };
 
 #endif // F_MALLES_H

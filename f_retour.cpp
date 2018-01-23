@@ -270,7 +270,7 @@ void F_Retour:: EmprunterJeux()
  */
 void F_Retour::ActualiserMembre()
 {
-    SearchMembre->setText(this->MembreActif);
+    SearchMembre->setCurrentText(this->MembreActif);
     AfficherMembre();
 }
 
@@ -292,7 +292,7 @@ void F_Retour::ActualiserListeEmprunteurs()
  */
 void F_Retour::ActualiserJeu()
 {
-    SearchJeux->setText(this->JeuActif);
+    SearchJeux->setCurrentText(this->JeuActif);
     on_LE_SearchJeux_returnPressed();
 }
 
@@ -310,7 +310,7 @@ void F_Retour::AfficherMembre()
     {
         return;
     }
-    SearchMembre->setText(this->MembreActif);
+    SearchMembre->setCurrentText(this->MembreActif);
     ui->LE_NbreJeuxRendre->setText("0");
 //    this->Amende = 0 ;
 
@@ -621,7 +621,7 @@ void F_Retour::CalculerCreditsRestants()
  */
 void F_Retour::ViderJeu()
 {
-    SearchJeux->setText("");
+    SearchJeux->setCurrentText("");
     ui->LE_NomJeuARemplir->setText("");
     ui->TxE_ContenuBoite->setText("");
     ui->LE_Caution->setText("");
@@ -672,7 +672,7 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
 {
     unsigned int LigneTableau (0);
     LigneTableau=index.row();
-    SearchJeux->setText(this->ModelJeuEmpruntes->index(LigneTableau,1).data().toString());
+    SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(LigneTableau,1).data().toString());
     // Affiche les infos du jeu sélectionné
     on_LE_SearchJeux_returnPressed();
 }
@@ -782,7 +782,7 @@ void F_Retour::on_Bt_Prolonger_clicked()
 void F_Retour::on_LE_SearchMembre_returnPressed()
 {
    // Actualise l'attribut MembreActif avec le code du membre que l'on affiche
-   this->MembreActif=SearchMembre->text();
+   this->MembreActif=SearchMembre->currentText();
    //Affiche les informations du membre
    this->AfficherMembre();
 }
@@ -793,7 +793,7 @@ void F_Retour::on_LE_SearchMembre_returnPressed()
 void F_Retour::on_LE_SearchJeux_returnPressed()
 {
     //Récupère le code du jeu qui a été saisi
-    QString CodeJeu= SearchJeux->text();
+    QString CodeJeu= SearchJeux->currentText();
 
     //Vérification que le jeu est bien à rendre
     QSqlQuery RequeteStatut ;
@@ -831,7 +831,7 @@ void F_Retour::on_LE_SearchJeux_returnPressed()
     }
     else
     {
-        if (SearchJeux->text()!="")
+        if (SearchJeux->currentText()!="")
         {
             QMessageBox::information(this,"Jeu non emprunté","Ce jeu n'a pas été emprunté.\nVous ne pouvez pas le rendre.","Ok");
         }

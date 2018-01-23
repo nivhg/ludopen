@@ -41,11 +41,11 @@
 #ifndef SEARCHBOX_H
 #define SEARCHBOX_H
 
-#include <QLineEdit>
+#include <QComboBox>
 
 class Suggest;
 
-class SearchBox: public QLineEdit
+class SearchBox: public QComboBox
 {
     Q_OBJECT
 
@@ -57,9 +57,11 @@ signals:
     /** @brief Signal emit à la fin d'une suggestion
     */
     void SignalSuggestionFini();
+    void SignalMousePressEvent();
 
 private:
     Suggest *completer;
+    void mousePressEvent(QMouseEvent* event);
 };
 
 #endif // SEARCHBOX_H

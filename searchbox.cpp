@@ -45,7 +45,7 @@
 #include "suggest.h"
 
 
-SearchBox::SearchBox(QWidget *parent): QLineEdit(parent)
+SearchBox::SearchBox(QWidget *parent): QComboBox(parent)
 {
     completer = new Suggest(this);
 
@@ -55,4 +55,10 @@ SearchBox::SearchBox(QWidget *parent): QLineEdit(parent)
 void SearchBox::MAJResults(QVector<QVector<QString> > Results, int NbRow2Display)
 {
     completer->MAJResults(&Results, NbRow2Display);
+}
+
+void SearchBox::mousePressEvent(QMouseEvent* event)
+{
+    emit(this->SignalMousePressEvent());
+    QComboBox::mousePressEvent(event);
 }

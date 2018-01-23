@@ -47,7 +47,7 @@
 
 using namespace std;
 
-class QLineEdit;
+class QComboBox;
 class QTimer;
 class QTreeWidget;
 
@@ -56,7 +56,7 @@ class Suggest : public QObject
     Q_OBJECT
 
 public:
-    Suggest(QLineEdit *parent = 0);
+    Suggest(QComboBox *parent = 0);
     ~Suggest();
     void MAJResults(QVector<QVector<QString> > *Results, int NbOfRows2Display=1);
     bool eventFilter(QObject *obj, QEvent *ev) Q_DECL_OVERRIDE;
@@ -69,7 +69,7 @@ public slots:
     void autoSuggest();
 
 private:
-    QLineEdit *editor;
+    QComboBox *editor;
     QTreeWidget *popup;
     QTimer *timer;
     QVector<QVector<QString> > Results;

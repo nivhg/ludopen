@@ -40,7 +40,7 @@
 
 #include "suggest.h"
 
-Suggest::Suggest(QLineEdit *parent): QObject(parent), editor(parent)
+Suggest::Suggest(QComboBox *parent): QObject(parent), editor(parent)
 {
     this->NbOfRows2Display=NbOfRows2Display;
     popup = new QTreeWidget;
@@ -60,15 +60,15 @@ Suggest::Suggest(QLineEdit *parent): QObject(parent), editor(parent)
 
     popup->installEventFilter(this);
 
-    connect(popup, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
-            SLOT(doneCompletion()));
+    connect(popup, SIGNAL(itemClicked(QTreeWidgetItem*,int)),SLOT(doneCompletion()));
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
     timer->setInterval(300);
     connect(timer, SIGNAL(timeout()), SLOT(autoSuggest()));
-    connect(editor, SIGNAL(textEdited(QString)), timer, SLOT(start()));
-
+    editor->setEditable(true);
+    connect(editor, SIGNAL(currentTextChanged(QString)), timer, SLOT(start()));
+    connect(parent, SIGNAL(SignalMousePressEvent()), SLOT(autoSuggest()));
 }
 
 Suggest::~Suggest()
@@ -150,15 +150,17 @@ void Suggest::showCompletion(const QVector<QVector<QString> > &Vector)
         item->setTextColor(1, color);*/
     }
     popup->setCurrentItem(popup->topLevelItem(0));
-    for(int j=0;j<NbOfRows2Display;j++)
+    /*for(int j=0;j<NbOfRows2Display;j++)
     {
         popup->resizeColumnToContents(j);
-    }
-    popup->adjustSize();
+    }*/
+    popup->setColumnWidth(0,300);
+    popup->resizeColumnToContents(1);
+    //popup->adjustSize();
     popup->setUpdatesEnabled(true);
 
     int h = popup->sizeHintForRow(0) * qMin(7, Vector.count()) + 3;
-    popup->resize(popup->width(), h);
+    popup->resize(450, h);
 
     popup->move(editor->mapToGlobal(QPoint(0, editor->height())));
     popup->setFocus();
@@ -172,14 +174,14 @@ void Suggest::doneCompletion(QString value)
     editor->setFocus();
     if(value != "")
     {
-        editor->setText(value);
+        editor->setCurrentText(value);
         popup->clear();
     }
     else
     {
         QTreeWidgetItem *item = popup->currentItem();
         if (item) {
-            editor->setText(item->text(SearchResults[0].length()-1));
+            editor->setCurrentText(item->text(SearchResults[0].length()-1));
             popup->clear();
         }
     }
@@ -189,56 +191,48 @@ void Suggest::doneCompletion(QString value)
 
 void Suggest::autoSuggest()
 {
-    QString str = editor->text();
+    QString str = editor->currentText();
     unsigned int i (0) ;
 
     //Remize à  zéro de du Vecteur SearchResults
     this->SearchResults.clear();
 
-    //Vérification que les champs sont bien remplis
-    //S'ils ne sont pas, remplis le Vecteur SearchResults avec le Vecteur VecteurMembre
-    if(str == "")
+    //On vérifie que la suite de lettres entrées dans LE_Nom correpondent aux Noms du vecteur VecteurMembre
+    //ou que la suite de chiffre entrées dans LE_Code correspondent aux CodeMembres du Vecteur Results
+    bool EstCeNumerique;
+    str.toInt(&EstCeNumerique);
+    // Si le texte saisie est un nombre
+    if( EstCeNumerique )
     {
-        this->SearchResults = this->Results ;
+        doneCompletion(str);
     }
-    else// Sinon on remplis le Vecteur VecteurRechercheMembre
+    else
     {
-        //On vérifie que la suite de lettres entrées dans LE_Nom correpondent aux Noms du vecteur VecteurMembre
-        //ou que la suite de chiffre entrées dans LE_Code correspondent aux CodeMembres du Vecteur Results
-        bool EstCeNumerique;
-        str.toInt(&EstCeNumerique);
-        // Si le texte saisie est un nombre
-        if( EstCeNumerique )
+        for(i = 0 ; i < this->Results.size() ; i++)
         {
-            doneCompletion(str);
+            // Retrait des accents pour pouvoir faire des recherches de membres avec accents
+            QString sNom=this->Results[i][0].toLower().replace(QRegExp("[éèë]"), "e");
+            sNom.replace(QRegExp("[à]"), "a");
+            QString sPrenom=this->Results[i][1].toLower().replace(QRegExp("[éèë]"), "e");
+            sPrenom.replace(QRegExp("[à]"), "a");
+            //Si le Nom, le prénom ou les 2 correspondent, on l'ajoute dans le vecteur SearchResults
+            if( sNom.indexOf( str.toLower() ) != string::npos )
+            {
+                this->SearchResults.push_back(Results[i]);
+            }
+            else if( sPrenom.indexOf( str.toLower() ) != string::npos )
+            {
+                this->SearchResults.push_back(Results[i]);
+            }
+        }
+        // Si le nom ou le prénom sont le seul résultat correct, on complète le champs
+        if(this->SearchResults.size()==1&&(this->SearchResults[0][0].toLower()==str.toLower()||this->SearchResults[0][1].toLower()==str.toLower()))
+        {
+            doneCompletion(this->SearchResults.at(0).at(SearchResults[0].length()-1));
         }
         else
         {
-            for(i = 0 ; i < this->Results.size() ; i++)
-            {
-                // Retrait des accents pour pouvoir faire des recherches de membres avec accents
-                QString sNom=this->Results[i][0].toLower().replace(QRegExp("[éèë]"), "e");
-                sNom.replace(QRegExp("[à]"), "a");
-                QString sPrenom=this->Results[i][1].toLower().replace(QRegExp("[éèë]"), "e");
-                sPrenom.replace(QRegExp("[à]"), "a");
-                //Si le Nom, le prénom ou les 2 correspondent, on l'ajoute dans le vecteur SearchResults
-                if( sNom.indexOf( str.toLower() ) != string::npos )
-                {
-                    this->SearchResults.push_back(Results[i]);
-                }
-                else if( sPrenom.indexOf( str.toLower() ) != string::npos )
-                {
-                    this->SearchResults.push_back(Results[i]);
-                }
-            }
-            if(this->SearchResults.size()==1)
-            {
-                doneCompletion(this->SearchResults.at(0).at(SearchResults[0].length()-1));
-            }
-            else
-            {
-                showCompletion(this->SearchResults);
-            }
+            showCompletion(this->SearchResults);
         }
     }
 }
