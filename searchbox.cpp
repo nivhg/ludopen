@@ -48,7 +48,6 @@
 SearchBox::SearchBox(QWidget *parent): QComboBox(parent)
 {
     completer = new Suggest(this);
-
     setFocus();
 }
 
@@ -59,6 +58,7 @@ void SearchBox::MAJResults(QVector<QVector<QString> > Results, int NbRow2Display
 
 void SearchBox::mousePressEvent(QMouseEvent* event)
 {
+    this->completer->editor->setCurrentText("");
     emit(this->SignalMousePressEvent());
     QComboBox::mousePressEvent(event);
 }

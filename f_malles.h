@@ -10,6 +10,7 @@
 
 #include "fonctions_globale.h"
 #include "f_preferences.h"
+#include "tableviewtooltipmodifier.h"
 
 namespace Ui {
 class F_Malles;
@@ -43,6 +44,9 @@ private:
     Ui::F_Malles *ui;
     //! Tableau associatif pour stocker la table TypeMalle
     QStandardItemModel * ModeleMalle;
+    QTableView *TbV_CalendrierMalles;
+    /*void mouseMoveEvent(QMouseEvent* event);
+    bool eventFilter(QObject *obj, QEvent *event);*/
 };
 
 #endif // F_MALLES_H

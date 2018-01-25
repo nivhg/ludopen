@@ -88,7 +88,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     ui->Hlay16->addWidget(SearchJeux);
 
     connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
-    connect(SearchJeux,SIGNAL(returnPressed()),this,SLOT(on_LE_SearchJeux_returnPressed()));
+    //connect(SearchJeux,SIGNAL(returnPressed()),this,SLOT(on_LE_SearchJeux_returnPressed()));
 
     QSqlQuery Requete;
     // On rend visible les composants de réservation de malle si on est dans l'onglet correspondant
@@ -1069,17 +1069,17 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
                 // Ligne en rouge si retard, sinon en vert
                 if ( DateDeRetourPrevue.daysTo( QDate::currentDate() ) < F_Preferences::ObtenirValeur("JourRetard").toInt() )
                 {  // Pas de retard
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,0),QColor(Qt::green), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,1),QColor(Qt::green), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,2),QColor(Qt::green), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,3),QColor(Qt::green), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,0),QColor(Qt::green), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,1),QColor(Qt::green), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,2),QColor(Qt::green), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,3),QColor(Qt::green), Qt::BackgroundColorRole);
                 }
                 else
                 {  // En retard
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,0),QColor(Qt::red), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,1),QColor(Qt::red), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,2),QColor(Qt::red), Qt::BackgroundColorRole);
-                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(NumeroLigne,3),QColor(Qt::red), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,0),QColor(Qt::red), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,1),QColor(Qt::red), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,2),QColor(Qt::red), Qt::BackgroundColorRole);
+                   ModeleJeuxEmpruntes->setData(ModeleJeuxEmpruntes->index(iCptTableView,3),QColor(Qt::red), Qt::BackgroundColorRole);
 
                    // Calculer l'amende à payer
                    int NbJours=DateDeRetourPrevue.daysTo( QDate::currentDate() );
@@ -1092,8 +1092,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
                    {
                        NbDeSemainesDeRetard = NbJours / JoursToleres ;
                    }
-                   Amende=Amende+
-                          F_Preferences::ObtenirValeur("PrixAmende").toFloat() * NbDeSemainesDeRetard ;
+                   Amende=Amende+F_Preferences::ObtenirValeur("PrixAmende").toFloat() * NbDeSemainesDeRetard ;
                    //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
                 }
                 NumeroLigne++;

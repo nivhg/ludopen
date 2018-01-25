@@ -62,6 +62,7 @@ signals:
 private:
     Suggest *completer;
     void mousePressEvent(QMouseEvent* event);
+    QComboBox parent;
 };
 
 #endif // SEARCHBOX_H

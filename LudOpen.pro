@@ -53,7 +53,8 @@ SOURCES += \
     majeur.cpp \
     f_malles.cpp \
     suggest.cpp \
-    searchbox.cpp
+    searchbox.cpp \
+    tableviewtooltipmodifier.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -93,7 +94,8 @@ HEADERS  += \
     majeur.h \
     f_malles.h \
     suggest.h \
-    searchbox.h
+    searchbox.h \
+    tableviewtooltipmodifier.h
 
 FORMS    += \
     f_statistiques.ui \

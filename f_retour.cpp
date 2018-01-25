@@ -670,11 +670,36 @@ void F_Retour::on_TxE_RemarquesJeu_textChanged()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
 {
-    unsigned int LigneTableau (0);
-    LigneTableau=index.row();
-    SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(LigneTableau,1).data().toString());
-    // Affiche les infos du jeu sélectionné
-    on_LE_SearchJeux_returnPressed();
+    // Si on a cliqué sur une case à cocher
+    if(this->ModelJeuEmpruntes->index(index.row(),index.column()).flags() & Qt::ItemIsUserCheckable==Qt::ItemIsUserCheckable)
+    {
+        bool checkedFound=false;
+        for(int i=0;i<ModelJeuEmpruntes->rowCount();i++)
+        {
+            if(ModelJeuEmpruntes->item(i,4)->checkState()==Qt::Checked)
+            {
+                checkedFound=true;
+            }
+        }
+        if(checkedFound)
+        {
+            ui->Bt_RendreJeu->setEnabled(true);
+            ui->Bt_Prolonger->setEnabled(true);
+        }
+        else
+        {
+            ui->Bt_RendreJeu->setEnabled(false);
+            ui->Bt_Prolonger->setEnabled(false);
+        }
+    }
+    else
+    {
+        unsigned int LigneTableau (0);
+        LigneTableau=index.row();
+        SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(LigneTableau,1).data().toString());
+        // Affiche les infos du jeu sélectionné
+        on_LE_SearchJeux_returnPressed();
+    }
 }
 
 
@@ -1129,5 +1154,10 @@ void F_Retour::on_bt_SuppReservation_clicked()
 
 void F_Retour::on_Bt_ToutSelectionner_clicked()
 {
-    ui->Tv_JeuxEmprunte->selectAll();
+    for(int i=0;i<ModelJeuEmpruntes->rowCount();i++)
+    {
+        ModelJeuEmpruntes->item(i,4)->setCheckState(Qt::Checked);
+    }
+    ui->Bt_RendreJeu->setEnabled(true);
+    ui->Bt_Prolonger->setEnabled(true);
 }

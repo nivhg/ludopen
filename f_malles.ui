@@ -14,6 +14,103 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="4" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_3">
+     <item row="0" column="0">
+      <widget class="QCommandLinkButton" name="Bt_EmprunterMalle">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Emprunter</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Panier.png</normaloff>:/Panier.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <widget class="QLabel" name="Lb_TypeEmprunt">
+       <property name="maximumSize">
+        <size>
+         <width>120</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>Type d'emprunt</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QLineEdit" name="Le_TypeEmprunt">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>200</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCommandLinkButton" name="Bt_SupprimerMalle">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>Supprimer</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QLabel" name="Lb_EmpruntResa">
+       <property name="styleSheet">
+        <string notr="true">border: 1px solid;
+border-color: red;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::RichText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QComboBox" name="CBx_Annee">
+     <item>
+      <property name="text">
+       <string>2018</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2019</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>2020</string>
+      </property>
+     </item>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QComboBox" name="CBx_Mois">
      <item>
@@ -78,51 +175,19 @@
      </item>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QComboBox" name="CBx_Annee">
-     <item>
-      <property name="text">
-       <string>2018</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2019</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2020</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QTableView" name="TbV_CalendrierMalles">
-     <property name="styleSheet">
-      <string notr="true">QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }</string>
-     </property>
-     <property name="selectionMode">
-      <enum>QAbstractItemView::SingleSelection</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="3">
-      <widget class="QLabel" name="Lb_Depart">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
+   <item row="1" column="0" colspan="2">
+    <layout class="QGridLayout" name="gL_CalendrierMalles">
+     <item row="0" column="0">
+      <widget class="QLabel" name="fake_label">
        <property name="text">
-        <string>Date et heure
-de départ :</string>
+        <string/>
        </property>
       </widget>
      </item>
+    </layout>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="6">
       <widget class="QLabel" name="Lb_Retour">
        <property name="maximumSize">
@@ -137,17 +202,17 @@ de retour :</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
-      <widget class="QDateTimeEdit" name="DtE_Depart">
-       <property name="enabled">
-        <bool>false</bool>
+     <item row="0" column="3">
+      <widget class="QLabel" name="Lb_Depart">
+       <property name="maximumSize">
+        <size>
+         <width>120</width>
+         <height>16777215</height>
+        </size>
        </property>
-      </widget>
-     </item>
-     <item row="0" column="7">
-      <widget class="QDateTimeEdit" name="DtE_Retour">
-       <property name="enabled">
-        <bool>false</bool>
+       <property name="text">
+        <string>Date et heure
+de départ :</string>
        </property>
       </widget>
      </item>
@@ -164,6 +229,13 @@ de retour :</string>
        </property>
       </widget>
      </item>
+     <item row="0" column="4">
+      <widget class="QDateTimeEdit" name="DtE_Depart">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="1" colspan="2">
       <widget class="QLineEdit" name="Le_NomMembre">
        <property name="enabled">
@@ -171,81 +243,10 @@ de retour :</string>
        </property>
       </widget>
      </item>
-    </layout>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="1">
-      <widget class="QCommandLinkButton" name="Bt_SupprimerMalle">
+     <item row="0" column="7">
+      <widget class="QDateTimeEdit" name="DtE_Retour">
        <property name="enabled">
         <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Supprimer</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ImagesIcones.qrc">
-         <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="Lb_TypeEmprunt">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Type d'emprunt</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QLineEdit" name="Le_TypeEmprunt">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QCommandLinkButton" name="Bt_EmprunterMalle">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
-       <property name="text">
-        <string>Emprunter</string>
-       </property>
-       <property name="icon">
-        <iconset resource="ImagesIcones.qrc">
-         <normaloff>:/Panier.png</normaloff>:/Panier.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="Lb_EmpruntResa">
-       <property name="styleSheet">
-        <string notr="true">border: 1px solid;
-border-color: red;</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::RichText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>

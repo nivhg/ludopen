@@ -6,9 +6,20 @@ F_Malles::F_Malles(QWidget *parent) :
     ui(new Ui::F_Malles)
 {
     ui->setupUi(this);
+    this->TbV_CalendrierMalles=new TableViewToolTipModifier(this);
+    this->TbV_CalendrierMalles->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->TbV_CalendrierMalles->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    ui->gL_CalendrierMalles->addWidget(this->TbV_CalendrierMalles,0,0);
     this->ModeleMalle = new QStandardItemModel() ;
+    connect(this->TbV_CalendrierMalles, SIGNAL( mouseClickItem(QModelIndex)), this, SLOT(on_TbV_CalendrierMalles_clicked(QModelIndex)));
+
     //Affiche le nom de la fenêtre
     this->setWindowTitle("Calendrier des grands jeux");
+/*    setMouseTracking(true);
+    ui->TbV_CalendrierMalles->installEventFilter(this);
+    ui->TbV_CalendrierMalles->setMouseTracking(true);
+    ui->TbV_CalendrierMalles->viewport()->setMouseTracking(true);*/
+
 }
 
 F_Malles::~F_Malles()
@@ -86,24 +97,24 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
                     "DAY(r.DatePrevuEmprunt) as JourEmprunt,r.DatePrevuRetour as DateRetour,0 as emprunt FROM reservation as r "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
-                    "LEFT JOIN membres as me ON m.Membres_IdMembre=me.IdMembre WHERE "+
+                    "LEFT JOIN membres as me ON r.Membres_IdMembre=me.IdMembre WHERE "+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(m.DatePrevuEmprunt)="+
-                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(m.DatePrevuEmprunt)="+ui->CBx_Annee->currentText()+
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(r.DatePrevuEmprunt)="+
+                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(r.DatePrevuEmprunt)="+ui->CBx_Annee->currentText()+
                     " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
                     "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt FROM emprunts as e "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
-                    "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
-                    "LEFT JOIN membres as me ON m.Membres_IdMembre=me.IdMembre WHERE "+
+                    "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=e.TypeEmprunt_IdTypeEmprunt "
+                    "LEFT JOIN membres as me ON e.Membres_IdMembre=me.IdMembre WHERE "+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(m.DateEmprunt)="+
-                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(m.DateEmprunt)="+ui->CBx_Annee->currentText()+") ORDER BY emprunt DESC");
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(e.DateEmprunt)="+
+                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(e.DateEmprunt)="+ui->CBx_Annee->currentText()+") ORDER BY emprunt DESC");
     //Exécute la requête
     if (!Requete.exec())
     {
         qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-//    qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
+    qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     int iCouleur=Qt::red;
     int iCptMalle=0;
     Requete.next();
@@ -121,6 +132,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
                 break;
             }
         }
+        int NumLigneJeu=i;
         // Si le jeu n'a pas été trouvé, on ne traite pas et on continue
         if(this->ModeleMalle->rowCount()==i)
         {
@@ -131,16 +143,19 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
             iCptMalle++;
             iIdMalleCourant=ObtenirValeurParNom(Requete,"IdMalle").toInt();
         }
-        item=new QStandardItem( QString::number(iCptMalle+1) );
-        // On affiche la couleur d'après dans l'enum Qt::GlobalColor
-        item->setBackground(static_cast<Qt::GlobalColor>(iCouleur+iCptMalle));
+        QString EmprunOuResa;
         // S'il s'agit d'un emprunt, on le barre
         if(ObtenirValeurParNom(Requete,"emprunt").toBool())
         {
-            QFont font=item->font();
-            font.setStrikeOut(true);
-            item->setFont(font);
+            EmprunOuResa="Emprunt de ";
         }
+        else
+        {
+            EmprunOuResa="Réservation de ";
+        }
+        item=new QStandardItem( QString::number(iCptMalle+1)+ " ("+EmprunOuResa.at(0)+")" );
+        // On affiche la couleur d'après dans l'enum Qt::GlobalColor
+        item->setBackground(static_cast<Qt::GlobalColor>(iCouleur+iCptMalle));
         // Si on est arrivé à la dernière couleur, on recommence
         if(iCouleur+iCptMalle==Qt::transparent)
         {
@@ -162,22 +177,28 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
         vListe.append(iPremiereColonne);
         vListe.append(iDerniereColonne);
         QSqlRecord record = Requete.record();
-        QHash<QString, QVariant> tmp;
+        QHash<QString, QVariant> list;
         for(int i=0; i < record.count(); i++)
         {
-            tmp[record.fieldName(i)] = record.value(i);
+            list[record.fieldName(i)] = record.value(i);
         }
-        vListe.append(tmp);
+        vListe.append(list);
         item->setData(vListe);
+        item->setData(QString(EmprunOuResa+list["NomMembre"].toString()+" "+
+                      list["PrenomMembre"].toString()+"\nType de malle: "+
+                list["TypeEmprunt"].toString()+"\nDate emprunt: "+list["DateEmprunt"].toDateTime().toString("dd/MM/yyyy hh:mm")+
+                "\nDate retour: "+list["DateRetour"].toDateTime().toString("dd/MM/yyyy hh:mm")),Qt::ToolTipRole);
         for(int j=0;j<iDerniereColonne;j++)
         {
-            this->ModeleMalle->setItem(i,iPremiereColonne+j,item);
+            qDebug()<<NumLigneJeu<<iPremiereColonne+j;
+            this->ModeleMalle->setItem(NumLigneJeu,iPremiereColonne+j,item);
             item=item->clone();
+            qDebug()<<item->data(Qt::ToolTipRole);
         }
     }while(Requete.next());
 
-    ui->TbV_CalendrierMalles->setModel(this->ModeleMalle);
-    ui->TbV_CalendrierMalles->resizeColumnsToContents();
+    this->TbV_CalendrierMalles->setModel(this->ModeleMalle);
+    this->TbV_CalendrierMalles->resizeColumnsToContents();
 }
 
 void F_Malles::on_CBx_Mois_currentIndexChanged(int index)
@@ -195,15 +216,14 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
     if(this->ModeleMalle->item(index.row(),index.column())!=0)
     {
         QVariantList vList=this->ModeleMalle->item(index.row(),index.column())->data().value<QVariantList> ();
-        QItemSelectionModel *selModel=ui->TbV_CalendrierMalles->selectionModel();
+        QItemSelectionModel *selModel=this->TbV_CalendrierMalles->selectionModel();
         for(int i=vList[0].toInt();i<vList[0].toInt()+vList[1].toInt();i++)
         {
             selModel->select(this->ModeleMalle->index(index.row(),i),QItemSelectionModel::Select);
         }
-        ui->TbV_CalendrierMalles->setSelectionModel(selModel);
-        ui->TbV_CalendrierMalles->setModel(this->ModeleMalle);
+        this->TbV_CalendrierMalles->setSelectionModel(selModel);
+        this->TbV_CalendrierMalles->setModel(this->ModeleMalle);
         QHash<QString, QVariant> list=vList[2].value<QHash<QString, QVariant> >();
-        //this->ModeleMalle->item(index.row(),index.column())->setToolTip(list["NomMembre"].toString()+" "+list["PrenomMembre"].toString()+"\nType de malle:"+list["TypeEmprunt"].toString());
         ui->Le_NomMembre->setText(list["NomMembre"].toString());
         ui->Le_NomMembre->setProperty("IdMalle",list["IdMalle"]);
         ui->Le_TypeEmprunt->setText(list["TypeEmprunt"].toString());
@@ -225,9 +245,9 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
     }
     else
     {
-        QItemSelectionModel *selModel=ui->TbV_CalendrierMalles->selectionModel();
+        QItemSelectionModel *selModel=this->TbV_CalendrierMalles->selectionModel();
         selModel->clear();
-        ui->TbV_CalendrierMalles->setSelectionModel(selModel);
+        this->TbV_CalendrierMalles->setSelectionModel(selModel);
         ui->Le_NomMembre->clear();
         ui->DtE_Depart->clear();
         ui->DtE_Retour->clear();
@@ -252,10 +272,30 @@ void F_Malles::on_Bt_SupprimerMalle_clicked()
 
 void F_Malles::on_Bt_EmprunterMalle_clicked()
 {
-    QItemSelectionModel *selModel=ui->TbV_CalendrierMalles->selectionModel();
+    QItemSelectionModel *selModel=this->TbV_CalendrierMalles->selectionModel();
     QVariantList vList=this->ModeleMalle->item(selModel->currentIndex().row(),selModel->currentIndex().column())
             ->data().value<QVariantList> ();
     QHash<QString, QVariant> list=vList[2].value<QHash<QString, QVariant> >();
     emit Signal_Clic_Emprunter(list["IdMalle"].toInt());
     this->close();
 }
+
+/*
+void F_Malles::mouseMoveEvent(QMouseEvent* event)
+{
+    qDebug() << event->pos();
+    QToolTip::hideText();
+    QWidget::mousePressEvent(event);
+}
+
+bool F_Malles::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == this->TbV_CalendrierMalles || obj == this->TbV_CalendrierMalles->viewport())
+    {
+        qDebug()<<event->type();
+        if (event->type() == QEvent::MouseMove)
+            qDebug() << "table mouse moveevent";
+    }
+    //return F_Malles::eventFilter(obj, event);
+}
+*/

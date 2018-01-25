@@ -61,6 +61,7 @@ public:
     void MAJResults(QVector<QVector<QString> > *Results, int NbOfRows2Display=1);
     bool eventFilter(QObject *obj, QEvent *ev) Q_DECL_OVERRIDE;
     void showCompletion(const QVector<QVector<QString> > &Vector);
+    QComboBox *editor;
 
 public slots:
 
@@ -69,7 +70,6 @@ public slots:
     void autoSuggest();
 
 private:
-    QComboBox *editor;
     QTreeWidget *popup;
     QTimer *timer;
     QVector<QVector<QString> > Results;
