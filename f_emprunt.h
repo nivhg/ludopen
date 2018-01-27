@@ -76,6 +76,9 @@ public:
     /** @brief Actualise les informations du membre
      */
     void ActualiserMembre();
+    /** @brief Actualise la liste des jeux
+     */
+    void ActualiserListeJeux();
     /** @brief Affiche l'état de la cotisation d'un membre
      */
     bool AfficherEtatCotisation(QString CodeMembre);
@@ -103,6 +106,12 @@ public:
 
     //! Affiche l'état de paiement de la malle
     void AfficherEtatPaiement();
+
+    //! Renvoie l'ID de la malle réservée sélectionnée
+    int get_MalleReserveeSelectionnee();
+
+    //! Renvoie l'ID de la malle empruntée sélectionnée
+    int get_MalleEmprunteeSelectionnee();
 
 private slots:
     void on_TxE_Remarques_textChanged();
@@ -144,6 +153,10 @@ private slots:
     void on_Bt_Reservation_clicked();
 
     void on_Bt_CalendrierMalles_clicked();
+
+    void on_DtE_Depart_editingFinished();
+
+    void on_DtE_Retour_editingFinished();
 
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);

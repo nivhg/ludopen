@@ -54,7 +54,8 @@ SOURCES += \
     f_malles.cpp \
     suggest.cpp \
     searchbox.cpp \
-    tableviewtooltipmodifier.cpp
+    tableviewtooltipmodifier.cpp \
+    f_imprimermalle.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -95,7 +96,8 @@ HEADERS  += \
     f_malles.h \
     suggest.h \
     searchbox.h \
-    tableviewtooltipmodifier.h
+    tableviewtooltipmodifier.h \
+    f_imprimermalle.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -126,7 +128,8 @@ FORMS    += \
     f_listereservations.ui \
     d_image.ui \
     d_ajoutsuppmodiffournisseursediteurs.ui \
-    f_malles.ui
+    f_malles.ui \
+    f_imprimermalle.ui
 
 VERSION = "2.00"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string

@@ -468,6 +468,8 @@ Cotisations</string>
     </property>
     <addaction name="Menu_Jeux_Imprimer_Etiquette"/>
     <addaction name="Menu_Jeux_Imprimer_Fiche_Complete"/>
+    <addaction name="Menu_Imprimer_Malle_Empruntee"/>
+    <addaction name="Menu_Imprimer_Malle_Reservee"/>
    </widget>
    <widget class="QMenu" name="menu_Edition">
     <property name="title">
@@ -513,6 +515,16 @@ Cotisations</string>
   <action name="actionAjouter_un_post_it">
    <property name="text">
     <string>Ajouter un post-it</string>
+   </property>
+  </action>
+  <action name="Menu_Imprimer_Malle_Reservee">
+   <property name="text">
+    <string>Imprimer malle réservée</string>
+   </property>
+  </action>
+  <action name="Menu_Imprimer_Malle_Empruntee">
+   <property name="text">
+    <string>Imprimer malle empruntée</string>
    </property>
   </action>
  </widget>

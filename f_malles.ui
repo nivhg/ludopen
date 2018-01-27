@@ -33,32 +33,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="Lb_TypeEmprunt">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Type d'emprunt</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QLineEdit" name="Le_TypeEmprunt">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>200</width>
-         <height>16777215</height>
-        </size>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QCommandLinkButton" name="Bt_SupprimerMalle">
        <property name="enabled">
@@ -70,23 +44,6 @@
        <property name="icon">
         <iconset resource="ImagesIcones.qrc">
          <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="Lb_EmpruntResa">
-       <property name="styleSheet">
-        <string notr="true">border: 1px solid;
-border-color: red;</string>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::RichText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </item>
@@ -181,72 +138,6 @@ border-color: red;</string>
       <widget class="QLabel" name="fake_label">
        <property name="text">
         <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="5" column="0" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="6">
-      <widget class="QLabel" name="Lb_Retour">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Date et heure
-de retour :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <widget class="QLabel" name="Lb_Depart">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Date et heure
-de départ :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="Lb_NomMembre">
-       <property name="maximumSize">
-        <size>
-         <width>120</width>
-         <height>16777215</height>
-        </size>
-       </property>
-       <property name="text">
-        <string>Nom membre :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="4">
-      <widget class="QDateTimeEdit" name="DtE_Depart">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" colspan="2">
-      <widget class="QLineEdit" name="Le_NomMembre">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="7">
-      <widget class="QDateTimeEdit" name="DtE_Retour">
-       <property name="enabled">
-        <bool>false</bool>
        </property>
       </widget>
      </item>

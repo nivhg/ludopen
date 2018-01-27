@@ -130,7 +130,7 @@ public:
     void AfficherVilles( QString VilleSelectionne = "" ) ;
 
     //! Mise à jour de la liste des membres
-    bool MaJListeMembres (bool AfficherContact=false);
+    bool MaJListeMembres (int iModeMAJ=0);
 
     //! Affichage de la liste des membres
     void AfficherListe() ;//Liste par défaut(this->VecteurMembres)
@@ -269,6 +269,8 @@ private slots:
     void on_LE_Email_textEdited(const QString &arg1);
 
     void on_CBx_DomaineEmail_currentIndexChanged(int index);
+
+    void on_comboBox_currentIndexChanged(int index);
 
 private:
 

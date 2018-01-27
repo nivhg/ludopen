@@ -276,10 +276,10 @@ void F_Membres::ChargerActivites(QComboBox * combobox)
 /**   Mise  jour de la liste des membres
  *  @pre    Accès à  la base de données
  *  @retval bool
- *  @return True si tous c'est passé correctement et false si il y a une erreur
+ *  @return True si tout c'est passé correctement et false si il y a une erreur
  *  @test   Voir la procédure dans le fichier associé.
  */
-bool F_Membres::MaJListeMembres(bool AfficherContact)
+bool F_Membres::MaJListeMembres(int iModeMAJ)
 {
     QSqlQuery query ;
     Membre Membres ;
@@ -289,16 +289,48 @@ bool F_Membres::MaJListeMembres(bool AfficherContact)
     this->VecteurMembres.clear() ;
 
     QString requeteSQL;
-    requeteSQL="SELECT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres WHERE Ecarte=0 ";
-    if(!AfficherContact)
+    requeteSQL="SELECT DISTINCT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres as m "
+            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0  AND ";
+    QDate DateAnnePasse;
+    DateAnnePasse=DateAnnePasse.currentDate();
+    DateAnnePasse.setDate(DateAnnePasse.year()-1,DateAnnePasse.month(),DateAnnePasse.day());
+    QString DateExpiration;
+    DateExpiration =DateAnnePasse.toString("yyyy-MM-dd");
+    switch(iModeMAJ)
     {
-        requeteSQL+="AND TypeMembres_IdTypeMembres!=4 ";
+        // Si choix par défaut : adhérents à jour ou expiré de 1 an max, on affiche les membres associés dans tous les cas d'expiration
+        case 0 :
+            {
+            requeteSQL+="(a.Prestations_IdPrestation IS NOT NULL AND DateExpiration>=:DateExpiration) OR IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
+            }
+            break;
+        // Si choix adhérents avec cotisation expirée, affiche les membres associés dans tous les cas d'expiration
+        case 1 :
+            {
+            requeteSQL+="(a.Prestations_IdPrestation IS NOT NULL AND DateExpiration<:DateExpiration) OR IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
+            }
+            break;
+        // SI choix membre sans adhésion
+        case 2 :
+            {
+            requeteSQL+="a.Prestations_IdPrestation IS NULL AND a.CartesPrepayees_IdCarte IS NULL";
+            }
+            break;
+        // Si choix membres associés à une collectivité
+        case 3 :
+            {
+            requeteSQL+="IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
+            }
+            break;
     }
-    requeteSQL+="ORDER BY Nom ASC";
+    requeteSQL+=" ORDER BY Nom ASC";
+
+    query.prepare(requeteSQL);
+    query.bindValue(":DateExpiration",DateExpiration);
 
     //Execute une requète sql qui retourne la liste des membres
     //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
-    if(query.exec(requeteSQL))
+    if(query.exec())
     {
         while(query.next())
         {
@@ -312,9 +344,11 @@ bool F_Membres::MaJListeMembres(bool AfficherContact)
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "RechercheMembre::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
+        qDebug()<< getLastExecutedQuery(query) << query.lastError();
         bRetourner = false ;
     }
+    qDebug()<< getLastExecutedQuery(query) << query.lastError();
+
     this->VecteurRechercheMembres = VecteurMembres ;
     ui->LE_Nom->clear() ;
     return bRetourner ;
@@ -395,7 +429,7 @@ void F_Membres::RechercherParNomEtNumero()
             // Si le texte saisie est un nombre
             if( numeric )
             {
-                if( this->VecteurMembres[i].sCodeMembre.indexOf( ui->LE_Nom->text(),0,Qt::CaseInsensitive ) != string::npos )
+                if( this->VecteurMembres[i].sCodeMembre==ui->LE_Nom->text())
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
@@ -2315,4 +2349,10 @@ void F_Membres::on_CBx_DomaineEmail_currentIndexChanged(int index)
         this->pDomaineEmailAjMod->Ajouter(12) ;
         ui->CBx_DomaineEmail->setCurrentIndex( 0 ) ;
     }
+}
+
+void F_Membres::on_comboBox_currentIndexChanged(int index)
+{
+    this->MaJListeMembres(index);
+    this->AfficherListe();
 }

@@ -155,7 +155,18 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
         }
         item=new QStandardItem( QString::number(iCptMalle+1)+ " ("+EmprunOuResa.at(0)+")" );
         // On affiche la couleur d'après dans l'enum Qt::GlobalColor
-        item->setBackground(static_cast<Qt::GlobalColor>(iCouleur+iCptMalle));
+        QBrush *CouleurFond=new QBrush(static_cast<Qt::GlobalColor>(iCouleur+iCptMalle));
+        item->setBackground(*CouleurFond);
+        // Suivant la couleur on va affiche le texte en blanc ou noir
+        if(((CouleurFond->color().red()+CouleurFond->color().green()+
+             CouleurFond->color().blue())/3)<128)
+        {
+            item->setForeground(Qt::white);
+        }
+        else
+        {
+            item->setForeground(Qt::black);
+        }
         // Si on est arrivé à la dernière couleur, on recommence
         if(iCouleur+iCptMalle==Qt::transparent)
         {
@@ -173,10 +184,12 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
         }
         int iPremiereColonne=ObtenirValeurParNom(Requete,"JourEmprunt").toInt()-1;
         int iDerniereColonne=iRetourEmprunt-iPremiereColonne;
+        // Liste qui servira pour la sélection de toute la période de réservation
         QVariantList vListe;
         vListe.append(iPremiereColonne);
         vListe.append(iDerniereColonne);
         QSqlRecord record = Requete.record();
+        // Liste interne à vListe qui contient toutes les infos sur la malle
         QHash<QString, QVariant> list;
         for(int i=0; i < record.count(); i++)
         {
@@ -185,7 +198,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
         vListe.append(list);
         item->setData(vListe);
         item->setData(QString(EmprunOuResa+list["NomMembre"].toString()+" "+
-                      list["PrenomMembre"].toString()+"\nType de malle: "+
+                      list["PrenomMembre"].toString()+"\nType d'emprunt: "+
                 list["TypeEmprunt"].toString()+"\nDate emprunt: "+list["DateEmprunt"].toDateTime().toString("dd/MM/yyyy hh:mm")+
                 "\nDate retour: "+list["DateRetour"].toDateTime().toString("dd/MM/yyyy hh:mm")),Qt::ToolTipRole);
         for(int j=0;j<iDerniereColonne;j++)
@@ -224,21 +237,15 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
         this->TbV_CalendrierMalles->setSelectionModel(selModel);
         this->TbV_CalendrierMalles->setModel(this->ModeleMalle);
         QHash<QString, QVariant> list=vList[2].value<QHash<QString, QVariant> >();
-        ui->Le_NomMembre->setText(list["NomMembre"].toString());
-        ui->Le_NomMembre->setProperty("IdMalle",list["IdMalle"]);
-        ui->Le_TypeEmprunt->setText(list["TypeEmprunt"].toString());
-        ui->DtE_Depart->setDateTime(list["DateEmprunt"].toDateTime());
-        ui->DtE_Retour->setDateTime(list["DateRetour"].toDateTime());
+        this->iIdMalleChoisie=list["IdMalle"].toInt();
         ui->Bt_SupprimerMalle->setEnabled(true);
         if(list["emprunt"].toBool())
         {
-            ui->Lb_EmpruntResa->setText("<img width=32 src="":/Valider.png"">Emprunté</img>");
             ui->Bt_EmprunterMalle->setEnabled(false);
             ui->Bt_SupprimerMalle->setEnabled(false);
         }
         else
         {
-            ui->Lb_EmpruntResa->setText("<img width=32 src="":/Download.png"">Réservé</img>");
             ui->Bt_EmprunterMalle->setEnabled(true);
             ui->Bt_SupprimerMalle->setEnabled(true);
         }
@@ -248,11 +255,7 @@ void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
         QItemSelectionModel *selModel=this->TbV_CalendrierMalles->selectionModel();
         selModel->clear();
         this->TbV_CalendrierMalles->setSelectionModel(selModel);
-        ui->Le_NomMembre->clear();
-        ui->DtE_Depart->clear();
-        ui->DtE_Retour->clear();
         ui->Bt_SupprimerMalle->setEnabled(false);
-        ui->Lb_EmpruntResa->setText("");
     }
 }
 
@@ -260,7 +263,7 @@ void F_Malles::on_Bt_SupprimerMalle_clicked()
 {
     QSqlQuery Requete;
     Requete.prepare("DELETE FROM malles,reservation USING malles INNER JOIN reservation ON Malles_IdMalle=IdMalle WHERE IdMalle=:IdMalle");
-    Requete.bindValue(":IdMalle",ui->Le_NomMembre->property("IdMalle").toInt());
+    Requete.bindValue(":IdMalle",this->iIdMalleChoisie);
 
     //Exécute la requête
     if (!Requete.exec())

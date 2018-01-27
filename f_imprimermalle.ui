@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>F_ImprimerMalle</class>
+ <widget class="QDialog" name="F_ImprimerMalle">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>539</width>
+    <height>512</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="Lb_Contenu">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>Récapitulatif de la malle :</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="TxE_Contenu"/>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCommandLinkButton" name="Bt_Imprimer">
+       <property name="text">
+        <string>Imprimer le récapitulatif de la malle</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCommandLinkButton" name="Bt_Quitter">
+       <property name="text">
+        <string>Retour aux malles</string>
+       </property>
+       <property name="icon">
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
+ <connections/>
+</ui>

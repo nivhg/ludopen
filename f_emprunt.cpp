@@ -60,7 +60,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
 
     //Met une date minimum pour le DateEdit du départ (la date du jour)
     ui->DtE_Depart->setMinimumDate(DateActuelle.date());
-    ui->DtE_Depart->setDate(DateActuelle.date());
+    ui->DtE_Depart->setDateTime(DateActuelle);
 
     MaJListeMembres();
 
@@ -75,7 +75,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     this->iMode=iMode;
     if(this->iMode==MODE_MALLES)
     {
-        SearchJeux->MAJResults(MaJListeJeux(),2);
+        this->ActualiserListeJeux();
         ui->Bt_Reservation->setText("Réserver Malle");
         ui->Bt_CalendrierMalles->setEnabled(false);
         ui->Lb_TypeEmprunt->setText("Type de malle");
@@ -161,8 +161,8 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     ui->Tv_JeuxReserves->setColumnWidth(4,100);
 
     // Bloque la saisie de code jeu à emprunter et du bouton OK tant que pas d'adhérent sélectionné
-    ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy");
-    ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy");
+    ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy hh:mm");
+    ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy hh:mm");
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -247,13 +247,18 @@ QVector<QVector <QString> > F_Emprunt::MaJListeJeux(QString filtre)
     {
         filtre=" WHERE "+filtre;
     }
-    Requete.prepare("SELECT NomJeu,CodeJeu FROM jeux "+filtre+" ORDER BY NomJeu");
+    Requete.prepare("SELECT NomJeu,CodeJeu FROM jeux as j LEFT JOIN reservation as r ON r.Jeux_IdJeux=IdJeux "
+                    "LEFT JOIN emprunts as e ON e.Jeux_IdJeux=IdJeux "+filtre+" ORDER BY NomJeu");
 
-    //Execute une requète sql qui retourne la liste des jeux
-    //Si la requète est correcte -> Remplissage du veteur VecteurJeux
-    // avec le résultat de la requête et on retourne vrai.
-    if(Requete.exec())
+    if(!Requete.exec())
     {
+        qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    else
+    {
+        //Execute une requète sql qui retourne la liste des jeux
+        //Si la requète est correcte -> Remplissage du veteur VecteurJeux
+        // avec le résultat de la requête et on retourne vrai.
         while(Requete.next())
         {
             for(int i=0;i<Requete.record().count();i++)
@@ -264,10 +269,7 @@ QVector<QVector <QString> > F_Emprunt::MaJListeJeux(QString filtre)
             Jeux.clear();
         }
     }
-    else //Sinon on affiche un message d'erreur et on retourne Faux
-    {
-        qDebug()<< "F_Emprunt::MaJListeJeux() : Erreur de connexion avec la base de donnée !" << endl ;
-    }
+    qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
     return this->VecteurJeux;
 }
 
@@ -335,6 +337,7 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
                                    ObtenirValeurParNom(Requete,"IdTypeEmprunt").toInt());
     }
 }
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////Actualise les informations du jeu////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -354,6 +357,41 @@ void F_Emprunt::ActualiserJeu()
         SearchJeux->setCurrentText(this->JeuActif);
         on_LE_SearchJeux_jeuTrouve();
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////Actualise la liste des jeux////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ *  @pre    Connexion avec la base de données, un jeu est actif dans la classe
+ *  @post
+ *  @param
+ *  @retval
+ *  @return
+ *  @test
+ *  @see    JeuActif
+ */
+void F_Emprunt::ActualiserListeJeux()
+{
+    QString ArgMAJListeJeux;
+    // Si il n'y a pas de jeux spéciaux empruntable, on les exclue de la requête
+    if(HashTypeEmprunt[ui->CBx_TypeEmprunt->currentData().toInt()]["NbJeuxSpeciauxEmpruntable"]==0)
+    {
+        ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND ";
+    }
+    // Si il n'y a pas des jeux autres que les jeux spéciaux empruntable, on les exclue de la requête
+    else if(HashTypeEmprunt[ui->CBx_TypeEmprunt->currentData().toInt()]["NbAutresJeuxEmpruntable"]==0)
+    {
+        ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND ";
+    }
+
+    SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux+"(DATE(r.DatePrevuEmprunt)>'"+
+                                        ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(r.DatePrevuRetour)<'"+
+                                        ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR r.DatePrevuEmprunt IS NULL OR r.DatePrevuRetour IS NULL) AND (DATE(e.DateEmprunt)>'"+
+                                        ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(e.DateRetourPrevu)<'"+
+                                        ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR e.DateEmprunt IS NULL OR e.DateRetourPrevu IS NULL)"),2);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -718,6 +756,8 @@ void F_Emprunt::EmprunterJeux()
             qDebug()<<"F_Emprunt::EmprunterJeux "<<getLastExecutedQuery(RequeteMalle)<<RequeteMalle.lastError();
         }
         IdMalle=RequeteMalle.lastInsertId().toString();
+        this->bRegle=false;
+        this->AfficherEtatPaiement();
     }
     // Traiter chaque jeu en cours d'emprunt
     for( register int i=0 ; i < NouveauEmprunts.size() ; i++ )
@@ -997,7 +1037,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
                                "m.DateEmprunt as mDateEmprunt,m.DateRetourPrevu as mDateRetourPrevu FROM emprunts as e "
                                "LEFT JOIN jeux ON IdJeux=Jeux_IdJeux LEFT JOIN malles as m ON e.Malles_IdMalle=m.IdMalle "
                                "LEFT JOIN typeemprunt as t ON m.TypeEmprunt_IdTypeEmprunt=t.IdTypeEmprunt "
-                               "WHERE e.Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND DateRetour IS NULL");
+                               "WHERE e.Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND m.DateRetour IS NULL");
     RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
     if( ! RequeteJeuEmprunte.exec())
     {
@@ -1191,21 +1231,7 @@ void F_Emprunt::on_CBx_TypeEmprunt_currentIndexChanged(int index)
     {
         ui->Bt_CalendrierMalles->setEnabled(true);
         SearchJeux->setEnabled(index!=0);
-        QString ArgMAJListeJeux;
-
-        // Si il n'y a pas de jeux spéciaux empruntable, on les exclue de la requête
-        if(HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["NbJeuxSpeciauxEmpruntable"]==0)
-        {
-            ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
-        }
-        // Si il n'y a pas des jeux autres que les jeux spéciaux empruntable, on les exclue de la requête
-        else if(HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["NbAutresJeuxEmpruntable"]==0)
-        {
-            ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
-        }
-        SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux),2);
+        this->ActualiserListeJeux();
         //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
         QString TotalJeuxEmpruntable=HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["TotalJeuxEmpruntable"].toString();
         ui->Lb_NbEmpruntPossibleAujourdhui->setText(TotalJeuxEmpruntable );
@@ -2472,4 +2498,27 @@ void F_Emprunt::on_Bt_CalendrierMalles_clicked()
 void F_Emprunt::slot_Clic_Emprunter(int iIdMalle)
 {
     this->AfficherMalle(iIdMalle);
+}
+
+void F_Emprunt::on_DtE_Depart_editingFinished()
+{
+    this->ActualiserListeJeux();
+}
+
+void F_Emprunt::on_DtE_Retour_editingFinished()
+{
+    this->ActualiserListeJeux();
+}
+
+//! Renvoie l'ID de la malle réservée sélectionnée
+int F_Emprunt::get_MalleReserveeSelectionnee()
+{
+    qDebug()<<ui->Tv_JeuxReserves->currentIndex();
+    return this->ModeleJeuxReserves->data(ui->Tv_JeuxReserves->currentIndex(),Qt::UserRole+1).toInt();
+}
+
+//! Renvoie l'ID de la malle empruntée sélectionnée
+int F_Emprunt::get_MalleEmprunteeSelectionnee()
+{
+    return this->ModeleJeuxEmpruntes->data(ui->Tv_JeuxMembres->currentIndex(),Qt::UserRole+1).toInt();
 }

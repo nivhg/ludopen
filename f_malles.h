@@ -45,8 +45,7 @@ private:
     //! Tableau associatif pour stocker la table TypeMalle
     QStandardItemModel * ModeleMalle;
     QTableView *TbV_CalendrierMalles;
-    /*void mouseMoveEvent(QMouseEvent* event);
-    bool eventFilter(QObject *obj, QEvent *event);*/
+    int iIdMalleChoisie;
 };
 
 #endif // F_MALLES_H

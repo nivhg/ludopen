@@ -20,6 +20,11 @@
 #include "f_postit.h"
 #include "f_listereservations.h"
 #include "f_malles.h"
+#include "f_imprimeretiquettejeu.h"
+#include "f_imprimerfichecompletejeu.h"
+#include "f_imprimermalle.h"
+#include "fonctions_globale.h"
+#include "majeur.h"
 
 namespace Ui {
 class F_MainWindow;
@@ -71,6 +76,8 @@ private slots:
     void on_Menu_Jeux_Imprimer_Etiquette_triggered();
     void on_Menu_Jeux_Imprimer_Fiche_Complete_triggered();
     void on_Bt_ListeMembres_clicked();
+    void on_Menu_Imprimer_Malle_Reservee_triggered();
+    void on_Menu_Imprimer_Malle_Empruntee_triggered();
 
 private:
     Ui::F_MainWindow *ui;

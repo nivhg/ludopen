@@ -64,7 +64,7 @@ Suggest::Suggest(QComboBox *parent): QObject(parent), editor(parent)
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
-    timer->setInterval(300);
+    timer->setInterval(500);
     connect(timer, SIGNAL(timeout()), SLOT(autoSuggest()));
     editor->setEditable(true);
     connect(editor, SIGNAL(currentTextChanged(QString)), timer, SLOT(start()));
@@ -146,17 +146,10 @@ void Suggest::showCompletion(const QVector<QVector<QString> > &Vector)
         {
             item->setText(j, Vector[i][j]);
         }
-/*        item->setTextAlignment(1, Qt::AlignRight);
-        item->setTextColor(1, color);*/
     }
     popup->setCurrentItem(popup->topLevelItem(0));
-    /*for(int j=0;j<NbOfRows2Display;j++)
-    {
-        popup->resizeColumnToContents(j);
-    }*/
     popup->setColumnWidth(0,300);
     popup->resizeColumnToContents(1);
-    //popup->adjustSize();
     popup->setUpdatesEnabled(true);
 
     int h = popup->sizeHintForRow(0) * qMin(7, Vector.count()) + 3;

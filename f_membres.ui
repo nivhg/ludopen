@@ -2448,10 +2448,10 @@
        </property>
       </widget>
      </item>
-     <item row="11" column="0" rowspan="3" colspan="3">
+     <item row="14" column="0" rowspan="3" colspan="3">
       <layout class="QGridLayout" name="Gl_Associes"/>
      </item>
-     <item row="8" column="0" colspan="3">
+     <item row="11" column="0" colspan="3">
       <widget class="QTableView" name="TbW_Recherche">
        <property name="minimumSize">
         <size>
@@ -2476,7 +2476,7 @@
      <item row="5" column="0" rowspan="2" colspan="3">
       <widget class="QLineEdit" name="LE_Nom"/>
      </item>
-     <item row="10" column="0" colspan="3">
+     <item row="13" column="0" colspan="3">
       <widget class="QFrame" name="Fr_Associes">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -2543,12 +2543,53 @@
        </layout>
       </widget>
      </item>
-     <item row="7" column="0" colspan="3">
+     <item row="10" column="0" colspan="3">
       <widget class="QLabel" name="Lb_Associes">
        <property name="text">
         <string>Sélectionner un membre faisant partie de l'organisme :</string>
        </property>
       </widget>
+     </item>
+     <item row="8" column="0" colspan="3">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>40</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Voir :</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>Membres à jour ou expiré de 1 an max</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Membres avec adhésion expirée &gt; 1 an</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Membres sans adhésion</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Membres associés à une collectivité</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

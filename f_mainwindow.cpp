@@ -1,9 +1,5 @@
 #include "f_mainwindow.h"
 #include "ui_f_mainwindow.h"
-#include "f_imprimeretiquettejeu.h"
-#include "f_imprimerfichecompletejeu.h"
-#include "fonctions_globale.h"
-#include "majeur.h"
 
 F_MainWindow::F_MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -342,6 +338,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
             this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
             this->ui->Lay_Malles->addWidget(this->pMalles);
         }
+        ui->menuImprimer->setEnabled(true);
         this->pMalles->setVisible(true);
         break;
     case 7 : //Liste Réservations
@@ -613,4 +610,36 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
       "<a href='http://code.google.com/p/ludopen'>http://code.google.com/p/ludopen</a><br><br>"
       "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
+}
+
+void F_MainWindow::on_Menu_Imprimer_Malle_Reservee_triggered()
+{
+    int iIdMalle=this->pMalles->get_MalleReserveeSelectionnee();
+    if ( iIdMalle!=0 )
+    {
+       F_ImprimerMalle F_ImprimerMalle;
+       F_ImprimerMalle.ImprimerMalle(iIdMalle,false) ;
+       F_ImprimerMalle.exec() ;
+    }
+    else
+    {
+       QMessageBox::information(this, "Pas de malle sélectionnée !", "Vous n'avez pas sélectionné de malle dans la liste des jeux/malles réservés.\n"
+                                "Veuillez en sélectionner une avant de lancer l'impression de son récapitulatif.", "OK") ;
+    }
+}
+
+void F_MainWindow::on_Menu_Imprimer_Malle_Empruntee_triggered()
+{
+    int iIdMalle=this->pMalles->get_MalleEmprunteeSelectionnee();
+    if ( iIdMalle!=0 )
+    {
+       F_ImprimerMalle F_ImprimerMalle;
+       F_ImprimerMalle.ImprimerMalle(iIdMalle,true);
+       F_ImprimerMalle.exec() ;
+    }
+    else
+    {
+       QMessageBox::information(this, "Pas de malle sélectionnée !", "Vous n'avez pas sélectionné de malle dans la liste des jeux/malles empruntés.\n"
+                                "Veuillez en sélectionner une avant de lancer l'impression de son récapitulatif.", "OK") ;
+    }
 }

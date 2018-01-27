@@ -291,7 +291,21 @@ QGroupBox::indicator:checked {
             <string>Emprunt</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_18">
-            <item row="0" column="1">
+            <item row="1" column="0" colspan="2">
+             <widget class="QCommandLinkButton" name="Bt_Regle">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>En attente de paiement</string>
+              </property>
+              <property name="icon">
+               <iconset resource="ImagesIcones.qrc">
+                <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
              <widget class="QCommandLinkButton" name="Bt_ValiderEmprunt">
               <property name="enabled">
                <bool>false</bool>
@@ -320,20 +334,6 @@ QGroupBox::indicator:checked {
                 <width>20</width>
                 <height>20</height>
                </size>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0" colspan="2">
-             <widget class="QCommandLinkButton" name="Bt_Regle">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>En attente de paiement</string>
-              </property>
-              <property name="icon">
-               <iconset resource="ImagesIcones.qrc">
-                <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
               </property>
              </widget>
             </item>
@@ -507,6 +507,49 @@ QGroupBox::indicator:checked {
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
+         <item row="9" column="0">
+          <layout class="QGridLayout" name="gridLayout_14">
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QLabel" name="Lb_Depart">
+             <property name="text">
+              <string>Date et heure de départ :</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QDateTimeEdit" name="DtE_Depart">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>140</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="calendarPopup">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="Bt_AjoutNonAdherent">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>27</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Ajouter un non-adhérent</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
@@ -528,18 +571,18 @@ QGroupBox::indicator:checked {
           </layout>
          </item>
          <item row="11" column="0">
-          <layout class="QHBoxLayout" name="HLay11_2">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_19">
+           <item row="0" column="0">
             <widget class="QLabel" name="Lb_Retour_2">
              <property name="text">
-              <string>Date de retour :</string>
+              <string>Date et heure de retour :</string>
              </property>
              <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
             </widget>
            </item>
-           <item>
+           <item row="0" column="1">
             <widget class="QDateTimeEdit" name="DtE_Retour">
              <property name="enabled">
               <bool>true</bool>
@@ -555,33 +598,31 @@ QGroupBox::indicator:checked {
              </property>
             </widget>
            </item>
-           <item>
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
           </layout>
          </item>
-         <item row="1" column="0">
-          <widget class="QPushButton" name="Bt_AjoutNonAdherent">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>27</height>
-            </size>
+         <item row="7" column="0" colspan="2">
+          <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0,0" columnminimumwidth="0,0,0">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
            </property>
-           <property name="text">
-            <string>Ajouter un non-adhérent</string>
-           </property>
-          </widget>
+           <item row="0" column="0">
+            <widget class="QLabel" name="Lb_TypeEmprunt">
+             <property name="text">
+              <string>Type d'emprunt :</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1" colspan="2">
+            <widget class="QComboBox" name="CBx_TypeEmprunt">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item row="12" column="0">
           <layout class="QHBoxLayout" name="HLay15">
@@ -636,76 +677,6 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="7" column="0" colspan="2">
-          <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0,0" columnminimumwidth="0,0,0">
-           <property name="sizeConstraint">
-            <enum>QLayout::SetMaximumSize</enum>
-           </property>
-           <item row="0" column="0">
-            <widget class="QLabel" name="Lb_TypeEmprunt">
-             <property name="text">
-              <string>Type d'emprunt :</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1" colspan="2">
-            <widget class="QComboBox" name="CBx_TypeEmprunt">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="editable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item row="9" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="Lb_Depart">
-             <property name="text">
-              <string>Date de départ :</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QDateTimeEdit" name="DtE_Depart">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>140</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="calendarPopup">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
          <item row="13" column="0">
           <widget class="QPushButton" name="Bt_CalendrierMalles">
            <property name="text">
@@ -757,7 +728,7 @@ QGroupBox::indicator:checked {
 }</string>
         </property>
         <property name="title">
-         <string>Jeux réser&amp;vé par le membre</string>
+         <string>Jeux/Malles réser&amp;vé par le membre</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -771,13 +742,6 @@ QGroupBox::indicator:checked {
            <property name="topMargin">
             <number>10</number>
            </property>
-           <item>
-            <widget class="QLabel" name="Lb_JeuxReserves">
-             <property name="text">
-              <string>Jeux/Malles réservés par ce membre :</string>
-             </property>
-            </widget>
-           </item>
            <item>
             <widget class="QCommandLinkButton" name="Bt_SupprimerReservation">
              <property name="enabled">
@@ -1189,7 +1153,7 @@ QGroupBox::indicator:checked {
 }</string>
         </property>
         <property name="title">
-         <string>Jeux encore che&amp;z ce membre</string>
+         <string>Jeux/Malles encore che&amp;z ce membre</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
