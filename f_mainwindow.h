@@ -52,6 +52,7 @@ public:
     void CreerEmprunt();
     void CreerRetour();
     void CreerReservations();
+    void CreerMalle();
 
 public slots:
     void slot_ChangerOnglet();
@@ -60,6 +61,7 @@ public slots:
     void slot_DoubleClic_ListeMembres(uint IdMembre) ;
     void slot_DoubleClic_ListeMembresAdmin(uint IdMembre) ;
     void slot_Clic_Reserve(int IdReservation);
+    void slot_Reservation_Malle(int iIdMalle);
 
 private slots:
     void on_Bt_Membre_clicked();

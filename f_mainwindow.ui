@@ -49,7 +49,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <property name="iconSize">
        <size>
@@ -124,7 +124,7 @@
         </iconset>
        </attribute>
        <attribute name="title">
-        <string>Emprunts/Réservations</string>
+        <string>Emprunts</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">
@@ -519,12 +519,12 @@ Cotisations</string>
   </action>
   <action name="Menu_Imprimer_Malle_Reservee">
    <property name="text">
-    <string>Imprimer malle réservée</string>
+    <string>Imprimer malle &amp;réservée</string>
    </property>
   </action>
   <action name="Menu_Imprimer_Malle_Empruntee">
    <property name="text">
-    <string>Imprimer malle empruntée</string>
+    <string>Imprimer &amp;malle empruntée</string>
    </property>
   </action>
  </widget>

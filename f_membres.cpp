@@ -116,7 +116,13 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     // TO DO pour trier le tableau, il faudrait que l'on retrouve le membre dans le vecteur
     // ou virer le vecteur en stockant toutes les infos dans le tableau sans afficher les colonnes qu'on ne veut pas
 
-    if(this->iMode==MODE_MEMBRE_ASSOCIE)
+    if(this->iMode==MODE_NON_ADHERENT)
+    {
+        this->MaJListeMembres();
+        ui->frame_2->setVisible(false);
+        ui->frame_3->setVisible(false);
+    }
+    else if(this->iMode==MODE_MEMBRE_ASSOCIE)
     {
         this->MaJListeMembres(true) ;
         setWindowTitle("Membres associés");
@@ -1098,6 +1104,11 @@ bool F_Membres::AjouterMembre()
         ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
 
         AjouterAssocie(ListStandardItem);
+        if(this->iMode==MODE_NON_ADHERENT)
+        {
+            emit(Signal_Non_Adherent_Cree(ui->Le_Code->text().toInt()));
+            this->close();
+        }
     }
     else//Sinon on affiche un message d'erreur et on retourne Faux
     {
@@ -2351,7 +2362,7 @@ void F_Membres::on_CBx_DomaineEmail_currentIndexChanged(int index)
     }
 }
 
-void F_Membres::on_comboBox_currentIndexChanged(int index)
+void F_Membres::on_CBx_Filtre_currentIndexChanged(int index)
 {
     this->MaJListeMembres(index);
     this->AfficherListe();

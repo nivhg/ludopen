@@ -17,6 +17,7 @@ using namespace std;
 #define MODE_UTILISATEUR 0
 #define MODE_ADMIN 1
 #define MODE_MEMBRE_ASSOCIE 2
+#define MODE_NON_ADHERENT 3
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
 
@@ -148,6 +149,10 @@ public:
     //! Récupère la liste des activités et la mets dans une combobox
     static void ChargerActivites(QComboBox * scombobox);
 
+signals:
+    //! Signal indiquant qu'un non-adhérent a été crée et envoie son Code
+    void Signal_Non_Adherent_Cree(int iCodeMembre);
+
 public slots:
 
     //! Permet l'ajout d'un type
@@ -170,7 +175,10 @@ public slots:
 
     //! Permet l'annulation de l'ajour d'une ville
     void slot_AnnulerAjoutVille() ;
-    
+
+    //! Permet l'ajout d'un membre
+    void on_Bt_AjouterMembre_clicked() ;
+
 private slots:
 
     //! Selectionne un membre avec un double click
@@ -181,9 +189,6 @@ private slots:
 
     //! Recherche les membres correspondant au champs à  chaque fois que le champs est modifiée
     void on_LE_Nom_textEdited(const QString &arg1);
-
-    //! Permet l'ajout d'un membre
-    void on_Bt_AjouterMembre_clicked() ;
 
     //! Permet d'ajout un nouveau type si "Créer type..." a été sélectionné
     void on_CBx_Type_activated(int index);
@@ -270,7 +275,7 @@ private slots:
 
     void on_CBx_DomaineEmail_currentIndexChanged(int index);
 
-    void on_comboBox_currentIndexChanged(int index);
+    void on_CBx_Filtre_currentIndexChanged(int index);
 
 private:
 

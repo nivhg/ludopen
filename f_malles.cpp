@@ -153,7 +153,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
         {
             EmprunOuResa="Réservation de ";
         }
-        item=new QStandardItem( QString::number(iCptMalle+1)+ " ("+EmprunOuResa.at(0)+")" );
+        item=new QStandardItem( QString::number(iCptMalle+1)+ " "+EmprunOuResa.at(0));
         // On affiche la couleur d'après dans l'enum Qt::GlobalColor
         QBrush *CouleurFond=new QBrush(static_cast<Qt::GlobalColor>(iCouleur+iCptMalle));
         item->setBackground(*CouleurFond);

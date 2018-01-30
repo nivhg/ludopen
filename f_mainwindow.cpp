@@ -332,12 +332,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pRetour->ActualiserListeEmprunteurs();
         break;
     case 6 : //Réservation Malles
-        if(!this->pMalles)
-        {
-            qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
-            this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
-            this->ui->Lay_Malles->addWidget(this->pMalles);
-        }
+        CreerMalle();
         ui->menuImprimer->setEnabled(true);
         this->pMalles->setVisible(true);
         break;
@@ -477,6 +472,8 @@ void F_MainWindow::CreerEmprunt()
         this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this->ui->Emprunt);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
+        // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
+        connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
     }
 }
 
@@ -488,6 +485,16 @@ void F_MainWindow::CreerRetour()
         this->pRetour=new F_Retour (this->ui->Retour);
         //Retour
         this->ui->Lay_Retour->addWidget(this->pRetour);
+    }
+}
+
+void F_MainWindow::CreerMalle()
+{
+    if(!this->pMalles)
+    {
+        qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
+        this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
+        this->ui->Lay_Malles->addWidget(this->pMalles);
     }
 }
 
@@ -642,4 +649,12 @@ void F_MainWindow::on_Menu_Imprimer_Malle_Empruntee_triggered()
        QMessageBox::information(this, "Pas de malle sélectionnée !", "Vous n'avez pas sélectionné de malle dans la liste des jeux/malles empruntés.\n"
                                 "Veuillez en sélectionner une avant de lancer l'impression de son récapitulatif.", "OK") ;
     }
+}
+
+void F_MainWindow::slot_Reservation_Malle(int iIdMalle)
+{
+    CreerMalle();
+    this->pMalles->AfficherMalle(iIdMalle);
+    // Faire apparaître l'onglet Malle
+    ui->TbW_Main->setCurrentIndex(6);
 }

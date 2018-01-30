@@ -48,6 +48,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     MembreActif="";
     JeuActif="";
     iMalleActive=0;
+    this->bReservationUniquement=false;
     //ui->TbV_Recherche->setVisible(false);
     ui->Lb_Cotisation->setText("");
     ui->Lb_CotisationARemplir->setText("");
@@ -59,8 +60,10 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     ui->DtE_Retour->setMinimumDate(DateActuelle.date());
 
     //Met une date minimum pour le DateEdit du départ (la date du jour)
+    ui->DtE_Depart->blockSignals(true);
     ui->DtE_Depart->setMinimumDate(DateActuelle.date());
     ui->DtE_Depart->setDateTime(DateActuelle);
+    ui->DtE_Depart->blockSignals(false);
 
     MaJListeMembres();
 
@@ -82,21 +85,20 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
     }
     else
     {
+        ui->Bt_Regle->setVisible(false);
+        ui->Bt_AjoutNonAdherent->setVisible(false);
         ui->Bt_Reservation->setText("Réserver Jeux");
+        ui->Bt_CalendrierMalles->setVisible(false);
     }
     SearchJeux->show();
+    SearchJeux->setEnabled(false);
+
     ui->Hlay16->addWidget(SearchJeux);
 
     connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
-    //connect(SearchJeux,SIGNAL(returnPressed()),this,SLOT(on_LE_SearchJeux_returnPressed()));
+
 
     QSqlQuery Requete;
-    // On rend visible les composants de réservation de malle si on est dans l'onglet correspondant
-    if(this->iMode==MODE_MALLES)
-    {
-        SearchJeux->setEnabled(false);
-    }
-
     // Tous les lieux sauf Internet
     Requete.exec("SELECT IdLieux,NomLieux FROM lieux WHERE IdLieux!=1");
 
@@ -294,7 +296,7 @@ void F_Emprunt::ViderJeu()
     ui->TxE_RemarquesJeu->setText("");
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
-    ui->Bt_Ajouter->setEnabled(false);
+    ui->Bt_AjouterJeu->setEnabled(false);
     // Plus de jeu actif sélectionné
     this->JeuActif = "" ;
 }
@@ -306,7 +308,7 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
     QSqlQuery Requete;
     QString Srequete="SELECT * FROM typeemprunt WHERE MALLE="+QString::number(this->iMode==MODE_MALLES);
 
-    if(iTitreMembre!=0)
+    if(this->iMode==MODE_MALLES && iTitreMembre!=0)
     {
         Srequete+=" AND TitreMembre_IdTitreMembre=:titremembre";
         Requete.prepare(Srequete);
@@ -322,8 +324,8 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
         return;
     }
     ui->CBx_TypeEmprunt->clear();
-    ui->CBx_TypeEmprunt->addItem("");
     QHash<QString, QVariant> HashRecord;
+    QString TypeEmprunt,TypeEmpruntDefaut;
     while(Requete.next())
     {
         for(int i=0;i<Requete.record().count();i++)
@@ -333,9 +335,15 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
             HashRecord[Requete.record().fieldName(i)]=Requete.value(i).toInt();
             HashTypeEmprunt[ObtenirValeurParNom(Requete,"IdTypeEmprunt").toInt()]=HashRecord;
         }
-        ui->CBx_TypeEmprunt->addItem(ObtenirValeurParNom(Requete,"TypeEmprunt").toString()+" ("+ObtenirValeurParNom(Requete,"DureeEmprunt").toString()+" jours)",
-                                   ObtenirValeurParNom(Requete,"IdTypeEmprunt").toInt());
+        TypeEmprunt=ObtenirValeurParNom(Requete,"TypeEmprunt").toString()+" ("+
+                ObtenirValeurParNom(Requete,"DureeEmprunt").toString()+" jours)";
+        ui->CBx_TypeEmprunt->addItem(TypeEmprunt,ObtenirValeurParNom(Requete,"IdTypeEmprunt").toInt());
+        if(ObtenirValeurParNom(Requete,"TypeEmprunt")==F_Preferences::ObtenirValeur("TypeEmpruntDefaut"))
+        {
+            TypeEmpruntDefaut=TypeEmprunt;
+        }
     }
+    ui->CBx_TypeEmprunt->setCurrentText(TypeEmpruntDefaut);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,20 +386,24 @@ void F_Emprunt::ActualiserListeJeux()
     if(HashTypeEmprunt[ui->CBx_TypeEmprunt->currentData().toInt()]["NbJeuxSpeciauxEmpruntable"]==0)
     {
         ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+
-                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND ";
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
     }
     // Si il n'y a pas des jeux autres que les jeux spéciaux empruntable, on les exclue de la requête
     else if(HashTypeEmprunt[ui->CBx_TypeEmprunt->currentData().toInt()]["NbAutresJeuxEmpruntable"]==0)
     {
         ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND ";
+                F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
     }
-
-    SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux+"(DATE(r.DatePrevuEmprunt)>'"+
-                                        ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(r.DatePrevuRetour)<'"+
-                                        ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR r.DatePrevuEmprunt IS NULL OR r.DatePrevuRetour IS NULL) AND (DATE(e.DateEmprunt)>'"+
-                                        ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(e.DateRetourPrevu)<'"+
-                                        ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR e.DateEmprunt IS NULL OR e.DateRetourPrevu IS NULL)"),2);
+    // Pour les malles, on exclue les jeux qui sont empruntés et réservés aux dates définies
+    if(this->iMode==MODE_MALLES)
+    {
+        ArgMAJListeJeux+=+" AND (DATE(r.DatePrevuEmprunt)>'"+
+                ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(r.DatePrevuRetour)<'"+
+                ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR r.DatePrevuEmprunt IS NULL OR r.DatePrevuRetour IS NULL) AND (DATE(e.DateEmprunt)>'"+
+                ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' OR DATE(e.DateRetourPrevu)<'"+
+                ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' OR e.DateEmprunt IS NULL OR e.DateRetourPrevu IS NULL OR e.DateRetour IS NOT NULL)";
+    }
+    SearchJeux->MAJResults(MaJListeJeux(ArgMAJListeJeux),2);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -504,7 +516,7 @@ void F_Emprunt::AfficherJeuxReserve(QStandardItemModel *ModeleJeuxReserves,QStri
 
     QSqlQuery RequeteJeuReserve;
     unsigned int  NumeroLigne =0;
-    RequeteJeuReserve.prepare("SELECT t.TypeEmprunt,m.DateReservation as mDateReservation, m.DatePrevuEmprunt as mDatePrevuEmprunt,m.DateRetourPrevu as mDateRetourPrevu,"
+    RequeteJeuReserve.prepare("SELECT r.idReservation,t.TypeEmprunt,m.DateReservation as mDateReservation, m.DatePrevuEmprunt as mDatePrevuEmprunt,m.DateRetourPrevu as mDateRetourPrevu,"
                               "r.DateReservation,r.DatePrevuEmprunt,r.DatePrevuRetour,NomLieux,NomJeu,m.IdMalle,"
                               "CodeJeu FROM reservation as r LEFT JOIN malles as m ON r.Malles_IdMalle=m.IdMalle "
                               "LEFT JOIN typeemprunt as t ON m.TypeEmprunt_IdTypeEmprunt=t.IdTypeEmprunt "
@@ -526,10 +538,13 @@ void F_Emprunt::AfficherJeuxReserve(QStandardItemModel *ModeleJeuxReserves,QStri
     //Tant qu'il y a des jeux réservés
     while(RequeteJeuReserve.next())
     {
+        QStandardItem *DeuxiemeItem=new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"CodeJeu").toString());
+        // On stocke l'Id de réservation dans la première case de la ligne du jeu
+        DeuxiemeItem->setData(ObtenirValeurParNom(RequeteJeuReserve,"idReservation").toInt());
         // Liste des valeurs à faire apparaitre dans le modele
         QList<QStandardItem *> List;
         List<<new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"NomJeu").toString() )
-           <<new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"CodeJeu").toString())
+           <<DeuxiemeItem
           <<new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"DateReservation").toDate().toString("dd-MM-yyyy") )
          <<new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuEmprunt").toDate().toString("dd-MM-yyyy") )
         <<new QStandardItem(ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuRetour").toDate().toString("dd-MM-yyyy") )
@@ -677,7 +692,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
     ui->Bt_SupprimerReservation->setEnabled(false);
 
     //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
-    ui->Le_NbJeuxEmpruntables->setText(Requete.value(5).toString());
+    //ui->Le_NbJeuxEmpruntables->setText(Requete.value(5).toString());
 
     //Affiche l'état de la cotisation
     //Savoir si le membre  a un membre associer
@@ -702,7 +717,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
         this->EtatCotisationMembre= AfficherEtatCotisation(this->MembreActif);
     }
     // Affiche les jeux empruntés
-    AfficherJeuxEnEmprunt(this->ModeleJeuxEmpruntes,this->MembreActif,false,0,0);
+    this->NbEmpruntEnCours=AfficherJeuxEnEmprunt(this->ModeleJeuxEmpruntes,this->MembreActif,false,0,0);
     // Affiche les jeux réservés
     AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
     // Affiche le nombre de crédits restants
@@ -826,7 +841,7 @@ void F_Emprunt::EmprunterJeux()
     }
 
     EffacerJeuAValider();
-    AfficherJeuxEnEmprunt(this->ModeleJeuxEmpruntes,this->MembreActif,false,0,0);
+    this->NbEmpruntEnCours=AfficherJeuxEnEmprunt(this->ModeleJeuxEmpruntes,this->MembreActif,false,0,0);
     AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
 }
 
@@ -1006,9 +1021,10 @@ void F_Emprunt::CalculerCreditsRestants()
  *  @test
  *  @see    MembreActif, ModeleJeuxEmpruntes
  */
-void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
+int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
                                       bool bRetour,QString *NbreJeuxRendre,QString *AmendeAPayer)
 {
+    int NbEmpruntEnCours=0;
     QDate DateActuelle;
     QSqlQuery RequeteIdMembre;
     int Amende;
@@ -1033,11 +1049,11 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
 
     QSqlQuery RequeteJeuEmprunte;
     unsigned int  NumeroLigne =0;
-    RequeteJeuEmprunte.prepare("SELECT TypeEmprunt,e.DateEmprunt,e.DateRetourPrevu,NomJeu,CodeJeu,IdMalle,"
-                               "m.DateEmprunt as mDateEmprunt,m.DateRetourPrevu as mDateRetourPrevu FROM emprunts as e "
+    RequeteJeuEmprunte.prepare("SELECT TypeEmprunt,t.Caution,e.DateEmprunt,e.DateRetourPrevu,NomJeu,CodeJeu,IdMalle,j.PrixLoc,"
+                               "m.DateEmprunt as mDateEmprunt,m.DateRetourPrevu as mDateRetourPrevu,m.Remarque FROM emprunts as e "
                                "LEFT JOIN jeux ON IdJeux=Jeux_IdJeux LEFT JOIN malles as m ON e.Malles_IdMalle=m.IdMalle "
                                "LEFT JOIN typeemprunt as t ON m.TypeEmprunt_IdTypeEmprunt=t.IdTypeEmprunt "
-                               "WHERE e.Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND m.DateRetour IS NULL");
+                               "WHERE e.Membres_IdMembre=:IdDuMembre AND IdJeux=Jeux_IdJeux AND e.DateRetour IS NULL");
     RequeteJeuEmprunte.bindValue(":IdDuMembre",IdDuMembre);
     if( ! RequeteJeuEmprunte.exec())
     {
@@ -1066,7 +1082,8 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
             // On recherche si la malle existe déjà dans le modele
             for(int i=0;i<ModeleJeuxEmpruntes->rowCount();i++)
             {
-                if(iIdMalle==ModeleJeuxEmpruntes->item(i,0)->data())
+                QHash<QString, QVariant> hInfosMalle=ModeleJeuxEmpruntes->item(i,0)->data().value<QHash<QString, QVariant> >();
+                if(iIdMalle==hInfosMalle["IdMalle"].toInt())
                 {
                     ModeleJeuxEmpruntes->item(i,0)->appendRow(List);
                     MalleNonTrouve=false;
@@ -1076,24 +1093,32 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
             if(MalleNonTrouve)
             {
                 QStandardItem *parent = new QStandardItem(ObtenirValeurParNom(RequeteJeuEmprunte,"TypeEmprunt").toString() );
-                parent->setData(iIdMalle);
+                QSqlRecord record = RequeteJeuEmprunte.record();
+                // Liste interne à vListe qui contient toutes les infos sur la malle
+                QHash<QString, QVariant> list;
+                for(int i=0; i < record.count(); i++)
+                {
+                    list[record.fieldName(i)] = record.value(i);
+                }
+                parent->setData(list);
                 //on ajoute une nouvelle ligne du table view
                 parent->appendRow(List);
                 ModeleJeuxEmpruntes->setItem( iCptTableView, 0, parent);
                 ModeleJeuxEmpruntes->setItem( iCptTableView, 2, new QStandardItem(ObtenirValeurParNom(RequeteJeuEmprunte,"mDateEmprunt").toDate().toString("dd-MM-yyyy")));
                 ModeleJeuxEmpruntes->setItem( iCptTableView, 3, new QStandardItem(ObtenirValeurParNom(RequeteJeuEmprunte,"mDateRetourPrevu").toDate().toString("dd-MM-yyyy")));
-                if(bRetour)
+                /*if(bRetour)
                 {
                     QStandardItem * item=new QStandardItem();
                     item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
                     item->setCheckState(Qt::Unchecked);
                     ModeleJeuxEmpruntes->setItem(iCptTableView, 4, item );
-                }
+                }*/
                 iCptTableView++;
             }
         }
         else
         {
+            NbEmpruntEnCours+=ObtenirValeurParNom(RequeteJeuEmprunte,"PrixLoc").toInt();
             //on ajoute une nouvelle ligne du table view
             for(int i=0;i<List.count();i++)
             {
@@ -1102,10 +1127,10 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
             QDate DateDeRetourPrevue=ObtenirValeurParNom(RequeteJeuEmprunte,"DateRetourPrevu").toDate();
             if(bRetour)
             {
-                QStandardItem * item=new QStandardItem();
+                /*QStandardItem * item=new QStandardItem();
                 item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
                 item->setCheckState(Qt::Unchecked);
-                ModeleJeuxEmpruntes->setItem(iCptTableView, 4, item );
+                ModeleJeuxEmpruntes->setItem(iCptTableView, 4, item );*/
                 // Ligne en rouge si retard, sinon en vert
                 if ( DateDeRetourPrevue.daysTo( QDate::currentDate() ) < F_Preferences::ObtenirValeur("JourRetard").toInt() )
                 {  // Pas de retard
@@ -1167,6 +1192,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
            AmendeAPayer->setNum(Amende);
         }
     }
+    return NbEmpruntEnCours;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1179,8 +1205,7 @@ void F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QS
 void F_Emprunt::AfficherNbEmpruntsEnCours()
 {
     QString NbEmpruntPossibleAujourdhui ;
-    NbEmpruntPossibleAujourdhui.setNum(ui->Le_NbJeuxEmpruntables->text().toInt() -
-                                       this->ModeleJeuxEmpruntes->rowCount());
+    //NbEmpruntPossibleAujourdhui.setNum(ui->Le_NbJeuxEmpruntables->text().toInt()-NbEmpruntEnCours);
     QString NbNouveauxEmprunts;
     NbNouveauxEmprunts.setNum( this->ModeleEmpruntsAValider->rowCount() );
     ui->Lb_NbNouveauEmprunt->setText( NbNouveauxEmprunts );
@@ -1210,7 +1235,9 @@ void F_Emprunt::on_LE_CodeJeu_returnPressed()
 
 void F_Emprunt::on_LE_SearchMembre_MembreTrouve()
 {
+    bReservationUniquement=false;
     this->AfficherMembre(SearchMembre->currentText());
+    SearchJeux->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1230,13 +1257,15 @@ void F_Emprunt::on_CBx_TypeEmprunt_currentIndexChanged(int index)
     if(this->iMode==MODE_MALLES)
     {
         ui->Bt_CalendrierMalles->setEnabled(true);
-        SearchJeux->setEnabled(index!=0);
-        this->ActualiserListeJeux();
         //Récupère le nombre de jeux empruntables dans la base de données puis l'affiche
         QString TotalJeuxEmpruntable=HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["TotalJeuxEmpruntable"].toString();
         ui->Lb_NbEmpruntPossibleAujourdhui->setText(TotalJeuxEmpruntable );
-        ui->Le_NbJeuxEmpruntables->setText(TotalJeuxEmpruntable);
     }
+    // Si la sélection ne concerne pas la première ligne vide, on active la recherche des jeux
+    //SearchJeux->setEnabled(index!=0);
+
+    this->ActualiserListeJeux();
+
     int duree=HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["DureeEmprunt"].toInt();
 
     QDate DateRetour;
@@ -1316,12 +1345,30 @@ void F_Emprunt::on_Tv_JeuxMembres_clicked(const QModelIndex &index)
  */
 void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
 {
-    //ui->Tv_JeuxReserves->selectRow(index.row());
-    ui->Bt_SupprimerReservation->setEnabled(true);
-    //Met le code du jeu sellectionné dans le line édit du code du membre
-    SearchJeux->setCurrentText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
-    //clic sur la recherche du jeu
-    on_LE_SearchJeux_jeuTrouve();
+    // Si c'est un jeu d'une malle, on quitte la fonction
+    if(index.parent().isValid())
+    {
+        ui->Bt_SupprimerReservation->setEnabled(false);
+        return;
+    }
+    // Si on a cliqué sur une malle
+    if(this->ModeleJeuxReserves->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+    {
+        // Demander si on veut procéder à l'emprunt de la malle
+        if( ! QMessageBox::warning(0,"Procéder à l'emprunt de la malle","Souhaitez-vous procéder à l'emprunt de la malle ?","Oui","Annuler") )
+        {
+            emit(Signal_Reservation_Malle(this->ModeleJeuxReserves->index(index.row(),0).data(Qt::UserRole+1).toInt()));
+        }
+    }
+    // Si on a cliqué sur un jeu
+    else
+    {
+        ui->Bt_SupprimerReservation->setEnabled(true);
+        //Met le code du jeu sellectionné dans le line édit du code du membre
+        SearchJeux->setCurrentText(this->ModeleJeuxReserves->index(index.row(),0).data().toString());
+        //clic sur la recherche du jeu
+        on_LE_SearchJeux_jeuTrouve();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1337,174 +1384,9 @@ void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
  *  @see
  */
 void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
-
 {
     ui->TbV_EmpruntAValider->selectRow(index.row());
     ui->Bt_SupprimerEmpruntAValider->setEnabled(true);
-    qDebug()<< "F_Emprunt::on_TbV_EmpruntAValider_clicked";
-/*
-    QDate dates;
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=1; i<100 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements (Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant) "
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-
-            qDebug()<< req.lastQuery();
-        }
-    }
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=100; i<200 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=200; i<300 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=300; i<400 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=400; i<500 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=500; i<600 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=600; i<700 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=700; i<800 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=800; i<900 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-
-    dates=dates.currentDate() ;
-    dates=dates.addDays(-30);
-    for (register int i=900; i<1000 ;i++)
-    {
-        dates=dates.addDays(1);
-        QSqlQuery req ;
-        req.prepare("INSERT INTO abonnements(Prestations_IdPrestation,ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,DateExpiration,CreditRestant)"
-                    " VALUES ( 3,1,NULL,:Membre,NULL,:Date,NULL)");
-        req.bindValue(":Membre",i);
-        req.bindValue(":Date",dates);
-        if(!req.exec())
-        {
-            qDebug()<< req.lastQuery();
-        }
-    }
-*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1521,38 +1403,84 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
  */
 void F_Emprunt::on_Bt_SupprimerReservation_clicked()
 {
-    //Récupération de l'id du jeu avec son code
-    QSqlQuery RequeteIdJeu;
-    RequeteIdJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    RequeteIdJeu.bindValue(":CodeDuJeu",(this->ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),0).data().toString()));
-
-    if ( ! RequeteIdJeu.exec() )
+    if(this->SupprimerReservation(ui->Tv_JeuxReserves,this->ModeleJeuxReserves,this->MembreActif))
     {
-        qDebug()<< "F_Emprunt::on_Bt_SupprimerReservation_clicked() =>" << RequeteIdJeu.lastQuery() ;
+        //Grise le bouton de suppression du tableau des réservations
+        ui->Bt_SupprimerReservation->setEnabled(false);
+        // Efface les info sur le jeu actuellement affiché
+        this->ViderJeu();
     }
-    RequeteIdJeu.next();
+}
 
-    // Demander confirmation pour la suppression de cette réservation
-    if( ! QMessageBox::warning(this,"Suppression d'une réservation !","Voulez-vous supprimer cette réservation ?\nNom du jeu :"+this->ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),1).data().toString(),"Supprimer cette réservation","Laisser") )
+bool F_Emprunt::SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif)
+{
+    bool IsMalle=true;
+    QString Message;
+    int i=0;
+    QVariant DataEnCours;
+    // Si une malle a été sélectionnée
+    if(ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
     {
-        //suppression de la réservation
-        QSqlQuery RequeteSupp;
-        RequeteSupp.prepare("DELETE FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
-        RequeteSupp.bindValue(":IdDuJeu",RequeteIdJeu.value(0));
-
-        if (!RequeteSupp.exec())
+        QString ListeJeux;
+        while((DataEnCours=ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).child(i++,0).data())!=QVariant::Invalid)
         {
-            qDebug()<< "F_Emprunt::on_Bt_SupprimerReservation_clicked() =>" << RequeteSupp.lastQuery() ;
+            ListeJeux+=DataEnCours.toString()+"\n";
         }
-
-        RequeteSupp.next();
-
-        AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
+        Message="Voulez-vous supprimer cette réservation de "+
+                ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).data().toString()+
+                " ?\nListe des jeux :\n"+ListeJeux;
     }
-    //Grise le bouton de suppression du tableau des réservations
-    ui->Bt_SupprimerReservation->setEnabled(false);
-    // Efface les info sur le jeu actuellement affiché
-    this->ViderJeu();
+    else
+    {
+        IsMalle=false;
+        Message="Voulez-vous supprimer cette réservation ?\nNom du jeu :"+
+        ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).data().toString();
+    }
+    // Demander confirmation pour la suppression de cette réservation
+    if( ! QMessageBox::warning(0,"Suppression d'une réservation !",Message,"Supprimer cette réservation","Laisser") )
+    {
+        if(IsMalle)
+        {
+            //suppression de la réservation de malle
+            QSqlQuery RequeteSupp;
+            RequeteSupp.prepare("DELETE FROM malles WHERE IdMalle=:IdMalle");
+            RequeteSupp.bindValue(":IdMalle",ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).data(Qt::UserRole+1).toInt());
+
+            if (!RequeteSupp.exec())
+            {
+                qDebug()<< getLastExecutedQuery(RequeteSupp) <<RequeteSupp.lastError();
+            }
+            qDebug()<< getLastExecutedQuery(RequeteSupp) <<RequeteSupp.lastError();
+
+            i=0;
+            while((DataEnCours=ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).child(i++,1).data(Qt::UserRole+1))!=QVariant::Invalid)
+            {
+                F_Emprunt::SuppressionReservation(DataEnCours.toInt());
+            }
+        }
+        else
+        {
+            F_Emprunt::SuppressionReservation(ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),1).data(Qt::UserRole+1).toInt());
+        }
+        AfficherJeuxReserve(ModeleJeuxReserves,MembreActif,false);
+        return true;
+    }
+    return false;
+}
+
+void F_Emprunt::SuppressionReservation(int iIdReservation)
+{
+    //suppression de la réservation
+    QSqlQuery RequeteSupp;
+    RequeteSupp.prepare("DELETE FROM reservation WHERE idReservation=:idReservation");
+    RequeteSupp.bindValue(":idReservation",iIdReservation);
+
+    if (!RequeteSupp.exec())
+    {
+        qDebug()<< getLastExecutedQuery(RequeteSupp) <<RequeteSupp.lastError();
+    }
+
+    RequeteSupp.next();
 }
 
 //#######################################################################################################
@@ -1572,7 +1500,7 @@ void F_Emprunt::on_Bt_SupprimerReservation_clicked()
  *  @test
  *  @see    JeuActif, MembreActif, ModeleEmpruntsAValider, NouveauEmprunts
  */
-void F_Emprunt::on_Bt_Ajouter_clicked()
+void F_Emprunt::on_Bt_AjouterJeu_clicked()
 {
     //Si la cotisation n'est pas à jour
     if(EtatCotisationMembre==false)
@@ -1590,26 +1518,27 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     {
         //Savoir combien de jeux sont en cours d'emprunt :
         QSqlQuery RequeteNbJeuEmprunte;
-        RequeteNbJeuEmprunte.prepare("SELECT Jeux_IdJeux FROM emprunts,membres "
-                                     "WHERE DateRetour IS NULL AND Membres_IdMembre=IdMembre AND "
-                                     "CodeMembre=:CodeDuMembre" );
+        RequeteNbJeuEmprunte.prepare("SELECT SUM(1) as NbJeux FROM emprunts LEFT JOIN membres ON Membres_IdMembre=IdMembre "
+                                     "WHERE DateRetour IS NULL AND Malles_IdMalle IS NULL AND CodeMembre=:CodeDuMembre" );
         RequeteNbJeuEmprunte.bindValue(":CodeDuMembre",this->MembreActif);
         if(!RequeteNbJeuEmprunte.exec())
         {
-            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked() => RequeteNbJeuEmprunte "<<RequeteNbJeuEmprunte.lastQuery();
+            qDebug()<<"RequeteNbJeuEmprunte "<<getLastExecutedQuery(RequeteNbJeuEmprunte)<<RequeteNbJeuEmprunte.lastError();
         }
+        qDebug()<<"RequeteNbJeuEmprunte "<<getLastExecutedQuery(RequeteNbJeuEmprunte)<<RequeteNbJeuEmprunte.lastError();
 
         //Tant qu'il y a des jeux
-        while(RequeteNbJeuEmprunte.next())
-        {
-             NbrTotalDeJeuxDejaSurCeCompteAdherent++;
-        }
+        RequeteNbJeuEmprunte.next();
+        qDebug()<<ObtenirValeurParNom(RequeteNbJeuEmprunte,"NbJeux").toInt();
         //on ajoute le nombre de nouveaux emprunts
-        NbrTotalDeJeuxDejaSurCeCompteAdherent =  NbrTotalDeJeuxDejaSurCeCompteAdherent+NouveauEmprunts.size();
+        NbrTotalDeJeuxDejaSurCeCompteAdherent =  ObtenirValeurParNom(RequeteNbJeuEmprunte,"NbJeux").toInt()+NouveauEmprunts.size();
     }
 
     //Met le bouton "Valider les emprunts" et "réserver" en cliquable
-    ui->Bt_ValiderEmprunt->setEnabled(true);
+    if(!this->bReservationUniquement)
+    {
+        ui->Bt_ValiderEmprunt->setEnabled(true);
+    }
     ui->Bt_Reservation->setEnabled(true);
 
     QSqlQuery RequeteIdJeu;
@@ -1622,7 +1551,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     //Exécute la requête
     if (!RequeteIdJeu.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdJeu : "<< RequeteIdJeu.lastQuery() ;
+        qDebug()<<"RequeteIdJeu : "<< RequeteIdJeu.lastQuery() ;
     }
 
     RequeteIdJeu.next();
@@ -1640,7 +1569,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     //Exécute la requête
     if (!RequeteIdMembre.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<< RequeteIdMembre.lastQuery() ;
+        qDebug()<<"RequeteIdMembre : "<< RequeteIdMembre.lastQuery() ;
     }
 
     RequeteIdMembre.next();
@@ -1701,10 +1630,11 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
 
         }
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
-        else if(ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1)
+        else //if(ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1)
         {
-            Verification=ui->Le_NbJeuxEmpruntables->text().toInt()< NbrTotalDeJeuxDejaSurCeCompteAdherent+1;
-            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\nVoulez-vous quand même autoriser l'emprunt de ce jeu ?";
+            Verification=true;
+            Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\n"
+                    "Voulez-vous quand même autoriser l'emprunt de ce jeu ?";
         }
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
         if(Verification)
@@ -1723,7 +1653,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
         if (!RequeteJeuReserve.exec())
         {
-            qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
+            qDebug()<<"RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
         }
         RequeteJeuReserve.next();
         // Si ce jeu est réservé
@@ -1758,7 +1688,7 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
                 RequeteJeuEmprunte.bindValue(":IdDuJeu",IdDuJeu);
                 if (!RequeteJeuEmprunte.exec())
                 {
-                    qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
+                    qDebug()<<"RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
 
                 }
                 AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
@@ -1778,8 +1708,6 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
         NbCredits=NbCredits+ this->ModeleEmpruntsAValider->index(i,3).data().toInt();
     }
 
-    //qDebug()<<" F_Emprunt::on_Bt_Ajouter_clicked => NbLignesEmpruntsAValider=" << NbLignesEmpruntsAValider << "NbCredits=" << NbCredits ;
-
     //Si le le prix des nouveaux emprunts est plus cher que les crédits restants, alors
     if ( NbCredits > ui->Le_CreditRestantARemplir->text().toInt() )
     {
@@ -1795,11 +1723,16 @@ void F_Emprunt::on_Bt_Ajouter_clicked()
     }
     // Prêt pour permettre un autre emprunt pour cette personne
     SearchJeux->setFocus();
-    ui->CBx_TypeEmprunt->setEnabled(false);
+    if(this->iMode==MODE_MALLES)
+    {
+        ui->CBx_TypeEmprunt->setEnabled(false);
+    }
     this->ViderJeu();
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
     ui->TbV_EmpruntAValider->resizeColumnsToContents();
+    this->SearchMembre->setEnabled(false);
+    this->SearchJeux->clear();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1844,7 +1777,7 @@ void F_Emprunt::AjouterJeuAValider(int iIdMembre, int iIdJeu,int iCodeJeu,int iT
 
     if ( ! RequeteStatut.exec())
     {
-        qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteStatut "<< RequeteStatut.lastQuery() ;
+        qDebug()<<"RequeteStatut "<< RequeteStatut.lastQuery() ;
     }
 }
 
@@ -1955,6 +1888,8 @@ void F_Emprunt::on_Bt_Reservation_clicked()
             }
         }
     }
+    this->AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
+    this->SearchMembre->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2002,27 +1937,29 @@ void F_Emprunt::on_Bt_ValiderEmprunt_clicked()
         nResultat = pPaiement->exec();
     }
 
-    // Si paiement ok, valider les emprunts
-    if (nResultat == 1)
+    // Si paiement nok, on quitte la fonction
+    if (nResultat == 0)
     {
-        this->EmprunterJeux();
-
-        // Réactualiser le nombre de crédits restant pour le communiquer à l'adhérent.
-        this->CalculerCreditsRestants();
-        if ( ui->Le_CreditRestantARemplir->text().toInt() <= 0 )
-        {
-            //mettre en rouge le nombre de crédits restants
-            ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:red;}");
-            ui->Lb_CreditRestant->setStyleSheet("QLabel {color:red;}");
-        }
-        else
-        {
-            //Le mettre en noir
-            ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:black;}");
-            ui->Lb_CreditRestant->setStyleSheet("QLabel {color:black;}");
-        }
-        ui->CBx_TypeEmprunt->setEnabled(true);
+        return;
     }
+    this->EmprunterJeux();
+
+    // Réactualiser le nombre de crédits restant pour le communiquer à l'adhérent.
+    this->CalculerCreditsRestants();
+    if ( ui->Le_CreditRestantARemplir->text().toInt() <= 0 )
+    {
+        //mettre en rouge le nombre de crédits restants
+        ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:red;}");
+        ui->Lb_CreditRestant->setStyleSheet("QLabel {color:red;}");
+    }
+    else
+    {
+        //Le mettre en noir
+        ui->Le_CreditRestantARemplir->setStyleSheet("QLineEdit {color:black;}");
+        ui->Lb_CreditRestant->setStyleSheet("QLabel {color:black;}");
+    }
+    ui->CBx_TypeEmprunt->setEnabled(true);
+    this->SearchMembre->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2086,6 +2023,8 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
         //Grise le bouton de validation des nouveaux emprunts
         ui->Bt_ValiderEmprunt->setEnabled(false);
         ui->CBx_TypeEmprunt->setEnabled(true);
+        this->SearchMembre->setEnabled(true);
+        ui->Bt_SupprimerEmpruntAValider->setEnabled(false);
     }
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
@@ -2164,7 +2103,7 @@ void F_Emprunt::on_LE_SearchJeux_returnPressed()
 {
     if(SearchJeux->currentText()!="")
     {
-        on_Bt_Ajouter_clicked();
+        on_Bt_AjouterJeu_clicked();
         SearchJeux->setCurrentText("");
     }
 }
@@ -2224,16 +2163,18 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     Requete.next();
 
     //Récupère le nom du jeu et l'affiche
-    ui->Le_NomJeuARemplir->setText( Requete.value(0).toString() ) ;
+    ui->Le_NomJeuARemplir->setText(ObtenirValeurParNom(Requete,"NomJeu").toString() ) ;
 
     //Récupère le prix de la caution et l'enregistre dans PrixCaution
     PrixCaution=Requete.value(1).toInt();
 
     //Récupère le prix de l'emprunt et l'affiche
-    ui->Le_PrixEmpruntARemplir->setText(Requete.value(2).toString());
+    ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
 
     //Récupère la remarque et l'affiche
-    ui->TxE_RemarquesJeu->setText(Requete.value(4).toString());
+    ui->TxE_RemarquesJeu->setText(ObtenirValeurParNom(Requete,"Remarque").toString());
+
+    ui->TxE_ContenuBoite->setText(ObtenirValeurParNom(Requete,"ContenuJeu").toString());
 
     //Grise les boutons de modification de la remarque du jeu
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
@@ -2241,7 +2182,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
 
     QDateTime DateActuelle;
     DateActuelle= DateActuelle.currentDateTime();
-    ui->DtE_Depart->setDate(DateActuelle.date());
+    ui->DtE_Depart->setTime(DateActuelle.time());
 
     //Savoir si le jeu est déja réservé
     QCalendarWidget * Calendrier=new QCalendarWidget();
@@ -2335,7 +2276,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
         ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:green;}");
         ui->Lb_StatutJeu->setStyleSheet("QLabel {color:green;}");
         //Met le bouton "Ajouté" en cliquable
-        ui->Bt_Ajouter->setEnabled(true);
+        ui->Bt_AjouterJeu->setEnabled(true);
     }
     else
     {
@@ -2350,7 +2291,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
             //Exécute la requête
             if (!RequeteIdMembre.exec())
             {
-                qDebug()<<"F_Emprunt::on_Bt_Ajouter_clicked => RequeteIdMembre : "<<RequeteIdMembre.lastQuery() ;
+                qDebug()<<"RequeteIdMembre : "<<RequeteIdMembre.lastQuery() ;
             }
 
             RequeteIdMembre.next();
@@ -2373,7 +2314,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
                 ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:green;}");
                 ui->Lb_StatutJeu->setStyleSheet("QLabel {color:green;}");
                 //Met le bouton "Ajouté" en cliquable
-                ui->Bt_Ajouter->setEnabled(true);
+                ui->Bt_AjouterJeu->setEnabled(true);
             }
             else
             {
@@ -2381,7 +2322,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
                 ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:red;}");
                 ui->Lb_StatutJeu->setStyleSheet("QLabel {color:red;}");
                 //Met le bouton "Ajouté" en non-cliquable
-                ui->Bt_Ajouter->setEnabled(false);
+                ui->Bt_AjouterJeu->setEnabled(false);
             }
         }
         else // pour tous les autres statuts autre que disponible
@@ -2390,7 +2331,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
             ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:red;}");
             ui->Lb_StatutJeu->setStyleSheet("QLabel {color:red;}");
             //Met le bouton "Ajouté" en non-cliquable
-            ui->Bt_Ajouter->setEnabled(false);
+            ui->Bt_AjouterJeu->setEnabled(false);
         }
     }
 
@@ -2405,8 +2346,8 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     RequeteEtat.next();
 
     //met le focus sur le bouton "Ajouter"
-    //ui->Bt_Ajouter->setFocus(Qt::TabFocusReason);
-    //ui->Bt_Ajouter->setFocusPolicy(Qt::StrongFocus);
+    //ui->Bt_AjouterJeu->setFocus(Qt::TabFocusReason);
+    //ui->Bt_AjouterJeu->setFocusPolicy(Qt::StrongFocus);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2502,7 +2443,7 @@ void F_Emprunt::slot_Clic_Emprunter(int iIdMalle)
 
 void F_Emprunt::on_DtE_Depart_editingFinished()
 {
-    this->ActualiserListeJeux();
+
 }
 
 void F_Emprunt::on_DtE_Retour_editingFinished()
@@ -2521,4 +2462,36 @@ int F_Emprunt::get_MalleReserveeSelectionnee()
 int F_Emprunt::get_MalleEmprunteeSelectionnee()
 {
     return this->ModeleJeuxEmpruntes->data(ui->Tv_JeuxMembres->currentIndex(),Qt::UserRole+1).toInt();
+}
+
+void F_Emprunt::on_Bt_AjoutNonAdherent_clicked()
+{
+    F_Membres* pMembres;
+    pMembres = new F_Membres(MODE_NON_ADHERENT,0);
+    connect(pMembres,SIGNAL(Signal_Non_Adherent_Cree(int)),this,SLOT(slot_Non_Adherent_Cree(int)));
+    pMembres->on_Bt_AjouterMembre_clicked();
+    pMembres->setWindowModality(Qt::ApplicationModal);
+    pMembres->showMaximized();
+}
+
+void F_Emprunt::slot_Non_Adherent_Cree(int iCodeMembre)
+{
+    SearchMembre->setCurrentText(QString::number(iCodeMembre));
+    AfficherMembre(QString::number(iCodeMembre));
+}
+
+void F_Emprunt::on_DtE_Depart_dateChanged(const QDate &date)
+{
+    if( ! QMessageBox::warning(0,"Changement de la date de départ","Si vous changer la date de départ, vous ne pourrez faire que des réservations.\n"
+                               "(Changer de membre pour revenir en mode emprunt/réservation)","Continuer","Annuler") )
+    {
+        bReservationUniquement=true;
+        ui->Bt_ValiderEmprunt->setEnabled(false);
+        this->ActualiserListeJeux();
+    }
+    else
+    {
+        QDateTime DateActuelle;
+        ui->DtE_Depart->setDateTime(DateActuelle.currentDateTime());
+    }
 }

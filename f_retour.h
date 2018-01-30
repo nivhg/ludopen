@@ -73,6 +73,9 @@ public:
     //! Mise à jour de la liste des jeux
     bool MaJListeJeux();
 
+    //! Faire le retour d'un jeu
+    void RetournerJeu(QString CodeJeu,QString NomJeu);
+
 private slots:
     void on_LE_SearchMembre_returnPressed();
 
@@ -108,6 +111,8 @@ private slots:
 
     void on_Bt_ToutSelectionner_clicked();
 
+    void on_Bt_ToutDeselectionner_clicked();
+
 private:
     Ui::F_Retour *ui;
 
@@ -115,6 +120,8 @@ private:
     QString MembreActif;
     //! Code du jeu actif sur la fenêtre
     QString JeuActif;
+    //! Code du jeu actif sur la fenêtre
+    int iMalleActive;
     //! modèle du TableView des jeux réservés
     QStandardItemModel * ModelJeuReserves;
     //! modèle du TableView des jeux empruntés
@@ -128,10 +135,10 @@ private:
     SearchBox *SearchJeux;
 
     //! Liste des membres
-        QVector<QVector <QString> > VecteurMembres;
+    QVector<QVector <QString> > VecteurMembres;
 
     //! Liste des jeux
-        QVector<QVector <QString> > VecteurJeux;
+    QVector<QVector <QString> > VecteurJeux;
 
 };
 

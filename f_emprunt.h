@@ -58,7 +58,7 @@ public:
                             int iPrixEmprunt,QString sNomJeu,bool bJeuSpecial);
     /** @brief Affiche les jeux empruntés par le membre
      */
-    static void AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
+    static int AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QString MembreActif,
                                bool bRetour,QString *NbreJeuxRendre,QString *AmendeAPayer);
     /** @brief Affiche les jeux réservés par le membre
      */
@@ -113,6 +113,12 @@ public:
     //! Renvoie l'ID de la malle empruntée sélectionnée
     int get_MalleEmprunteeSelectionnee();
 
+    //! Suppression d'une réservation
+    static void SuppressionReservation(int iIdReservation);
+
+    //! Suppression de la réservation sélectionnée
+    static bool SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif);
+
 private slots:
     void on_TxE_Remarques_textChanged();
 
@@ -128,7 +134,7 @@ private slots:
 
     void on_CBx_TypeEmprunt_currentIndexChanged(int index);
 
-    void on_Bt_Ajouter_clicked();
+    void on_Bt_AjouterJeu_clicked();
 
     void on_Bt_ValiderEmprunt_clicked();
 
@@ -158,9 +164,17 @@ private slots:
 
     void on_DtE_Retour_editingFinished();
 
+    void on_Bt_AjoutNonAdherent_clicked();
+
+    void on_DtE_Depart_dateChanged(const QDate &date);
+
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);
 
+    void slot_Non_Adherent_Cree(int iCodeMembre);
+
+signals:
+    void Signal_Reservation_Malle(int iIdMalle);
 private:
     Ui::F_Emprunt *ui;
 
@@ -209,6 +223,11 @@ private:
 
 //! Tableau associatif pour stocker la table TypeMalle
     QHash< int, QHash<QString, QVariant> > HashTypeEmprunt;
+
+//! Nombre de jeux en cours d'emprunt hors malles
+    int NbEmpruntEnCours;
+//! Indique si l'utilisateur à changer la date de départ, dans ce cas il ne peut faire que des réservations
+    bool bReservationUniquement;
 };
 
 #endif // F_EMPRUNT_H

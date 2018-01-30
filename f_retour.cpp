@@ -92,12 +92,11 @@ F_Retour::F_Retour(QWidget *parent) :
    // Autorise le tri pour ce tableau
    ui->Tv_JeuxEmprunte->setSortingEnabled(true);
    //Initialise les colonnes du TableView des nouveaux emprunts
-   this->ModelJeuEmpruntes->setColumnCount(4);
+   this->ModelJeuEmpruntes->setColumnCount(3);
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Code"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date retour"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(4, new QStandardItem("Sélection"));
    ui->Tv_JeuxEmprunte->setColumnWidth(0,140);
    ui->Tv_JeuxEmprunte->setColumnWidth(1,40);
 
@@ -322,7 +321,7 @@ void F_Retour::AfficherMembre()
 
     if (!Requete.exec())
     {
-        qDebug()<<"F_Retour::AfficherMembre || requete info membre "<<Requete.lastQuery();
+        qDebug()<<"requete info membre "<<Requete.lastQuery();
     }
 
     Requete.next();
@@ -670,35 +669,102 @@ void F_Retour::on_TxE_RemarquesJeu_textChanged()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
 {
-    // Si on a cliqué sur une case à cocher
-    if(this->ModelJeuEmpruntes->index(index.row(),index.column()).flags() & Qt::ItemIsUserCheckable==Qt::ItemIsUserCheckable)
+    // Si c'est un jeu d'une malle, on désélectionne la sélection et on quitte la fonction
+    if(index.parent().isValid())
     {
-        bool checkedFound=false;
-        for(int i=0;i<ModelJeuEmpruntes->rowCount();i++)
+        for(int i=0;i<this->ModelJeuEmpruntes->columnCount();i++)
         {
-            if(ModelJeuEmpruntes->item(i,4)->checkState()==Qt::Checked)
-            {
-                checkedFound=true;
-            }
+            ui->Tv_JeuxEmprunte->selectionModel()->select(ModelJeuEmpruntes->index(index.row(),i,index.parent()),QItemSelectionModel::Deselect);
         }
-        if(checkedFound)
+        return;
+    }
+    int NbJeux=0;
+    int NbMalles=0;
+    QString CodePremierJeuChoisi;
+    // On parcours le selectionModel pour voir ce qui a été sélectionné
+    foreach(QModelIndex selectedIndex, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
+    {
+        // Si une malle a été sélectionnée
+        if(this->ModelJeuEmpruntes->index(selectedIndex.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
         {
-            ui->Bt_RendreJeu->setEnabled(true);
-            ui->Bt_Prolonger->setEnabled(true);
+            NbMalles++;
         }
         else
         {
-            ui->Bt_RendreJeu->setEnabled(false);
-            ui->Bt_Prolonger->setEnabled(false);
+            if(CodePremierJeuChoisi=="")
+            {
+                CodePremierJeuChoisi=this->ModelJeuEmpruntes->index(selectedIndex.row(),1).data().toString();
+            }
+            NbJeux++;
         }
+    }
+    // Si on a cliqué sur une malle
+    if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+    {
+        QHash<QString, QVariant> hInfosMalle=this->ModelJeuEmpruntes->item(index.row(),0)->data().value<QHash<QString, QVariant> >();
+        QString ListeJeux;
+        QVariant DataEnCours;
+        int i=0;
+        while((DataEnCours=this->ModelJeuEmpruntes->index(index.row(),0).child(i++,0).data())!=QVariant::Invalid)
+        {
+            ListeJeux+=DataEnCours.toString()+"\n";
+        }
+        iMalleActive=hInfosMalle["IdMalle"].toInt();
+        ui->LE_NomJeuARemplir->setText(hInfosMalle["TypeEmprunt"].toString());
+        ui->TxE_RemarquesJeu->setText(hInfosMalle["Remarque"].toString());
+
+        //Grise les boutons de modification des remarques du membre
+        ui->Bt_ValiderRemarqueJeu->setEnabled(false);
+        ui->Bt_AnnulerRemarqueJeu->setEnabled(false);
+
+        ui->LE_Caution->setText(hInfosMalle["Caution"].toString());
+        ui->TxE_ContenuBoite->setText(ListeJeux);
+
+    }
+    // Si on a cliqué sur un jeu
+    else
+    {
+        // On bloque les signals de la Searchbox pour éviter qu'elle appelle la fonction AfficherJeuxEnEmprunt qui efface la sélection
+        SearchJeux->blockSignals(true);
+        if(NbJeux==1)
+        {
+            SearchJeux->setCurrentText(CodePremierJeuChoisi);
+        }
+        else
+        {
+            SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(index.row(),1).data().toString());
+        }
+        SearchJeux->blockSignals(false);
+        // Affiche les infos du jeu sélectionné
+        this->JeuActif = SearchJeux->currentText();
+        //Affiche les informations du jeu actuellement choisi dans la liste des jeux empruntés de ce membre
+        AfficherDetailDuJeu();
+    }
+    // Si aucun jeux et malles n'a été sélectionné
+    if(NbJeux==0 && NbMalles==0)
+    {
+        ui->Bt_RendreJeu->setEnabled(false);
     }
     else
     {
-        unsigned int LigneTableau (0);
-        LigneTableau=index.row();
-        SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(LigneTableau,1).data().toString());
-        // Affiche les infos du jeu sélectionné
-        on_LE_SearchJeux_returnPressed();
+        ui->Bt_RendreJeu->setEnabled(true);
+    }
+    // Si aucun jeux ou plus d'un jeu a été sélectionné
+    if(NbJeux==0||NbJeux>1)
+    {
+        ui->Bt_Prolonger->setEnabled(false);
+        ui->Lb_TypeProlongation->setVisible(false);
+        ui->CBx_TypeProlongation->setVisible(false);
+        ui->Lb_Prolonger->setVisible(false);
+        ui->DtE_Prolonger->setVisible(false);
+    }
+    else
+    {
+        ui->Bt_Prolonger->setEnabled(true);
+        ui->Lb_TypeProlongation->setVisible(true);
+        ui->CBx_TypeProlongation->setVisible(true);
+        ui->Lb_Prolonger->setVisible(true);
+        ui->DtE_Prolonger->setVisible(true);
     }
 }
 
@@ -785,7 +851,7 @@ void F_Retour::on_Bt_Prolonger_clicked()
 
     if (!RequeteCredit.exec())
     {
-       qDebug()<<"F_Retour::on_Bt_Prolonger_clicked =>  RequeteCredit "<<RequeteCredit.lastQuery();
+        qDebug()<<"RequeteCredit "<<getLastExecutedQuery(RequeteCredit)<<RequeteCredit.lastError();
     }
     RequeteCredit.next();
 
@@ -827,11 +893,11 @@ void F_Retour::on_LE_SearchJeux_returnPressed()
 
     if (!RequeteStatut.exec())
     {
-       qDebug()<<"F_Retour::on_LE_SearchJeux_returnPressed =>  RequeteStatut "<<RequeteStatut.lastQuery();
+       qDebug()<<"RequeteStatut "<<getLastExecutedQuery(RequeteStatut)<<RequeteStatut.lastError();
     }
 
     RequeteStatut.next();
-
+    // Vérification que le jeu a bien été emprunté
     if(RequeteStatut.value(0)==3)
     {
         this->JeuActif = CodeJeu;
@@ -922,19 +988,39 @@ void F_Retour::on_Bt_AnnulerRemarqueMembre_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Bt_ValiderRemarqueJeu_clicked()
 {
-   QSqlQuery RequeteMiseAJourRemarqueJeu;
+    if(iMalleActive!=0)
+    {
+        QSqlQuery RequeteMiseAJourRemarqueMalle;
 
-   //prépare le requête de mise à jour
-   RequeteMiseAJourRemarqueJeu.prepare("UPDATE jeux SET Remarque =:NouvelRemarque WHERE CodeJeu=:CodeDuJeu");
+        //prépare le requête de mise à jour
+        RequeteMiseAJourRemarqueMalle.prepare("UPDATE malles SET Remarque =:NouvelRemarque WHERE IdMalle=:IdMalle");
 
-   //Entre les valeurs de la requête
-   RequeteMiseAJourRemarqueJeu.bindValue(":CodeDuJeu",JeuActif);
-   RequeteMiseAJourRemarqueJeu.bindValue(":NouvelRemarque",ui->TxE_RemarquesJeu->toPlainText());
+        //Entre les valeurs de la requête
+        RequeteMiseAJourRemarqueMalle.bindValue(":IdMalle",this->iMalleActive);
+        RequeteMiseAJourRemarqueMalle.bindValue(":NouvelRemarque",ui->TxE_RemarquesJeu->toPlainText());
 
-   if (!RequeteMiseAJourRemarqueJeu.exec())
-   {
-      qDebug()<<"F_Retour::on_Bt_ValiderRemarqueJeu_clicked || RequeteMiseAJourRemarqueJeu "<< RequeteMiseAJourRemarqueJeu.lastQuery();
-   }
+        if (!RequeteMiseAJourRemarqueMalle.exec())
+        {
+           qDebug()<< getLastExecutedQuery(RequeteMiseAJourRemarqueMalle) << RequeteMiseAJourRemarqueMalle.lastError();
+        }
+        AfficherJeuxEnEmprunt();
+    }
+    else
+    {
+       QSqlQuery RequeteMiseAJourRemarqueJeu;
+
+       //prépare le requête de mise à jour
+       RequeteMiseAJourRemarqueJeu.prepare("UPDATE jeux SET Remarque =:NouvelRemarque WHERE CodeJeu=:CodeDuJeu");
+
+       //Entre les valeurs de la requête
+       RequeteMiseAJourRemarqueJeu.bindValue(":CodeDuJeu",JeuActif);
+       RequeteMiseAJourRemarqueJeu.bindValue(":NouvelRemarque",ui->TxE_RemarquesJeu->toPlainText());
+
+       if (!RequeteMiseAJourRemarqueJeu.exec())
+       {
+          qDebug()<<"F_Retour::on_Bt_ValiderRemarqueJeu_clicked || RequeteMiseAJourRemarqueJeu "<< RequeteMiseAJourRemarqueJeu.lastQuery();
+       }
+    }
 
    //Grise les boutons de modification de le remarque
    ui->Bt_ValiderRemarqueJeu->setEnabled(false);
@@ -973,191 +1059,176 @@ void F_Retour::on_Bt_AnnulerRemarqueJeu_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Bt_RendreJeu_clicked()
 {
-    if((JeuActif!="")&&(MembreActif!=""))
+    // Si aucun membre n'est actif, on sort de la fonction
+    if(MembreActif=="")
     {
-        QSqlQuery RequeteRetour;
-        QDateTime DateDeRetourToleree;
-        DateDeRetourToleree=DateDeRetourToleree.currentDateTime();
-
-        //Rechercher la date prévu de l'emprunt
-        QSqlQuery RequeteDateRetour;
-        RequeteDateRetour.prepare("SELECT DateRetourPrevu"
-                                  " FROM emprunts,jeux"
-                                  " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux AND DateRetour IS NULL");
-        RequeteDateRetour.bindValue(":CodeDuJeu",this->JeuActif);
-
-        if (!RequeteDateRetour.exec())
-        {
-           qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked =>  RequeteDateRetour "<<RequeteDateRetour.lastQuery();
-        }
-        RequeteDateRetour.next();
-
-        //Comparaison entre la date prévue du retour et la date du jour, on récupère un int
-        unsigned int EcartJours (0);
-        EcartJours= RequeteDateRetour.value(0).toDateTime().daysTo(DateDeRetourToleree);
-
-        //
-        // TO DO Ajouter un paramètre qui est le nombre de jour de retard toléré avant de compter une amende
-        //
-        // obtenir le nombre de jours tolérés pour un retard
-        //DateDeRetourToleree=DateDeRetourToleree.currentDateTime();
-        unsigned int NbJoursRetardToleres(0);
-        // Calculer la date de retour avec la tolérance du nombre de jours
-        NbJoursRetardToleres = F_Preferences::ObtenirValeur("JourRetard").toInt();
-        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked() => NbJoursRetardToleres=" << NbJoursRetardToleres ;
-
-        //si la date de retour est supérieure à la date du jour, alors le jeux est rendu en retard
-        if(EcartJours > NbJoursRetardToleres)
-        {
-            //Donc on incrémente le nombre de retard du membre
-            //On récupère d'abord le nombre de retard du membre
-            QSqlQuery RequeteNbRetardsMembre;
-            RequeteNbRetardsMembre.prepare("SELECT NbreRetard FROM membres WHERE CodeMembre=:CodeDuMembre");
-            RequeteNbRetardsMembre.bindValue(":CodeDuMembre",this->MembreActif);
-
-            if (!RequeteNbRetardsMembre.exec())
-            {
-               qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked =>  RequeteNbRetardsMembre "<<RequeteNbRetardsMembre.lastQuery();
-            }
-            RequeteNbRetardsMembre.next();
-
-            //Puis on l'incrémente
-            QSqlQuery RequeteRetard;
-            RequeteRetard.prepare("UPDATE membres SET NbreRetard=:NbRetard WHERE CodeMembre=:CodeDuMembre");
-            RequeteRetard.bindValue(":NbRetard",RequeteNbRetardsMembre.value(0).toInt()+1);
-            RequeteRetard.bindValue(":CodeDuMembre",this->MembreActif);
-
-            if (!RequeteRetard.exec())
-            {
-               qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked =>  RequeteRetard "<<RequeteRetard.lastQuery();
-            }
-        }
-
-        // Mise à jour de la table emprunt
-        RequeteRetour.prepare("UPDATE emprunts,jeux "
-                              "SET DateRetour=:DateRetour "
-                              "WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
-
-        RequeteRetour.bindValue(":DateRetour",DateDeRetourToleree);
-        RequeteRetour.bindValue(":CodeDuJeu",this->JeuActif);
-        if(!RequeteRetour.exec())
-        {
-            qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastQuery();
-        }
-
-        //if(RequeteStatut.value(0) == 1 ) // "statut 1 = Disponnible"
-        {
-            //Savoir si le jeu est réservé
-            //
-            // TO DO rendre le jeu dispo à la réservation
-            //
-            QSqlQuery RequeteJeu;
-            RequeteJeu.prepare("SELECT idReservation FROM reservation,jeux"
-                               " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
-            RequeteJeu.bindValue(":CodeDuJeu",this->JeuActif);
-
-            if(!RequeteJeu.exec())
-            {
-                qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteJeu "<< RequeteJeu.lastQuery();
-            }
-
-            RequeteJeu.next();
-
-            if(RequeteJeu.size()>0)
-            {
-                //Modifier la réservation de ce jeu pour qu'il soit marqué "Disponible" pour l'emprunt
-                QSqlQuery RequeteJeuEmprunte;
-                RequeteJeuEmprunte.prepare("UPDATE reservation FROM reservation,jeux SET JeuEmprunte=1"
-                                           " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
-                RequeteJeuEmprunte.bindValue(":CodeDuJeu",this->JeuActif);
-                if (!RequeteJeuEmprunte.exec())
-                {
-                    qDebug()<<"F_Retour::on_Bt_Ajouter_clicked || RequeteJeuEmprunte "<<RequeteJeuEmprunte.lastQuery() ;
-                }
-                //
-                // TODO message avec le nom de la personne qui a réservé
-                //
-                QMessageBox::information(this,"Ce jeu est réservé !","Vous devriez mettre ce jeu de coté.","Mis de coté","Pas mis de coté");
-
-            }
-        }
-        ActualiserMembre();
-        ViderJeu();
+        qDebug()<<"Aucun jeu n'est sélectionné!!!";
+        return;
     }
-    else
+
+    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedIndexes())
     {
-        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked =>  Aucun jeu n'est sélectionné!!!";
+        if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+        {
+            QHash<QString, QVariant> hInfosMalle=this->ModelJeuEmpruntes->
+                    item(index.row(),0)->data().value<QHash<QString, QVariant> >();
+            int iIdMalle=hInfosMalle["IdMalle"].toInt();
+            // Mise à jour de la table malles
+            QSqlQuery RequeteRetourMalle;
+            RequeteRetourMalle.prepare("UPDATE malles SET DateRetour=:DateRetour "
+                                  "WHERE DateRetour IS NULL AND IdMalle=:IdMalle");
+
+            QDateTime DateDeRetour;
+            DateDeRetour=DateDeRetour.currentDateTime();
+            RequeteRetourMalle.bindValue(":DateRetour",DateDeRetour);
+            RequeteRetourMalle.bindValue(":IdMalle",iIdMalle);
+            if(!RequeteRetourMalle.exec())
+            {
+                qDebug()<<"RequeteRetourMalle "<< getLastExecutedQuery(RequeteRetourMalle) << RequeteRetourMalle.lastError();
+            }
+            QVariant CodeEnCours;
+            int j=0;
+            while((CodeEnCours=this->ModelJeuEmpruntes->index(index.row(),0).child(j,1).data())
+                  !=QVariant::Invalid)
+            {
+                RetournerJeu(CodeEnCours.toString(),this->ModelJeuEmpruntes->
+                             index(index.row(),0).child(j,0).data().toString());
+                j++;
+            }
+        }
+        // Si c'est un jeu
+        else
+        {
+            this->RetournerJeu(ModelJeuEmpruntes->item(index.row(),1)->text(),
+                               ModelJeuEmpruntes->item(index.row(),0)->text());
+        }
     }
+    ActualiserMembre();
+    ViderJeu();
 }
 
+void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
+{
+    QSqlQuery RequeteRetour;
+    QDateTime DateDeRetourToleree;
+    DateDeRetourToleree=DateDeRetourToleree.currentDateTime();
+
+    //Rechercher la date prévu de l'emprunt
+    QSqlQuery RequeteDateRetour;
+    RequeteDateRetour.prepare("SELECT DateRetourPrevu"
+                              " FROM emprunts,jeux"
+                              " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux AND DateRetour IS NULL");
+    RequeteDateRetour.bindValue(":CodeDuJeu",CodeJeu);
+
+    if (!RequeteDateRetour.exec())
+    {
+       qDebug()<<"RequeteDateRetour "<<RequeteDateRetour.lastQuery();
+    }
+    RequeteDateRetour.next();
+
+    //Comparaison entre la date prévue du retour et la date du jour, on récupère un int
+    unsigned int EcartJours (0);
+    EcartJours= RequeteDateRetour.value(0).toDateTime().daysTo(DateDeRetourToleree);
+
+    unsigned int NbJoursRetardToleres(0);
+    // Calculer la date de retour avec la tolérance du nombre de jours
+    NbJoursRetardToleres = F_Preferences::ObtenirValeur("JourRetard").toInt();
+
+    //si la date de retour est supérieure à la date du jour, alors le jeux est rendu en retard
+    if(EcartJours > NbJoursRetardToleres)
+    {
+        //Donc on incrémente le nombre de retard du membre
+        //On récupère d'abord le nombre de retard du membre
+        QSqlQuery RequeteNbRetardsMembre;
+        RequeteNbRetardsMembre.prepare("SELECT NbreRetard FROM membres WHERE CodeMembre=:CodeDuMembre");
+        RequeteNbRetardsMembre.bindValue(":CodeDuMembre",this->MembreActif);
+
+        if (!RequeteNbRetardsMembre.exec())
+        {
+           qDebug()<<"RequeteNbRetardsMembre "<<RequeteNbRetardsMembre.lastQuery();
+        }
+        RequeteNbRetardsMembre.next();
+
+        //Puis on l'incrémente
+        QSqlQuery RequeteRetard;
+        RequeteRetard.prepare("UPDATE membres SET NbreRetard=:NbRetard WHERE CodeMembre=:CodeDuMembre");
+        RequeteRetard.bindValue(":NbRetard",RequeteNbRetardsMembre.value(0).toInt()+1);
+        RequeteRetard.bindValue(":CodeDuMembre",this->MembreActif);
+
+        if (!RequeteRetard.exec())
+        {
+           qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked =>  RequeteRetard "<<RequeteRetard.lastQuery();
+        }
+    }
+
+    // Mise à jour de la table emprunt
+    RequeteRetour.prepare("UPDATE emprunts,jeux "
+                          "SET DateRetour=:DateRetour "
+                          "WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
+
+    RequeteRetour.bindValue(":DateRetour",DateDeRetourToleree);
+    RequeteRetour.bindValue(":CodeDuJeu",CodeJeu);
+    if(!RequeteRetour.exec())
+    {
+        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastQuery();
+    }
+
+    //Savoir si le jeu est réservé
+    QSqlQuery RequeteJeu;
+    RequeteJeu.prepare("SELECT idReservation FROM reservation,jeux"
+                       " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
+    RequeteJeu.bindValue(":CodeDuJeu",CodeJeu);
+
+    if(!RequeteJeu.exec())
+    {
+        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteJeu "<< RequeteJeu.lastQuery();
+    }
+
+    RequeteJeu.next();
+
+    if(RequeteJeu.size()>0)
+    {
+        //Modifier la réservation de ce jeu pour qu'il soit marqué "Disponible" pour l'emprunt
+        QSqlQuery RequeteJeuEmprunte;
+        RequeteJeuEmprunte.prepare("UPDATE reservation FROM reservation,jeux SET JeuEmprunte=1"
+                                   " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
+        RequeteJeuEmprunte.bindValue(":CodeDuJeu",CodeJeu);
+        if (!RequeteJeuEmprunte.exec())
+        {
+            qDebug()<<"F_Retour::on_Bt_Ajouter_clicked || RequeteJeuEmprunte "<<RequeteJeuEmprunte.lastQuery() ;
+        }
+        //
+        // TODO message avec le nom de la personne qui a réservé+mettre dans la BDD info que le jeu a été mis de coté
+        //
+        QMessageBox::information(this,"Le jeu "+NomJeu+" ("+CodeJeu+") est réservé !",
+                                 "Vous devriez mettre ce jeu de coté.","Mis de coté","Pas mis de coté");
+
+    }
+}
 
 ////////////////////////////////////////////Suppression d'un jeu réservé/////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_bt_SuppReservation_clicked()
 {
-
-    //Récupération de l'id du jeu avec son code
-    QSqlQuery RequeteIdJeu;
-    RequeteIdJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    RequeteIdJeu.bindValue(":CodeDuJeu",(this->ModelJeuReserves->index(ui->Tv_JeuxReserve->currentIndex().row(),0).data().toString()));
-
-    if (!RequeteIdJeu.exec())
+    if(F_Emprunt::SupprimerReservation(ui->Tv_JeuxReserve,this->ModelJeuReserves,this->MembreActif))
     {
-        qDebug()<<"F_Retour::on_bt_SuppReservation_clicked || RequeteIdJeu "<<RequeteIdJeu.lastQuery() ;
+        //Grise le bouton de suppression du tableau des réservations
+        ui->bt_SuppReservation->setEnabled(false);
+        // Efface les info sur le jeu actuellement affiché
+        this->ViderJeu();
     }
-    RequeteIdJeu.next();
-
-    //Connaitre le statut du jeu
-    QSqlQuery RequeteStatut;
-    RequeteStatut.prepare("SELECT StatutJeux_IdStatutJeux FROM jeux WHERE IdJeux=:IdDuJeu");
-    RequeteStatut.bindValue(":IdDuJeu",RequeteIdJeu.value(0));
-
-    if (!RequeteStatut.exec())
-    {
-        qDebug()<<"F_Retour::on_bt_SuppReservation_clicked || RequeteStatut "<<RequeteStatut.lastQuery() ;
-    }
-    RequeteStatut.next();
-
-    // Abandonné par WS car les réservations ne se gèrent que dans la table des réservations
-    // le jeu ne change pas de statut. Il est soit dispo à la ludo, soit emprunté par un adhérent !
-    /*
-    //si le statut du jeux est à réservé, alors,
-    if (RequeteStatut.value(0)==4)
-    {
-        //on met son statut à disponible
-        QSqlQuery RequeteMAJStatut;
-        RequeteMAJStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=1 WHERE IdJeux=:IdDuJeu");
-        RequeteMAJStatut.bindValue(":IdDuJeu",RequeteIdJeu.value(0));
-        if(!RequeteMAJStatut.exec())
-        {
-            qDebug()<< "F_Retour::on_Tv_JeuxReserve_clicked || RequeteMAJStatut "<<RequeteMAJStatut.lastQuery();
-        }
-    }
-    */
-
-    //suppression de la réservation
-    QSqlQuery RequeteSupp;
-    RequeteSupp.prepare("DELETE FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
-    RequeteSupp.bindValue(":IdDuJeu",RequeteIdJeu.value(0));
-
-    if (!RequeteSupp.exec())
-    {
-        qDebug()<<"F_Retour::on_bt_SuppReservation_clicked || RequeteSupp "<<RequeteSupp.lastQuery() ;
-    }
-    RequeteSupp.next();
-
-    AfficherJeuxEnReservation();
-
-    //Grise le bouton de suppression du tableau des réservations
-    ui->bt_SuppReservation->setEnabled(false);
 }
 
 void F_Retour::on_Bt_ToutSelectionner_clicked()
 {
-    for(int i=0;i<ModelJeuEmpruntes->rowCount();i++)
-    {
-        ModelJeuEmpruntes->item(i,4)->setCheckState(Qt::Checked);
-    }
+    ui->Tv_JeuxEmprunte->selectAll();
     ui->Bt_RendreJeu->setEnabled(true);
     ui->Bt_Prolonger->setEnabled(true);
+}
+
+void F_Retour::on_Bt_ToutDeselectionner_clicked()
+{
+    ui->Tv_JeuxEmprunte->selectionModel()->clear();
+    ui->Bt_RendreJeu->setEnabled(false);
+    ui->Bt_Prolonger->setEnabled(false);
 }
