@@ -584,7 +584,9 @@ void F_Retour::CalculerCreditsRestants()
  */
 void F_Retour::ViderJeu()
 {
+    SearchJeux->blockSignals(true);
     SearchJeux->setCurrentText("");
+    SearchJeux->blockSignals(false);
     ui->LE_NomJeuARemplir->setText("");
     ui->TxE_ContenuBoite->setText("");
     ui->LE_Caution->setText("");

@@ -476,6 +476,7 @@ void F_Emprunt::AfficherMalle(int iIdMalle)
     ui->Bt_Reserver->setText("Modifier Malle");
     ui->Bt_Reserver->setEnabled(true);
     ui->Bt_Emprunter->setEnabled(true);
+    ui->rB_Mode_Emprunt->setChecked(true);
     this->AfficherEtatPaiement();
     this->AfficherNbEmpruntsEnCours();
 }

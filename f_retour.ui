@@ -834,25 +834,25 @@ QGroupBox::indicator:checked {
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
+         <item row="2" column="0">
           <widget class="QLabel" name="Lb_CodeMembre">
            <property name="text">
             <string>Par membre (Nom,prénom ou code) :</string>
            </property>
           </widget>
          </item>
-         <item row="4" column="0">
+         <item row="6" column="0">
           <layout class="QHBoxLayout" name="Hlay11"/>
          </item>
-         <item row="6" column="0">
-          <layout class="QHBoxLayout" name="HLay9"/>
-         </item>
-         <item row="5" column="0">
+         <item row="0" column="0">
           <widget class="QLabel" name="Lb_CodeJeu">
            <property name="text">
             <string>Par jeu (Code ou Nom) :</string>
            </property>
           </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QHBoxLayout" name="HLay9"/>
          </item>
         </layout>
        </widget>
