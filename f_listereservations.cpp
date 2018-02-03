@@ -321,11 +321,13 @@ bool F_ListeReservations::AffichageListe()
             // Ajouter au vecteur l'ID de cette réservation (sert pour la suppression des réservations)
             this->VecteurListeReservations.append( ObtenirValeurParNom(RequeteDesReservations,"idReservation").toInt() ) ;
 
-            // On place des case à cocher dans la première colonne.
-            item = new QStandardItem() ;
-            item->setCheckable( true ) ;
-            ModeleReservations.setItem( i, 0, item ) ;
-
+            if(ObtenirValeurParNom(RequeteDesReservations,"IdMalle").toInt()==0)
+            {
+                // On place des case à cocher dans la première colonne.
+                item = new QStandardItem() ;
+                item->setCheckable( true ) ;
+                ModeleReservations.setItem( i, 0, item ) ;
+            }
             // Code du jeu réservé
             ModeleReservations.setItem( i, 1, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"CodeJeu").toString() ) ) ;
@@ -541,10 +543,6 @@ void F_ListeReservations::on_DtE_DateEmpruntPrevue_Fin_dateChanged(const QDate &
 void F_ListeReservations::on_CBx_Cotisation_currentIndexChanged(int index)
 {
     this->AffichageListe() ;
-}
-
-void F_ListeReservations::on_Tv_ListeReservations_clicked(const QModelIndex &index)
-{
 }
 
 void F_ListeReservations::on_Tv_ListeReservations_doubleClicked(const QModelIndex &index)

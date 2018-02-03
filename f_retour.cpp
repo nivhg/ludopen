@@ -47,10 +47,8 @@ F_Retour::F_Retour(QWidget *parent) :
 
     connect(SearchMembre,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchMembre_returnPressed()));
 
-    MaJListeJeux();
-
     SearchJeux = new SearchBox(this);
-    SearchJeux->MAJResults(this->VecteurJeux,1);
+    ActualiserListeJeux();
     SearchJeux->show();
     ui->HLay9->addWidget(SearchJeux);
 
@@ -71,11 +69,11 @@ F_Retour::F_Retour(QWidget *parent) :
     QSqlQuery RequeteTypeEmprunt;
     QString   TypeEmprunt;
 
-    if (!RequeteTypeEmprunt.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt"))
+    if (!RequeteTypeEmprunt.exec("SELECT TypeEmprunt,DureeEmprunt FROM typeemprunt WHERE Malle=0"))
     {
        qDebug()<<"F_Retour::F_Retour || RequeteTypeEmprunt "<<RequeteTypeEmprunt.lastQuery();
     }
-   //Tant qu'il y a des types d'emprunt dans la table TupesEmprunt,
+   //Tant qu'il y a des types d'emprunt dans la table TypeEmprunt,
    while(RequeteTypeEmprunt.next())
    {
        //on entre un nouveau Item au ComboBox avec le nom du type d'emprunt
@@ -141,7 +139,7 @@ F_Retour::~F_Retour()
  *  @return True si tous c'est passé correctement et false si il y a une erreur
  *  @test   Voir la procédure dans le fichier associé.
  */
-bool F_Retour::MaJListeMembres(bool AfficherContact)
+bool F_Retour::MaJListeMembres()
 {
     QSqlQuery query ;
     QVector<QString> Membres ;
@@ -151,12 +149,9 @@ bool F_Retour::MaJListeMembres(bool AfficherContact)
     this->VecteurMembres.clear() ;
 
     QString requeteSQL;
-    requeteSQL="SELECT Nom, Prenom, Email,Ville,IdMembre,CodeMembre FROM membres ";
-    if(!AfficherContact)
-    {
-        requeteSQL+="WHERE TypeMembres_IdTypeMembres!=4 ";
-    }
-    requeteSQL+="ORDER BY Nom ASC";
+    requeteSQL="SELECT DISTINCT Nom, Prenom, Email,Ville,IdMembre,CodeMembre FROM emprunts as e "
+            "LEFT JOIN membres as m ON e.Membres_IdMembre=m.IdMembre WHERE "
+            "e.DateRetour IS NULL ORDER BY Nom ASC";
 
     //Execute une requète sql qui retourne la liste des membres
     //Si la requète est correcte -> Remplissage du veteur VecteurMembres avec le résultat de la requète et on retourne vrai.
@@ -174,7 +169,7 @@ bool F_Retour::MaJListeMembres(bool AfficherContact)
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug()<< "F_Emprunt::MaJListeMembres() : Erreur de connexion avec la base de donnée !" << endl ;
+        qDebug()<< getLastExecutedQuery(query) << query.lastError();
         bRetourner = false ;
     }
     return bRetourner ;
@@ -197,67 +192,28 @@ bool F_Retour::MaJListeJeux()
 
     QSqlQuery Requete;
     //Prépare la requête
-    Requete.prepare("SELECT NomJeu,CodeJeu FROM jeux");
+    Requete.prepare("SELECT DISTINCT j.NomJeu,j.CodeJeu FROM emprunts as e "
+                    "LEFT JOIN jeux as j ON j.IdJeux=Jeux_IdJeux WHERE "
+                    "e.DateRetour IS NULL ORDER BY NomJeu");
 
     //Execute une requète sql qui retourne la liste des jeux
     //Si la requète est correcte -> Remplissage du veteur VecteurJeux
     // avec le résultat de la requête et on retourne vrai.
-    if(Requete.exec())
+    if(!Requete.exec())
     {
-        while(Requete.next())
-        {
-            for(int i=0;i<Requete.record().count();i++)
-            {
-                Jeux.append(Requete.value(i).toString()) ;
-            }
-            this->VecteurJeux.push_back(Jeux) ;
-            Jeux.clear();
-        }
+        qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
+        return false;
     }
-    else //Sinon on affiche un message d'erreur et on retourne Faux
+    while(Requete.next())
     {
-        qDebug()<< "F_Emprunt::MaJListeJeux() : Erreur de connexion avec la base de donnée !" << endl ;
-        bRetourner = false ;
+        for(int i=0;i<Requete.record().count();i++)
+        {
+            Jeux.append(Requete.value(i).toString()) ;
+        }
+        this->VecteurJeux.push_back(Jeux) ;
+        Jeux.clear();
     }
     return bRetourner ;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////Prolonge le jeu/////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/** permet de prolonger le jeu qui est affiché
- *  @pre    Connexion à la base de données
- *  @see    JeuActif
- */
-void F_Retour:: EmprunterJeux()
-{
-    //Récupération du nombre de prolongation
-    QSqlQuery RequeteNbProlongation;
-    RequeteNbProlongation.prepare("SELECT NbrPrologation, IdEmprunts"
-                                  " FROM emprunts,jeux"
-                                  " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux AND DateRetour IS NULL");
-    RequeteNbProlongation.bindValue(":CodeDuJeu",this->JeuActif);
-
-    if (!RequeteNbProlongation.exec())
-    {
-       qDebug()<<"F_Retour::EmprunterJeux || RequeteNbProlongation "<<RequeteNbProlongation.lastQuery();
-    }
-    RequeteNbProlongation.next();
-
-    QSqlQuery RequeteProlongation;
-    RequeteProlongation.prepare("UPDATE emprunts SET NbrPrologation=:NbProlongations,DateRetourPrevu=:DateRetour"
-                                " WHERE IdEmprunts=:IdEmprunt");
-    RequeteProlongation.bindValue(":NbProlongations",RequeteNbProlongation.value(0).toInt()+1);
-    RequeteProlongation.bindValue(":DateRetour",ui->DtE_Prolonger->date());
-    RequeteProlongation.bindValue(":IdEmprunt",RequeteNbProlongation.value(1).toInt());
-
-    if (!RequeteProlongation.exec())
-    {
-       qDebug()<<"F_Retour::EmprunterJeux || RequeteProlongation "<<RequeteProlongation.lastQuery();
-    }
-
-    ViderJeu();
-    ActualiserMembre();
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,6 +238,15 @@ void F_Retour::ActualiserListeEmprunteurs()
     SearchMembre->MAJResults(VecteurMembres,3);
 }
 
+/** Actualise la liste des membres ayant des emprunts
+ *  Donne la liste de tous les membres ayant un retour à faire.
+ */
+void F_Retour::ActualiserListeJeux()
+{
+    MaJListeJeux();
+    SearchJeux->MAJResults(VecteurJeux,1);
+}
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Actualise les informations du jeu//////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,6 +256,7 @@ void F_Retour::ActualiserListeEmprunteurs()
  */
 void F_Retour::ActualiserJeu()
 {
+    ActualiserListeJeux();
     SearchJeux->setCurrentText(this->JeuActif);
     on_LE_SearchJeux_returnPressed();
 }
@@ -316,12 +282,13 @@ void F_Retour::AfficherMembre()
     QSqlQuery Requete;
 
     //Prépare la requête
-    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque,NbreJeuxAutorises FROM membres WHERE CodeMembre=:CodeDuMembre");
+    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque FROM membres WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",this->MembreActif);
 
     if (!Requete.exec())
     {
-        qDebug()<<"requete info membre "<<Requete.lastQuery();
+        qDebug()<<"requete info membre "<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        return;
     }
 
     Requete.next();
@@ -399,9 +366,6 @@ void F_Retour::AfficherMembre()
  */
 void F_Retour::AfficherDetailDuJeu()
 {
-   //dégrise le bouton rendre
-   ui->Bt_RendreJeu->setEnabled(true);
-
    //Recherche d'une éventuelle réservation du jeux
    QSqlQuery RequeteJeuReserve;
    RequeteJeuReserve.prepare("SELECT idReservation FROM reservation,jeux "
@@ -637,14 +601,6 @@ void F_Retour::ViderJeu()
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Pression sur entrée pour le code jeu///////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-void F_Retour::on_LE_CodeJeu_returnPressed()
-{
-    on_LE_SearchJeux_returnPressed();
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////Changement de la remarque du Membre//////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Txe_RemarqueMembre_textChanged()
@@ -669,13 +625,11 @@ void F_Retour::on_TxE_RemarquesJeu_textChanged()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
 {
+    qDebug()<<index;
     // Si c'est un jeu d'une malle, on désélectionne la sélection et on quitte la fonction
     if(index.parent().isValid())
     {
-        for(int i=0;i<this->ModelJeuEmpruntes->columnCount();i++)
-        {
-            ui->Tv_JeuxEmprunte->selectionModel()->select(ModelJeuEmpruntes->index(index.row(),i,index.parent()),QItemSelectionModel::Deselect);
-        }
+        ui->Tv_JeuxEmprunte->selectionModel()->select(ModelJeuEmpruntes->index(index.row(),0,index.parent()),QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
         return;
     }
     int NbJeux=0;
@@ -749,25 +703,27 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
     {
         ui->Bt_RendreJeu->setEnabled(true);
     }
-    // Si aucun jeux ou plus d'un jeu a été sélectionné
-    if(NbJeux==0||NbJeux>1)
+    if(NbMalles>0)
     {
-        ui->Bt_Prolonger->setEnabled(false);
-        ui->Lb_TypeProlongation->setVisible(false);
-        ui->CBx_TypeProlongation->setVisible(false);
-        ui->Lb_Prolonger->setVisible(false);
-        ui->DtE_Prolonger->setVisible(false);
+        this->AffichageProlongation(false);
     }
     else
     {
-        ui->Bt_Prolonger->setEnabled(true);
-        ui->Lb_TypeProlongation->setVisible(true);
-        ui->CBx_TypeProlongation->setVisible(true);
-        ui->Lb_Prolonger->setVisible(true);
-        ui->DtE_Prolonger->setVisible(true);
+        this->AffichageProlongation(true);
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////Affiche ou masque les contrôles liés à la prolongation/////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+void F_Retour::AffichageProlongation(bool Activer)
+{
+    ui->Bt_Prolonger->setEnabled(Activer);
+    ui->Lb_TypeProlongation->setVisible(Activer);
+    ui->CBx_TypeProlongation->setVisible(Activer);
+    ui->Lb_Prolonger->setVisible(Activer);
+    ui->DtE_Prolonger->setVisible(Activer);
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////Clic sur le tableau des jeux réservés/////////////////////////
@@ -803,6 +759,7 @@ void F_Retour::on_CBx_TypeProlongation_currentIndexChanged(int index)
     }
     RequeteDateRetour.next();
 
+    // Si le membre rends le jeu avant la date de retour prévue, on se base sur la date de retour prévue pour calculer la date de prolongation
     if( DateRetour<RequeteDateRetour.value(0).toDate())
     {
         DateRetour=RequeteDateRetour.value(0).toDate();
@@ -831,15 +788,6 @@ void F_Retour::on_CBx_TypeProlongation_currentIndexChanged(int index)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Pression sur entrée pour le code membre////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-void F_Retour::on_LE_CodeMembre_returnPressed()
-{
-    on_LE_SearchMembre_returnPressed();
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////Paye le prolongement////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Bt_Prolonger_clicked()
@@ -857,12 +805,25 @@ void F_Retour::on_Bt_Prolonger_clicked()
 
     int nResultat (0);
     // Création de la fenêtre du paiement
+    // TODO : Regarder les jeux réservés avant de demander le paiement
     F_Paiement FenetrePaiement;
     FenetrePaiement.AfficherPaiement(RequeteCredit.value(0).toInt(),this->MembreActif,true,VENTILATION_PRET);
     nResultat = FenetrePaiement.exec();
     if (nResultat==1)
     {
-        EmprunterJeux();
+        QSqlQuery RequeteProlongation;
+        RequeteProlongation.prepare("UPDATE emprunts as e SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
+                                    " LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux WHERE j.CodeJeu=:CodeDuJeu AND e.DateRetour IS NULL");
+        RequeteProlongation.bindValue(":DateRetour",ui->DtE_Prolonger->date());
+        RequeteProlongation.bindValue(":CodeDuJeu",this->JeuActif);
+
+        if (!RequeteProlongation.exec())
+        {
+           qDebug()<<"RequeteProlongation "<<getLastExecutedQuery(RequeteProlongation)<<RequeteProlongation.lastError();
+        }
+
+        ViderJeu();
+        ActualiserMembre();
     }
 }
 
@@ -876,6 +837,7 @@ void F_Retour::on_LE_SearchMembre_returnPressed()
    this->MembreActif=SearchMembre->currentText();
    //Affiche les informations du membre
    this->AfficherMembre();
+    ui->Bt_RendreJeu->setEnabled(false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -883,6 +845,7 @@ void F_Retour::on_LE_SearchMembre_returnPressed()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_LE_SearchJeux_returnPressed()
 {
+    ui->Bt_RendreJeu->setEnabled(false);
     //Récupère le code du jeu qui a été saisi
     QString CodeJeu= SearchJeux->currentText();
 
@@ -919,6 +882,35 @@ void F_Retour::on_LE_SearchJeux_returnPressed()
         // Actualisation du membre actif
         this->MembreActif = RequeteCodeMembre.value(0).toString() ;
         AfficherMembre();
+
+        //Savoir si le jeu est déja réservé
+        QSqlQuery RequeteResa;
+        RequeteResa.prepare("SELECT idReservation,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour "
+                            "FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux "
+                            "WHERE CodeJeu=:CodeJeu");
+        RequeteResa.bindValue(":CodeJeu",CodeJeu);
+
+        if (!RequeteResa.exec())
+        {
+            qDebug() << "RequeteResa :" << getLastExecutedQuery(RequeteResa)<<RequeteResa.lastError();
+        }
+        QCalendarWidget * Calendrier=new QCalendarWidget();
+        // Marque sur le calendrier les dates de réservation
+        while(RequeteResa.next())
+        {
+           QDate date = ObtenirValeurParNom(RequeteResa,"DatePrevuEmprunt").toDate();
+           QDate dateRetour = ObtenirValeurParNom(RequeteResa,"DatePrevuRetour").toDate().addDays(1);
+           while(date!=dateRetour)
+           {
+               QTextCharFormat cf = Calendrier->dateTextFormat(date);
+               cf.setFontStrikeOut(true);
+               Calendrier->setDateTextFormat( date, cf );
+
+               date=date.addDays(1);
+           }
+        }
+
+        ui->DtE_Prolonger->setCalendarWidget(Calendrier);
     }
     else
     {
@@ -1062,14 +1054,16 @@ void F_Retour::on_Bt_RendreJeu_clicked()
     // Si aucun membre n'est actif, on sort de la fonction
     if(MembreActif=="")
     {
-        qDebug()<<"Aucun jeu n'est sélectionné!!!";
+        qDebug()<<"Aucun membre n'est sélectionné!!!";
         return;
     }
 
-    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedIndexes())
+    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
     {
+        // S'il s'agit d'une malle
         if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
         {
+            // Récupère la QHash sur les infos de la malle
             QHash<QString, QVariant> hInfosMalle=this->ModelJeuEmpruntes->
                     item(index.row(),0)->data().value<QHash<QString, QVariant> >();
             int iIdMalle=hInfosMalle["IdMalle"].toInt();
@@ -1105,6 +1099,8 @@ void F_Retour::on_Bt_RendreJeu_clicked()
     }
     ActualiserMembre();
     ViderJeu();
+    ActualiserListeJeux();
+    ActualiserListeEmprunteurs();
 }
 
 void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
@@ -1163,7 +1159,7 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     // Mise à jour de la table emprunt
     RequeteRetour.prepare("UPDATE emprunts,jeux "
-                          "SET DateRetour=:DateRetour "
+                          "SET DateRetour=:DateRetour,StatutJeux_IdStatutJeux=1 "
                           "WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
 
     RequeteRetour.bindValue(":DateRetour",DateDeRetourToleree);
@@ -1181,7 +1177,7 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     if(!RequeteJeu.exec())
     {
-        qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteJeu "<< RequeteJeu.lastQuery();
+        qDebug()<<"RequeteJeu "<< RequeteJeu.lastQuery();
     }
 
     RequeteJeu.next();
@@ -1221,14 +1217,22 @@ void F_Retour::on_bt_SuppReservation_clicked()
 
 void F_Retour::on_Bt_ToutSelectionner_clicked()
 {
-    ui->Tv_JeuxEmprunte->selectAll();
+    // Sélection de toutes les lignes (les child des malles ne seront pas sélectionnées)
+    for(int i=0;i<this->ModelJeuEmpruntes->rowCount();i++)
+    {
+        ui->Tv_JeuxEmprunte->selectionModel()->select(
+                    this->ModelJeuEmpruntes->item(i,0)->index(),
+                    QItemSelectionModel::Select | QItemSelectionModel::Rows);
+    }
     ui->Bt_RendreJeu->setEnabled(true);
-    ui->Bt_Prolonger->setEnabled(true);
+    this->AffichageProlongation(true);
+    //On appelle cette fonction pour quel calcul si il faut activer ou non le bouton prolonger (uniquement si pas de malle)
+    on_Tv_JeuxEmprunte_clicked(this->ModelJeuEmpruntes->item(0,0)->index());
 }
 
 void F_Retour::on_Bt_ToutDeselectionner_clicked()
 {
     ui->Tv_JeuxEmprunte->selectionModel()->clear();
     ui->Bt_RendreJeu->setEnabled(false);
-    ui->Bt_Prolonger->setEnabled(false);
+    this->AffichageProlongation(false);
 }

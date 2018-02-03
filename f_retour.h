@@ -57,6 +57,9 @@ public:
      *  Donne la liste de tous les membres ayant un retour à faire.
      */
     void ActualiserListeEmprunteurs();
+    /** @brief Actualise la liste des jeux empruntés
+     */
+    void ActualiserListeJeux();
     /** @brief Affiche l'état du membre passé en paramètre
      */
     void AfficherEtatCotisation(QString CodeMembre);
@@ -68,13 +71,16 @@ public:
     void CalculerCreditsRestants();
 
     //! Mise à jour de la liste des membres
-    bool MaJListeMembres (bool AfficherContact=false);
+    bool MaJListeMembres ();
 
     //! Mise à jour de la liste des jeux
     bool MaJListeJeux();
 
     //! Faire le retour d'un jeu
     void RetournerJeu(QString CodeJeu,QString NomJeu);
+
+    //! Affiche ou masque les contrôles liés à la prolongation
+    void AffichageProlongation(bool Activer);
 
 private slots:
     void on_LE_SearchMembre_returnPressed();
@@ -92,10 +98,6 @@ private slots:
     void on_Bt_AnnulerRemarqueMembre_clicked();
 
     void on_TxE_RemarquesJeu_textChanged();
-
-    void on_LE_CodeMembre_returnPressed();
-
-    void on_LE_CodeJeu_returnPressed();
 
     void on_Bt_RendreJeu_clicked();
 

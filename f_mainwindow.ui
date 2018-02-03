@@ -124,7 +124,7 @@
         </iconset>
        </attribute>
        <attribute name="title">
-        <string>Emprunts</string>
+        <string>Emprunts/Réservations</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5">
         <item row="0" column="0">

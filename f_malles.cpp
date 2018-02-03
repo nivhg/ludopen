@@ -15,11 +15,9 @@ F_Malles::F_Malles(QWidget *parent) :
 
     //Affiche le nom de la fenêtre
     this->setWindowTitle("Calendrier des grands jeux");
-/*    setMouseTracking(true);
-    ui->TbV_CalendrierMalles->installEventFilter(this);
-    ui->TbV_CalendrierMalles->setMouseTracking(true);
-    ui->TbV_CalendrierMalles->viewport()->setMouseTracking(true);*/
-
+    QDate DateActuelle;
+    DateActuelle=DateActuelle.currentDate();
+    ui->CBx_Mois->setCurrentIndex(DateActuelle.month()-1);
 }
 
 F_Malles::~F_Malles()
@@ -35,18 +33,10 @@ F_Malles::~F_Malles()
  */
 void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
 {
-    QDesktopWidget desk;
-    QRect screenres = desk.screenGeometry(0);
-    //this->setGeometry(QRect(screenres.x(),screenres.y(),screenres.width(),screenres.height()));
-    /*this->setWindowState(this->windowState() | Qt::WindowNoState);
-    this->setWindowState(this->windowState() | Qt::WindowActive);
-    this->setWindowState(this->windowState() | Qt::WindowMaximized);*/
     if(ParentGeometry!=QRect())
     {
         this->setGeometry(ParentGeometry);
     }
-    qDebug()<<this->geometry();
-    qDebug()<<this->maximumSize();
     int i;
     QStandardItem *item;
     // Calcul le dernier jour du mois

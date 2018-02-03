@@ -960,8 +960,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
 
                 ui->LE_Email->setText( ObtenirValeurParNom(RequeteMembre,"Email2").toString() ) ;
 
-                ui->SBx_JeuxAutorises->setValue( ObtenirValeurParNom(RequeteMembre,"NbreJeuxAutorises").toInt() ) ;
-
                 ui->SBx_NbrePersonne->setValue( ObtenirValeurParNom(RequeteMembre,"NbrePersonne").toInt() ) ;
 
                 ui->DtE_Insritption->setDateTime( ObtenirValeurParNom(RequeteMembre,"DateInscription").toDateTime() ) ;
@@ -993,8 +991,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                 }
 
                 ui->Le_Code->setText( ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString() ) ;
-
-                ui->SPx_NbreRetards->setValue( ObtenirValeurParNom(RequeteMembre,"NbreRetard").toInt() ) ;
 
                 this->AfficherJeuxEmpruntes( nIdMembre ) ;
 
@@ -1028,10 +1024,10 @@ bool F_Membres::AjouterMembre()
 
     //Enregistrement d'un nouveau membre dans la base de données
     RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
-        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,DomaineEmail_IdDomaineEmail,NbreJeuxAutorises,DateInscription,"
+        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,DomaineEmail_IdDomaineEmail,DateInscription,"
         "Remarque,Ecarte,CodeMembre,NbreRetard,NbrePersonne) "
         "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
-        ":Telephone,:Mobile,:Fax,:Email,:DomaineEmail_IdDomaineEmail,:NbreJeuxAutorises,:DateInscription,:Remarque,"
+        ":Telephone,:Mobile,:Fax,:Email,:DomaineEmail_IdDomaineEmail,:DateInscription,:Remarque,"
         ":Ecarte,:CodeMembre,:NbreRetard,:NbrePersonne)" ) ;
 
     //Titre Membre
@@ -1070,9 +1066,6 @@ bool F_Membres::AjouterMembre()
     //Domaine Email
     RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id );
 
-    //Nombre de jeux Autorisés
-    RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
-
     //Nombre de personne
     RequeteMembre.bindValue( ":NbrePersonne", ui->SBx_NbrePersonne->text().toInt() ) ;
 
@@ -1087,9 +1080,6 @@ bool F_Membres::AjouterMembre()
 
     //Code Membre
     RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
-
-    //Nombre de retards
-    RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->text() ) ;
 
     //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
     if( RequeteMembre.exec() )
@@ -1160,9 +1150,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
                                "Prenom=:Prenom,Rue=:Rue,CP=:CP,Ville=:Ville,"
                                "Telephone=:Telephone,Mobile=:Mobile,Fax=:Fax,"
                                "Email=:Email,DomaineEmail_IdDomaineEmail=:DomaineEmail_IdDomaineEmail,"
-                               "NbreJeuxAutorises=:NbreJeuxAutorises,"
-                               "DateInscription=:DateInscription,NbreRetard=:NbreRetard,"
-                               "DateNaissance=:DateNaissance,Remarque=:Remarque,"
+                               "DateInscription=:DateInscription,NbreRetard=:NbreRetard,Remarque=:Remarque,"
                                "NbrePersonne=:NbrePersonne,Ecarte=:Ecarte,CodeMembre=:CodeMembre "
                                "WHERE IdMembre=:IdMembre" ) ;
 
@@ -1205,9 +1193,6 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         //Domaine Email
         RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id ) ;
 
-        //Nombre de jeux Autorisés
-        RequeteMembre.bindValue( ":NbreJeuxAutorises", ui->SBx_JeuxAutorises->text().toInt() ) ;
-
         //Nombre de personne
         RequeteMembre.bindValue( ":NbrePersonne", ui->SBx_NbrePersonne->text().toInt() ) ;
 
@@ -1222,9 +1207,6 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Code Membre
         RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
-
-        //Nombre de retards
-        RequeteMembre.bindValue( ":NbreRetard", ui->SPx_NbreRetards->value() ) ;
 
         //Si le membre n'a pas été enregisté on indique l'erreur qu'il y a une erreur et on retourne l'erreur de sql
         if( RequeteMembre.exec()== false )
@@ -1380,9 +1362,7 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->Te_Rue->setReadOnly( bVerrouille ) ;
     ui->Le_CP->setReadOnly( bVerrouille ) ;
     ui->CBx_Ville->setDisabled( bVerrouille ) ;
-    ui->SBx_JeuxAutorises->setReadOnly( bVerrouille ) ;
     ui->SBx_NbrePersonne->setReadOnly( bVerrouille ) ;
-    ui->SPx_NbreRetards->setReadOnly( bVerrouille ) ;
     ui->TE_Remarque->setReadOnly( bVerrouille ) ;
     ui->DtE_Insritption->setReadOnly( bVerrouille ) ;
     ui->ChBx_MembreEcarte->setVisible( !bVerrouille ) ;
@@ -1406,9 +1386,7 @@ void F_Membres::EffacerTousLesChamps ()
     ui->Te_Rue->clear() ;
     ui->Le_CP->clear() ;
     ui->CBx_Ville->setCurrentIndex( 0 ) ;
-    ui->SBx_JeuxAutorises->clear() ;
     ui->SBx_NbrePersonne->clear() ;
-    ui->SPx_NbreRetards->clear() ;
     ui->DtE_Insritption->clear() ;
     ui->TE_Remarque->clear() ;
     QStandardItemModel* modeleVide = new QStandardItemModel() ;
@@ -2311,10 +2289,6 @@ void F_Membres::on_CBx_Titre_currentIndexChanged(int index)
     {
         this->pTitreAjMod->Ajouter(6) ;
         ui->CBx_Titre->setCurrentIndex( 0 ) ;
-    }
-    else
-    {
-        ui->SBx_JeuxAutorises->setValue( this->VectorTitre.at( index ).nJeuxAutorises ) ;
     }
     // Si c'est collectivité ou association ou école qui a été choisie
     if(RecupererEmplacementTitreVecteur(2) == index ||

@@ -119,31 +119,11 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="6" colspan="3">
-      <widget class="QDialogButtonBox" name="Bt_OK_Annuler">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="2">
-      <widget class="QLabel" name="Lb_RestAPayer">
-       <property name="text">
-        <string>Reste à payer :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
+     <item row="0" column="4" colspan="4">
+      <widget class="QComboBox" name="CBx_Cartes"/>
      </item>
      <item row="3" column="4" colspan="4">
       <widget class="QComboBox" name="CBx_ModePaiement"/>
-     </item>
-     <item row="0" column="4" colspan="4">
-      <widget class="QComboBox" name="CBx_Cartes"/>
      </item>
      <item row="0" column="1" colspan="3">
       <widget class="QPushButton" name="Bt_AjouterCartePaiement">
@@ -215,6 +195,29 @@
        </property>
        <property name="selectionBehavior">
         <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="6" colspan="3">
+      <widget class="QDialogButtonBox" name="Bt_OK_Annuler">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0" colspan="3">
+      <widget class="QLabel" name="Lb_RestAPayer">
+       <property name="text">
+        <string>Reste à payer :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>

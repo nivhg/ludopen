@@ -404,22 +404,22 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     int firstrow=-1;
     // Déconnexion du défilement du tableau des jeux avec les flêches du clavier
     disconnect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
+    bool test;
     //Tant qu'il y a des jeux dans la table jeux,
     for(int i=0;i<this->ModelJeu->rowCount();i++)
     {
         // Si le texte saisie est un nombre
         if( numeric )
         {
-            ColonneRecherche=CodeColonne;
+            test=(this->ModelJeu->item(i,CodeColonne)->text()==NomJeu);
         }
         else
         {
-            ColonneRecherche=CodeNomJeu;
+            TexteCellule = this->ModelJeu->item(i,CodeNomJeu)->text();
+            test=(TexteCellule.indexOf(NomJeu,0,Qt::CaseInsensitive ) != string::npos);
         }
 
-        TexteCellule = this->ModelJeu->item(i,ColonneRecherche)->text();
-        if(TexteCellule.indexOf(
-                    NomJeu,0,Qt::CaseInsensitive ) != string::npos )
+        if(test)
         {
             ui->TbV_NomJeux->showRow(i);
             if(firstrow==-1)

@@ -472,7 +472,6 @@ void F_MainWindow::CreerEmprunt()
         this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this->ui->Emprunt);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
-        // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
         connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
     }
 }
@@ -495,6 +494,7 @@ void F_MainWindow::CreerMalle()
         qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
         this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
         this->ui->Lay_Malles->addWidget(this->pMalles);
+        connect( this->pMalles, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
     }
 }
 

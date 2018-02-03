@@ -32,8 +32,8 @@ struct Emprunts
     unsigned int PrixCaution;   ///< prix de la caution
     unsigned int PrixEmprunt;   ///< prix de l'emprunt (en crédits)
     QDateTime DateEmprunt;          ///< date de l'emprunt
-    QDate DateRetourPrevu;      ///< date du retour
-
+    QDateTime DateRetourPrevu;      ///< date du retour
+    unsigned int idReservation;   ///< prix de l'emprunt (en crédits)
 };
 
 namespace Ui {
@@ -54,7 +54,8 @@ public:
     void AfficherMembre(QString CodeMembre);
     /** @brief Ajoute un jeu à valider
      */
-    void AjouterJeuAValider(int iIdMembre, int iIdJeu,int iCodeJeu,int iTypeEmprunt,QDate dDateRetourPrevu,
+    void AjouterJeuAValider(int iIdMembre, int iIdJeu, int iIdReservation,int iCodeJeu,
+                            int iTypeEmprunt,QDate dDateRetourPrevu,
                             int iPrixEmprunt,QString sNomJeu,bool bJeuSpecial);
     /** @brief Affiche les jeux empruntés par le membre
      */
@@ -136,7 +137,7 @@ private slots:
 
     void on_Bt_AjouterJeu_clicked();
 
-    void on_Bt_ValiderEmprunt_clicked();
+    void on_Bt_Emprunter_clicked();
 
     void on_LE_CodeJeu_returnPressed();
 
@@ -156,15 +157,15 @@ private slots:
 
     void on_Bt_SupprimerEmpruntAValider_clicked();
 
-    void on_Bt_Reservation_clicked();
+    void on_Bt_Reserver_clicked();
 
     void on_Bt_CalendrierMalles_clicked();
-
-    void on_DtE_Depart_editingFinished();
 
     void on_DtE_Retour_editingFinished();
 
     void on_Bt_AjoutNonAdherent_clicked();
+
+    void on_rB_Mode_Emprunt_toggled(bool checked);
 
     void on_DtE_Depart_dateChanged(const QDate &date);
 
@@ -182,6 +183,8 @@ private:
     QString MembreActif;
 //! Code du jeu actif sur la fenêtre
     QString JeuActif;
+//! Id de réservation du jeu actif
+    int iIdReservation;
 //! Id de la malle active sur la fenêtre
     int iMalleActive;
 //! Booléen qui indique si la malle active a été payée ou non
@@ -225,9 +228,9 @@ private:
     QHash< int, QHash<QString, QVariant> > HashTypeEmprunt;
 
 //! Nombre de jeux en cours d'emprunt hors malles
-    int NbEmpruntEnCours;
-//! Indique si l'utilisateur à changer la date de départ, dans ce cas il ne peut faire que des réservations
-    bool bReservationUniquement;
+    int iNbEmpruntEnCours;
+    int iNbJeuxEmpruntables;
+    int iNbNouveauxEmprunts;
 };
 
 #endif // F_EMPRUNT_H

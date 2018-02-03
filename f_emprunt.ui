@@ -288,14 +288,14 @@ QGroupBox::indicator:checked {
 }</string>
         </property>
         <property name="title">
-         <string>Jeux &amp;à emprunter/réserver</string>
+         <string>Jeux/Malles &amp;à valider</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
          <item row="3" column="2" rowspan="3" colspan="2">
-          <widget class="QGroupBox" name="groupBox_7">
+          <widget class="QGroupBox" name="gB_Reservation">
            <property name="title">
             <string>Réservation</string>
            </property>
@@ -311,7 +311,7 @@ QGroupBox::indicator:checked {
              <widget class="QComboBox" name="CBx_Retrait"/>
             </item>
             <item row="4" column="1">
-             <widget class="QCommandLinkButton" name="Bt_Reservation">
+             <widget class="QCommandLinkButton" name="Bt_Reserver">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -328,7 +328,7 @@ QGroupBox::indicator:checked {
           </widget>
          </item>
          <item row="3" column="0" rowspan="3">
-          <widget class="QGroupBox" name="groupBox_8">
+          <widget class="QGroupBox" name="gB_Emprunt">
            <property name="font">
             <font>
              <weight>50</weight>
@@ -357,7 +357,7 @@ QGroupBox::indicator:checked {
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QCommandLinkButton" name="Bt_ValiderEmprunt">
+             <widget class="QCommandLinkButton" name="Bt_Emprunter">
               <property name="enabled">
                <bool>false</bool>
               </property>
@@ -464,7 +464,7 @@ QGroupBox::indicator:checked {
            <item row="0" column="0" colspan="6">
             <widget class="QLabel" name="Lb_NewEmprunt">
              <property name="text">
-              <string>Emprunts ou réservations à valider :</string>
+              <string>Nombre de jeux à valider/empruntable (en crédit) :</string>
              </property>
             </widget>
            </item>
@@ -548,7 +548,27 @@ QGroupBox::indicator:checked {
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
-         <item row="8" column="0" colspan="2">
+         <item row="3" column="0" colspan="2">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <widget class="QLabel" name="Lb_RechercheMembre">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Saisir le nom, le prénom ou le code du membre :</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout"/>
+           </item>
+          </layout>
+         </item>
+         <item row="10" column="0" colspan="2">
           <layout class="QGridLayout" name="gridLayout_16" columnstretch="0,0,0" columnminimumwidth="0,0,0">
            <property name="sizeConstraint">
             <enum>QLayout::SetMaximumSize</enum>
@@ -572,41 +592,53 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QPushButton" name="Bt_AjoutNonAdherent">
-           <property name="minimumSize">
+         <item row="0" column="0" colspan="2">
+          <widget class="QGroupBox" name="gB_Mode_Emprunt">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
             <size>
-             <width>0</width>
-             <height>27</height>
+             <width>16777215</width>
+             <height>60</height>
             </size>
            </property>
-           <property name="text">
-            <string>Ajouter un non-adhérent</string>
+           <property name="title">
+            <string/>
            </property>
+           <layout class="QGridLayout" name="gridLayout_14">
+            <item row="0" column="0">
+             <widget class="QLabel" name="Lb_Mode_Emprunt">
+              <property name="text">
+               <string>Mode :</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QRadioButton" name="rB_Mode_Emprunt">
+              <property name="text">
+               <string>Emprunt</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QRadioButton" name="rB_Mode_Resa">
+              <property name="text">
+               <string>Réservation</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
-         <item row="1" column="0" colspan="2">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
-            <widget class="QLabel" name="Lb_RechercheMembre">
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>20</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Saisir le nom, le prénom ou le code du membre :</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout"/>
-           </item>
-          </layout>
-         </item>
-         <item row="10" column="0" colspan="2">
-          <layout class="QGridLayout" name="gridLayout_14">
+         <item row="12" column="0" colspan="2">
+          <layout class="QGridLayout" name="gL_Depart">
            <property name="bottomMargin">
             <number>0</number>
            </property>
@@ -635,7 +667,37 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="12" column="0" colspan="2">
+         <item row="4" column="0" colspan="2">
+          <widget class="QPushButton" name="Bt_AjoutNonAdherent">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>27</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Ajouter un non-adhérent</string>
+           </property>
+          </widget>
+         </item>
+         <item row="16" column="0" colspan="2">
+          <widget class="QPushButton" name="Bt_CalendrierMalles">
+           <property name="text">
+            <string>Calendrier des grands jeux</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/Calendrier.png</normaloff>:/Calendrier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0" colspan="2">
           <layout class="QGridLayout" name="gridLayout_19">
            <item row="0" column="0">
             <widget class="QLabel" name="Lb_Retour_2">
@@ -665,7 +727,7 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="13" column="0" colspan="2">
+         <item row="11" column="0" colspan="2">
           <layout class="QHBoxLayout" name="HLay15">
            <item>
             <layout class="QVBoxLayout" name="VLay2">
@@ -718,39 +780,6 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="14" column="0" colspan="2">
-          <widget class="QPushButton" name="Bt_CalendrierMalles">
-           <property name="text">
-            <string>Calendrier des grands jeux</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Calendrier.png</normaloff>:/Calendrier.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>32</width>
-             <height>32</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0" colspan="2">
-          <spacer name="verticalSpacer_5">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Minimum</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>10</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
        </widget>
       </item>
@@ -785,7 +814,7 @@ QGroupBox::indicator:checked {
 }</string>
         </property>
         <property name="title">
-         <string>Jeux/Malles réser&amp;vé par le membre</string>
+         <string>Jeux/Malles réser&amp;vés par le membre</string>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -1130,7 +1159,7 @@ QGroupBox::indicator:checked {
          <widget class="QLineEdit" name="Le_CreditRestantARemplir">
           <property name="maximumSize">
            <size>
-            <width>40</width>
+            <width>80</width>
             <height>16777215</height>
            </size>
           </property>

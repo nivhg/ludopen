@@ -87,8 +87,6 @@ private slots:
 
     void on_Bt_Exporter_clicked();
 
-    void on_Tv_ListeReservations_clicked(const QModelIndex &index);
-
     void on_Tv_ListeReservations_doubleClicked(const QModelIndex &index);
 
     void on_CBx_LieuxDeRetrait_activated(int index);

@@ -319,22 +319,6 @@ QGroupBox::indicator:checked {
            </property>
           </widget>
          </item>
-         <item row="5" column="0" colspan="6">
-          <widget class="QLabel" name="Lb_AmendeAPayer">
-           <property name="font">
-            <font>
-             <weight>75</weight>
-             <bold>true</bold>
-            </font>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0" colspan="7">
           <widget class="QTreeView" name="Tv_JeuxEmprunte">
            <property name="minimumSize">
@@ -390,6 +374,22 @@ QGroupBox::indicator:checked {
              </widget>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="5" column="0" colspan="7">
+          <widget class="QLabel" name="Lb_AmendeAPayer">
+           <property name="font">
+            <font>
+             <weight>75</weight>
+             <bold>true</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
           </widget>
          </item>
         </layout>

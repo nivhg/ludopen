@@ -111,9 +111,12 @@ void F_DetailsJeux::AfficherDetailJeu()
     QSqlQuery RequeteHistoriqueInterventionJeu;
     JeuEnConsultation = Code ;    
 
-    RequeteHistoriqueInterventionJeu.prepare("SELECT DateIntervention,TypeIntervention,CodeJeu FROM intervientionsjeu,jeux WHERE Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu ORDER BY DateIntervention DESC");
+    RequeteHistoriqueInterventionJeu.prepare("SELECT DateIntervention,TypeIntervention,CodeJeu FROM intervientionsjeu,jeux "
+                                             "WHERE Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu ORDER BY DateIntervention DESC");
     RequeteHistoriqueInterventionJeu.bindValue(":CodeDuJeu",Code);
     RequeteHistoriqueInterventionJeu.exec();
+
+    qDebug()<<getLastExecutedQuery(RequeteHistoriqueInterventionJeu)<<RequeteHistoriqueInterventionJeu.lastError();
     
     //On vide le model
     this->ModelHistoriqueInterventions->clear();
@@ -143,10 +146,14 @@ void F_DetailsJeux::AfficherDetailJeu()
     QSqlQuery RequeteHistoriqueEmprunt;
     JeuEnConsultation = Code ;
 
-    RequeteHistoriqueEmprunt.prepare("SELECT CodeMembre,Nom,Prenom,DateEmprunt,DateRetour,Membres_IdMembre FROM emprunts,membres,jeux WHERE Membres_IdMembre=IdMembre AND CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux ORDER BY DateEmprunt DESC");
+    RequeteHistoriqueEmprunt.prepare("SELECT CodeMembre,Nom,Prenom,DateEmprunt,DateRetour,Membres_IdMembre FROM emprunts,membres,jeux "
+                                     "WHERE Membres_IdMembre=IdMembre AND CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux ORDER BY DateEmprunt DESC");
     RequeteHistoriqueEmprunt.bindValue(":CodeDuJeu",Code);
+
     RequeteHistoriqueEmprunt.exec();
     
+    qDebug()<<getLastExecutedQuery(RequeteHistoriqueEmprunt)<<RequeteHistoriqueEmprunt.lastError();
+
     //On vide le model
     this->ModelHistoriqueEmprunts->clear();
     //Indique le nombres de colonnes puis leurs noms
