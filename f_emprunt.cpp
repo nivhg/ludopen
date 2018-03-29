@@ -1014,7 +1014,7 @@ void F_Emprunt::CalculerCreditsRestants()
                           "AND CodeMembre=:CodeDuMembre "
                           "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
                           "AND abonnements.CreditRestant >0 "
-                          "AND IdCarte=CartesPrepayees_IdCarte ");
+                          "AND IdCarte=CartesPrepayees_IdCarte AND Supprimer=0");
     RequeteCartes.bindValue(":CodeDuMembre",this->MembreActif);
     if ( ! RequeteCartes.exec())
     {
@@ -1666,24 +1666,26 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
         //Vérifier si ce jeu est réservé
         //Recherche de l'id du membre qui a réservé le jeu
         QSqlQuery RequeteJeuReserve;
-        RequeteJeuReserve.prepare("SELECT Membres_IdMembre,ConfirmationReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
+        RequeteJeuReserve.prepare("SELECT Membres_IdMembre,ConfirmationReservation FROM reservation WHERE DATE(DatePrevuEmprunt)<'"+
+                                  ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' AND DATE(DatePrevuRetour)>'"+
+                                  ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' AND Jeux_IdJeux=:IdDuJeu");
         RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
         if (!RequeteJeuReserve.exec())
         {
-            qDebug()<<"RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
+            qDebug()<<"RequeteJeuReserve : "<< getLastExecutedQuery(RequeteJeuReserve) << RequeteJeuReserve.lastError();
         }
         RequeteJeuReserve.next();
         // Si ce jeu est réservé
         if ( RequeteJeuReserve.size() !=0 )
         {
             //si l'id du membre actuellement sélectionné n'est le même que celui du réserveur,
-            if ( RequeteJeuReserve.value(0) != IdDuMembre )
+            if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toInt() != IdDuMembre )
             {
                 QString sMessage;
-                if(RequeteJeuReserve.value(1).toInt()==1)
+                if(ObtenirValeurParNom(RequeteJeuReserve,"ConfirmationReservation").toInt()==1)
                 {
                     sMessage="Ce jeu "+ui->Le_NomJeuARemplir->text()
-                            +" est réservé et ne peut sortir de la ludothèque.";
+                            +" est réservé à ces dates, il n'est pas possible de le réserver.";
                 }
                 else
                 {
@@ -2020,7 +2022,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
 
     int nResultat (0);
     // Si la malle a été réglée
-    if(this->bRegle)
+    if(this->bRegle&&this->iMode==MODE_MALLES)
     {
         nResultat=1;
     }
@@ -2080,7 +2082,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     //Mettre le statut du jeu à "Disponible"
     QSqlQuery RequeteStatut;
     RequeteStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=1 WHERE CodeJeu=:CodeDuJeu");
-    RequeteStatut.bindValue( ":CodeDuJeu" , this->ModeleEmpruntsAValider->index(ui->TbV_EmpruntAValider->currentIndex().row(),0).data().toString() );
+    RequeteStatut.bindValue( ":CodeDuJeu" , this->ModeleEmpruntsAValider->index(ui->TbV_EmpruntAValider->currentIndex().row(),1).data().toString() );
     if ( ! RequeteStatut.exec())
     {
         qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteStatut : "<< RequeteStatut.lastQuery() ;

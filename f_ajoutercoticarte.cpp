@@ -34,6 +34,7 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
     //Remplir le ComboBox des modes de paiements
     QSqlQuery RequeteMode;
     RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
+    ui->CBx_ModePaiement->addItem("");
     while (RequeteMode.next())
     {
       ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
@@ -78,7 +79,7 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
 
     //Vérification carte ou prestation
     RequeteAbonnement.prepare("SELECT Prestations_IdPrestation,CartesPrepayees_IdCarte,DateExpiration,CreditRestant,DateSouscription "
-                              "FROM abonnements WHERE IdAbonnements=:IdAbonnement");
+                              "FROM abonnements WHERE IdAbonnements=:IdAbonnement AND Supprimer=0");
     RequeteAbonnement.bindValue(":IdAbonnement", this->nIDAbonnement);
     if( RequeteAbonnement.exec() )
     {
@@ -434,4 +435,16 @@ void F_AjouterCotiCarte::on_Bt_Prolonger_clicked()
 {
     ui->DtE_DateSouscription->setDate( QDate::currentDate() ) ;
     ui->DtE_Expiration->setDate( QDate::currentDate().addYears(1) ) ;
+}
+
+void F_AjouterCotiCarte::on_CBx_ModePaiement_currentIndexChanged(int index)
+{
+    if(index!=0)
+    {
+        ui->Bt_Valider->setEnabled(true);
+    }
+    else
+    {
+        ui->Bt_Valider->setEnabled(false);
+    }
 }

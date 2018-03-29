@@ -296,7 +296,7 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
 
     QString requeteSQL;
     requeteSQL="SELECT DISTINCT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres as m "
-            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0  AND ";
+            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0 AND Supprimer=0 AND ";
     QDate DateAnnePasse;
     DateAnnePasse=DateAnnePasse.currentDate();
     DateAnnePasse.setDate(DateAnnePasse.year()-1,DateAnnePasse.month(),DateAnnePasse.day());

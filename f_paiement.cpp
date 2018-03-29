@@ -53,6 +53,7 @@ F_Paiement::F_Paiement(QWidget *parent) :
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;
    RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
+   ui->CBx_ModePaiement->addItem("");
    while (RequeteMode.next())
    {
      ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
@@ -155,9 +156,9 @@ void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre, bool Eu
                               "FROM abonnements,cartesprepayees,membres "
                               "WHERE abonnements.Membres_IdMembre=IdMembre "
                               "AND CodeMembre=:CodeDuMembre "
-                                       "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
-                                       "AND abonnements.CreditRestant>0 "
-                                       "AND IdCarte=CartesPrepayees_IdCarte");
+                                "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
+                                "AND abonnements.CreditRestant>0 "
+                                "AND IdCarte=CartesPrepayees_IdCarte AND Supprimer=0");
 
 
         RequeteCartes.bindValue(":CodeDuMembre",CodeMembre);
@@ -205,9 +206,9 @@ void F_Paiement::on_Bt_AjouterCartePaiement_clicked()
                           "FROM abonnements,cartesprepayees,membres "
                           "WHERE abonnements.Membres_IdMembre=IdMembre "
                           "AND CodeMembre=:CodeDuMembre "
-                                   "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
-                                   "AND abonnements.CreditRestant>0 "
-                                   "AND IdCarte=CartesPrepayees_IdCarte");
+                           "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
+                           "AND abonnements.CreditRestant>0 "
+                           "AND IdCarte=CartesPrepayees_IdCarte AND Supprimer=0");
 
 
     RequeteCartes.bindValue(":CodeDuMembre",this->MembreActif);
@@ -250,6 +251,10 @@ void F_Paiement::on_Bt_AjouterCartePaiement_clicked()
  */
 void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
 {
+    if(ui->CBx_ModePaiement->currentIndex()==0)
+    {
+        return;
+    }
     ui->TW_PaiementAutre->insertRow(NombreLignePaiementAutre);
 
     QDoubleSpinBox* DoubleSpinBox;

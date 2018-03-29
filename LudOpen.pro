@@ -131,7 +131,7 @@ FORMS    += \
     f_malles.ui \
     f_imprimermalle.ui
 
-VERSION = "1.99"
+VERSION = "2.00"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 

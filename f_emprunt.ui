@@ -523,7 +523,7 @@ QGroupBox::indicator:checked {
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="6" column="0" colspan="2">
+      <item row="2" column="1">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="font">
          <font>
@@ -548,9 +548,15 @@ QGroupBox::indicator:checked {
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
+         <property name="topMargin">
+          <number>0</number>
+         </property>
          <item row="3" column="0" colspan="2">
-          <layout class="QVBoxLayout" name="verticalLayout">
-           <item>
+          <layout class="QGridLayout" name="gridLayout_20">
+           <item row="2" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout"/>
+           </item>
+           <item row="0" column="0">
             <widget class="QLabel" name="Lb_RechercheMembre">
              <property name="maximumSize">
               <size>
@@ -563,8 +569,18 @@ QGroupBox::indicator:checked {
              </property>
             </widget>
            </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout"/>
+           <item row="0" column="1" rowspan="3">
+            <widget class="QPushButton" name="Bt_AjoutNonAdherent">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>27</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Ajouter un non-adhérent</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -630,7 +646,7 @@ QGroupBox::indicator:checked {
             <item row="0" column="2">
              <widget class="QRadioButton" name="rB_Mode_Resa">
               <property name="text">
-               <string>Réservation</string>
+               <string>Réser&amp;vation</string>
               </property>
              </widget>
             </item>
@@ -666,36 +682,6 @@ QGroupBox::indicator:checked {
             </widget>
            </item>
           </layout>
-         </item>
-         <item row="4" column="0" colspan="2">
-          <widget class="QPushButton" name="Bt_AjoutNonAdherent">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>27</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Ajouter un non-adhérent</string>
-           </property>
-          </widget>
-         </item>
-         <item row="16" column="0" colspan="2">
-          <widget class="QPushButton" name="Bt_CalendrierMalles">
-           <property name="text">
-            <string>Calendrier des grands jeux</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Calendrier.png</normaloff>:/Calendrier.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>32</width>
-             <height>32</height>
-            </size>
-           </property>
-          </widget>
          </item>
          <item row="14" column="0" colspan="2">
           <layout class="QGridLayout" name="gridLayout_19">
@@ -867,6 +853,23 @@ QGroupBox::indicator:checked {
             </size>
            </property>
           </spacer>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="Bt_CalendrierMalles">
+           <property name="text">
+            <string>Calendrier des grands jeux</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/Calendrier.png</normaloff>:/Calendrier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>

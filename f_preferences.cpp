@@ -953,7 +953,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
     {
         QString IdModePaiement=ui->TbV_MembresPaiement->selectionModel()->selectedRows(1).first().data().toString();
         QSqlQuery RequeteSupprimer;
-        RequeteSupprimer.prepare("SELECT * FROM abonnements WHERE ModePaiement_IdModePaiement=:IdModePaiement");
+        RequeteSupprimer.prepare("SELECT * FROM abonnements WHERE ModePaiement_IdModePaiement=:IdModePaiement AND Supprimer=0");
         RequeteSupprimer.bindValue(":IdModePaiement", IdModePaiement);
         RequeteSupprimer.exec();
         QSqlQuery RequeteSupprimer2;
@@ -985,7 +985,7 @@ void F_Preferences::on_Bt_SupprimerMembrePaiement_clicked()
                 return;
             }
             RequeteSupprimer.prepare("UPDATE abonnements SET ModePaiement_IdModePaiement=:IdModePaiement"
-                                   " WHERE ModePaiement_IdModePaiement=:IdModePaiementPrecedent");
+                                   " WHERE ModePaiement_IdModePaiement=:IdModePaiementPrecedent AND Supprimer=0");
             QString IdPaiement=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
             RequeteSupprimer.bindValue(":IdModePaiement",IdPaiement);
             RequeteSupprimer.bindValue(":IdModePaiementPrecedent", IdModePaiement);

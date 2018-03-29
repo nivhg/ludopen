@@ -93,8 +93,8 @@ F_Retour::F_Retour(QWidget *parent) :
    this->ModelJeuEmpruntes->setColumnCount(3);
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
    this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Code"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date retour"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
+   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
    ui->Tv_JeuxEmprunte->setColumnWidth(0,140);
    ui->Tv_JeuxEmprunte->setColumnWidth(1,40);
 
@@ -556,10 +556,10 @@ void F_Retour::CalculerCreditsRestants()
     RequeteCartes.prepare("SELECT CreditRestant"
                           " FROM abonnements,cartesprepayees,membres"
                           " WHERE abonnements.Membres_IdMembre=IdMembre"
-                                   " AND CodeMembre=:CodeDuMembre"
-                                   " AND abonnements.CartesPrepayees_IdCarte IS NOT NULL"
-                                   " AND abonnements.CreditRestant>0"
-                                   " AND IdCarte=CartesPrepayees_IdCarte");
+                           " AND CodeMembre=:CodeDuMembre"
+                           " AND abonnements.CartesPrepayees_IdCarte IS NOT NULL"
+                           " AND abonnements.CreditRestant>0"
+                           " AND IdCarte=CartesPrepayees_IdCarte AND Supprimer=0");
 
     RequeteCartes.bindValue(":CodeDuMembre",this->MembreActif);
 
@@ -794,10 +794,24 @@ void F_Retour::on_CBx_TypeProlongation_currentIndexChanged(int index)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_Bt_Prolonger_clicked()
 {
+    QStringList CodesJeux;
+    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
+    {
+        // S'il s'agit d'une malle
+        if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)==QVariant::Invalid)
+        {
+            CodesJeux << ModelJeuEmpruntes->item(index.row(),1)->text();
+        }
+    }
+    // Si aucun jeux n'est trouvé, on quitte la fonction
+    if(CodesJeux.count()==0)
+    {
+        return;
+    }
+
     //Recherche le nombre de crédit à payer
     QSqlQuery RequeteCredit;
-    RequeteCredit.prepare("SELECT PrixLoc FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    RequeteCredit.bindValue(":CodeDuJeu",this->JeuActif);
+    RequeteCredit.prepare("SELECT SUM(PrixLoc) as Total FROM jeux WHERE CodeJeu IN ("+CodesJeux.join(",")+")");
 
     if (!RequeteCredit.exec())
     {
@@ -814,16 +828,14 @@ void F_Retour::on_Bt_Prolonger_clicked()
     if (nResultat==1)
     {
         QSqlQuery RequeteProlongation;
-        RequeteProlongation.prepare("UPDATE emprunts as e SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
-                                    " LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux WHERE j.CodeJeu=:CodeDuJeu AND e.DateRetour IS NULL");
+        RequeteProlongation.prepare("UPDATE emprunts as e LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
+                                    " WHERE j.CodeJeu IN ("+CodesJeux.join(",")+") AND e.DateRetour IS NULL");
         RequeteProlongation.bindValue(":DateRetour",ui->DtE_Prolonger->date());
-        RequeteProlongation.bindValue(":CodeDuJeu",this->JeuActif);
 
         if (!RequeteProlongation.exec())
         {
            qDebug()<<"RequeteProlongation "<<getLastExecutedQuery(RequeteProlongation)<<RequeteProlongation.lastError();
         }
-
         ViderJeu();
         ActualiserMembre();
     }

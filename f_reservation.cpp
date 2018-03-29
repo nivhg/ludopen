@@ -714,10 +714,10 @@ void F_Reservation::CalculerCreditsRestants()
     RequeteCartes.prepare("SELECT CreditRestant "
                           "FROM abonnements,cartesprepayees,membres "
                           "WHERE abonnements.Membres_IdMembre=IdMembre "
-                                   "AND CodeMembre=:CodeDuMembre "
-                                   "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
-                                   "AND abonnements.CreditRestant>0 "
-                                   "AND IdCarte=CartesPrepayees_IdCarte");
+                           "AND CodeMembre=:CodeDuMembre "
+                           "AND abonnements.CartesPrepayees_IdCarte IS NOT NULL "
+                           "AND abonnements.CreditRestant>0 "
+                           "AND IdCarte=CartesPrepayees_IdCarte AND Supprimer=0");
 
 
     RequeteCartes.bindValue(":CodeDuMembre",this->MembreActif);

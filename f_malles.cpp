@@ -66,7 +66,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
 
     QSqlQuery Requete;
     //Prépare le requête pour récupérer le nom du jeu
-    Requete.prepare("SELECT IdJeux,NomJeu FROM jeux WHERE "+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
+    Requete.prepare("SELECT IdJeux,CodeJeu,NomJeu FROM jeux WHERE "+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
                         F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" ORDER BY NomJeu");
 
     //Exécute la requête
@@ -77,7 +77,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
     i=0;
     while(Requete.next())
     {
-        item=new QStandardItem( ObtenirValeurParNom(Requete,"NomJeu").toString() );
+        item=new QStandardItem( ObtenirValeurParNom(Requete,"CodeJeu").toString()+" "+ObtenirValeurParNom(Requete,"NomJeu").toString() );
         item->setData(ObtenirValeurParNom(Requete,"IdJeux"));
         this->ModeleMalle->setVerticalHeaderItem( i++, item ) ;
     }
@@ -98,7 +98,7 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
                     "LEFT JOIN membres as me ON e.Membres_IdMembre=me.IdMembre WHERE "+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(e.DateEmprunt)="+
-                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(e.DateEmprunt)="+ui->CBx_Annee->currentText()+") ORDER BY emprunt DESC");
+                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(e.DateEmprunt)="+ui->CBx_Annee->currentText()+") ORDER BY emprunt,IdMalle DESC");
     //Exécute la requête
     if (!Requete.exec())
     {

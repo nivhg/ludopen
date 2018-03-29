@@ -1521,8 +1521,8 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
 
     // Vide tous les champs avant l'ajout
     VideChamps();
-
-    ui->SBx_PrixLocation->setValue(F_Preferences::ObtenirValeur("UniteLocation").toFloat() );
+    QLocale french(QLocale::French);
+    ui->SBx_PrixLocation->setValue(french.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
 
     // Provisoire :
     ui->CBx_Classification->setItemText(0, "Sélectionner une classification");

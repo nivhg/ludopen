@@ -59,6 +59,8 @@ private slots:
 
     void on_Bt_Prolonger_clicked();
 
+    void on_CBx_ModePaiement_currentIndexChanged(int index);
+
 private:
     Ui::F_AjouterCotiCarte *ui;
 
