@@ -3,6 +3,7 @@
 
 // En-têtes propres l'application nécessaires dans ce fichier en-tête --------
 #include <QtWidgets>
+#include <f_paiement.h>
 
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
@@ -68,6 +69,8 @@ private:
     int nIDMembre ; //! Contient l'id du membre selectionne
     int nIDAbonnement ; //! Contient l'id de l'abonnement selectionne
     bool bNouvelAbo ; //! Indique s'il s'agit d'un nouvel abonnement
+    //! Pointeur vers la fenêtre du paiement
+    F_Paiement * pPaiement;
 };
 
 #endif // F_AJOUTERCOTICARTE_H

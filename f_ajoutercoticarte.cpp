@@ -27,6 +27,8 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    this->pPaiement=new F_Paiement;
+
     this->MaJListeAbonnements() ;
     // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
     ui->DtE_DateSouscription->setDisplayFormat("dd/MM/yyyy");
@@ -347,7 +349,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
                 nIdCarte = query.record().value( 0 ).toInt() ;
             }
 
-            query.prepare("INSERT INTO abonnements (ModePaiement_IdModePaiement,CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
+            query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
                           "DateExpiration,CreditRestant) "
                           "VALUES (:ModePaiement_IdModePaiement,:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
             query.bindValue(":ModePaiement_IdModePaiement", ui->CBx_ModePaiement->currentData());
@@ -386,6 +388,14 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
                 qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastQuery();
             }
             qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : nIdPrestation="<<nIdPrestation ;
+        }
+        pPaiement->setWindowModality(Qt::ApplicationModal);
+        pPaiement->AfficherPaiement(ui->LE_CreditsDisponibles->text().toInt(),this->nIDMembre,true,6);
+
+        // S'il ne procède pas oau paiement, on sort de la fonction
+        if(pPaiement->exec()==0)
+        {
+            return;
         }
     }
     else

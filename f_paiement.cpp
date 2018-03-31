@@ -428,9 +428,9 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
       QSpinBox* SpinBox;
       SpinBox = (QSpinBox*) ui->TW_PaiementAutre->cellWidget(i,1);
       //ui->TW_PaiementAutre->item(i,3)->data();
-      //Ajoute les infos du paiement dans la table paiementHorsAb(onnement
+      //Ajoute les infos du paiement dans la table paiements
       QSqlQuery RequeteAjoutPaiement;
-      RequeteAjoutPaiement.prepare("INSERT INTO paiementhorsabonnements (DatePaiement,Membres_IdMembre,ModePaiement_IdModePaiement,Montant,TypeVentilation_IdTypeVentilation) "
+      RequeteAjoutPaiement.prepare("INSERT INTO paiements (DatePaiement,Membres_IdMembre,ModePaiement_IdModePaiement,Montant,TypeVentilation_IdTypeVentilation) "
                                    "SELECT :DatePaiement,IdMembre,:IdModePaiement,:Montant,:IdTypeVentilation FROM membres WHERE CodeMembre=:CodeMembre");
       RequeteAjoutPaiement.bindValue(":DatePaiement",QDate::currentDate().toString("yyyy-MM-dd"));
       RequeteAjoutPaiement.bindValue(":CodeMembre",this->MembreActif);
