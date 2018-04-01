@@ -241,6 +241,7 @@ void F_Paiement::on_Bt_AjouterCartePaiement_clicked()
         }
     }
     slot_CalculerPrix();
+    ui->Bt_OK_Annuler->setEnabled(true);
 }
 //------------------------------------------------------------------------------
 /**
@@ -273,6 +274,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
     this->NombreLignePaiementAutre++;
 
     slot_CalculerPrix();
+    ui->Bt_OK_Annuler->setEnabled(true);
 }
 //------------------------------------------------------------------------------
 /**
