@@ -4,6 +4,7 @@
 // En-têtes propres l'application nécessaires dans ce fichier en-tête --------
 #include <QtWidgets>
 #include <f_paiement.h>
+#include <fonctions_globale.h>
 
 
 // Declaration des TYPEs UTILISATEURs ------------------------------------------
@@ -52,15 +53,10 @@ private slots:
     //! Change les informations en fonction du choix dans le combo box
     void on_CBx_ChoixAbonnement_currentIndexChanged(const QString &arg1);
 
-    //! Verrouille le bouton valider si rien n'est sélectionné
-    void on_CBx_ChoixAbonnement_currentIndexChanged(int index) ;
-
     //! Ferme la fenêtre sans rien mofifier
     void on_Bt_Annuler_clicked();
 
     void on_Bt_Prolonger_clicked();
-
-    void on_CBx_ModePaiement_currentIndexChanged(int index);
 
 private:
     Ui::F_AjouterCotiCarte *ui;

@@ -5,6 +5,7 @@
 // En-têtes standards necessaires dans ce fichier en-tête seulement ------------
 #include <QtWidgets>
 #include <QtSql>
+#include <fonctions_globale.h>
 
 namespace Ui {
 class F_PopUpCLESTTEM;
@@ -52,7 +53,7 @@ public:
      *  @brief Ouvrir la fenêtre en mode "ajouter".
      *
      */
-    void Ajouter(int nCLESTTEM);
+    int Ajouter(int nCLESTTEM);
 
     /**
      *  @brief Ouvrir la fenêtre en mode "modifier".

@@ -5,9 +5,13 @@
 #include <QDialog>
 #include <QAbstractButton>
 #include <QtWidgets>
+#include <f_popupclesttem.h>
 
 #define VENTILATION_PRET 1
 #define VENTILATION_MALLES 5
+#define VENTILATION_ABONNEMENT 6
+
+#define PAIEMENT_CHEQUE 2
 
 namespace Ui
 {
@@ -25,7 +29,9 @@ public:
     ~F_Paiement();
     /** @brief affiche les informations du paiement
      */
-    void AfficherPaiement(unsigned int Somme,QString CodeMembre,bool EurosOuCredits, int TypeVentilation);
+    void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits);
+    void MaJBanques(QComboBox *ComboBoxBanque);
+    void CalculerPrix();
 
 private slots:
     void on_Bt_AjouterCartePaiement_clicked();
@@ -35,7 +41,12 @@ private slots:
     void on_Bt_SupprimerCartePaiement_clicked();
     void on_Bt_SupprimerAutrePaiement_clicked();
     void on_Bt_OK_Annuler_accepted();
-    void slot_CalculerPrix ();
+    void on_ComboBoxBanque_currentIndexChanged(int index);
+    void slot_VerifMontant ();
+
+    void on_CBx_ModePaiement_currentIndexChanged(int index);
+
+    void on_CBx_Cartes_currentIndexChanged(int index);
 
 private:
     Ui::F_Paiement *ui;
@@ -53,6 +64,18 @@ private:
     int PrixCredit ;
     //! Type de ventilation
     int TypeVentilation;
+    //! Id Membre
+    int IdMembre;
+    //! Nom du Membre
+    QString NomMembre;
+    //! Nom de la table sur lequel pointe le paiement
+    QString NomTable;
+    //! Id dans la table sur lequel pointe le paiement
+    int IdTable;
+    //! Id de la facture concernée par ce paiement
+    int IdFacture;
+    //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (13)
+    F_PopUpCLESTTEM *pBanqueAjMod;
 };
 
 #endif // F_PAIEMENT_H

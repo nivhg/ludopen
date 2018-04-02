@@ -28,6 +28,8 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
     ui->setupUi(this);
 
     this->pPaiement=new F_Paiement;
+    this->pPaiement->setWindowModality( Qt::ApplicationModal ) ;
+
 
     this->MaJListeAbonnements() ;
     // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
@@ -36,12 +38,6 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
     //Remplir le ComboBox des modes de paiements
     QSqlQuery RequeteMode;
     RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
-    ui->CBx_ModePaiement->addItem("");
-    while (RequeteMode.next())
-    {
-      ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
-    }
-
 }
 //======================================================================================================
 /** Détruit l'objet ui
@@ -290,24 +286,7 @@ void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(const QStrin
     ui->LE_Prix->setText(Prix);
     ui->LE_CreditsDisponibles->setText(Credit);
 }
-//======================================================================================================
-/** Verrouille le bouton valider quand rien n'est sélectionne dans le combobox
- *  @param int index
-  *
- */
-void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(int index)
-{
-    /*
-    if (index != 0)
-    {
-        ui->Bt_Valider->setEnabled(true);
-    }
-    else
-    {
-        ui->Bt_Valider->setEnabled(false);
-    }
-    */
-}
+
 //======================================================================================================
 /** Efface les champs et ferme la fenêtre
   *
@@ -337,6 +316,22 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
 
     if (this->bNouvelAbo == true)
     {
+        QSqlQuery RequeteMembre;
+        RequeteMembre.prepare("SELECT CodeMembre FROM membres WHERE IdMembre=:IdMembre");
+        RequeteMembre.bindValue(":IdMembre",this->nIDMembre);
+        RequeteMembre.exec();
+        RequeteMembre.next();
+        QString CodeMembre=ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString();
+
+        pPaiement->setWindowModality(Qt::ApplicationModal);
+        pPaiement->AfficherPaiement(QDateTime::currentDateTime(),CodeMembre,ui->LE_CreditsDisponibles->text().toInt(),
+                                    VENTILATION_ABONNEMENT,"abonnements",NULL,NULL,false);
+
+        // S'il ne procède pas au paiement, on sort de la fonction
+        if(pPaiement->exec()==0)
+        {
+            return;
+        }
         if( ui->LE_CreditsDisponibles->isEnabled() )
         {
             if( !query.exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
@@ -351,8 +346,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
 
             query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
                           "DateExpiration,CreditRestant) "
-                          "VALUES (:ModePaiement_IdModePaiement,:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
-            query.bindValue(":ModePaiement_IdModePaiement", ui->CBx_ModePaiement->currentData());
+                          "VALUES (:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
             query.bindValue(":CartesPrepayees_IdCarte", nIdCarte);
             query.bindValue(":Membres_IdMembre", this->nIDMembre);
             query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
@@ -387,16 +381,15 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             {
                 qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastQuery();
             }
-            qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : nIdPrestation="<<nIdPrestation ;
         }
-        pPaiement->setWindowModality(Qt::ApplicationModal);
-        pPaiement->AfficherPaiement(ui->LE_CreditsDisponibles->text().toInt(),this->nIDMembre,true,6);
-
-        // S'il ne procède pas oau paiement, on sort de la fonction
-        if(pPaiement->exec()==0)
+        QSqlQuery UpdateQuery;
+        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable");
+        UpdateQuery.bindValue(":IdTable",query.lastInsertId().toInt());
+        if(!UpdateQuery.exec())
         {
-            return;
+            qDebug()<< "Mise à jour paiement" << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
         }
+
     }
     else
     {
@@ -445,16 +438,4 @@ void F_AjouterCotiCarte::on_Bt_Prolonger_clicked()
 {
     ui->DtE_DateSouscription->setDate( QDate::currentDate() ) ;
     ui->DtE_Expiration->setDate( QDate::currentDate().addYears(1) ) ;
-}
-
-void F_AjouterCotiCarte::on_CBx_ModePaiement_currentIndexChanged(int index)
-{
-    if(index!=0)
-    {
-        ui->Bt_Valider->setEnabled(true);
-    }
-    else
-    {
-        ui->Bt_Valider->setEnabled(false);
-    }
 }

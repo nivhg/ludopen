@@ -823,7 +823,7 @@ void F_Retour::on_Bt_Prolonger_clicked()
     // Création de la fenêtre du paiement
     // TODO : Regarder les jeux réservés avant de demander le paiement
     F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(RequeteCredit.value(0).toInt(),this->MembreActif,true,VENTILATION_PRET);
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,RequeteCredit.value(0).toInt(),VENTILATION_PRET,NULL,NULL,NULL,true);
     nResultat = FenetrePaiement.exec();
     if (nResultat==1)
     {

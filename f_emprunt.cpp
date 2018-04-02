@@ -1843,7 +1843,8 @@ void F_Emprunt::on_Bt_Reserver_clicked()
             if (regle)
             {
                 pPaiement->setWindowModality(Qt::ApplicationModal);
-                pPaiement->AfficherPaiement(NbCredits,this->MembreActif,EurosOuCredits,TypeVentilation);
+                pPaiement->AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,NbCredits,TypeVentilation,NULL,
+                                            NULL,NULL,EurosOuCredits);
                 int nResultat (0);
 
                 nResultat = pPaiement->exec();
@@ -2029,7 +2030,8 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
     else
     {
         pPaiement->setWindowModality(Qt::ApplicationModal);
-        pPaiement->AfficherPaiement(NbCredits,this->MembreActif,EurosOuCredits,TypeVentilation);
+        pPaiement->AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,NbCredits,TypeVentilation,NULL,
+                                    NULL,NULL,EurosOuCredits);
 
         nResultat = pPaiement->exec();
     }

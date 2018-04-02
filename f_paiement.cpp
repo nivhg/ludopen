@@ -50,6 +50,7 @@ F_Paiement::F_Paiement(QWidget *parent) :
    QLocale french(QLocale::French);
    this->PrixCredit=(round(french.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
 
+   ui->Cbx_AmendesRetards->setVisible(false);
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;
    RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
@@ -73,13 +74,23 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    //Initialise le tableau des Autres moyens de paiement
    this->NombreLignePaiementAutre=0;
-   ui->TW_PaiementAutre->setColumnCount(3);
+   ui->TW_PaiementAutre->setColumnCount(6);
    ui->TW_PaiementAutre->setHorizontalHeaderItem(0,new QTableWidgetItem ("Moyens de paiement"));
-   ui->TW_PaiementAutre->setHorizontalHeaderItem(1,new QTableWidgetItem ("Somme"));
-   ui->TW_PaiementAutre->setColumnWidth(2,0);
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(1,new QTableWidgetItem ("Banque"));
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(2,new QTableWidgetItem ("Numéro de chèque"));
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(3,new QTableWidgetItem ("Nom sur le chèque"));
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(4,new QTableWidgetItem ("Montant du chèque"));
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(5,new QTableWidgetItem ("Somme"));
    ui->TW_PaiementAutre->verticalHeader()->hide();
-   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::Stretch );
-   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 0, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->setColumnWidth(1,100);
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 2, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 3, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 4, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( 5, QHeaderView::ResizeToContents );
+
+   this->pBanqueAjMod = new F_PopUpCLESTTEM();
+   this->pBanqueAjMod->setWindowModality(Qt::ApplicationModal);
 
    //Grise le bouton OK
    ui->Bt_OK_Annuler->button(QDialogButtonBox::Ok)->setEnabled(false);
@@ -99,21 +110,23 @@ F_Paiement::~F_Paiement()
  *  @param  Somme : Pris à payer en nombre de crédits , CodeMembre : code du membre qui emprunte
  *  @retval Valeurs de retour
  */
-void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre, bool EurosOuCredits, int TypeVentilation)
+void F_Paiement::AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits)
 {
     this->TypeVentilation=TypeVentilation;
+    this->NomTable=NomTable;
+    this->IdTable=IdTable;
+    this->IdFacture=IdFacture;
     //Affichage du nom de la fenêtre
     QString NomFenetre;
     QSqlQuery RequeteMembre;
-    RequeteMembre.prepare("SELECT Nom,Prenom FROM membres WHERE CodeMembre=:CodeDuMembre");
+    RequeteMembre.prepare("SELECT IdMembre,Nom,Prenom FROM membres WHERE CodeMembre=:CodeDuMembre");
     RequeteMembre.bindValue(":CodeDuMembre",CodeMembre);
     RequeteMembre.exec();
     RequeteMembre.next();
-
-    NomFenetre= "Paiement de "+RequeteMembre.value(0).toString()
-            +" "+RequeteMembre.value(1).toString()
-            + " de "+ NomFenetre.setNum(Somme) +" crédits";
-
+    this->NomMembre=ObtenirValeurParNom(RequeteMembre,"Nom").toString();
+    NomFenetre= "Paiement de "+NomMembre+" "+ObtenirValeurParNom(RequeteMembre,"Nom").toString()+
+            " de "+NomFenetre.setNum(Somme) +" crédits";
+    IdMembre=ObtenirValeurParNom(RequeteMembre,"IdMembre").toInt();
     //Affiche le nom de la fenêtre
     this->setWindowTitle(NomFenetre);
 
@@ -126,17 +139,20 @@ void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre, bool Eu
     ui->CBx_ModePaiement->setCurrentIndex(0);
     ui->CBx_Cartes->setCurrentIndex(0);
 
+    int NbLignes;
+    NbLignes=ui->TW_PaiementCarte->rowCount();
     //Vide le TableWidgetDes cartes prépayées
-    for(register unsigned int i=0 ; i < NombreLignePaiement ; i++)
+    for(register unsigned int i=0 ; i < NbLignes ; i++)
     {
-        ui->TW_PaiementCarte->removeRow(i);
+        ui->TW_PaiementCarte->removeRow(0);
     }
     this->NombreLignePaiement=0;
 
+    NbLignes=ui->TW_PaiementAutre->rowCount();
     //Vide le TableWidget des autre moyens de paiement
-    for(register unsigned int i=0 ; i < NombreLignePaiementAutre ; i++)
+    for(register unsigned int i=0 ; i < NbLignes ; i++)
     {
-        ui->TW_PaiementAutre->removeRow(i);
+        ui->TW_PaiementAutre->removeRow(0);
     }
     this->NombreLignePaiementAutre=0;
 
@@ -172,7 +188,7 @@ void F_Paiement::AfficherPaiement(unsigned int Somme,QString CodeMembre, bool Eu
         }
     }
 
-    slot_CalculerPrix();
+    CalculerPrix();
 }
 //------------------------------------------------------------------------------
 /**
@@ -240,7 +256,8 @@ void F_Paiement::on_Bt_AjouterCartePaiement_clicked()
             this->NombreLignePaiement--;
         }
     }
-    slot_CalculerPrix();
+    CalculerPrix();
+    ui->Bt_OK_Annuler->setEnabled(true);
 }
 //------------------------------------------------------------------------------
 /**
@@ -261,18 +278,76 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
     DoubleSpinBox= new QDoubleSpinBox;
     DoubleSpinBox->setSingleStep(0.01);
 
-    connect(DoubleSpinBox,SIGNAL(valueChanged(double)),this,SLOT(slot_CalculerPrix()));
+    connect(DoubleSpinBox,SIGNAL(valueChanged(double)),this,SLOT(slot_VerifMontant()));
 
     DoubleSpinBox->setMaximum(this->Prix*this->PrixCredit);
     DoubleSpinBox->setValue(ui->LE_ResteAPayer->text().toFloat());
+    DoubleSpinBox->setProperty("row",this->NombreLignePaiementAutre);
+    DoubleSpinBox->setProperty("column",0);
 
     QTableWidgetItem* Item=new QTableWidgetItem (ui->CBx_ModePaiement->currentText());
     Item->setData(Qt::UserRole,ui->CBx_ModePaiement->currentData());
+
     ui->TW_PaiementAutre->setItem(this->NombreLignePaiementAutre,0,Item);
-    ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,1,DoubleSpinBox);
+
+    if(ui->CBx_ModePaiement->currentData().toInt()==PAIEMENT_CHEQUE)
+    {
+        QComboBox *ComboBoxBanque=new QComboBox();
+        connect(ComboBoxBanque,SIGNAL(currentIndexChanged(int)),this,SLOT(on_ComboBoxBanque_currentIndexChanged(int)));
+        MaJBanques(ComboBoxBanque);
+        ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,1,ComboBoxBanque);
+
+        QComboBox *ComboBoxCheque=new QComboBox();
+        ComboBoxCheque->setEditable(true);
+
+        QSqlQuery RequeteCheque;
+
+        qDebug()<<"SELECT IdCheque, Numero FROM cheques LEFT JOIN paiements"
+                  " ON IdCheque=Cheques_IdCheque WHERE Membres_IdMembre=:IdMembre ORDER BY Numero" ;
+        // Récupère toutes les banques
+        RequeteCheque.prepare("SELECT IdCheque, Numero FROM cheques LEFT JOIN paiements"
+                              " ON IdCheque=Cheques_IdCheque WHERE Membres_IdMembre=:IdMembre ORDER BY Numero" ) ;
+        RequeteCheque.bindValue(":IdMembre",IdMembre);
+
+        //Exectution de la requête
+        if( !RequeteCheque.exec() )
+        {
+            qDebug() << getLastExecutedQuery(RequeteCheque)<< RequeteCheque.lastError();
+        }
+        else
+        {
+            QString Cheque;
+            int IdCheque;
+            int i = 0;
+            ComboBoxCheque->addItem("");
+            while( RequeteCheque.next() )
+            {
+                // Récupère la valeurs des champs
+                Cheque = ObtenirValeurParNom(RequeteCheque,"Numero").toString();
+                IdCheque = ObtenirValeurParNom(RequeteCheque,"IdCheque").toInt();
+                // Ajoute une activité et son ID dans la partie DATA
+                ComboBoxCheque->addItem(Cheque);
+                ComboBoxCheque->setItemData(i,IdCheque,Qt::UserRole);
+                i++;
+            }
+        }
+        ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,2,ComboBoxCheque);
+
+        QLineEdit *LineEdit=new QLineEdit();
+        LineEdit->setText(NomMembre);
+        ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,3,LineEdit);
+        QDoubleSpinBox* DoubleSpinBoxMontant=new QDoubleSpinBox();
+        DoubleSpinBoxMontant->setProperty("row",this->NombreLignePaiementAutre);
+        DoubleSpinBoxMontant->setProperty("column",4);
+        ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,4,DoubleSpinBoxMontant);
+        connect(DoubleSpinBoxMontant,SIGNAL(valueChanged(double)),this,SLOT(slot_VerifMontant()));
+    }
+
+    ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,5,DoubleSpinBox);
     this->NombreLignePaiementAutre++;
 
-    slot_CalculerPrix();
+    CalculerPrix();
+    ui->Bt_OK_Annuler->setEnabled(true);
 }
 //------------------------------------------------------------------------------
 /**
@@ -281,7 +356,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
  * @param
  * @retval
  */
-void F_Paiement::slot_CalculerPrix ()
+void F_Paiement::CalculerPrix ()
 {
     int nReste (0);         //reste de crédit à payer
     nReste= this->Prix;     //Prix est le nombre de crédits à payer
@@ -308,7 +383,7 @@ void F_Paiement::slot_CalculerPrix ()
     for (register unsigned int i=0; i < this->NombreLignePaiementAutre ; i++)
     {
         //on récupère un pointeur du DoubleSpinBox
-        DoubleSpinBox = (QDoubleSpinBox*) ui->TW_PaiementAutre->cellWidget(i,1);
+        DoubleSpinBox = (QDoubleSpinBox*) ui->TW_PaiementAutre->cellWidget(i,5);
         //On récupère la valeur du SpinBox et on fait un arrondi
         int nVarEnt (round(DoubleSpinBox->value()*100.0L)) ;
         //On la soustrait du reste
@@ -341,6 +416,14 @@ void F_Paiement::slot_CalculerPrix ()
         ui->Bt_OK_Annuler->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
 }
+
+void F_Paiement::slot_VerifMontant()
+{
+    QDoubleSpinBox *senderObj = (QDoubleSpinBox *) sender();
+    qDebug()<<senderObj->property("column").toInt();
+    CalculerPrix();
+}
+
 //------------------------------------------------------------------------------
 /**
  * @brief Supprime du tableau des cartes pré-payée une carte choisie prédédemment
@@ -360,7 +443,7 @@ void F_Paiement::on_Bt_SupprimerCartePaiement_clicked()
       ui->Bt_SupprimerCartePaiement->setEnabled(false);
 
       //Calcule le reste à payer
-      slot_CalculerPrix();
+      CalculerPrix();
    }
 }
 //------------------------------------------------------------------------------
@@ -382,7 +465,7 @@ void F_Paiement::on_Bt_SupprimerAutrePaiement_clicked()
       ui->Bt_SupprimerAutrePaiement->setEnabled(false);
 
       //Calcule le reste à payer
-      slot_CalculerPrix();
+      CalculerPrix();
    }
 }
 //------------------------------------------------------------------------------
@@ -422,26 +505,109 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
       RequeteMajCredit.bindValue(":IdAbonnement",((QTableWidgetItem* )ui->TW_PaiementCarte->item(i,2))->data(0).toInt());
       RequeteMajCredit.exec();
    }
+
    for(register unsigned int i=0 ; i < NombreLignePaiementAutre ; i++)
    {
-      //Retrouve le montant
-      QSpinBox* SpinBox;
-      SpinBox = (QSpinBox*) ui->TW_PaiementAutre->cellWidget(i,1);
-      //ui->TW_PaiementAutre->item(i,3)->data();
-      //Ajoute les infos du paiement dans la table paiements
-      QSqlQuery RequeteAjoutPaiement;
-      RequeteAjoutPaiement.prepare("INSERT INTO paiements (DatePaiement,Membres_IdMembre,ModePaiement_IdModePaiement,Montant,TypeVentilation_IdTypeVentilation) "
-                                   "SELECT :DatePaiement,IdMembre,:IdModePaiement,:Montant,:IdTypeVentilation FROM membres WHERE CodeMembre=:CodeMembre");
-      RequeteAjoutPaiement.bindValue(":DatePaiement",QDate::currentDate().toString("yyyy-MM-dd"));
-      RequeteAjoutPaiement.bindValue(":CodeMembre",this->MembreActif);
-      RequeteAjoutPaiement.bindValue(":IdModePaiement",ui->TW_PaiementAutre->item(i,0)->data(Qt::UserRole));
-      RequeteAjoutPaiement.bindValue(":Montant",SpinBox->value());
-      RequeteAjoutPaiement.bindValue(":IdTypeVentilation",this->TypeVentilation);
+        int IdCheque=NULL;
+        if(ui->TW_PaiementAutre->item(i,0)->data(Qt::UserRole)==PAIEMENT_CHEQUE)
+        {
+          QComboBox* ComboBox;
+          ComboBox = (QComboBox*) ui->TW_PaiementAutre->cellWidget(i,1);
+          QSqlQuery RequeteAjoutCheque;
+          RequeteAjoutCheque.prepare("INSERT INTO cheques (Banques_IdBanque,NomEmetteur,Numero) "
+                                       "VALUES (:Banques_IdBanque,:NomEmetteur,:Numero)");
+          RequeteAjoutCheque.bindValue(":Banques_IdBanque",ComboBox->currentData());
+          RequeteAjoutCheque.bindValue(":NomEmetteur",this->MembreActif);
+          ComboBox = (QComboBox*) ui->TW_PaiementAutre->cellWidget(i,2);
+          RequeteAjoutCheque.bindValue(":Numero",ComboBox->currentText());
+          if(!RequeteAjoutCheque.exec())
+          {
+              qDebug() << getLastExecutedQuery( RequeteAjoutCheque) << RequeteAjoutCheque.lastError();
+          }
+          IdCheque=RequeteAjoutCheque.lastInsertId().toInt();
+        }
+        //Retrouve le montant
+        QSpinBox* SpinBox;
+        SpinBox = (QSpinBox*) ui->TW_PaiementAutre->cellWidget(i,5);
+        //Ajoute les infos du paiement dans la table paiements
+        QSqlQuery RequeteAjoutPaiement;
+        RequeteAjoutPaiement.prepare("INSERT INTO paiements (DatePaiement,Membres_IdMembre,ModePaiement_IdModePaiement,Montant,"
+                                   "TypeVentilation_IdTypeVentilation,NomTable,IdTable,Cheques_IdCheque,Factures_IdFacture) "
+                                   "SELECT :DatePaiement,IdMembre,:IdModePaiement,:Montant,:IdTypeVentilation,:NomTable,"
+                                   ":IdTable,:Cheques_IdCheque,:Factures_IdFacture FROM membres WHERE CodeMembre=:CodeMembre");
+        RequeteAjoutPaiement.bindValue(":DatePaiement",QDate::currentDate().toString("yyyy-MM-dd"));
+        RequeteAjoutPaiement.bindValue(":CodeMembre",this->MembreActif);
+        RequeteAjoutPaiement.bindValue(":IdModePaiement",ui->TW_PaiementAutre->item(i,0)->data(Qt::UserRole));
+        RequeteAjoutPaiement.bindValue(":Montant",SpinBox->value());
+        RequeteAjoutPaiement.bindValue(":IdTypeVentilation",this->TypeVentilation);
+        RequeteAjoutPaiement.bindValue(":NomTable",this->NomTable);
+        RequeteAjoutPaiement.bindValue(":IdTable",this->IdTable);
+        RequeteAjoutPaiement.bindValue(":Cheques_IdCheque",IdCheque);
+        RequeteAjoutPaiement.bindValue(":Factures_IdFacture",this->IdFacture);
 
-      RequeteAjoutPaiement.exec();
+        RequeteAjoutPaiement.exec();
 
-      //    qDebug()<<getLastExecutedQuery(RequeteAjoutPaiement);
+        //    qDebug()<<getLastExecutedQuery(RequeteAjoutPaiement);
    }
    //Cacher la fenêtre du paiement
    this->hide();
+}
+
+void F_Paiement::on_ComboBoxBanque_currentIndexChanged(int index)
+{
+    QComboBox *senderObj = (QComboBox *) sender();
+    if( (senderObj->count()-1) == index && index !=0 )
+    {
+        // S'il ne rajoute pas de de banque, on sort de la fonction
+        if(this->pBanqueAjMod->Ajouter(13)==0)
+        {
+            return;
+        }
+        senderObj->blockSignals(true);
+        senderObj->clear();
+        MaJBanques(senderObj);
+        senderObj->blockSignals(false);
+    }
+}
+
+void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)
+{
+    QSqlQuery RequeteBanque;
+
+    // Récupère toutes les banques
+    RequeteBanque.prepare("SELECT IdBanque, CONCAT(Acronyme,\" - \",NomBanque) as NomBanque FROM banques ORDER BY NomBanque" ) ;
+
+    //Exectution de la requête
+    if( !RequeteBanque.exec() )
+    {
+        qDebug() << getLastExecutedQuery(RequeteBanque)<< RequeteBanque.lastError();
+    }
+    else
+    {
+        QString Banque;
+        int IdBanque;
+        int i = 0;
+        ComboBoxBanque->addItem("");
+        while( RequeteBanque.next() )
+        {
+            // Récupère la valeurs des champs
+            Banque = ObtenirValeurParNom(RequeteBanque,"NomBanque").toString();
+            IdBanque = ObtenirValeurParNom(RequeteBanque,"IdBanque").toInt();
+            // Ajoute une activité et son ID dans la partie DATA
+            ComboBoxBanque->addItem(Banque);
+            ComboBoxBanque->setItemData(i,IdBanque,Qt::UserRole);
+            i++;
+        }
+        ComboBoxBanque->addItem("Ajouter une banque...");
+    }
+}
+
+void F_Paiement::on_CBx_ModePaiement_currentIndexChanged(int index)
+{
+    ui->Bt_AjouterAutrePaiement->setEnabled(index!=0);
+}
+
+void F_Paiement::on_CBx_Cartes_currentIndexChanged(int index)
+{
+    ui->Bt_AjouterCartePaiement->setEnabled(index!=0);
 }

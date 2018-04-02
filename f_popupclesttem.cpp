@@ -22,6 +22,7 @@
  *      -Si 10, il s'agit d'une activité d'un membre.
  *      -Si 11, il s'agit d'un mot-clé d'un jeu.
  *      -Si 12, il s'agit d'un domaine d'email
+ *      -Si 13, il s'agit d'une banque
  *
  *  Fabrication   Qt Creator, projet    .pro
  *
@@ -68,7 +69,7 @@ F_PopUpCLESTTEM::~F_PopUpCLESTTEM()
  *  @brief Ouvrir la fenêtre en mode "ajouter".
  *
  */
-void F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
+int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
 {
     this->nCLESTTEM = nCLESTTEM;
     this->bCLESTTEM = true;
@@ -191,14 +192,23 @@ void F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        default: // Erreur création fenêtre.
+        case 13: // Banque
+            ui->Lb_TitreFenetre->setText("Création d'une banque");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->show();
+            ui->Lb_Autres->setText("Acronyme :");
+            ui->LE_Autres->show();
+            ui->LE_Autres->clear();
+        break;
+
+    default: // Erreur création fenêtre.
             qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
         break;
     }
 
     ui->LE_CLESTTEM->setEnabled(true);
     ui->LE_Autres->setEnabled(true);
-    this->exec();
+    return this->exec();
 }
 
 /**
@@ -370,6 +380,18 @@ int F_PopUpCLESTTEM::Modifier(QString sCLESTTEM, int nCLESTTEM, QTableView * TbV
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
+            ui->LE_Autres->clear();
+
+            this->sCLESTTEM = sCLESTTEM;
+            ui->LE_CLESTTEM->setText(sCLESTTEM);
+        break;
+
+        case 13: // Banque
+            ui->Lb_TitreFenetre->setText("Modification d'une banque");
+            ui->LE_CLESTTEM->clear();
+            ui->Lb_Autres->setText("Acronyme");
+            ui->Lb_Autres->show();
+            ui->LE_Autres->show();
             ui->LE_Autres->clear();
 
             this->sCLESTTEM = sCLESTTEM;
@@ -662,6 +684,26 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                 RequeteValider.prepare("UPDATE domaineemail SET NomDomaine=:NomDomaine WHERE NomDomaine=:NomDomainePrecedent");
                 RequeteValider.bindValue(":NomDomaine", ui->LE_CLESTTEM->text());
                 RequeteValider.bindValue(":NomDomainePrecedent", this->sCLESTTEM);
+                RequeteValider.exec();
+                requete=RequeteValider.lastQuery();
+            }
+        break;
+
+        case 13: // Banque
+            if(this->bCLESTTEM)
+            {
+                RequeteValider.prepare("INSERT INTO banques (NomBanque,Acronyme) VALUES (:NomBanque,:Acronyme)");
+                RequeteValider.bindValue(":NomBanque", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":Acronyme", ui->LE_Autres->text());
+                RequeteValider.exec();
+                qDebug()<<getLastExecutedQuery(RequeteValider)<<RequeteValider.lastError();
+            }
+            else
+            {
+                RequeteValider.prepare("UPDATE banques SET NomBanque=:NomBanque,Acronyme=:Acronyme WHERE NomBanque=:NomBanquePrecedent");
+                RequeteValider.bindValue(":NomBanque", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":NomBanquePrecedent", this->sCLESTTEM);
+                RequeteValider.bindValue(":Acronyme", ui->LE_Autres->text());
                 RequeteValider.exec();
                 requete=RequeteValider.lastQuery();
             }
