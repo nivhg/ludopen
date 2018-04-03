@@ -8,8 +8,21 @@
 #include <f_popupclesttem.h>
 
 #define VENTILATION_PRET 1
+#define VENTILATION_RETARD 3
 #define VENTILATION_MALLES 5
 #define VENTILATION_ABONNEMENT 6
+#define VENTILATION_AMENDE 7
+
+#define COLAUTRE_MODEPAIEMENT 0
+#define COLAUTRE_NUMCHEQUE 1
+#define COLAUTRE_BANQUE 2
+#define COLAUTRE_EMETEUR 3
+#define COLAUTRE_MONTANT 4
+#define COLAUTRE_SOMME 5
+
+#define COL_CARTE 0
+#define COL_CREDITS 1
+#define COL_IDCARTE 2
 
 #define PAIEMENT_CHEQUE 2
 
@@ -32,6 +45,7 @@ public:
     void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits);
     void MaJBanques(QComboBox *ComboBoxBanque);
     void CalculerPrix();
+    void AjouterPaiement(int IdModePaiement,int Montant,int TypeVentilation,int IdCheque);
 
 private slots:
     void on_Bt_AjouterCartePaiement_clicked();
@@ -42,11 +56,12 @@ private slots:
     void on_Bt_SupprimerAutrePaiement_clicked();
     void on_Bt_OK_Annuler_accepted();
     void on_ComboBoxBanque_currentIndexChanged(int index);
+    void on_ComboBoxCheque_currentIndexChanged(int index);
     void slot_VerifMontant ();
 
     void on_CBx_ModePaiement_currentIndexChanged(int index);
 
-    void on_CBx_Cartes_currentIndexChanged(int index);
+    void on_Cbx_AmendesRetards_clicked();
 
 private:
     Ui::F_Paiement *ui;
@@ -76,6 +91,8 @@ private:
     int IdFacture;
     //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (13)
     F_PopUpCLESTTEM *pBanqueAjMod;
+    //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (14)
+    F_PopUpCLESTTEM *pRetardsAmendesAjMod;
 };
 
 #endif // F_PAIEMENT_H

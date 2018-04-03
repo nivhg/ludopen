@@ -97,6 +97,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent) :
 
     ui->Hlay16->addWidget(SearchJeux);
 
+    connect(SearchJeux->lineEdit(), SIGNAL( returnPressed() ), this, SLOT( on_LE_SearchJeux_returnPressed() ) );
     connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
 
 

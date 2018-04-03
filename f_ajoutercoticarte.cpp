@@ -75,6 +75,8 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
     ui->LE_CreditsDisponibles->setReadOnly( true ) ;
     ui->LE_CreditsRestants->setReadOnly( false ) ;
 
+    ui->Bt_Valider->setText("Valider");
+
     //Vérification carte ou prestation
     RequeteAbonnement.prepare("SELECT Prestations_IdPrestation,CartesPrepayees_IdCarte,DateExpiration,CreditRestant,DateSouscription "
                               "FROM abonnements WHERE IdAbonnements=:IdAbonnement AND Supprimer=0");
@@ -208,6 +210,8 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
     // Pas de crédit restant puisque nouvelle carte
     ui->Lb_CreditsRestants->hide();
     ui->LE_CreditsRestants->hide();
+
+    ui->Bt_Valider->setText("Paiement");
 
     this->show();
 }

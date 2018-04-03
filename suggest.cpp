@@ -64,7 +64,7 @@ Suggest::Suggest(QComboBox *parent): QObject(parent), editor(parent)
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
-    timer->setInterval(500);
+    timer->setInterval(700);
     connect(timer, SIGNAL(timeout()), SLOT(autoSuggest()));
     editor->setEditable(true);
     connect(editor, SIGNAL(currentTextChanged(QString)), timer, SLOT(start()));
