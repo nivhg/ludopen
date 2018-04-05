@@ -119,6 +119,7 @@ void F_Paiement::AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int
     this->IdTable=IdTable;
     this->IdFacture=IdFacture;
 
+    ui->W_AmendesRetards->setEnabled(true);
     ui->W_AmendesRetards->setVisible(false);
     ui->Cbx_AmendesRetards->setChecked(true);
 
@@ -293,9 +294,13 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
         QSqlQuery RequeteCheque;
 
         // Récupère tous les chèques du membre encaissés aujourd'hui et dont le montant du chèque est supérieur au paiement
-        RequeteCheque.prepare("SELECT DISTINCT(IdCheque) as IdCheque, Banques_IdBanque, NomEmetteur, c.Montant as Montant,Numero FROM cheques as c "
-                              "LEFT JOIN paiements as p ON IdCheque=Cheques_IdCheque WHERE DATE(DatePaiement)=DATE(NOW()) "
-                              "AND c.Montant>p.Montant AND Membres_IdMembre=:IdMembre ORDER BY Numero" ) ;
+        // ainsi qu'une indication pour les cheques qui règles de retards ou amendes
+        RequeteCheque.prepare("SELECT DISTINCT(IdCheque) as IdCheque, Banques_IdBanque, NomEmetteur, c.Montant as Montant,Numero,"
+                              "(SELECT IdCheque FROM cheques as c2 LEFT JOIN paiements as p ON IdCheque=Cheques_IdCheque WHERE Membres_IdMembre=:IdMembre AND "
+                              "DATE(DatePaiement)=DATE(NOW()) AND c.Montant>p.Montant AND TypeVentilation_IdTypeVentilation IN (3,7) "
+                              "AND c.IdCheque=c2.IdCheque ORDER BY Numero LIMIT 1) as AmendeRetard FROM cheques as c LEFT JOIN paiements as p ON "
+                              "IdCheque=Cheques_IdCheque WHERE DATE(DatePaiement)=DATE(NOW()) AND c.Montant>p.Montant AND Membres_IdMembre=:IdMembre "
+                              "ORDER BY Numero" ) ;
         RequeteCheque.bindValue(":IdMembre",IdMembre);
 
         qDebug() << getLastExecutedQuery(RequeteCheque)<< RequeteCheque.lastError();
@@ -318,7 +323,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
                 // Ajoute les infos concernant le chèque dans la partie DATA
                 QVariantList vListe;
                 vListe<<IdCheque<<ObtenirValeurParNom(RequeteCheque,"Banques_IdBanque").toInt()<<ObtenirValeurParNom(RequeteCheque,"NomEmetteur").toString()
-                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString();
+                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString()<<(ObtenirValeurParNom(RequeteCheque,"AmendeRetard").toInt()!=0);
                 ComboBoxCheque->addItem(Cheque);
                 ComboBoxCheque->setItemData(i,vListe,Qt::UserRole);
                 i++;
@@ -491,6 +496,10 @@ void F_Paiement::on_Bt_SupprimerAutrePaiement_clicked()
       //Calcule le reste à payer
       CalculerPrix();
    }
+   if(ui->TW_PaiementAutre->rowCount()==0)
+   {
+       ui->W_AmendesRetards->setEnabled(true);
+   }
 }
 //------------------------------------------------------------------------------
 void F_Paiement::on_TW_PaiementCarte_clicked(const QModelIndex &index)
@@ -649,7 +658,7 @@ void F_Paiement::AjouterPaiement(int IdModePaiement,int Montant,int TypeVentilat
                                "TypeVentilation_IdTypeVentilation,NomTable,IdTable,Cheques_IdCheque,Factures_IdFacture,Remarque) "
                                "VALUES (:DatePaiement,:Membres_IdMembre,:IdModePaiement,:Montant,:IdTypeVentilation,:NomTable,"
                                ":IdTable,:Cheques_IdCheque,:Factures_IdFacture,:Remarque)");
-    RequeteAjoutPaiement.bindValue(":DatePaiement",QDateTime::currentDateTime().toTime_t());
+    RequeteAjoutPaiement.bindValue(":DatePaiement",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     RequeteAjoutPaiement.bindValue(":Membres_IdMembre",this->IdMembre);
     RequeteAjoutPaiement.bindValue(":IdModePaiement",IdModePaiement);
     RequeteAjoutPaiement.bindValue(":Montant",Montant);
@@ -695,6 +704,8 @@ void F_Paiement::on_ComboBoxCheque_currentIndexChanged(int index)
     LineEditEmetteur->setText(vList.at(2).toString());
     QDoubleSpinBox *DoubleSpinBoxMontant = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_MONTANT);
     DoubleSpinBoxMontant->setValue(vList.at(3).toDouble());
+    ui->W_AmendesRetards->setEnabled(!vList.at(4).toBool());
+    ui->Cbx_AmendesRetards->setChecked(!vList.at(4).toBool());
 }
 
 void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)

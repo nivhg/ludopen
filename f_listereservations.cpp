@@ -408,7 +408,7 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
     //Vérification que la personne veut bien supprimer les réservations choisies
     if ( QMessageBox::information( this, "Suppression de réservations","Voulez vous vraiment supprimer toutes les réservations sélectionnées ?", "Supprimer", "Garder" ) == 0 )
     {
-        for (register int i (0) ; i < ui->Tv_ListeReservations->model()->columnCount() ; i++ )
+        for (register int i (0) ; i < ui->Tv_ListeReservations->model()->rowCount() ; i++ )
         {
             //Si le checkbox est "check" dans la liste des résa, on vire cette résa
             if(ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0), Qt::CheckStateRole).toBool() )

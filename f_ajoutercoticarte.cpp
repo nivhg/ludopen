@@ -328,7 +328,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         QString CodeMembre=ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString();
 
         pPaiement->setWindowModality(Qt::ApplicationModal);
-        pPaiement->AfficherPaiement(QDateTime::currentDateTime(),CodeMembre,ui->LE_CreditsDisponibles->text().toInt(),
+        pPaiement->AfficherPaiement(QDateTime::currentDateTime(),CodeMembre,ui->LE_Prix->text().toInt(),
                                     VENTILATION_ABONNEMENT,"abonnements",NULL,NULL,false);
 
         // S'il ne procède pas au paiement, on sort de la fonction
