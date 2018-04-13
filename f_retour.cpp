@@ -819,13 +819,11 @@ void F_Retour::on_Bt_Prolonger_clicked()
     }
     RequeteCredit.next();
 
-    int nResultat (0);
     // Création de la fenêtre du paiement
     // TODO : Regarder les jeux réservés avant de demander le paiement
     F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,RequeteCredit.value(0).toInt(),VENTILATION_PRET,NULL,NULL,NULL,true);
-    nResultat = FenetrePaiement.exec();
-    if (nResultat==1)
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,RequeteCredit.value(0).toInt(),VENTILATION_PRET,NULL,NULL,NULL,true,NULL);
+    if (FenetrePaiement.exec()==1)
     {
         QSqlQuery RequeteProlongation;
         RequeteProlongation.prepare("UPDATE emprunts as e LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
@@ -852,6 +850,8 @@ void F_Retour::on_LE_SearchMembre_returnPressed()
    //Affiche les informations du membre
    this->AfficherMembre();
     ui->Bt_RendreJeu->setEnabled(false);
+    ui->Bt_PayerAmende->setEnabled(true);
+    ui->Bt_PayerRetard->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1249,4 +1249,28 @@ void F_Retour::on_Bt_ToutDeselectionner_clicked()
     ui->Tv_JeuxEmprunte->selectionModel()->clear();
     ui->Bt_RendreJeu->setEnabled(false);
     this->AffichageProlongation(false);
+}
+
+void F_Retour::on_Bt_PayerAmende_clicked()
+{
+    bool ok;
+    QString MontantAmende = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("Montant de l'amende:"), QLineEdit::Normal,
+                                         "", &ok);
+    if (!ok) return;
+    F_Paiement FenetrePaiement;
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,MontantAmende.toInt(),VENTILATION_AMENDE,NULL,NULL,NULL,true,NULL);
+    FenetrePaiement.exec();
+}
+
+void F_Retour::on_Bt_PayerRetard_clicked()
+{
+    bool ok;
+    QString MontantAmende = QInputDialog::getText(this, tr("QInputDialog::getText()"),
+                                         tr("Montant du retard:"), QLineEdit::Normal,
+                                         "", &ok);
+    if (!ok) return;
+    F_Paiement FenetrePaiement;
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,MontantAmende.toInt(),VENTILATION_RETARD,NULL,NULL,NULL,true,NULL);
+    FenetrePaiement.exec();
 }

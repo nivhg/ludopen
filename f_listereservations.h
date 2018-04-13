@@ -37,6 +37,9 @@ public:
     //! Met à jour la liste des Lieuxs depuis la base de données
     void MaJLieux () ;
 
+    //! Met à jour la liste des types de malles
+    void MaJMalles ();
+
     bool AffichageListe () ;
 
     void SelectionnerReservation(int IdReservation);
@@ -92,6 +95,10 @@ private slots:
     void on_CBx_LieuxDeRetrait_activated(int index);
 
     void on_ChBx_NonConfirme_clicked();
+
+    void on_ChBx_MallesJeux_clicked();
+
+    void on_CBx_MallesJeux_activated(int index);
 
 private:
     Ui::F_ListeReservations *ui;

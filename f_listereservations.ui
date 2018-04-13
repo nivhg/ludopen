@@ -100,6 +100,16 @@
           </property>
          </widget>
         </item>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_MallesJeux"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="ChBx_MallesJeux">
+          <property name="text">
+           <string>Malles/Jeux</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="0" column="4">

@@ -42,7 +42,8 @@ public:
     ~F_Paiement();
     /** @brief affiche les informations du paiement
      */
-    void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits);
+    void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,
+               QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits,QVector<int> *IdPaiementVector);
     void MaJBanques(QComboBox *ComboBoxBanque);
     void CalculerPrix();
     void AjouterPaiement(int IdModePaiement,int Montant,int TypeVentilation,int IdCheque);
@@ -58,10 +59,7 @@ private slots:
     void on_ComboBoxBanque_currentIndexChanged(int index);
     void on_ComboBoxCheque_currentIndexChanged(int index);
     void slot_VerifMontant ();
-
     void on_CBx_ModePaiement_currentIndexChanged(int index);
-
-    void on_Cbx_AmendesRetards_clicked();
 
 private:
     Ui::F_Paiement *ui;
@@ -93,6 +91,8 @@ private:
     F_PopUpCLESTTEM *pBanqueAjMod;
     //! Pointeur sur la classe F_PopUpCLESTTEM avec comme paramètre (14)
     F_PopUpCLESTTEM *pRetardsAmendesAjMod;
+    //! Liste des Ids de paiement créée
+    QVector<int> *IdPaiementVector;
 };
 
 #endif // F_PAIEMENT_H

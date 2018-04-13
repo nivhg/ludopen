@@ -979,7 +979,7 @@ void F_Reservation::DecolorierJours()
     QDate date=ui->Cal_DateEmprunt->selectedDate();
     QDate DateRetour=ui->Cal_DateRetour->selectedDate();
 
-    while(date!=DateRetour)
+    while(date!=DateRetour&&date<DateRetour.addMonths(1))
     {
         QTextCharFormat formatDate = ui->Cal_DateRetour->dateTextFormat(date);
         formatDate.setBackground(QBrush(Qt::white, Qt::SolidPattern));

@@ -115,6 +115,10 @@ private slots:
 
     void on_Bt_ToutDeselectionner_clicked();
 
+    void on_Bt_PayerAmende_clicked();
+
+    void on_Bt_PayerRetard_clicked();
+
 private:
     Ui::F_Retour *ui;
 

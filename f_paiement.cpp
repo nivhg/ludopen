@@ -112,16 +112,14 @@ F_Paiement::~F_Paiement()
  *  @param  Somme : Pris à payer en nombre de crédits , CodeMembre : code du membre qui emprunte
  *  @retval Valeurs de retour
  */
-void F_Paiement::AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits)
+void F_Paiement::AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int Somme,int TypeVentilation,
+              QString NomTable,int IdTable,int IdFacture,bool EurosOuCredits,QVector<int> *IdPaiementVector)
 {
     this->TypeVentilation=TypeVentilation;
     this->NomTable=NomTable;
     this->IdTable=IdTable;
     this->IdFacture=IdFacture;
-
-    ui->W_AmendesRetards->setEnabled(true);
-    ui->W_AmendesRetards->setVisible(false);
-    ui->Cbx_AmendesRetards->setChecked(true);
+    this->IdPaiementVector=IdPaiementVector;
 
     QString NomFenetre;
     QSqlQuery RequeteMembre;
@@ -313,7 +311,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
         {
             QString Cheque;
             int IdCheque;
-            int i = 0;
+            int i = 1;
             ComboBoxCheque->addItem("");
             while( RequeteCheque.next() )
             {
@@ -323,7 +321,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
                 // Ajoute les infos concernant le chèque dans la partie DATA
                 QVariantList vListe;
                 vListe<<IdCheque<<ObtenirValeurParNom(RequeteCheque,"Banques_IdBanque").toInt()<<ObtenirValeurParNom(RequeteCheque,"NomEmetteur").toString()
-                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString()<<(ObtenirValeurParNom(RequeteCheque,"AmendeRetard").toInt()!=0);
+                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString()<<(ObtenirValeurParNom(RequeteCheque,"AmendeRetard").toBool()!=0);
                 ComboBoxCheque->addItem(Cheque);
                 ComboBoxCheque->setItemData(i,vListe,Qt::UserRole);
                 i++;
@@ -439,17 +437,6 @@ void F_Paiement::slot_VerifMontant()
     MontantChequeSBx = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_MONTANT);
     SommeSBx = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_SOMME);
 
-    if(MontantChequeSBx!=0 && SommeSBx!=0)
-    {
-        if(MontantChequeSBx->value()>SommeSBx->value())
-        {
-            ui->W_AmendesRetards->setVisible(true);
-        }
-        else
-        {
-            ui->W_AmendesRetards->setVisible(false);
-        }
-    }
     CalculerPrix();
 }
 
@@ -495,10 +482,6 @@ void F_Paiement::on_Bt_SupprimerAutrePaiement_clicked()
 
       //Calcule le reste à payer
       CalculerPrix();
-   }
-   if(ui->TW_PaiementAutre->rowCount()==0)
-   {
-       ui->W_AmendesRetards->setEnabled(true);
    }
 }
 //------------------------------------------------------------------------------
@@ -550,15 +533,6 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
             }
         }
     }
-    // Vérifier la saisie des amendes et retards
-    if(ui->W_AmendesRetards->isVisible()&&ui->Cbx_AmendesRetards->checkState()==Qt::Checked)
-    {
-        if(ui->SBx_Amende->value()==0 && ui->SBx_Retard->value()==0)
-        {
-            QMessageBox::critical(this,"Erreur de saisie","Merci de saisir le montant de l'amende et/ou du retard");
-            return;
-        }
-    }
 
    for(register unsigned int i=0 ; i < NombreLignePaiement ; i++)
    {
@@ -602,6 +576,8 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
               RequeteAjoutCheque.bindValue(":Numero",ComboBox->currentText());
 
               ComboBox = (QComboBox*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_BANQUE);
+              qDebug()<<ComboBox->currentData();
+              qDebug()<<ComboBox->currentIndex();
               RequeteAjoutCheque.bindValue(":Banques_IdBanque",ComboBox->currentData());
 
 
@@ -621,25 +597,12 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
           else
           {
               QComboBox *ComboBox=(QComboBox *) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_NUMCHEQUE);
+              qDebug()<<ComboBox->currentIndex();
               QVariantList vList=ComboBox->itemData(ComboBox->currentIndex()).value<QVariantList> ();
+              IdCheque=vList.at(0).toInt();
           }
           QDoubleSpinBox * MontantChequeDBx= (QDoubleSpinBox*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_MONTANT);
           QDoubleSpinBox * SommeDBx= (QDoubleSpinBox*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_SOMME);
-          // Si le montant du chèque est supérieur à la somme demandée, qu'on n'a pas encore trouvé de ce type de chèque
-          // et qu'il y a un montant d'amendes et/ou retards
-          if(MontantChequeDBx->value()>SommeDBx->value() && ChequeNonTrouve &&
-                  ui->W_AmendesRetards->isVisible() && ui->Cbx_AmendesRetards->checkState()==Qt::Checked)
-          {
-              if(ui->SBx_Amende->value()!=0)
-              {
-                  AjouterPaiement(ui->TW_PaiementAutre->item(i,COLAUTRE_MODEPAIEMENT)->data(Qt::UserRole).toInt(),ui->SBx_Amende->value(),VENTILATION_AMENDE,IdCheque);
-              }
-              if(ui->SBx_Retard->value()!=0)
-              {
-                  AjouterPaiement(ui->TW_PaiementAutre->item(i,COLAUTRE_MODEPAIEMENT)->data(Qt::UserRole).toInt(),ui->SBx_Retard->value(),VENTILATION_RETARD,IdCheque);
-              }
-              ChequeNonTrouve=false;
-          }
         }
         //Retrouve le montant
         QSpinBox* SpinBox;
@@ -672,6 +635,11 @@ void F_Paiement::AjouterPaiement(int IdModePaiement,int Montant,int TypeVentilat
     if(!RequeteAjoutPaiement.exec())
     {
         qDebug()<<getLastExecutedQuery(RequeteAjoutPaiement)<<RequeteAjoutPaiement.lastError();
+        return;
+    }
+    if(IdPaiementVector!=0)
+    {
+        IdPaiementVector->append(RequeteAjoutPaiement.lastInsertId().toInt());
     }
 }
 
@@ -695,7 +663,7 @@ void F_Paiement::on_ComboBoxBanque_currentIndexChanged(int index)
 void F_Paiement::on_ComboBoxCheque_currentIndexChanged(int index)
 {
     QComboBox *senderObj = (QComboBox *) sender();
-    QVariantList vList=senderObj->itemData(senderObj->currentIndex()-1).value<QVariantList> ();
+    QVariantList vList=senderObj->itemData(senderObj->currentIndex()).value<QVariantList> ();
     qDebug()<<senderObj->currentIndex();
     QComboBox *ComboBoxBanque = (QComboBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_BANQUE);
     qDebug()<<ComboBoxBanque->findData(vList.at(1));
@@ -704,8 +672,6 @@ void F_Paiement::on_ComboBoxCheque_currentIndexChanged(int index)
     LineEditEmetteur->setText(vList.at(2).toString());
     QDoubleSpinBox *DoubleSpinBoxMontant = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_MONTANT);
     DoubleSpinBoxMontant->setValue(vList.at(3).toDouble());
-    ui->W_AmendesRetards->setEnabled(!vList.at(4).toBool());
-    ui->Cbx_AmendesRetards->setChecked(!vList.at(4).toBool());
 }
 
 void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)
@@ -724,7 +690,7 @@ void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)
     {
         QString Banque;
         int IdBanque;
-        int i = 0;
+        int i = 1;
         ComboBoxBanque->addItem("");
         while( RequeteBanque.next() )
         {
@@ -745,16 +711,3 @@ void F_Paiement::on_CBx_ModePaiement_currentIndexChanged(int index)
     ui->Bt_AjouterAutrePaiement->setEnabled(index!=0);
 }
 
-void F_Paiement::on_Cbx_AmendesRetards_clicked()
-{
-    if(ui->Cbx_AmendesRetards->checkState()==Qt::Checked)
-    {
-        ui->SBx_Amende->setEnabled(true);
-        ui->SBx_Retard->setEnabled(true);
-    }
-    else
-    {
-        ui->SBx_Amende->setEnabled(false);
-        ui->SBx_Retard->setEnabled(false);
-    }
-}

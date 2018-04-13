@@ -315,6 +315,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
     int nIdPrestation (0) ;
     int nIdCarte (0) ;
     QDate DateActuelle ;
+    QVector<int> IdPaiementVector;
 
     DateActuelle = QDate::currentDate() ;
 
@@ -326,16 +327,26 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         RequeteMembre.exec();
         RequeteMembre.next();
         QString CodeMembre=ObtenirValeurParNom(RequeteMembre,"CodeMembre").toString();
-
+        int IdVentilation;
+        // Si c'est une carte prépayées
+        if( ui->LE_CreditsDisponibles->isEnabled() )
+        {
+            IdVentilation=VENTILATION_PRET;
+        }
+        else
+        {
+            IdVentilation=VENTILATION_ABONNEMENT;
+        }
         pPaiement->setWindowModality(Qt::ApplicationModal);
         pPaiement->AfficherPaiement(QDateTime::currentDateTime(),CodeMembre,ui->LE_Prix->text().toInt(),
-                                    VENTILATION_ABONNEMENT,"abonnements",NULL,NULL,false);
+                                    IdVentilation,"abonnements",NULL,NULL,false,&IdPaiementVector);
 
         // S'il ne procède pas au paiement, on sort de la fonction
         if(pPaiement->exec()==0)
         {
             return;
         }
+        // Si c'est une carte prépayées
         if( ui->LE_CreditsDisponibles->isEnabled() )
         {
             if( !query.exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
@@ -386,14 +397,6 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
                 qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastQuery();
             }
         }
-        QSqlQuery UpdateQuery;
-        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable");
-        UpdateQuery.bindValue(":IdTable",query.lastInsertId().toInt());
-        if(!UpdateQuery.exec())
-        {
-            qDebug()<< "Mise à jour paiement" << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
-        }
-
     }
     else
     {
@@ -420,6 +423,17 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             {
                 qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastQuery() << endl ;
             }
+        }
+    }
+    for(int i=0;i<IdPaiementVector.length();i++)
+    {
+        QSqlQuery UpdateQuery;
+        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable WHERE IdPaiements=:IdPaiements");
+        UpdateQuery.bindValue(":IdTable",query.lastInsertId().toInt());
+        UpdateQuery.bindValue(":IdPaiements",IdPaiementVector.at(i));
+        if(!UpdateQuery.exec())
+        {
+            qDebug()<< "Mise à jour paiement" << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
         }
     }
 

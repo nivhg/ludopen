@@ -61,7 +61,9 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
         sCheminConfig="";
     }
 
-    this->setWindowTitle(this->windowTitle()+ " v" + QString::fromLocal8Bit(VER) + sCheminConfig);
+    QString DateCompil=QLocale("en_US").toDate(QString(__DATE__).simplified(), "MMM d yyyy").toString("dd-MM-yyyy");
+
+    this->setWindowTitle(this->windowTitle()+ " v" + QString::fromLocal8Bit(VER) + " " + QString("%1 %2").arg(DateCompil).arg(__TIME__) + sCheminConfig);
 
     qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;

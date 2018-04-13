@@ -47,7 +47,6 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 3, new QStandardItem( "Statut" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 4, new QStandardItem( "Nom" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 5, new QStandardItem( "Prénom" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 6, new QStandardItem( "Date réservation" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Emprunt prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Retour prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
@@ -76,6 +75,7 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     //Initialisation de la liste de lieux de réservation et de retrait
     //this->MiseAJourStatutJeu() ;
     this->MaJLieux() ;
+    this->MaJMalles() ;
 
     // Date d'inscription initialiser à la date du jour
     ui->DtE_DateResa_Debut->setDate(QDate::currentDate());
@@ -201,6 +201,32 @@ void F_ListeReservations::MaJLieux ()
     }
 }
 
+void F_ListeReservations::MaJMalles ()
+{
+    QSqlQuery Requete;
+
+    //Suppression du contenu du vecteur de la combobox CBx_Lieu
+    ui->CBx_MallesJeux->clear();
+
+    //Exécution de la requête qui sélectionne le contenu de la table typeemprunt
+    if( !Requete.exec( "SELECT IdTypeEmprunt,TypeEmprunt FROM typeemprunt where Malle=1" ) )
+    {
+        //Sinon on affiche un message d'erreur et on retourne Faux
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    ui->CBx_MallesJeux->insertItem(0,"");
+    ui->CBx_MallesJeux->insertItem(1,"Jeux");
+    //Remplissage du vecteur avec ce que retourne la requête
+    while( Requete.next() )
+    {
+        ui->CBx_MallesJeux->insertItem(
+                    ui->CBx_MallesJeux->count(),
+                    ObtenirValeurParNom(Requete,"TypeEmprunt").toString(),
+                    ObtenirValeurParNom(Requete,"IdTypeEmprunt").toString()) ;
+    }
+}
+
 /** Description détaillée de la méthode
  *  @pre    Accés à  la base de données
  *  @test   Voir la procédure dans le fichier associé.
@@ -296,6 +322,20 @@ bool F_ListeReservations::AffichageListe()
         sRequeteWHERE = sRequeteWHERE + " DatePrevuRetour<='" + ui->DtE_DateEmpruntPrevue_Fin->dateTime().toString("yyyy-MM-dd") + "' AND " ;
     }
 
+    if ( ui->ChBx_MallesJeux->isChecked() )
+    {
+        // Si c'est une malle qui a été choisie
+        if(ui->CBx_MallesJeux->currentIndex()>1)
+        {
+            sRequeteWHERE = sRequeteWHERE + " IdTypeEmprunt=" + ui->CBx_MallesJeux->currentData().toString() + " AND " ;
+        }
+        // Si c'est un jeu qui a été choisi
+        else if(ui->CBx_MallesJeux->currentIndex()==1)
+        {
+            sRequeteWHERE = sRequeteWHERE + " Malle IS NULL AND " ;
+        }
+    }
+
     sRequeteWHERE = sRequeteWHERE + " ConfirmationReservation="+QString::number(!ui->ChBx_NonConfirme->isChecked())+" AND ";
 
     // Vire le dernier mot AND dans la requête WHERE ou le WHERE si requête sans WHERE nécessaire
@@ -342,23 +382,20 @@ bool F_ListeReservations::AffichageListe()
             // Prénom de l'adhérent qui a réservé
             ModeleReservations.setItem( i,5, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"Prenom").toString() ) ) ;
-            // Date réservation
-            ModeleReservations.setItem( i, 6, new QStandardItem(
-                 ObtenirValeurParNom(RequeteDesReservations,"DateReservation").toDate().toString("dd-MM-yyyy" ) ) ) ;
             // Date d'emprunt prévue
-            ModeleReservations.setItem( i, 7, new QStandardItem(
+            ModeleReservations.setItem( i, 6, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"DatePrevuEmprunt").toDate().toString("dd-MM-yyyy" ) ) ) ;
             // Date de retour prévue
-            ModeleReservations.setItem( i, 8, new QStandardItem(
+            ModeleReservations.setItem( i, 7, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"DatePrevuRetour").toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Lieu de réservation
-            ModeleReservations.setItem( i, 9, new QStandardItem(
+            ModeleReservations.setItem( i, 8, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"NomReservation").toString() ) ) ;
-            ModeleReservations.setItem( i, 10, new QStandardItem(
+            ModeleReservations.setItem( i, 9, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
-            ModeleReservations.setItem( i, 11, new QStandardItem(
+            ModeleReservations.setItem( i, 10, new QStandardItem(
                  (ObtenirValeurParNom(RequeteDesReservations,"ConfirmationReservation").toString()=="1")?"OUI":"NON") );
-            ModeleReservations.setItem( i, 12, new QStandardItem(
+            ModeleReservations.setItem( i, 11, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"TypeEmprunt").toString() ) );
             i++ ;
         }
@@ -562,6 +599,16 @@ void F_ListeReservations::on_CBx_LieuxDeRetrait_activated(int index)
 }
 
 void F_ListeReservations::on_ChBx_NonConfirme_clicked()
+{
+    this->AffichageListe();
+}
+
+void F_ListeReservations::on_ChBx_MallesJeux_clicked()
+{
+    this->AffichageListe();
+}
+
+void F_ListeReservations::on_CBx_MallesJeux_activated(int index)
 {
     this->AffichageListe();
 }

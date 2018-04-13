@@ -1845,7 +1845,7 @@ void F_Emprunt::on_Bt_Reserver_clicked()
             {
                 pPaiement->setWindowModality(Qt::ApplicationModal);
                 pPaiement->AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,NbCredits,TypeVentilation,NULL,
-                                            NULL,NULL,EurosOuCredits);
+                                            NULL,NULL,EurosOuCredits,NULL);
                 int nResultat (0);
 
                 nResultat = pPaiement->exec();
@@ -2032,7 +2032,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
     {
         pPaiement->setWindowModality(Qt::ApplicationModal);
         pPaiement->AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,NbCredits,TypeVentilation,NULL,
-                                    NULL,NULL,EurosOuCredits);
+                                    NULL,NULL,EurosOuCredits,NULL);
 
         nResultat = pPaiement->exec();
     }
