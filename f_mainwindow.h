@@ -3,6 +3,7 @@
 
 #include <QDebug>
 #include <QMainWindow>
+#include <QHostInfo>
 #include "f_emprunt.h"
 #include "f_jeux.h"
 #include "f_retour.h"
@@ -16,13 +17,14 @@
 #include "f_preferences.h"
 #include "f_retards.h"
 #include "f_listemembres.h"
-#include "f_popupcode.h"
+#include "d_popupcode.h"
 #include "f_postit.h"
 #include "f_listereservations.h"
 #include "f_malles.h"
 #include "f_imprimeretiquettejeu.h"
 #include "f_imprimerfichecompletejeu.h"
 #include "f_imprimermalle.h"
+#include "d_releve.h"
 #include "fonctions_globale.h"
 #include "majeur.h"
 
@@ -53,6 +55,7 @@ public:
     void CreerRetour();
     void CreerReservations();
     void CreerMalle();
+    void CreerReleve();
 
 public slots:
     void slot_ChangerOnglet();
@@ -62,6 +65,9 @@ public slots:
     void slot_DoubleClic_ListeMembresAdmin(uint IdMembre) ;
     void slot_Clic_Reserve(int IdReservation);
     void slot_Reservation_Malle(int iIdMalle);
+    void slot_PlusTardReleve();
+    void slot_ReleveFini();
+    void slot_MembreIdentifier(uint iIdMembre);
 
 private slots:
     void on_Bt_Membre_clicked();
@@ -80,6 +86,7 @@ private slots:
     void on_Bt_ListeMembres_clicked();
     void on_Menu_Imprimer_Malle_Reservee_triggered();
     void on_Menu_Imprimer_Malle_Empruntee_triggered();
+    void verifReleve();
 
 private:
     Ui::F_MainWindow *ui;
@@ -98,10 +105,16 @@ private:
     F_Paiement * pPaiement;
     F_Retards * pRetards;
     F_Preferences * pPreferences;
-    F_PopUpCode * pPopUpCode;
+    D_PopUpCode * pPopUpCode;
     F_POSTIT * pPostIt ;
     F_ListeReservations * pListeReservations ;
     F_Emprunt * pMalles;
+    D_Releve * pReleve;
+    QTimer *Relevetimer;
+    void TimerProchainePermanence();
+    QString ProchainePermRequete(int DebutFin, QString ChampsDebutFin, int DecalageJour);
+    QString ProchainePermSousRequete(QString ChampsDebutFin, int DecalageJour,bool NowDateReleve);
+    uint iIdBenevole;
 };
 
 #endif // F_MAINWINDOW_H

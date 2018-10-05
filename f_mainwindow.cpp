@@ -38,6 +38,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pRetards=0;
     this->pListeReservations = 0;
     this->pMalles = 0;
+    this->pReleve = 0;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -47,11 +48,28 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pStatistiques=0;
     this->pAjoutSuppModifJeux=0;
     this->pAbonnements=0;
-    this->pPopUpCode = 0;
+//    this->pPopUpCode = 0;
     /*****************************************************************************/
 
     this->VerifierConnexionBDD() ;
     this->pPreferences->ChargerPreferencesBDD();
+
+
+    this->pPopUpCode = new D_PopUpCode;
+    this->pPopUpCode->setWindowFlag(Qt::Dialog);
+    this->pPopUpCode->setWindowFlag(Qt::WindowCloseButtonHint,false);
+    this->pPopUpCode->setWindowFlag(Qt::WindowMaximizeButtonHint,false);
+    //this->pPopUpCode->setWindowTitle("Identification");
+    //this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
+
+    connect(this->pPopUpCode, SIGNAL(SignalMembreIdentifier(uint)), this, SLOT(slot_MembreIdentifier(uint)));
+    this->pPopUpCode->exec();
+
+    CreerReleve();
+    Relevetimer = new QTimer(this);
+    Relevetimer->setSingleShot(true);
+    connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
+    TimerProchainePermanence();
 
     MAJeur *MAJ=new MAJeur(this);
 
@@ -72,7 +90,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->ui->Lay_PostIt->addWidget(this->pPostIt);
 
     // Afficher les post-it au démarrage de l'application
-    ui->TbW_Main->setCurrentIndex(9);
+    ui->TbW_Main->setCurrentIndex(ui->TbW_Main->count()-1);
 
     qDebug()<<"Constructeur F_MainWindow = OK";
 }
@@ -272,6 +290,10 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
     {
         this->pMalles->setVisible(false) ;
     }
+    if(this->pReleve)
+    {
+        this->pReleve->setVisible(false) ;
+    }
     if(w)
     {
         w->setVisible(true);
@@ -352,13 +374,12 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     case 9 : //Administration
         //Widget-admin/////////
         CreerAdminMembres();
-
         /*****************************************************************************/
         //this->pPopUpCode->show();  // Pas de code pour le moment, trop chiant"
         /*if(!this->pPopUpCode)
         {
-                qDebug()<<"Création ADMIN-F_PopUpCode";
-                this->pPopUpCode = new F_PopUpCode;
+                qDebug()<<"Création ADMIN-D_PopUpCode";
+                this->pPopUpCode = new D_PopUpCode;
                 this->pPopUpCode->setWindowTitle("Code d'accès");
                 this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
 
@@ -371,7 +392,13 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;
         break;
-    case 10 : //PostIt
+    case 10 : //Releve caisse
+        CreerReleve();
+        this->pReleve->setVisible(true);
+        connect( this->pReleve, SIGNAL( SignalPlusTard() ), this, SLOT( slot_PlusTardReleve() ) ) ;
+        connect( this->pReleve, SIGNAL( SignalReleveFini() ), this, SLOT( slot_ReleveFini() ) ) ;
+        break;
+    case 11 : //PostIt
         ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
         break;
@@ -497,6 +524,16 @@ void F_MainWindow::CreerMalle()
         this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
         this->ui->Lay_Malles->addWidget(this->pMalles);
         connect( this->pMalles, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
+    }
+}
+
+void F_MainWindow::CreerReleve()
+{
+    if(!this->pReleve)
+    {
+        qDebug()<<"Création D_Releve";
+        this->pReleve=new D_Releve(NULL,iIdBenevole);
+        this->ui->Lay_Releve->addWidget(this->pReleve);
     }
 }
 
@@ -659,4 +696,114 @@ void F_MainWindow::slot_Reservation_Malle(int iIdMalle)
     this->pMalles->AfficherMalle(iIdMalle);
     // Faire apparaître l'onglet Malle
     ui->TbW_Main->setCurrentIndex(6);
+}
+
+void F_MainWindow::verifReleve()
+{
+    QStringList Postes=F_Preferences::ObtenirValeur("PosteReleveCaisse").split(",");
+    if(Postes.contains(QHostInfo::localHostName(),Qt::CaseInsensitive))
+    {
+        for(int i=0;i<ui->TbW_Main->count();i++)
+        {
+            ui->TbW_Main->setTabEnabled(i,false);
+        }
+        ui->TbW_Main->setTabEnabled(10,true);
+        ui->TbW_Main->setCurrentIndex(10);
+    }
+}
+
+void F_MainWindow::slot_PlusTardReleve()
+{
+    for(int i=0;i<ui->TbW_Main->count();i++)
+    {
+        ui->TbW_Main->setTabEnabled(i,true);
+    }
+    // On redemandera le relevé dans 5 minutes
+    Relevetimer->start(5*60*1000);
+}
+
+void F_MainWindow::TimerProchainePermanence()
+{
+    QSqlQuery Requete;
+
+    // Récupère toutes les activités
+    Requete.prepare("SELECT * FROM ("+ProchainePermRequete(0,"HeureDebut",0)+"UNION ALL"+
+                    ProchainePermRequete(1,"HeureFin",0)+"UNION ALL"+ProchainePermRequete(0,"HeureDebut",7)+
+                    ") D HAVING Difference >= 0 AND (DiffReleve >= 0 OR DiffReleve IS NULL) ORDER BY Difference LIMIT 1");
+
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    qDebug() << getLastExecutedQuery(Requete);
+    Requete.next();
+    this->pReleve->ChangementModeSaisie(ObtenirValeurParNom(Requete,"DebutFin").toBool());
+
+    QTime DifferenceTime=ObtenirValeurParNom(Requete,"Difference").toTime();
+
+    QTime IntervalReleve=QTime::fromString(F_Preferences::ObtenirValeur("IntervalReleveCaisse"),"hh:mm:ss");
+    IntervalReleve=IntervalReleve.addMSecs(QTime(0, 0, 0).msecsTo(IntervalReleve));
+
+    int Difference=IntervalReleve.msecsTo(DifferenceTime);
+    // Si on est dans la plage de l'interval (ex: si interval=30min, ça fait du 9h30 à 10h30 pour un début à 10h)
+    if( Difference <= 0)
+    {
+        Difference=0;
+    }
+
+    qDebug() << Difference;
+    Relevetimer->start(Difference);
+}
+
+QString F_MainWindow::ProchainePermRequete(int DebutFin, QString ChampsDebutFin, int DecalageJour)
+{
+    return " (SELECT "+QString::number(DebutFin)+" as DebutFin,"+ProchainePermSousRequete(ChampsDebutFin,DecalageJour,0)+","+
+                    ProchainePermSousRequete(ChampsDebutFin,DecalageJour,1)+
+                    "FROM (SELECT @d:=NOW()) d, permanences as p LEFT JOIN relevescaisse as r ON WEEKDAY(DateHeureReleve)=p.JourPermanence) ";
+}
+
+QString F_MainWindow::ProchainePermSousRequete(QString ChampsDebutFin, int DecalageJour,bool NowDateReleve)
+{
+    QString sAddSub,sNowDateReleve,sNomChamps;
+    if(NowDateReleve)
+    {
+        sAddSub="SUBTIME";
+        sNowDateReleve="r.DateHeureReleve";
+        sNomChamps="DiffReleve";
+    }
+    else
+    {
+        sAddSub="ADDTIME";
+        sNowDateReleve="@d";
+        sNomChamps="Difference";
+    }
+    return "TIMEDIFF("+
+            sAddSub+"("
+                "ADDTIME("
+                    "ADDDATE("
+                        // On trouve le date du 1° jour de la semaine
+                        "SUBDATE(DATE("+sNowDateReleve+"),WEEKDAY("+sNowDateReleve+"))"
+                    // On trouve le jour de permanence correspondant
+                    ",JourPermanence+"+QString::number(DecalageJour)+")"
+                // On ajoute l'heure de la perm
+                ","+ChampsDebutFin+")"
+            // On retire l'heure d'affichage du relevé de la caisse
+            ",'"+F_Preferences::ObtenirValeur("IntervalReleveCaisse")+"')"
+        ","+sNowDateReleve+") as "+sNomChamps+" ";
+}
+
+void F_MainWindow::slot_MembreIdentifier(uint iIdMembre)
+{
+    iIdBenevole=iIdMembre;
+}
+
+void F_MainWindow::slot_ReleveFini()
+{
+    for(int i=0;i<ui->TbW_Main->count();i++)
+    {
+        ui->TbW_Main->setTabEnabled(i,true);
+    }
+    TimerProchainePermanence();
 }

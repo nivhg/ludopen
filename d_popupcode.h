@@ -1,23 +1,27 @@
 // f_poupcode.h	1.0	<06/2012>	<NORMAND Julien>
-#ifndef F_POPUPCODE_H
-#define F_POPUPCODE_H
+#ifndef D_POPUPCODE_H
+#define D_POPUPCODE_H
 
 // En-têtes standards necessaires dans ce fichier en-tête seulement ------------
+#include <QDialog>
+#include <QtDebug>
 #include <QtWidgets>
 #include <QtSql>
-#include <QtWidgets>
+//using namespace std ;
+
+#include "f_preferences.h"
 
 // En-têtes propres à  l'application necessaires dans ce fichier en-tête --------
 
 namespace Ui {
-class F_PopUpCode;
+class D_PopUpCode;
 }
 
 /**
- *  @brief  F_PopUpCode permet la gestion de la partie "Administration" en ayant un code.
+ *  @brief  D_PopUpCode permet la gestion de la partie "Administration" en ayant un code.
  *
  */
-class F_PopUpCode : public QWidget
+class D_PopUpCode : public QDialog
 {
     Q_OBJECT
     
@@ -29,13 +33,13 @@ public:
      *
      *  @param  parent
      */
-    explicit F_PopUpCode(QWidget *parent = 0);
+    explicit D_PopUpCode(QWidget *parent = 0);
 
     /**
      *  @brief  Destructeur de la classe.
      *
      */
-    ~F_PopUpCode();
+    ~D_PopUpCode();
 
 signals:
     // METHODEs ----------------------------------------------------------------
@@ -44,7 +48,8 @@ signals:
      *
      */
     void SignalOnglet();
-    
+    void SignalMembreIdentifier(uint iIdMembre);
+
 private slots:
     // METHODEs ----------------------------------------------------------------
     /**
@@ -54,7 +59,7 @@ private slots:
     void on_Bt_OK_clicked();
 
     /**
-     *  @brief Ferme la fenêtre F_PopUpCode et ré-affiche le premier onglet.
+     *  @brief Ferme la fenêtre D_PopUpCode et ré-affiche le premier onglet.
      *
      */
     void on_Bt_Annuler_clicked();
@@ -68,12 +73,16 @@ private slots:
 
     void on_LE_Code_returnPressed();
 
+    void on_CBx_Benevole_currentIndexChanged(int index);
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
-    Ui::F_PopUpCode *ui;
+    Ui::D_PopUpCode *ui;
+    void closeEvent(QCloseEvent *event);
+    bool enableClose;
 };
 
 //------------------------------------------------------------------------------
-#endif // F_POPUPCODE_H
+#endif // D_PopUpCode_H
 //------------------------------------------------------------------------------

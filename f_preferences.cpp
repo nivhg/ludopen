@@ -322,15 +322,15 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_Mail->setText(TbPreferences["Email"]);
     ui->LE_Web->setText(TbPreferences["SiteWeb"]);
     ui->SBx_JeuxAutorises->setValue(TbPreferences["JeuxAutorises"].toInt());
-    QLocale french(QLocale::French);
-    ui->DSBx_UniteLocation->setValue(french.toDouble(TbPreferences["UniteLocation"]));
+    QLocale English(QLocale::English);
+    ui->DSBx_UniteLocation->setValue(English.toDouble(TbPreferences["UniteLocation"]));
     ui->SBx_JourEmail->setValue(TbPreferences["JourAvantMail"].toInt());
     ui->SBx_JourRetard->setValue(TbPreferences["JourRetard"].toInt());
     ui->LE_CheminPhotosJeux->setText(TbPreferences["CheminPhotosJeux"]);
     ui->LE_CheminRegle->setText(TbPreferences["CheminReglesJeux"]);
     ui->LE_AdresseSMTP->setText(TbPreferences["AdresseServeurSMTP"]);
     ui->LE_PortSMTP->setText(TbPreferences["PortSMTP"]);
-    ui->DSBx_PrixAmende->setValue(french.toDouble(TbPreferences["PrixAmende"]));
+    ui->DSBx_PrixAmende->setValue(English.toDouble(TbPreferences["PrixAmende"]));
     ui->LE_CheminPhotosServeur->setText(TbPreferences["CheminPhotosServeur"]);
     ui->LE_CheminReglesServeur->setText(TbPreferences["CheminReglesServeur"]);
     ui->LE_AdresseServeur->setText(TbPreferences["AdresseServeur"]);

@@ -193,7 +193,7 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     ui->TbW_Recherche->setModel(&ModeleRechercheMembre) ;
     ui->TbW_Recherche->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    // Faire défiler le tableau des membres avec les flèches du clavier
+    // Faire défiler le tableau des membres avec les flêches du clavier
     connect(ui->TbW_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbW_Recherche_clicked(QModelIndex)));
 
     slot_AfficherMembre(this->VecteurRechercheMembres[0].id);

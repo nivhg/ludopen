@@ -38,5 +38,18 @@
         <file>Fleche_haut.png</file>
         <file>Carton_rentrant.png</file>
         <file>Calendrier.png</file>
+        <file>1_cent.png</file>
+        <file>1_euro.png</file>
+        <file>2_cent.png</file>
+        <file>2_euro.png</file>
+        <file>5_cent.png</file>
+        <file>5_euro.png</file>
+        <file>10_cent.png</file>
+        <file>10_euro.png</file>
+        <file>20_euro.jpg</file>
+        <file>50_cent.png</file>
+        <file>50_euro.png</file>
+        <file>100_euro.jpg</file>
+        <file>20_cent.png</file>
     </qresource>
 </RCC>

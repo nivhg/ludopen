@@ -120,6 +120,9 @@ public:
     //! Suppression de la réservation sélectionnée
     static bool SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif);
 
+    //! Vérifier si ce jeu est réservé
+    bool VerifJeuReserve();
+
 private slots:
     void on_TxE_Remarques_textChanged();
 
@@ -223,6 +226,9 @@ private:
 
 //! Indique le mode dans lequel se trouve la classe (emprunt ou résa malles)
     int iMode;
+
+//! Indique le mode dans lequel se trouve la classe (emprunt ou résa malles)
+    bool NonAdherent;
 
 //! Tableau associatif pour stocker la table TypeMalle
     QHash< int, QHash<QString, QVariant> > HashTypeEmprunt;

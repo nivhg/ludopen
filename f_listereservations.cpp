@@ -47,12 +47,12 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 3, new QStandardItem( "Statut" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 4, new QStandardItem( "Nom" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 5, new QStandardItem( "Prénom" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Emprunt prévu le" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Retour prévu le" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Lieu de retrait" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Confirmé?" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 12, new QStandardItem( "Type de malle" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 6, new QStandardItem( "Emprunt prévu le" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Retour prévu le" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Lieu de réservation" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de retrait" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Confirmé?" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Type de malle" ) ) ;
 
     // Règle la largeur des colonnes
     /*ui->Tv_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
@@ -361,13 +361,12 @@ bool F_ListeReservations::AffichageListe()
             // Ajouter au vecteur l'ID de cette réservation (sert pour la suppression des réservations)
             this->VecteurListeReservations.append( ObtenirValeurParNom(RequeteDesReservations,"idReservation").toInt() ) ;
 
-            if(ObtenirValeurParNom(RequeteDesReservations,"IdMalle").toInt()==0)
-            {
-                // On place des case à cocher dans la première colonne.
-                item = new QStandardItem() ;
-                item->setCheckable( true ) ;
-                ModeleReservations.setItem( i, 0, item ) ;
-            }
+            // On place des case à cocher dans la première colonne.
+            item = new QStandardItem() ;
+            item->setCheckable( true ) ;
+            item->setData(ObtenirValeurParNom(RequeteDesReservations,"IdMalle").toInt());
+            ModeleReservations.setItem( i, 0, item ) ;
+
             // Code du jeu réservé
             ModeleReservations.setItem( i, 1, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"CodeJeu").toString() ) ) ;
@@ -443,19 +442,29 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
     QSqlQuery RequeteSupprimer ;
 
     //Vérification que la personne veut bien supprimer les réservations choisies
-    if ( QMessageBox::information( this, "Suppression de réservations","Voulez vous vraiment supprimer toutes les réservations sélectionnées ?", "Supprimer", "Garder" ) == 0 )
+    if ( QMessageBox::information( this, "Suppression de réservations","Voulez vous vraiment supprimer toutes les réservations sélectionnées (si un jeu fait partie d'une malle, la réservation de la malle sera supprimée') ?", "Supprimer", "Garder" ) == 0 )
     {
         for (register int i (0) ; i < ui->Tv_ListeReservations->model()->rowCount() ; i++ )
         {
             //Si le checkbox est "check" dans la liste des résa, on vire cette résa
             if(ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0), Qt::CheckStateRole).toBool() )
             {
-                //Préparation de la requête permettant la suppression dans la table reservation
-                RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
-                RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                int IdMalle=ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole+1).toInt();
+                if( IdMalle==0 )
+                {
+                    //Préparation de la requête permettant la suppression dans la table reservation
+                    RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
+                    RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                }
+                else
+                {
+                    //Préparation de la requête permettant la suppression dans la table reservation et malles
+                    RequeteSupprimer.prepare( "DELETE FROM reservation,malles USING malles LEFT JOIN reservation ON Malles_IdMalle=IdMalle WHERE IdMalle=:IdMalle" ) ;
+                    RequeteSupprimer.bindValue( ":IdMalle", IdMalle ) ;
+                }
                 if( ! RequeteSupprimer.exec() )
                 {
-                    qDebug() << "F_ListeReservations::on_Bt_SupprimerListe_clicked => RequeteSupprimer" << RequeteSupprimer.lastQuery()<< endl ;
+                    qDebug() << getLastExecutedQuery(RequeteSupprimer)<< RequeteSupprimer.lastError();
                 }
             }
         }

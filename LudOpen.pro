@@ -38,7 +38,6 @@ SOURCES += \
     f_retards.cpp \
     Courriel.cpp \
     f_listemembres.cpp \
-    f_popupcode.cpp \
     f_postit.cpp \
     f_popupclesttem.cpp \
     f_imprimerfichecompletejeu.cpp \
@@ -55,7 +54,9 @@ SOURCES += \
     suggest.cpp \
     searchbox.cpp \
     tableviewtooltipmodifier.cpp \
-    f_imprimermalle.cpp
+    f_imprimermalle.cpp \
+    d_releve.cpp \
+    d_popupcode.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -80,7 +81,6 @@ HEADERS  += \
     f_retards.h \
     Courriel.h \
     f_listemembres.h \
-    f_popupcode.h \
     f_postit.h \
     f_popupclesttem.h \
     f_imprimerfichecompletejeu.h \
@@ -97,7 +97,9 @@ HEADERS  += \
     suggest.h \
     searchbox.h \
     tableviewtooltipmodifier.h \
-    f_imprimermalle.h
+    f_imprimermalle.h \
+    d_releve.h \
+    d_popupcode.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -120,7 +122,6 @@ FORMS    += \
     f_preferences.ui \
     f_retards.ui \
     f_listemembres.ui \
-    f_popupcode.ui \
     f_postit.ui \
     f_popupclesttem.ui \
     f_imprimerfichecompletejeu.ui \
@@ -129,11 +130,13 @@ FORMS    += \
     d_image.ui \
     d_ajoutsuppmodiffournisseursediteurs.ui \
     f_malles.ui \
-    f_imprimermalle.ui
+    f_imprimermalle.ui \
+    d_releve.ui \
+    d_popupcode.ui
 
-VERSION = "2.01"
+VERSION = "2.02"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 
 include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
-LIBS += -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(Botan) -l$$qtLibraryName(QSsh)
+LIBS += -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)

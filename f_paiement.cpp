@@ -47,8 +47,9 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    ui->setupUi(this);
 
-   QLocale french(QLocale::French);
-   this->PrixCredit=(round(french.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
+   bool ok;
+   QLocale English(QLocale::English);
+   this->PrixCredit=(round(English.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
 
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;
@@ -73,11 +74,12 @@ F_Paiement::F_Paiement(QWidget *parent) :
 
    //Initialise le tableau des Autres moyens de paiement
    this->NombreLignePaiementAutre=0;
-   ui->TW_PaiementAutre->setColumnCount(6);
+   ui->TW_PaiementAutre->setColumnCount(7);
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_MODEPAIEMENT,new QTableWidgetItem ("Moyen de paiement"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_NUMCHEQUE,new QTableWidgetItem ("N° du chèque"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_BANQUE,new QTableWidgetItem ("Banque"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_EMETEUR,new QTableWidgetItem ("Nom sur le chèque"));
+   ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_DATE,new QTableWidgetItem ("Date du chèque"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_MONTANT,new QTableWidgetItem ("Montant du chèque"));
    ui->TW_PaiementAutre->setHorizontalHeaderItem(COLAUTRE_SOMME,new QTableWidgetItem ("Somme"));
    ui->TW_PaiementAutre->verticalHeader()->hide();
@@ -85,6 +87,7 @@ F_Paiement::F_Paiement(QWidget *parent) :
    ui->TW_PaiementAutre->setColumnWidth(COLAUTRE_BANQUE,100);
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( COLAUTRE_NUMCHEQUE, QHeaderView::ResizeToContents );
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( COLAUTRE_EMETEUR, QHeaderView::ResizeToContents );
+   ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( COLAUTRE_DATE, QHeaderView::ResizeToContents );
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( COLAUTRE_MONTANT, QHeaderView::ResizeToContents );
    ui->TW_PaiementAutre->horizontalHeader()->setSectionResizeMode( COLAUTRE_SOMME, QHeaderView::ResizeToContents );
 
@@ -129,7 +132,16 @@ void F_Paiement::AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int
     RequeteMembre.next();
     this->NomMembre=ObtenirValeurParNom(RequeteMembre,"Nom").toString();
     NomFenetre= "Paiement de "+NomMembre+" "+ObtenirValeurParNom(RequeteMembre,"Nom").toString()+
-            " de "+NomFenetre.setNum(Somme) +" crédits";
+            " de "+NomFenetre.setNum(Somme);
+    if(EurosOuCredits)
+    {
+        NomFenetre+=" crédits";
+    }
+    else
+    {
+        NomFenetre+=" euros";
+    }
+
     IdMembre=ObtenirValeurParNom(RequeteMembre,"IdMembre").toInt();
     //Affiche le nom de la fenêtre
     this->setWindowTitle(NomFenetre);
@@ -275,6 +287,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
 {
     if(ui->CBx_ModePaiement->currentIndex()==0)
     {
+        QMessageBox::critical(this, "Choisir un mode de paiement", "Merci de choisir un mode de paiement.");
         return;
     }
     ui->TW_PaiementAutre->insertRow(NombreLignePaiementAutre);
@@ -293,7 +306,7 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
 
         // Récupère tous les chèques du membre encaissés aujourd'hui et dont le montant du chèque est supérieur au paiement
         // ainsi qu'une indication pour les cheques qui règles de retards ou amendes
-        RequeteCheque.prepare("SELECT DISTINCT(IdCheque) as IdCheque, Banques_IdBanque, NomEmetteur, c.Montant as Montant,Numero,"
+        RequeteCheque.prepare("SELECT DISTINCT(IdCheque) as IdCheque, Banques_IdBanque, NomEmetteur, c.Montant as Montant,Numero,DateCheque,"
                               "(SELECT IdCheque FROM cheques as c2 LEFT JOIN paiements as p ON IdCheque=Cheques_IdCheque WHERE Membres_IdMembre=:IdMembre AND "
                               "DATE(DatePaiement)=DATE(NOW()) AND c.Montant>p.Montant AND TypeVentilation_IdTypeVentilation IN (3,7) "
                               "AND c.IdCheque=c2.IdCheque ORDER BY Numero LIMIT 1) as AmendeRetard FROM cheques as c LEFT JOIN paiements as p ON "
@@ -321,7 +334,8 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
                 // Ajoute les infos concernant le chèque dans la partie DATA
                 QVariantList vListe;
                 vListe<<IdCheque<<ObtenirValeurParNom(RequeteCheque,"Banques_IdBanque").toInt()<<ObtenirValeurParNom(RequeteCheque,"NomEmetteur").toString()
-                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString()<<(ObtenirValeurParNom(RequeteCheque,"AmendeRetard").toBool()!=0);
+                     <<ObtenirValeurParNom(RequeteCheque,"Montant").toString()<<(ObtenirValeurParNom(RequeteCheque,"AmendeRetard").toBool()!=0)
+                    <<ObtenirValeurParNom(RequeteCheque,"DateCheque").toDate();
                 ComboBoxCheque->addItem(Cheque);
                 ComboBoxCheque->setItemData(i,vListe,Qt::UserRole);
                 i++;
@@ -340,9 +354,15 @@ void F_Paiement::on_Bt_AjouterAutrePaiement_clicked()
         QLineEdit *LineEdit=new QLineEdit();
         LineEdit->setText(NomMembre);
         ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,COLAUTRE_EMETEUR,LineEdit);
+
+        QDateEdit *DateEdit=new QDateEdit();
+        DateEdit->setDate(QDate::currentDate());
+        ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,COLAUTRE_DATE,DateEdit);
+
         QDoubleSpinBox* DoubleSpinBoxMontant=new QDoubleSpinBox();
         DoubleSpinBoxMontant->setProperty("row",this->NombreLignePaiementAutre);
         DoubleSpinBoxMontant->setProperty("column",COLAUTRE_MONTANT);
+        DoubleSpinBoxMontant->setMaximum(9999.99);
         ui->TW_PaiementAutre->setCellWidget(this->NombreLignePaiementAutre,COLAUTRE_MONTANT,DoubleSpinBoxMontant);
         connect(DoubleSpinBoxMontant,SIGNAL(valueChanged(double)),this,SLOT(slot_VerifMontant()));
     }
@@ -571,8 +591,8 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
           if(ComboBox->itemText(ComboBox->currentIndex())!=ComboBox->currentText())
           {
               QSqlQuery RequeteAjoutCheque;
-              RequeteAjoutCheque.prepare("INSERT INTO cheques (Banques_IdBanque,NomEmetteur,Numero,Montant) "
-                                           "VALUES (:Banques_IdBanque,:NomEmetteur,:Numero,:Montant)");
+              RequeteAjoutCheque.prepare("INSERT INTO cheques (Banques_IdBanque,NomEmetteur,Numero,Montant,DateCheque) "
+                                           "VALUES (:Banques_IdBanque,:NomEmetteur,:Numero,:Montant,:DateCheque)");
               RequeteAjoutCheque.bindValue(":Numero",ComboBox->currentText());
 
               ComboBox = (QComboBox*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_BANQUE);
@@ -583,6 +603,9 @@ void F_Paiement::on_Bt_OK_Annuler_accepted()
 
               QLineEdit * LineEdit= (QLineEdit*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_EMETEUR);
               RequeteAjoutCheque.bindValue(":NomEmetteur",LineEdit->text());
+
+              QDateEdit * DateEdit= (QDateEdit*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_DATE);
+              RequeteAjoutCheque.bindValue(":DateCheque",DateEdit->date().toString("yyyy-MM-dd"));
 
               QDoubleSpinBox * DoubleSpinBox= (QDoubleSpinBox*) ui->TW_PaiementAutre->cellWidget(i,COLAUTRE_MONTANT);
               RequeteAjoutCheque.bindValue(":Montant",DoubleSpinBox->value());
@@ -663,15 +686,23 @@ void F_Paiement::on_ComboBoxBanque_currentIndexChanged(int index)
 void F_Paiement::on_ComboBoxCheque_currentIndexChanged(int index)
 {
     QComboBox *senderObj = (QComboBox *) sender();
-    QVariantList vList=senderObj->itemData(senderObj->currentIndex()).value<QVariantList> ();
-    qDebug()<<senderObj->currentIndex();
-    QComboBox *ComboBoxBanque = (QComboBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_BANQUE);
-    qDebug()<<ComboBoxBanque->findData(vList.at(1));
-    ComboBoxBanque->setCurrentIndex(ComboBoxBanque->findData(vList.at(1)));
-    QLineEdit *LineEditEmetteur = (QLineEdit *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_EMETEUR);
-    LineEditEmetteur->setText(vList.at(2).toString());
-    QDoubleSpinBox *DoubleSpinBoxMontant = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_MONTANT);
-    DoubleSpinBoxMontant->setValue(vList.at(3).toDouble());
+    if( index !=0 )
+    {
+        QVariantList vList=senderObj->itemData(senderObj->currentIndex()).value<QVariantList> ();
+        qDebug()<<senderObj->currentIndex();
+        QComboBox *ComboBoxBanque = (QComboBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_BANQUE);
+        qDebug()<<ComboBoxBanque->findData(vList.at(1));
+        ComboBoxBanque->setCurrentIndex(ComboBoxBanque->findData(vList.at(1)));
+
+        QLineEdit *LineEditEmetteur = (QLineEdit *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_EMETEUR);
+        LineEditEmetteur->setText(vList.at(2).toString());
+
+        QDoubleSpinBox *DoubleSpinBoxMontant = (QDoubleSpinBox *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_MONTANT);
+        DoubleSpinBoxMontant->setValue(vList.at(3).toDouble());
+
+        QDateEdit *DateEditEmetteur = (QDateEdit *)ui->TW_PaiementAutre->cellWidget(senderObj->property("row").toInt(),COLAUTRE_DATE);
+        DateEditEmetteur->setDate(vList.at(5).toDate());
+    }
 }
 
 void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)
@@ -708,6 +739,6 @@ void F_Paiement::MaJBanques(QComboBox *ComboBoxBanque)
 
 void F_Paiement::on_CBx_ModePaiement_currentIndexChanged(int index)
 {
-    ui->Bt_AjouterAutrePaiement->setEnabled(index!=0);
+    //ui->Bt_AjouterAutrePaiement->setEnabled(index!=0);
 }
 

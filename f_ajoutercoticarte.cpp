@@ -428,12 +428,13 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
     for(int i=0;i<IdPaiementVector.length();i++)
     {
         QSqlQuery UpdateQuery;
-        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable WHERE IdPaiements=:IdPaiements");
+        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable WHERE IdPaiement=:IdPaiement");
+        qDebug()<<query.lastInsertId().toInt();
         UpdateQuery.bindValue(":IdTable",query.lastInsertId().toInt());
-        UpdateQuery.bindValue(":IdPaiements",IdPaiementVector.at(i));
+        UpdateQuery.bindValue(":IdPaiement",IdPaiementVector.at(i));
         if(!UpdateQuery.exec())
         {
-            qDebug()<< "Mise à jour paiement" << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
+            qDebug()<< "Mise à jour paiement : " << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
         }
     }
 
