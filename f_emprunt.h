@@ -123,6 +123,9 @@ public:
     //! Vérifier si ce jeu est réservé
     bool VerifJeuReserve();
 
+    //! modèle du TableView des nouveaux emprunts
+    QStandardItemModel * ModeleEmpruntsAValider;
+
 private slots:
     void on_TxE_Remarques_textChanged();
 
@@ -194,8 +197,6 @@ private:
     bool bRegle;
 //! Vecteur des nouveau emprunts
     QVector <Emprunts> NouveauEmprunts;
-//! modèle du TableView des nouveaux emprunts
-    QStandardItemModel * ModeleEmpruntsAValider;
 //! modèle du TableView des jeux réservés
     QStandardItemModel * ModeleJeuxReserves;
 //! modèle du TableView des jeux empruntés

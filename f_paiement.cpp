@@ -54,7 +54,7 @@ F_Paiement::F_Paiement(QWidget *parent) :
    //Remplir le ComboBox des modes de paiements
    QSqlQuery RequeteMode;
    RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
-   ui->CBx_ModePaiement->addItem("");
+   ui->CBx_ModePaiement->addItem("Choisir un mode de paiement");
    while (RequeteMode.next())
    {
      ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());

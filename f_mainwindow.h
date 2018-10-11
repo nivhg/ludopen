@@ -111,10 +111,12 @@ private:
     F_Emprunt * pMalles;
     D_Releve * pReleve;
     QTimer *Relevetimer;
+    uint iIdBenevole;
+
     void TimerProchainePermanence();
     QString ProchainePermRequete(int DebutFin, QString ChampsDebutFin, int DecalageJour);
     QString ProchainePermSousRequete(QString ChampsDebutFin, int DecalageJour,bool NowDateReleve);
-    uint iIdBenevole;
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // F_MAINWINDOW_H

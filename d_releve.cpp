@@ -21,6 +21,9 @@ D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
 {
     ui->setupUi(this);
 
+    DebutFin=false;
+    ui->DtE_Releve->setVisible(false);
+    ui->Lb_Releve->setVisible(false);
     this->iIdBenevole=iIdBenevole;
     QDateTime DateActuelle;
     DateActuelle=DateActuelle.currentDateTime();
@@ -179,39 +182,44 @@ void D_Releve::VerifChampsSaisis()
 void D_Releve::on_Bt_Valider_clicked()
 {
     QSqlQuery Requete;
-    // Requête qui permet de retrouver le montant des recettes de la permanence en cours. On cherche déjà l'heure de début de la permanence, puis on calcule le
-    // montant des recettes à partir de cette heure de début moins 1H. Si il est 1h de plus que l'heure de fin de la permanence, la requête ne renvoie rien
+    // Seulement en fin de perm
+    if(this->DebutFin)
+    {
+        // Requête qui permet de retrouver le montant des recettes de la permanence en cours. On cherche déjà l'heure de début de la permanence, puis on calcule le
+        // montant des recettes à partir de cette heure de début moins 1H. Si il est 1h de plus que l'heure de fin de la permanence, la requête ne renvoie rien
 
-    Requete.prepare("SELECT SUM(pa.Montant) as Total,r.Montant as MontantDebut FROM (SELECT @d:='2018-09-26 18:30:00') d,permanences as pe LEFT JOIN paiements as pa ON "
-                    "DATE(pa.DatePaiement)=DATE(@d) AND SUBTIME(pa.DatePaiement,SUBTIME(pe.HeureDebut,'01:00')) > 0 LEFT JOIN relevescaisse as r ON "
-                    "DATE(r.DateHeureReleve)=DATE(@d) AND SUBTIME(r.DateHeureReleve,SUBTIME(pe.HeureDebut,'01:00')) > 0 WHERE JourPermanence=WEEKDAY(@d) AND "
-                    "SUBTIME(ADDTIME(HeureFin,'01:00'),TIME(@d)) > 0 AND SUBTIME(TIME(@d),SUBTIME(HeureDebut,'01:00')) > 0 GROUP BY r.Montant,r.DateHeureReleve "
-                    "ORDER BY r.DateHeureReleve ASC LIMIT 1");
-    //Exectution de la requête
-    if( !Requete.exec() )
-    {
-        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError() ;
-        return;
-    }
-    Requete.next();
-    double total=ObtenirValeurParNom(Requete,"Total").toDouble();
-    double DiffDebutFin=ui->SBx_Total->value()-ObtenirValeurParNom(Requete,"MontantDebut").toDouble();
-    if(ui->SBx_Difference->value() != 0 && total!=ui->SBx_Difference->value())
-    {
-        if(QMessageBox::question(this, "Confirmation", "Il y a eu "+QString::number(total)+
-                " euros de recette pendant cette permanence. Êtes-vous sûr que la différence n'est que de "+
-                QString::number(ui->SBx_Difference->value())+" euros ?", "Oui", "Non") != 0)
+        Requete.prepare("SELECT SUM(pa.Montant) as Total,r.Montant as MontantDebut FROM (SELECT @d:=NOW()) d,permanences as pe LEFT JOIN paiements as pa ON "
+                        "DATE(pa.DatePaiement)=DATE(@d) AND SUBTIME(pa.DatePaiement,SUBTIME(pe.HeureDebut,'01:00')) > 0 LEFT JOIN relevescaisse as r ON "
+                        "DATE(r.DateHeureReleve)=DATE(@d) AND SUBTIME(r.DateHeureReleve,SUBTIME(pe.HeureDebut,'01:00')) > 0 WHERE JourPermanence=WEEKDAY(@d) AND "
+                        "SUBTIME(ADDTIME(HeureFin,'01:00'),TIME(@d)) > 0 AND SUBTIME(TIME(@d),SUBTIME(HeureDebut,'01:00')) > 0 AND pa.ModePaiement_IdModePaiement=1 "
+                        "GROUP BY r.Montant,r.DateHeureReleve "
+                        "ORDER BY r.DateHeureReleve ASC LIMIT 1");
+        //Exectution de la requête
+        if( !Requete.exec() )
         {
+            qDebug() << getLastExecutedQuery(Requete) << Requete.lastError() ;
             return;
         }
-    }
-    if(ui->SBx_Total->value() != 0 && DiffDebutFin != total)
-    {
-        if(QMessageBox::question(this, "Confirmation", "Il y a eu "+QString::number(total)+
-                " euros de recette pendant cette permanence. Êtes-vous sûr que le montant de la caisse est de "+QString::number(ui->SBx_Total->value())+
-                " euros ?", "Oui", "Non") != 0)
+        Requete.next();
+        double total=ObtenirValeurParNom(Requete,"Total").toDouble();
+        double DiffDebutFin=ui->SBx_Total->value()-ObtenirValeurParNom(Requete,"MontantDebut").toDouble();
+        if(ui->SBx_Difference->value() != 0 && total!=ui->SBx_Difference->value())
         {
-            return;
+            if(QMessageBox::question(this, "Confirmation", "Il y a eu "+QString::number(total)+
+                    " euros de recette pendant cette permanence. Êtes-vous sûr que la différence n'est que de "+
+                    QString::number(ui->SBx_Difference->value())+" euros ?", "Oui", "Non") != 0)
+            {
+                return;
+            }
+        }
+        if(ui->SBx_Total->value() != 0 && DiffDebutFin != total)
+        {
+            if(QMessageBox::question(this, "Confirmation", "Il y a eu "+QString::number(total)+
+                    " euros de recette pendant cette permanence. Êtes-vous sûr que le montant de la caisse est de "+QString::number(ui->SBx_Total->value())+
+                    " euros ?", "Oui", "Non") != 0)
+            {
+                return;
+            }
         }
     }
 
@@ -291,5 +299,13 @@ void D_Releve::on_Bt_PlusTard_clicked()
 
 void D_Releve::ChangementModeSaisie(bool DebutFin)
 {
+
     ui->SBx_Difference->setEnabled(DebutFin);
+}
+
+void D_Releve::keyPressEvent(QKeyEvent *e)
+{
+    if(e->key() != Qt::Key_Escape)
+        QDialog::keyPressEvent(e);
+    else {/* minimize */}
 }

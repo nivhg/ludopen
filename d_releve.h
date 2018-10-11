@@ -5,6 +5,7 @@
 #include <QDebug>
 #include <QtSql>
 #include <QMessageBox>
+#include <QKeyEvent>
 #include "fonctions_globale.h"
 
 namespace Ui {
@@ -64,6 +65,8 @@ private:
     QStandardItemModel ModeleReleves;
     uint iIdBenevole;
     void MajReleves();
+    bool DebutFin;
+    void keyPressEvent(QKeyEvent *e);
 
 signals:
     void SignalPlusTard();

@@ -82,6 +82,9 @@ public:
     //! Affiche ou masque les contrôles liés à la prolongation
     void AffichageProlongation(bool Activer);
 
+    //! modèle du TableView des jeux empruntés
+    QStandardItemModel * ModelJeuEmpruntes;
+
 private slots:
     void on_LE_SearchMembre_returnPressed();
 
@@ -130,8 +133,6 @@ private:
     int iMalleActive;
     //! modèle du TableView des jeux réservés
     QStandardItemModel * ModelJeuReserves;
-    //! modèle du TableView des jeux empruntés
-    QStandardItemModel * ModelJeuEmpruntes;
     //! Amende calculée pour jours de retard
     //float Amende ;
     //! LineEdit SearchBox pour la recherche de membre

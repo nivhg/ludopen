@@ -449,7 +449,7 @@
     <widget class="QDateTimeEdit" name="DtE_Releve"/>
    </item>
    <item row="4" column="8">
-    <widget class="QLabel" name="label_16">
+    <widget class="QLabel" name="Lb_Releve">
      <property name="font">
       <font>
        <pointsize>11</pointsize>

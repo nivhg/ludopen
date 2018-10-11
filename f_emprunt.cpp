@@ -1124,6 +1124,7 @@ int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QSt
             if(MalleNonTrouve)
             {
                 QStandardItem *parent = new QStandardItem(ObtenirValeurParNom(RequeteJeuEmprunte,"TypeEmprunt").toString() );
+
                 QSqlRecord record = RequeteJeuEmprunte.record();
                 // Liste interne à vListe qui contient toutes les infos sur la malle
                 QHash<QString, QVariant> list;
@@ -2504,14 +2505,14 @@ void F_Emprunt::on_DtE_Retour_editingFinished()
 //! Renvoie l'ID de la malle réservée sélectionnée
 int F_Emprunt::get_MalleReserveeSelectionnee()
 {
-    qDebug()<<ui->Tv_JeuxReserves->currentIndex();
     return this->ModeleJeuxReserves->data(ui->Tv_JeuxReserves->currentIndex(),Qt::UserRole+1).toInt();
 }
 
 //! Renvoie l'ID de la malle empruntée sélectionnée
 int F_Emprunt::get_MalleEmprunteeSelectionnee()
 {
-    return this->ModeleJeuxEmpruntes->data(ui->Tv_JeuxMembres->currentIndex(),Qt::UserRole+1).toInt();
+    QHash<QString, QVariant> hInfosMalle=ModeleJeuxEmpruntes->data(ui->Tv_JeuxMembres->currentIndex(),Qt::UserRole+1).value<QHash<QString, QVariant> >();
+    return hInfosMalle["IdMalle"].toInt();
 }
 
 void F_Emprunt::on_Bt_AjoutNonAdherent_clicked()

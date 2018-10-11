@@ -65,12 +65,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     connect(this->pPopUpCode, SIGNAL(SignalMembreIdentifier(uint)), this, SLOT(slot_MembreIdentifier(uint)));
     this->pPopUpCode->exec();
 
-    CreerReleve();
-    Relevetimer = new QTimer(this);
-    Relevetimer->setSingleShot(true);
-    connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
-    TimerProchainePermanence();
-
     MAJeur *MAJ=new MAJeur(this);
 
     QString sCheminConfig=" " + this->pPreferences->ObtenirsCheminConfig();
@@ -91,6 +85,12 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(ui->TbW_Main->count()-1);
+
+    CreerReleve();
+    Relevetimer = new QTimer(this);
+    Relevetimer->setSingleShot(true);
+    TimerProchainePermanence();
+    connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
 
     qDebug()<<"Constructeur F_MainWindow = OK";
 }
@@ -641,7 +641,8 @@ void F_MainWindow::on_Menu_Jeux_Imprimer_Fiche_Complete_triggered()
    }
    else
    {
-      QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner un avant de lancer l'impression de sa fiche complête.", "OK") ;
+      QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner "
+                               "un avant de lancer l'impression de sa fiche complête.", "OK") ;
    }
 }
 
@@ -703,10 +704,12 @@ void F_MainWindow::verifReleve()
     QStringList Postes=F_Preferences::ObtenirValeur("PosteReleveCaisse").split(",");
     if(Postes.contains(QHostInfo::localHostName(),Qt::CaseInsensitive))
     {
+        ui->TbW_Main->blockSignals(true);
         for(int i=0;i<ui->TbW_Main->count();i++)
         {
             ui->TbW_Main->setTabEnabled(i,false);
         }
+        ui->TbW_Main->blockSignals(false);
         ui->TbW_Main->setTabEnabled(10,true);
         ui->TbW_Main->setCurrentIndex(10);
     }
@@ -729,7 +732,7 @@ void F_MainWindow::TimerProchainePermanence()
     // Récupère toutes les activités
     Requete.prepare("SELECT * FROM ("+ProchainePermRequete(0,"HeureDebut",0)+"UNION ALL"+
                     ProchainePermRequete(1,"HeureFin",0)+"UNION ALL"+ProchainePermRequete(0,"HeureDebut",7)+
-                    ") D HAVING Difference >= 0 AND (DiffReleve >= 0 OR DiffReleve IS NULL) ORDER BY Difference LIMIT 1");
+                    ") D HAVING Difference >= 0 AND (DiffReleve <= 0 OR DiffReleve IS NULL) ORDER BY Difference");
 
     //Exectution de la requête
     if( !Requete.exec() )
@@ -740,15 +743,18 @@ void F_MainWindow::TimerProchainePermanence()
     qDebug() << getLastExecutedQuery(Requete);
     Requete.next();
     this->pReleve->ChangementModeSaisie(ObtenirValeurParNom(Requete,"DebutFin").toBool());
+    qDebug()<<ObtenirValeurParNom(Requete,"Difference").toInt();
+    QTime *DifferenceTime=new QTime(0, 0, 0, 0);
+    *DifferenceTime=DifferenceTime->addSecs(ObtenirValeurParNom(Requete,"Difference").toInt());
 
-    QTime DifferenceTime=ObtenirValeurParNom(Requete,"Difference").toTime();
-
+    qDebug()<<*DifferenceTime;
     QTime IntervalReleve=QTime::fromString(F_Preferences::ObtenirValeur("IntervalReleveCaisse"),"hh:mm:ss");
     IntervalReleve=IntervalReleve.addMSecs(QTime(0, 0, 0).msecsTo(IntervalReleve));
+    qDebug()<<IntervalReleve;
 
-    int Difference=IntervalReleve.msecsTo(DifferenceTime);
+    int Difference=IntervalReleve.msecsTo(*DifferenceTime);
     // Si on est dans la plage de l'interval (ex: si interval=30min, ça fait du 9h30 à 10h30 pour un début à 10h)
-    if( Difference <= 0)
+    if( Difference < 0)
     {
         Difference=0;
     }
@@ -779,7 +785,7 @@ QString F_MainWindow::ProchainePermSousRequete(QString ChampsDebutFin, int Decal
         sNowDateReleve="@d";
         sNomChamps="Difference";
     }
-    return "TIMEDIFF("+
+    return "TIME_TO_SEC(TIMEDIFF("+
             sAddSub+"("
                 "ADDTIME("
                     "ADDDATE("
@@ -791,7 +797,7 @@ QString F_MainWindow::ProchainePermSousRequete(QString ChampsDebutFin, int Decal
                 ","+ChampsDebutFin+")"
             // On retire l'heure d'affichage du relevé de la caisse
             ",'"+F_Preferences::ObtenirValeur("IntervalReleveCaisse")+"')"
-        ","+sNowDateReleve+") as "+sNomChamps+" ";
+        ",@d)) as "+sNomChamps+" ";
 }
 
 void F_MainWindow::slot_MembreIdentifier(uint iIdMembre)
@@ -806,4 +812,31 @@ void F_MainWindow::slot_ReleveFini()
         ui->TbW_Main->setTabEnabled(i,true);
     }
     TimerProchainePermanence();
+}
+
+void F_MainWindow::closeEvent(QCloseEvent *event)
+{
+    if(this->pEmprunt && this->pEmprunt->ModeleEmpruntsAValider->rowCount()>0)
+    {
+        if(QMessageBox::question(this, "Confirmation", "Il reste des emprunts à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
+        {
+            event->ignore();
+        }
+    }
+
+    if(this->pMalles && this->pMalles->ModeleEmpruntsAValider->rowCount()>0)
+    {
+        if(QMessageBox::question(this, "Confirmation", "Il reste une malle à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
+        {
+            event->ignore();
+        }
+    }
+
+    if(this->pRetour && this->pRetour->ModelJeuEmpruntes->rowCount()>0)
+    {
+        if(QMessageBox::question(this, "Confirmation", "Il reste des retours de jeux à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
+        {
+            event->ignore();
+        }
+    }
 }
