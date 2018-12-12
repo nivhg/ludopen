@@ -31,8 +31,8 @@ using namespace std;
 #include "f_statistiques.h"
 #include "ui_f_statistiques.h"
 //------------------------------------------------------------------------------
+// En-têtes propres à  l'application necessaires dans ce fichier en-tête --------
 #include "f_plusdestatistiques.h"
-//------------------------------------------------------------------------------
 
 /**
  *  @brief Constructeur de la classe.

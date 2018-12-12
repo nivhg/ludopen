@@ -18,6 +18,7 @@
 #include "f_paiement.h"
 #include "searchbox.h"
 #include "f_emprunt.h"
+#include "f_panier.h"
 
 namespace Ui {
     class F_Retour;
@@ -122,11 +123,16 @@ private slots:
 
     void on_Bt_PayerRetard_clicked();
 
+signals:
+    //! Signal emit lors de l'ajout au panier d'un abonnement
+    bool Signal_AjouterAuPanier(QString Titre,uint nIDMembre,double Prix,int IdVentilation,QString Table,QList<QSqlQuery *> *requete);
+
 private:
     Ui::F_Retour *ui;
 
     //! Code du membre actif sur la fenêtre
     QString MembreActif;
+    uint IdDuMembre;
     //! Code du jeu actif sur la fenêtre
     QString JeuActif;
     //! Code du jeu actif sur la fenêtre

@@ -45,6 +45,8 @@ public:
 signals:
     //! Signal emit lors de l'ajout ou de la modification d'un abonnment.
     void SignalAjoutCotisationCarte();
+    //! Signal emit lors de l'ajout au panier d'un abonnement
+    bool Signal_AjouterAuPanier(QString Titre,uint nIDMembre,double Prix,int IdVentilation,QString Table,QList<QSqlQuery *> *requete);
 
 private slots:
     //! Valide la modification ou l'ajout

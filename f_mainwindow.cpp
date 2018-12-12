@@ -1,5 +1,6 @@
 #include "f_mainwindow.h"
 #include "ui_f_mainwindow.h"
+#include "f_panier.h"
 
 F_MainWindow::F_MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +11,14 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
     // Création de la fenêtre de choix des préférences du logiciel
     this->pPreferences=new F_Preferences(this);
+
+    this->VerifierConnexionBDD() ;
+    this->pPreferences->ChargerPreferencesBDD();
+
+    // Création de la fenêtre de choix des préférences du logiciel
+    this->pPanier=new F_Panier(this);
+    this->ui->Lay_Panier->addWidget(this->pPanier);
+    connect(this->pPanier, SIGNAL(SignalMiseAJourNbItemsPanier(uint)), this, SLOT(slot_MiseAJourNbItemsPanier(uint)));
 
     // Récupère la taille de la police
     QFont font=QApplication::font();
@@ -39,6 +48,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pListeReservations = 0;
     this->pMalles = 0;
     this->pReleve = 0;
+    this->pCalendrierMalles = 0;
 
     //Widget-admin/////////
     ////Fournisseur////////
@@ -50,10 +60,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pAbonnements=0;
 //    this->pPopUpCode = 0;
     /*****************************************************************************/
-
-    this->VerifierConnexionBDD() ;
-    this->pPreferences->ChargerPreferencesBDD();
-
 
     this->pPopUpCode = new D_PopUpCode;
     this->pPopUpCode->setWindowFlag(Qt::Dialog);
@@ -73,9 +79,12 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
         sCheminConfig="";
     }
 
-    QString DateCompil=QLocale("en_US").toDate(QString(__DATE__).simplified(), "MMM d yyyy").toString("dd-MM-yyyy");
+    //QString DateCompil=QLocale("en_US").toDate(QString(__DATE__).simplified(), "MMM d yyyy").toString("dd-MM-yyyy");
+    QFileInfo info1(QCoreApplication::applicationFilePath());
+    qDebug()<<info1.lastModified();
+    QString DateFichier=info1.lastModified().toString("dd-MM-yyyy hh:mm");
 
-    this->setWindowTitle(this->windowTitle()+ " v" + QString::fromLocal8Bit(VER) + " " + QString("%1 %2").arg(DateCompil).arg(__TIME__) + sCheminConfig);
+    this->setWindowTitle(this->windowTitle()+ " v" + QString::fromLocal8Bit(VER) + " " + DateFichier + sCheminConfig);
 
     qDebug()<<"Création F_POSTIT";
     this->pPostIt=new F_POSTIT (this->ui->PostIt) ;
@@ -86,12 +95,29 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(ui->TbW_Main->count()-1);
 
+    // Si il y a plus d'un écran, on affiche le calendrier des malles aux adhérents
+    if(QApplication::desktop()->screenCount() > 1)
+    {
+        this->pCalendrierMalles=new F_Malles(this);
+        QRect screenres = QApplication::desktop()->screenGeometry(1);
+        pCalendrierMalles->move(QPoint(screenres.x(), screenres.y()));
+        pCalendrierMalles->resize(screenres.width(), screenres.height());
+        pCalendrierMalles->setWindowModality(Qt::NonModal);
+        pCalendrierMalles->AfficherCalendrier();
+        pCalendrierMalles->showFullScreen();
+        pCalendrierMalles->show();
+        connect(this->pPanier,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
+    }
+    else
+    {
+        this->pCalendrierMalles=0;
+    }
+
     CreerReleve();
     Relevetimer = new QTimer(this);
     Relevetimer->setSingleShot(true);
     TimerProchainePermanence();
     connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
-
     qDebug()<<"Constructeur F_MainWindow = OK";
 }
 
@@ -183,7 +209,7 @@ void F_MainWindow::slot_Preferences()
 
 void F_MainWindow::on_Bt_Membre_clicked()
 {
-    ChangerFenetre(this->pAdministrerMembres);
+    ChangerFenetreAdmin(this->pAdministrerMembres);
 }
 
 void F_MainWindow::on_Bt_Jeux_clicked()
@@ -196,7 +222,7 @@ void F_MainWindow::on_Bt_Jeux_clicked()
         this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
         this->pAjoutSuppModifJeux->setVisible(false);
     }
-    ChangerFenetre(this->pAjoutSuppModifJeux);
+    ChangerFenetreAdmin(this->pAjoutSuppModifJeux);
 }
 
 void F_MainWindow::on_Bt_FournisseurEditeur_clicked()
@@ -209,7 +235,7 @@ void F_MainWindow::on_Bt_FournisseurEditeur_clicked()
         this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifFournisseurEditeurs);
         this->pAjoutSuppModifFournisseurEditeurs->setVisible(false);
     }
-    ChangerFenetre(this->pAjoutSuppModifFournisseurEditeurs);
+    ChangerFenetreAdmin(this->pAjoutSuppModifFournisseurEditeurs);
 }
 
 void F_MainWindow::on_Bt_Abonnements_clicked()
@@ -222,7 +248,7 @@ void F_MainWindow::on_Bt_Abonnements_clicked()
         this->ui->Lay_Admin->addWidget(this->pAbonnements);
         this->pAbonnements->setVisible(false);
     }
-    ChangerFenetre(this->pAbonnements);
+    ChangerFenetreAdmin(this->pAbonnements);
 }
 
 void F_MainWindow::on_Bt_Statistiques_clicked()
@@ -235,32 +261,18 @@ void F_MainWindow::on_Bt_Statistiques_clicked()
         this->ui->Lay_Admin->addWidget(this->pStatistiques);
         this->pStatistiques->setVisible(false);
     }
-    ChangerFenetre(this->pStatistiques);
+    ChangerFenetreAdmin(this->pStatistiques);
 }
 
 void F_MainWindow::on_Bt_ListeMembres_clicked()
 {
-    if(!this->pListeMembresAdmin)
-    {
-        ////Liste Membres//////
-        qDebug()<<"Création ADMIN-F_ListeMembres";
-        this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->admin ) ;
-        this->pListeMembresAdmin->setVisible( false ) ;
-        this->ui->Lay_Admin->addWidget( this->pListeMembresAdmin ) ;
-        // Si double clic dans la liste des membres sur un membre,
-        // affiche la fiche détaillée du membre sélectionné
-        connect( this->pListeMembresAdmin,
-                 SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this,
-                 SLOT( slot_DoubleClic_ListeMembresAdmin ( uint )) ) ;
-        this->pListeMembresAdmin->AffichageListe() ;
-    }
-    ChangerFenetre(this->pListeMembresAdmin);
+    CreerListeMembres();
 }
 
 /** @brief Cache les différentes fenêtres admin et affiche celle passée en argument
  *  @param  QWidget : fenêtre à afficher
  */
-void F_MainWindow::ChangerFenetre(QWidget *w)
+void F_MainWindow::ChangerFenetreAdmin(QWidget *w)
 {
     if(this->pAdministrerMembres)
     {
@@ -282,17 +294,25 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
     {
         this->pStatistiques->setVisible(false) ;
     }
+    if(w)
+    {
+        w->setVisible(true);
+    }
+}
+
+void F_MainWindow::ChangerFenetreListes(QWidget *w)
+{
+    if(this->pListeJeux)
+    {
+        this->pListeJeux->setVisible(false);
+    }
+    if(this->pListeReservations)
+    {
+        this->pListeReservations->setVisible(false);
+    }
     if(this->pListeMembresAdmin)
     {
         this->pListeMembresAdmin->setVisible(false) ;
-    }
-    if(this->pMalles)
-    {
-        this->pMalles->setVisible(false) ;
-    }
-    if(this->pReleve)
-    {
-        this->pReleve->setVisible(false) ;
     }
     if(w)
     {
@@ -303,10 +323,10 @@ void F_MainWindow::ChangerFenetre(QWidget *w)
 //Changement d'onglet
 void F_MainWindow::on_TbW_Main_currentChanged(int index)
 {
-
-    switch(index)
+    this->setCursor(Qt::WaitCursor);
+    QString tab=ui->TbW_Main->currentWidget()->objectName().toLower();
+    if(tab=="membre")
     {
-    case 0 : //Membre
         if(!this->pMembres)
         {
             CreerMembre();
@@ -317,34 +337,36 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pMembres->MaJTitre() ;
         this->pMembres->MaJType() ;
         this->pMembres->AfficherMembre() ;
-        break;
-
-    case 1 : //Liste Membres
-        CreerListeMembres();
+    }
+    else if(tab=="listemembre") //Liste Membres
+    {
+        //CreerListeMembres();
         ui->menuImprimer->setEnabled(false);
         this->pListeMembres->AffichageListe() ;
-        break ;
-    case 2 : //Jeux
+    }
+    else if(tab=="jeu") //Jeux
+    {
         // Rendre visible le menu jeu pour imprimer les étiquettes et les fiches des jeux
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
         //if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
-    {
         CreerJeux();
         ui->menuImprimer->setEnabled(true);
         this->pJeux->ActualiserJeux();
     }
-        break;
-    case 3 : //Liste jeux
-        CreerListeJeux();
+    else if(tab=="listejeux") //Liste jeux
+    {
+        ////CreerListeJeux();
         ui->menuImprimer->setEnabled(false);
-        break;
-    case 4 : //Emprunt
+    }
+    else if(tab=="emprunt") //Emprunt
+    {
         CreerEmprunt();
         ui->menuImprimer->setEnabled(false);
         this->pEmprunt->ActualiserJeu();
         this->pEmprunt->ActualiserMembre();
-        break;
-    case 5 : //Retour
+    }
+    else if(tab=="retour") //Retour
+    {
         CreerRetour();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
@@ -354,24 +376,30 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pRetour->ActualiserJeu();
         // Remet à jour la liste de membres ayant un retour à faire
         this->pRetour->ActualiserListeEmprunteurs();
-        break;
-    case 6 : //Réservation Malles
+    }
+    else if(tab=="malles") //Réservation Malles
+    {
         CreerMalle();
         ui->menuImprimer->setEnabled(true);
         this->pMalles->setVisible(true);
-        break;
-    case 7 : //Liste Réservations
-        CreerReservations();
+        this->pMalles->ActualiserJeu();
+        this->pMalles->ActualiserMembre();
+    }
+    else if(tab=="listereservations") //Liste Réservations
+    {
+        //CreerReservations();
         // Désactive le menu Jeux
         ui->menuImprimer->setEnabled(false);
         this->pListeReservations->AffichageListe() ;
-        break;
-    case 8 : //retards
-        CreerRetards();
+    }
+    else if(tab=="retards") //retards
+    {
+        //CreerRetards();
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
-        break;
-    case 9 : //Administration
+    }
+    else if(tab=="admin") //Administration
+    {
         //Widget-admin/////////
         CreerAdminMembres();
         /*****************************************************************************/
@@ -391,18 +419,26 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         this->pAdministrerMembres->MaJTitre() ;
         this->pAdministrerMembres->MaJType() ;
         this->pAdministrerMembres->AfficherMembre() ;
-        break;
-    case 10 : //Releve caisse
+    }
+    else if(tab=="listes") //Listes
+    {
+        //Widget-admin/////////
+        CreerListeJeux();
+        ui->menuImprimer->setEnabled(false);
+    }
+    else if(tab=="releve") //Releve caisse
+    {
         CreerReleve();
         this->pReleve->setVisible(true);
         connect( this->pReleve, SIGNAL( SignalPlusTard() ), this, SLOT( slot_PlusTardReleve() ) ) ;
         connect( this->pReleve, SIGNAL( SignalReleveFini() ), this, SLOT( slot_ReleveFini() ) ) ;
-        break;
-    case 11 : //PostIt
+    }
+    else if(tab=="postit") //PostIt
+    {
         ui->menuImprimer->setEnabled(false);
         this->pPostIt->setVisible(true);
-        break;
     }
+    this->setCursor(Qt::ArrowCursor);
 }
 
 void F_MainWindow::CreerAdminMembres()
@@ -411,14 +447,14 @@ void F_MainWindow::CreerAdminMembres()
     {
         ////Membre/////////////
         qDebug()<<"Création ADMIN-F_Membres";
-        this->pAdministrerMembres=new F_Membres (MODE_ADMIN,this->ui->admin);
+        this->pAdministrerMembres=new F_Membres (MODE_ADMIN,this->ui->admin,0,pPanier);
         this->pAdministrerMembres->setVisible(false);
         this->ui->Lay_Admin->addWidget(this->pAdministrerMembres);
         this->pAdministrerMembres->setVisible(true);
     }
 }
 
-void F_MainWindow::CreerRetards()
+/*void F_MainWindow::CreerRetards()
 {
     if(!this->pRetards)
     {
@@ -429,17 +465,17 @@ void F_MainWindow::CreerRetards()
         // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
         connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
     }
-}
+}*/
 
 void F_MainWindow::CreerReservations()
 {
     if(!this->pListeReservations)
     {
         qDebug()<<"Création F_ListeReservation";
-        this->pListeReservations = new F_ListeReservations( ui->ListeReservations ) ;
-        //Liste Réservations
-        ui->Lay_ListeReservations->addWidget( this->pListeReservations ) ;
+        this->pListeReservations=new F_ListeReservations(this->ui->Listes);
+        this->ui->Lay_Listes->addWidget(this->pListeReservations);
     }
+    ChangerFenetreListes(this->pListeReservations);
 }
 
 void F_MainWindow::CreerMembre()
@@ -447,10 +483,13 @@ void F_MainWindow::CreerMembre()
     if(!this->pMembres)
     {
         qDebug()<<"Création F_Membres";
-        this->pMembres=new F_Membres (MODE_UTILISATEUR, this->ui->Membre);
+        this->pMembres=new F_Membres (MODE_UTILISATEUR, this->ui->Membre,0,pPanier);
         //Membres
         this->ui->Lay_Membres->addWidget(this->pMembres);
         connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
+        connect( this->pMembres, SIGNAL( Signal_Adherent_Cree() ), this->pEmprunt, SLOT( slot_ActualiserMembres() ) ) ;
+        connect( this->pMembres, SIGNAL( Signal_Adherent_Cree() ), this->pMalles, SLOT( slot_ActualiserMembres() ) ) ;
+
     }
 }
 
@@ -458,12 +497,20 @@ void F_MainWindow::CreerListeMembres()
 {
     if(!this->pListeMembres)
     {
-        qDebug()<<"Création F_ListeMembres";
-        this->pListeMembres = new F_ListeMembres( false ,ui->ListeMembres ) ;
+        ////Liste Membres//////
+        qDebug()<<"Création ADMIN-F_ListeMembres";
+        this->pListeMembresAdmin = new F_ListeMembres( true, this->ui->Listes ) ;
         //Liste Membres
-        ui->Lay_ListeMembres->addWidget( this->pListeMembres ) ;
+        this->ui->Lay_Listes->addWidget( this->pListeMembresAdmin ) ;
+        // Si double clic dans la liste des membres sur un membre,
+        // affiche la fiche détaillée du membre sélectionné
+        connect( this->pListeMembresAdmin,
+                 SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this,
+                 SLOT( slot_DoubleClic_ListeMembresAdmin ( uint )) ) ;
+        this->pListeMembresAdmin->AffichageListe() ;
         connect( this->pListeMembres, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres( uint ) ) ) ;
     }
+    ChangerFenetreListes(this->pListeMembresAdmin);
 }
 
 void F_MainWindow::CreerJeux()
@@ -484,13 +531,15 @@ void F_MainWindow::CreerListeJeux()
     if(!this->pListeJeux)
     {
         qDebug()<<"Création F_ListeJeux";
-        this->pListeJeux=new F_ListeJeux (this->ui->ListeJeux);
+        this->pListeJeux=new F_ListeJeux (this->ui->Listes);
         //Liste Jeux
-        this->ui->Layout_ListeJeux->addWidget(this->pListeJeux);
+        this->ui->Lay_Listes->addWidget(this->pListeJeux);
 
         // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
         connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
     }
+    ChangerFenetreListes(this->pListeJeux);
+//        this->pListeJeux->setVisible(false);
 }
 
 void F_MainWindow::CreerEmprunt()
@@ -502,6 +551,12 @@ void F_MainWindow::CreerEmprunt()
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
         connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
+        connect( this->pEmprunt, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
+                 SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) );
+        connect( this->pEmprunt, SIGNAL( Signal_VerifMembrePanier(uint IdDuMembre)), this->pPanier,
+                 SLOT( slot_VerifMembrePanier(uint IdDuMembre)) );
+        if(!pCalendrierMalles)
+            connect(this->pEmprunt,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
     }
 }
 
@@ -513,6 +568,8 @@ void F_MainWindow::CreerRetour()
         this->pRetour=new F_Retour (this->ui->Retour);
         //Retour
         this->ui->Lay_Retour->addWidget(this->pRetour);
+        connect( this->pRetour, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
+                 SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) ) ;
     }
 }
 
@@ -521,9 +578,15 @@ void F_MainWindow::CreerMalle()
     if(!this->pMalles)
     {
         qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
-        this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles);
+        this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles,pCalendrierMalles);
         this->ui->Lay_Malles->addWidget(this->pMalles);
         connect( this->pMalles, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
+        connect( this->pMalles, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
+                 SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) ) ;
+        connect( this->pMalles, SIGNAL( Signal_VerifMembrePanier(uint IdDuMembre)), this->pPanier,
+                 SLOT( slot_VerifMembrePanier(uint IdDuMembre)) );
+        if(!pCalendrierMalles)
+            connect(this->pMalles,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
     }
 }
 
@@ -580,7 +643,7 @@ void F_MainWindow::slot_DoubleClic_ListeJeux(QString CodeJeu)
  */
 void F_MainWindow::slot_Clic_Reserve(int IdReservation)
 {
-    CreerReservations();
+    //CreerReservations();
     this->pListeReservations->TousSelectionner( false ) ;
     ui->TbW_Main->setCurrentIndex(6);
     this->pListeReservations->SelectionnerReservation(IdReservation);
@@ -598,7 +661,7 @@ void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
     // Indiquer à l'onglet Membre quel membre afficher
     this->pMembres->slot_AfficherMembre( IdMembre );
     // Faire apparaître l'onglet Membre
-    ui->TbW_Main->setCurrentIndex(0);
+    ui->TbW_Main->setCurrentIndex(this->trouveOnglet("membre"));
 }
 
 /**
@@ -609,11 +672,11 @@ void F_MainWindow::slot_DoubleClic_ListeMembres(uint IdMembre)
  */
 void F_MainWindow::slot_DoubleClic_ListeMembresAdmin(uint IdMembre)
 {
-    CreerMembre();
+    CreerAdminMembres();
     // Indiquer à l'onglet Membre quel membre afficher
     this->pAdministrerMembres->slot_AfficherMembre( IdMembre );
     // Faire apparaître l'onglet Admin/Membre
-    ChangerFenetre(this->pAdministrerMembres);
+    ui->TbW_Main->setCurrentIndex(this->trouveOnglet("membre"));
 }
 
 void F_MainWindow::on_Menu_Jeux_Imprimer_Etiquette_triggered()
@@ -654,7 +717,7 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
       QString::number(BUILD_DAY) + "-" + QString::number(BUILD_MONTH) + "-" + QString::number(BUILD_YEAR) + " " +
       QString::number(BUILD_HOUR) + ":" + QString::number(BUILD_MIN) + ":" + QString::number(BUILD_SEC) +
       "<br><br>Programme créé avec Qt Creator 3.0.1 - Qt 5.2.1<br><br>"
-      "<a href='http://code.google.com/p/ludopen'>http://code.google.com/p/ludopen</a><br><br>"
+      "<a href='https://github.com/nivhg/ludopen'>https://github.com/nivhg/ludopen</a><br><br>"
       "Copyright © BOTHEREL Phillipe, MARY Florian, NORMAND Julien, PADIOU Nicolas, SOREL William, VICTORIN Vincent. Tous droits réservés.");
     //APropos.setWindowIcon(QIcon(""));
 }
@@ -710,29 +773,65 @@ void F_MainWindow::verifReleve()
             ui->TbW_Main->setTabEnabled(i,false);
         }
         ui->TbW_Main->blockSignals(false);
-        ui->TbW_Main->setTabEnabled(10,true);
-        ui->TbW_Main->setCurrentIndex(10);
+        int IndexReleve=trouveOnglet("releve");
+        ui->TbW_Main->setTabEnabled(IndexReleve,true);
+        ui->TbW_Main->setCurrentIndex(IndexReleve);
     }
 }
 
+int F_MainWindow::trouveOnglet(QString NomOnglet)
+{
+    for(int i=0;i<ui->TbW_Main->count();i++)
+    {
+        if(ui->TbW_Main->widget(i)->objectName().compare(NomOnglet,Qt::CaseInsensitive)==0)
+        {
+            return i;
+        }
+    }
+}
 void F_MainWindow::slot_PlusTardReleve()
 {
     for(int i=0;i<ui->TbW_Main->count();i++)
     {
         ui->TbW_Main->setTabEnabled(i,true);
     }
-    // On redemandera le relevé dans 5 minutes
-    Relevetimer->start(5*60*1000);
+    // On redemandera le relevé dans X minutes
+    Relevetimer->start(F_Preferences::ObtenirValeur("RelanceReleveCaisse").toInt()*60*1000);
 }
 
 void F_MainWindow::TimerProchainePermanence()
 {
     QSqlQuery Requete;
+    QList<QList <QVariant>> Permanences;
 
-    // Récupère toutes les activités
-    Requete.prepare("SELECT * FROM ("+ProchainePermRequete(0,"HeureDebut",0)+"UNION ALL"+
-                    ProchainePermRequete(1,"HeureFin",0)+"UNION ALL"+ProchainePermRequete(0,"HeureDebut",7)+
-                    ") D HAVING Difference >= 0 AND (DiffReleve <= 0 OR DiffReleve IS NULL) ORDER BY Difference");
+    Requete.prepare("SELECT * FROM permanences as p");
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    // Si on obtient un résultat, c'est qu'il y a eu un relevé, on attends
+    int i=0;
+    while(Requete.next())
+    {
+        QList<QVariant> *Liste=new QList<QVariant>();
+        Liste->append(ObtenirValeurParNom(Requete,"JourPermanence"));
+        Liste->append(ObtenirValeurParNom(Requete,"HeureDebut"));
+        Liste->append(ObtenirValeurParNom(Requete,"HeureFin"));
+        Permanences.append(*Liste);
+    }
+    qDebug()<<Permanences;
+
+
+    QDateTime Maintenant=QDateTime::currentDateTime();
+//    QString sMaintenant="2018-11-24 17:00";
+    QString sMaintenant="NOW()";
+//    Maintenant="'"+Maintenant.fromString(sMaintenant,"yyyy-MM-dd hh:mm")+"'";
+    qDebug()<<Maintenant;
+    // Récupère toutes les relevés de caisse
+    Requete.prepare("SELECT * FROM (SELECT @d:="+sMaintenant+") as d,relevescaisse as r WHERE DATE_FORMAT(@d,'%y-%m-%d')="
+                    "DATE_FORMAT(DateHeureReleve,'%y-%m-%d')");
 
     //Exectution de la requête
     if( !Requete.exec() )
@@ -741,63 +840,75 @@ void F_MainWindow::TimerProchainePermanence()
         return;
     }
     qDebug() << getLastExecutedQuery(Requete);
-    Requete.next();
-    this->pReleve->ChangementModeSaisie(ObtenirValeurParNom(Requete,"DebutFin").toBool());
-    qDebug()<<ObtenirValeurParNom(Requete,"Difference").toInt();
-    QTime *DifferenceTime=new QTime(0, 0, 0, 0);
-    *DifferenceTime=DifferenceTime->addSecs(ObtenirValeurParNom(Requete,"Difference").toInt());
-
-    qDebug()<<*DifferenceTime;
-    QTime IntervalReleve=QTime::fromString(F_Preferences::ObtenirValeur("IntervalReleveCaisse"),"hh:mm:ss");
-    IntervalReleve=IntervalReleve.addMSecs(QTime(0, 0, 0).msecsTo(IntervalReleve));
-    qDebug()<<IntervalReleve;
-
-    int Difference=IntervalReleve.msecsTo(*DifferenceTime);
-    // Si on est dans la plage de l'interval (ex: si interval=30min, ça fait du 9h30 à 10h30 pour un début à 10h)
-    if( Difference < 0)
+    bool Retour=Requete.next();
+    int Difference;
+    QDateTime FuturPerm;
+    int iFuturPerm=0;
+    // Recherche de la prochaine permanence
+    FuturPerm=TrouverProchainePerm(Maintenant,Permanences,&iFuturPerm);
+    qDebug()<<FuturPerm;
+    int HeurePerm;
+    // Si il y a eu un relevé aujourd'hui, on active le timer pour s'enclencher 30 minutes avant la fin de la permanence, sinon au début
+    if(Retour)
     {
-        Difference=0;
-    }
-
-    qDebug() << Difference;
-    Relevetimer->start(Difference);
-}
-
-QString F_MainWindow::ProchainePermRequete(int DebutFin, QString ChampsDebutFin, int DecalageJour)
-{
-    return " (SELECT "+QString::number(DebutFin)+" as DebutFin,"+ProchainePermSousRequete(ChampsDebutFin,DecalageJour,0)+","+
-                    ProchainePermSousRequete(ChampsDebutFin,DecalageJour,1)+
-                    "FROM (SELECT @d:=NOW()) d, permanences as p LEFT JOIN relevescaisse as r ON WEEKDAY(DateHeureReleve)=p.JourPermanence) ";
-}
-
-QString F_MainWindow::ProchainePermSousRequete(QString ChampsDebutFin, int DecalageJour,bool NowDateReleve)
-{
-    QString sAddSub,sNowDateReleve,sNomChamps;
-    if(NowDateReleve)
-    {
-        sAddSub="SUBTIME";
-        sNowDateReleve="r.DateHeureReleve";
-        sNomChamps="DiffReleve";
+        HeurePerm=PERM_FIN;
+        do
+        {
+            QTime FinPerm=QTime::fromString(Permanences.at(iFuturPerm).at(HeurePerm).toString());
+            Difference=FinPerm.secsTo(ObtenirValeurParNom(Requete,"DateHeureReleve").toDateTime().time());
+            Difference=Difference+F_Preferences::ObtenirValeur("IntervalReleveCaisse").toInt()*60;
+            // Si il y a eu un relevé de fin de permanence, on programme le timer pour la prochaine permanence
+            if(Difference>0)
+            {
+                HeurePerm=PERM_DEBUT;
+                // On commence la recherche à partir de demain
+                FuturPerm=TrouverProchainePerm(Maintenant.addDays(1),Permanences,&iFuturPerm);
+                break;
+            }
+        }
+        while(Requete.next());
     }
     else
     {
-        sAddSub="ADDTIME";
-        sNowDateReleve="@d";
-        sNomChamps="Difference";
+        HeurePerm=PERM_DEBUT;
     }
-    return "TIME_TO_SEC(TIMEDIFF("+
-            sAddSub+"("
-                "ADDTIME("
-                    "ADDDATE("
-                        // On trouve le date du 1° jour de la semaine
-                        "SUBDATE(DATE("+sNowDateReleve+"),WEEKDAY("+sNowDateReleve+"))"
-                    // On trouve le jour de permanence correspondant
-                    ",JourPermanence+"+QString::number(DecalageJour)+")"
-                // On ajoute l'heure de la perm
-                ","+ChampsDebutFin+")"
-            // On retire l'heure d'affichage du relevé de la caisse
-            ",'"+F_Preferences::ObtenirValeur("IntervalReleveCaisse")+"')"
-        ",@d)) as "+sNomChamps+" ";
+    // On mets l'heure de la future perm (début ou fin de permanence)
+    FuturPerm.setTime(QTime::fromString(Permanences.at(iFuturPerm).at(HeurePerm).toString()));
+    qDebug()<<FuturPerm;
+    // On calcule la différence de temps entre la futur perm et maintenant et on retire l'interval défini pour le relevé de caisse (30 min)
+    Difference=Maintenant.secsTo(FuturPerm);
+    Difference=Difference-F_Preferences::ObtenirValeur("IntervalReleveCaisse").toInt()*60;
+    qDebug()<<Difference;
+    if(Difference<0) Difference=0;
+
+    Relevetimer->start(Difference*1000);
+}
+
+QDateTime F_MainWindow::TrouverProchainePerm(QDateTime LaDate,QList<QList <QVariant>> Permanences,int *iFuturPerm)
+{
+    QDateTime FuturPerm=LaDate;
+    // Si le jour d'aujourd'hui est supérieur au dernier jour de permanence, on prends la première permanence
+    if(LaDate.date().dayOfWeek()-1 > Permanences.at(Permanences.count()-1).at(PERM_JOUR).toInt())
+    {
+        // On part de la semaine prochaine pour trouver le jour correspondant
+        FuturPerm=FuturPerm.addDays(8-LaDate.date().dayOfWeek());
+        FuturPerm=FuturPerm.addDays(Permanences.at(0).at(PERM_JOUR).toInt());
+    }
+    // Sinon, on recherche la prochaine permanence
+    else
+    {
+        for(int i=0;i<Permanences.count();i++)
+        {
+            if(Permanences.at(i).at(PERM_JOUR)>=LaDate.date().dayOfWeek()-1)
+            {
+                FuturPerm=FuturPerm.addDays(1-LaDate.date().dayOfWeek());
+                FuturPerm=FuturPerm.addDays(Permanences.at(i).at(PERM_JOUR).toInt());
+                *iFuturPerm=i;
+                break;
+            }
+        }
+    }
+    return FuturPerm;
 }
 
 void F_MainWindow::slot_MembreIdentifier(uint iIdMembre)
@@ -821,6 +932,7 @@ void F_MainWindow::closeEvent(QCloseEvent *event)
         if(QMessageBox::question(this, "Confirmation", "Il reste des emprunts à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
         {
             event->ignore();
+            return;
         }
     }
 
@@ -829,6 +941,7 @@ void F_MainWindow::closeEvent(QCloseEvent *event)
         if(QMessageBox::question(this, "Confirmation", "Il reste une malle à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
         {
             event->ignore();
+            return;
         }
     }
 
@@ -837,6 +950,31 @@ void F_MainWindow::closeEvent(QCloseEvent *event)
         if(QMessageBox::question(this, "Confirmation", "Il reste des retours de jeux à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
         {
             event->ignore();
+            return;
         }
     }
+
+    if(this->pPanier && this->pPanier->ModelePanier.rowCount()>0)
+    {
+        if(QMessageBox::question(this, "Confirmation", "Il reste des éléments dans le panier. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
+        {
+            event->ignore();
+            return;
+        }
+    }
+}
+
+void F_MainWindow::on_Bt_ListeJeux_clicked()
+{
+    CreerListeJeux();
+}
+
+void F_MainWindow::on_Bt_ListeReservations_clicked()
+{
+    CreerReservations();
+}
+
+void F_MainWindow::slot_MiseAJourNbItemsPanier(uint iNbItems)
+{
+    ui->TbW_Main->setTabText(trouveOnglet("Panier"),"Panier ("+QString::number(iNbItems)+")");
 }

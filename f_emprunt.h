@@ -46,7 +46,7 @@ class F_Emprunt : public QWidget
 
 public:
     //! Constructeur
-    explicit F_Emprunt(int iMode=0, QWidget *parent = 0);
+    explicit F_Emprunt(int iMode=0, QWidget *parent = 0,F_Malles *pCalendrierMalles=0);
     //! Destructeur
     ~F_Emprunt();
     /** @brief affiche les informations du membre
@@ -85,7 +85,7 @@ public:
     bool AfficherEtatCotisation(QString CodeMembre);
     /** @brief Emprunte les jeux
      */
-    void EmprunterJeux();
+    void EmprunterJeux(bool DansPanier);
     /** @brief Calcule les crédits restants
      */
     void CalculerCreditsRestants();
@@ -163,8 +163,6 @@ private slots:
 
     void on_Bt_SupprimerEmpruntAValider_clicked();
 
-    void on_Bt_Reserver_clicked();
-
     void on_Bt_CalendrierMalles_clicked();
 
     void on_DtE_Retour_editingFinished();
@@ -180,13 +178,22 @@ public slots:
 
     void slot_Non_Adherent_Cree(int iCodeMembre);
 
+    void slot_ActualiserMembres();
+
 signals:
     void Signal_Reservation_Malle(int iIdMalle);
+    //! Signal emit lors de l'ajout au panier d'un abonnement
+    bool Signal_AjouterAuPanier(QString Titre,uint nIDMembre,double Prix,int IdVentilation,QString Table,QList<QSqlQuery *> *requete);
+    bool Signal_VerifMembrePanier(uint IdDuMembre);
+    //! Signal indiquant qu'il y a une nouvelle malle
+    void Signal_Nouvelle_Malle();
+
 private:
     Ui::F_Emprunt *ui;
 
-//! Code du membre actif sur la fenêtre
+//! Code et ID du membre actif sur la fenêtre
     QString MembreActif;
+    uint IdDuMembre;
 //! Code du jeu actif sur la fenêtre
     QString JeuActif;
 //! Id de réservation du jeu actif
@@ -238,6 +245,8 @@ private:
     int iNbEmpruntEnCours;
     int iNbJeuxEmpruntables;
     int iNbNouveauxEmprunts;
+
+    void Reserver();
 };
 
 #endif // F_EMPRUNT_H

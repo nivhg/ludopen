@@ -21,8 +21,8 @@ class F_Malles : public QDialog
     Q_OBJECT
 
 public:
-    explicit F_Malles(QWidget *parent = 0);
-    void AfficherCalendrier(QRect ParentGeometry);
+    explicit F_Malles(QWidget *parent = 0,F_Malles *pCalendrierMalles=0);
+    void AfficherCalendrier(int mois=0,int annee=0);
     ~F_Malles();
 
 private slots:
@@ -36,6 +36,8 @@ private slots:
 
     void on_Bt_EmprunterMalle_clicked();
 
+    void slot_actualiserCalendrier();
+
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton Emprunter
     void Signal_Clic_Emprunter( int iIdMalle);
@@ -46,6 +48,8 @@ private:
     QStandardItemModel * ModeleMalle;
     QTableView *TbV_CalendrierMalles;
     int iIdMalleChoisie;
+    //! Calendrier des malles pour les adhérents (2° écran)
+    F_Malles * pCalendrierMalles;
 };
 
 #endif // F_MALLES_H

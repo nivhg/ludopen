@@ -1,17 +1,32 @@
 #include "f_malles.h"
 #include "ui_f_malles.h"
 
-F_Malles::F_Malles(QWidget *parent) :
+F_Malles::F_Malles(QWidget *parent,F_Malles *pCalendrierMalles) :
     QDialog(parent),
     ui(new Ui::F_Malles)
 {
     ui->setupUi(this);
+
+    this->pCalendrierMalles=pCalendrierMalles;
+
     this->TbV_CalendrierMalles=new TableViewToolTipModifier(this);
+
+    QFont PoliceCalendrier=this->TbV_CalendrierMalles->font();
+    PoliceCalendrier.setPointSize(9);
+    this->TbV_CalendrierMalles->setFont(PoliceCalendrier);
+    QHeaderView *verticalHeader = this->TbV_CalendrierMalles->verticalHeader();
+    verticalHeader->setSectionResizeMode(QHeaderView::Fixed);
+    verticalHeader->setDefaultSectionSize(16);
+    QHeaderView *horizontalHeader = this->TbV_CalendrierMalles->horizontalHeader();
+    horizontalHeader->setSectionResizeMode(QHeaderView::Fixed);
+    horizontalHeader->setDefaultSectionSize(28);
+
     this->TbV_CalendrierMalles->setSelectionMode(QAbstractItemView::SingleSelection);
     this->TbV_CalendrierMalles->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    this->TbV_CalendrierMalles->setAlternatingRowColors(true);
     ui->gL_CalendrierMalles->addWidget(this->TbV_CalendrierMalles,0,0);
     this->ModeleMalle = new QStandardItemModel() ;
-    connect(this->TbV_CalendrierMalles, SIGNAL( mouseClickItem(QModelIndex)), this, SLOT(on_TbV_CalendrierMalles_clicked(QModelIndex)));
+    connect(this->TbV_CalendrierMalles, SIGNAL( mouseClickItem(QModelIndex)), this, SLOT(on_TbV_CalendrierMalles_clicked(QModelIndex)));    
 
     //Affiche le nom de la fenêtre
     this->setWindowTitle("Calendrier des grands jeux");
@@ -31,11 +46,19 @@ F_Malles::~F_Malles()
  *  @param  Somme : Pris à payer en nombre de crédits , CodeMembre : code du membre qui emprunte
  *  @retval Valeurs de retour
  */
-void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
+void F_Malles::AfficherCalendrier(int mois,int annee)
 {
-    if(ParentGeometry!=QRect())
+    if(mois!=0||annee!=0)
     {
-        this->setGeometry(ParentGeometry);
+        if(mois!=0)
+        {
+            ui->CBx_Mois->setCurrentIndex(mois-1);
+        }
+        if(annee!=0)
+        {
+            ui->CBx_Annee->setCurrentText(QString::number(annee));
+        }
+        return;
     }
     int i;
     QStandardItem *item;
@@ -193,24 +216,30 @@ void F_Malles::AfficherCalendrier(QRect ParentGeometry=QRect())
                 "\nDate retour: "+list["DateRetour"].toDateTime().toString("dd/MM/yyyy hh:mm")),Qt::ToolTipRole);
         for(int j=0;j<iDerniereColonne;j++)
         {
-            qDebug()<<NumLigneJeu<<iPremiereColonne+j;
             this->ModeleMalle->setItem(NumLigneJeu,iPremiereColonne+j,item);
             item=item->clone();
-            qDebug()<<item->data(Qt::ToolTipRole);
         }
     }while(Requete.next());
 
     this->TbV_CalendrierMalles->setModel(this->ModeleMalle);
-    this->TbV_CalendrierMalles->resizeColumnsToContents();
+    //this->TbV_CalendrierMalles->resizeColumnsToContents();
 }
 
 void F_Malles::on_CBx_Mois_currentIndexChanged(int index)
 {
+    if(pCalendrierMalles)
+    {
+        pCalendrierMalles->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
+    }
     this->AfficherCalendrier();
 }
 
 void F_Malles::on_CBx_Annee_currentIndexChanged(int index)
 {
+    if(pCalendrierMalles)
+    {
+        pCalendrierMalles->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
+    }
     this->AfficherCalendrier();
 }
 
@@ -292,3 +321,8 @@ bool F_Malles::eventFilter(QObject *obj, QEvent *event)
     //return F_Malles::eventFilter(obj, event);
 }
 */
+
+void F_Malles::slot_actualiserCalendrier()
+{
+    AfficherCalendrier(0,0);
+}

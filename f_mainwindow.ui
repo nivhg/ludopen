@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1366</width>
-    <height>720</height>
+    <width>1350</width>
+    <height>640</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -55,7 +55,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>4</number>
       </property>
       <property name="iconSize">
        <size>
@@ -78,21 +78,6 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ListeMembres">
-       <attribute name="icon">
-        <iconset>
-         <normalon>:/Adherents_liste.png</normalon>
-        </iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Liste membres</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_9">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Lay_ListeMembres"/>
-        </item>
-       </layout>
-      </widget>
       <widget class="QWidget" name="Jeu">
        <attribute name="icon">
         <iconset>
@@ -105,21 +90,6 @@
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="Lay_Jeux"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="ListeJeux">
-       <attribute name="icon">
-        <iconset>
-         <normalon>:/De_par_2.png</normalon>
-        </iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Liste jeux</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_7">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Layout_ListeJeux"/>
         </item>
        </layout>
       </widget>
@@ -171,40 +141,18 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="ListeReservations">
-       <property name="layoutDirection">
-        <enum>Qt::LeftToRight</enum>
-       </property>
+      <widget class="QWidget" name="Panier">
        <attribute name="icon">
         <iconset>
-         <normalon>:/Reservations.png</normalon>
+         <normalon>:/Panier.png</normalon>
         </iconset>
        </attribute>
        <attribute name="title">
-        <string>Liste réservations</string>
+        <string>Panier (0)</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_11">
+       <layout class="QGridLayout" name="gridLayout_14">
         <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Lay_ListeReservations">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetNoConstraint</enum>
-          </property>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="Retards">
-       <attribute name="icon">
-        <iconset>
-         <normalon>:/Sablier.png</normalon>
-        </iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Retards</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Layout_Retards"/>
+         <layout class="QHBoxLayout" name="Lay_Panier"/>
         </item>
        </layout>
       </widget>
@@ -253,41 +201,6 @@
              <property name="icon">
               <iconset>
                <normalon>:/Adherent_info.png</normalon>
-              </iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>25</width>
-               <height>25</height>
-              </size>
-             </property>
-            </widget>
-            <widget class="QPushButton" name="Bt_ListeMembres">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>100</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>100</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="text">
-              <string>Liste
-Membres</string>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normalon>:/Adherents_liste.png</normalon>
               </iconset>
              </property>
              <property name="iconSize">
@@ -423,6 +336,142 @@ Cotisations</string>
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="Listes">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Listes.png</normalon>
+        </iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Listes</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_15">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Listes">
+          <item>
+           <widget class="QSplitter" name="SP_Listes">
+            <property name="maximumSize">
+             <size>
+              <width>150</width>
+              <height>188</height>
+             </size>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <widget class="QPushButton" name="Bt_ListeJeux">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Liste
+Jeux</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/De_par_2.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_ListeReservations">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Liste
+réservations</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Reservations.png</normaloff>:/Reservations.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_ListeMembres">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Liste
+Membres</string>
+             </property>
+             <property name="icon">
+              <iconset>
+               <normalon>:/Adherents_liste.png</normalon>
+              </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="Retards">
+       <attribute name="icon">
+        <iconset>
+         <normalon>:/Sablier.png</normalon>
+        </iconset>
+       </attribute>
+       <attribute name="title">
+        <string>Retards</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <layout class="QHBoxLayout" name="Lay_Retards"/>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="Releve">
        <property name="enabled">
         <bool>true</bool>
@@ -465,7 +514,7 @@ Cotisations</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1366</width>
+     <width>1350</width>
      <height>22</height>
     </rect>
    </property>
@@ -480,7 +529,7 @@ Cotisations</string>
    </widget>
    <widget class="QMenu" name="menuAide">
     <property name="title">
-     <string>Aide</string>
+     <string>Aid&amp;e</string>
     </property>
     <addaction name="Menu_Aide_Aide"/>
     <addaction name="separator"/>

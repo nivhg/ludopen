@@ -165,13 +165,18 @@
        <property name="enabled">
         <bool>true</bool>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="text">
-        <string>Paiement</string>
+        <string>Ajouter au panier</string>
        </property>
        <property name="icon">
-        <iconset>
-         <normalon>:/Valider.png</normalon>
-        </iconset>
+        <iconset resource="ImagesIcones.qrc">
+         <normaloff>:/Panier.png</normaloff>:/Panier.png</iconset>
        </property>
        <property name="default">
         <bool>false</bool>
@@ -183,6 +188,8 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources/>
+ <resources>
+  <include location="ImagesIcones.qrc"/>
+ </resources>
  <connections/>
 </ui>

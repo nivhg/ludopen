@@ -24,9 +24,14 @@
 #include "f_imprimeretiquettejeu.h"
 #include "f_imprimerfichecompletejeu.h"
 #include "f_imprimermalle.h"
+#include "f_panier.h"
 #include "d_releve.h"
 #include "fonctions_globale.h"
 #include "majeur.h"
+
+#define PERM_JOUR 0
+#define PERM_DEBUT 1
+#define PERM_FIN 2
 
 namespace Ui {
 class F_MainWindow;
@@ -42,7 +47,8 @@ public:
     void VerifierConnexionBDD() ;
     /** @brief Cache les différentes fenêtres admin et affiche celle passée en argument
      */
-    void ChangerFenetre(QWidget *w=NULL);
+    void ChangerFenetreAdmin(QWidget *w=NULL);
+    void ChangerFenetreListes(QWidget *w=NULL);
 
     // Fonction de création des interfaces
     void CreerAdminMembres();
@@ -68,6 +74,7 @@ public slots:
     void slot_PlusTardReleve();
     void slot_ReleveFini();
     void slot_MembreIdentifier(uint iIdMembre);
+    void slot_MiseAJourNbItemsPanier(uint iNbItems);
 
 private slots:
     void on_Bt_Membre_clicked();
@@ -87,6 +94,9 @@ private slots:
     void on_Menu_Imprimer_Malle_Reservee_triggered();
     void on_Menu_Imprimer_Malle_Empruntee_triggered();
     void verifReleve();
+    void on_Bt_ListeJeux_clicked();
+
+    void on_Bt_ListeReservations_clicked();
 
 private:
     Ui::F_MainWindow *ui;
@@ -109,13 +119,15 @@ private:
     F_POSTIT * pPostIt ;
     F_ListeReservations * pListeReservations ;
     F_Emprunt * pMalles;
+    F_Malles * pCalendrierMalles;
     D_Releve * pReleve;
+    F_Panier * pPanier;
     QTimer *Relevetimer;
     uint iIdBenevole;
 
     void TimerProchainePermanence();
-    QString ProchainePermRequete(int DebutFin, QString ChampsDebutFin, int DecalageJour);
-    QString ProchainePermSousRequete(QString ChampsDebutFin, int DecalageJour,bool NowDateReleve);
+    QDateTime TrouverProchainePerm(QDateTime LaDate,QList<QList <QVariant>> Permanences,int *iFuturPerm);
+    int trouveOnglet(QString NomOnglet);
     void closeEvent(QCloseEvent *event);
 };
 

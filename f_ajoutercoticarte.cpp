@@ -27,17 +27,9 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    this->pPaiement=new F_Paiement;
-    this->pPaiement->setWindowModality( Qt::ApplicationModal ) ;
-
-
     this->MaJListeAbonnements() ;
     // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
     ui->DtE_DateSouscription->setDisplayFormat("dd/MM/yyyy");
-
-    //Remplir le ComboBox des modes de paiements
-    QSqlQuery RequeteMode;
-    RequeteMode.exec("SELECT NomPaiement,IdModePaiement FROM modepaiement ORDER BY IdModePaiement");
 }
 //======================================================================================================
 /** Détruit l'objet ui
@@ -211,8 +203,6 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
     ui->Lb_CreditsRestants->hide();
     ui->LE_CreditsRestants->hide();
 
-    ui->Bt_Valider->setText("Paiement");
-
     this->show();
 }
 //======================================================================================================
@@ -311,11 +301,10 @@ void F_AjouterCotiCarte::on_Bt_Annuler_clicked()
  */
 void F_AjouterCotiCarte::on_Bt_Valider_clicked()
 {
-    QSqlQuery query;
+    QSqlQuery *query=new QSqlQuery();
     int nIdPrestation (0) ;
     int nIdCarte (0) ;
     QDate DateActuelle ;
-    QVector<int> IdPaiementVector;
 
     DateActuelle = QDate::currentDate() ;
 
@@ -337,7 +326,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         {
             IdVentilation=VENTILATION_ABONNEMENT;
         }
-        pPaiement->setWindowModality(Qt::ApplicationModal);
+        /*pPaiement->setWindowModality(Qt::ApplicationModal);
         pPaiement->AfficherPaiement(QDateTime::currentDateTime(),CodeMembre,ui->LE_Prix->text().toInt(),
                                     IdVentilation,"abonnements",NULL,NULL,false,&IdPaiementVector);
 
@@ -345,56 +334,62 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
         if(pPaiement->exec()==0)
         {
             return;
-        }
+        }*/
         // Si c'est une carte prépayées
         if( ui->LE_CreditsDisponibles->isEnabled() )
         {
-            if( !query.exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
+            if( !query->exec( "SELECT IdCarte FROM cartesprepayees WHERE NomCarte='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query.lastQuery() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection Carte : " <<query->lastQuery() << endl ;
             }
             else
             {
-                query.next() ;
-                nIdCarte = query.record().value( 0 ).toInt() ;
+                query->next() ;
+                nIdCarte = query->record().value( 0 ).toInt() ;
             }
 
-            query.prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
+            query->prepare("INSERT INTO abonnements (CartesPrepayees_IdCarte,Membres_IdMembre,DateSouscription,"
                           "DateExpiration,CreditRestant) "
                           "VALUES (:CartesPrepayees_IdCarte,:Membres_IdMembre,:DateSouscription,:DateExpiration,:CreditRestant)");
-            query.bindValue(":CartesPrepayees_IdCarte", nIdCarte);
-            query.bindValue(":Membres_IdMembre", this->nIDMembre);
-            query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
+            query->bindValue(":CartesPrepayees_IdCarte", nIdCarte);
+            query->bindValue(":Membres_IdMembre", this->nIDMembre);
+            query->bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
             DateActuelle = ui->DtE_DateSouscription->date() ;
-            query.bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
-            query.bindValue(":CreditRestant", ui->LE_CreditsDisponibles->text().toInt() ) ;
-            if( !query.exec() )
+            query->bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
+            query->bindValue(":CreditRestant", ui->LE_CreditsDisponibles->text().toInt() ) ;
+            QList<QSqlQuery *> *Liste=new QList<QSqlQuery *>();
+            Liste->append(query);
+            if(!emit(Signal_AjouterAuPanier(ui->CBx_ChoixAbonnement->currentText(),this->nIDMembre,ui->LE_Prix->text().toInt(),IdVentilation,
+                                            "abonnements",Liste)))
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : enregistrement carte : " << query.lastQuery() << endl ;
+                return;
             }
         }
         else
         {
-            if( !query.exec( "SELECT IdPrestation FROM prestations WHERE NomPrestation='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
+            if( !query->exec( "SELECT IdPrestation FROM prestations WHERE NomPrestation='" + ui->CBx_ChoixAbonnement->currentText() + "'"  ) )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query.lastQuery();
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : selection prestation : " <<query->lastQuery();
             }
             else
             {
-                query.next() ;
-                nIdPrestation = query.record().value( 0 ).toInt() ;
+                query->next() ;
+                nIdPrestation = query->record().value( 0 ).toInt() ;
             }
 
-            query.prepare("INSERT INTO abonnements (Prestations_IdPrestation, Membres_IdMembre, DateSouscription, DateExpiration ) "
+            query->prepare("INSERT INTO abonnements (Prestations_IdPrestation, Membres_IdMembre, DateSouscription, DateExpiration ) "
                           "VALUES (:Prestations_IdPrestation, :Membres_IdMembre, :DateSouscription, :DateExpiration ) ");
-            query.bindValue(":Prestations_IdPrestation", nIdPrestation);
-            query.bindValue(":Membres_IdMembre", this->nIDMembre);
-            query.bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
+            query->bindValue(":Prestations_IdPrestation", nIdPrestation);
+            query->bindValue(":Membres_IdMembre", this->nIDMembre);
+            query->bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
             DateActuelle = ui->DtE_DateSouscription->date() ;
-            query.bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
-            if( !query.exec() )
+            query->bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
+            QList<QSqlQuery *> *Liste=new QList<QSqlQuery *>();
+            Liste->append(query);
+            if(!emit(Signal_AjouterAuPanier(ui->CBx_ChoixAbonnement->currentText(),this->nIDMembre,ui->LE_Prix->text().toInt(),IdVentilation,
+                                            "abonnements",Liste)))
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Prestation : " <<query.lastQuery();
+                return;
             }
         }
     }
@@ -402,39 +397,27 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
     {
         if ( ui->LE_CreditsRestants->isEnabled() == true )
         {
-            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,CreditRestant=:CreditRestant "
+            query->prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,CreditRestant=:CreditRestant "
                           "WHERE IdAbonnements=:IdAbonnements");
-            query.bindValue(":IdAbonnements", this->nIDAbonnement);
-            query.bindValue(":DateExpiration", ui->DtE_Expiration->date() ) ;
-            query.bindValue(":CreditRestant", ui->LE_CreditsRestants->text().toInt() ) ;
-            if( !query.exec() )
+            query->bindValue(":IdAbonnements", this->nIDAbonnement);
+            query->bindValue(":DateExpiration", ui->DtE_Expiration->date() ) ;
+            query->bindValue(":CreditRestant", ui->LE_CreditsRestants->text().toInt() ) ;
+            if( !query->exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query.lastQuery() ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : Modifier carte : " << query->lastQuery() ;
             }
         }
         else
         {
-            query.prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,DateSouscription=:DateSouscription "
+            query->prepare("UPDATE abonnements SET DateExpiration=:DateExpiration,DateSouscription=:DateSouscription "
                           "WHERE IdAbonnements=:IdAbonnements");
-            query.bindValue( ":IdAbonnements"    , this->nIDAbonnement);
-            query.bindValue( ":DateExpiration"   , ui->DtE_Expiration->date() ) ;
-            query.bindValue( ":DateSouscription" , ui->DtE_DateSouscription->date() ) ;
-            if( !query.exec() )
+            query->bindValue( ":IdAbonnements"    , this->nIDAbonnement);
+            query->bindValue( ":DateExpiration"   , ui->DtE_Expiration->date() ) ;
+            query->bindValue( ":DateSouscription" , ui->DtE_DateSouscription->date() ) ;
+            if( !query->exec() )
             {
-                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query.lastQuery() << endl ;
+                qDebug()<< "F_AjouterCotiCarte::on_Bt_Valider_clicked() : modifier prestation : " <<query->lastQuery() << endl ;
             }
-        }
-    }
-    for(int i=0;i<IdPaiementVector.length();i++)
-    {
-        QSqlQuery UpdateQuery;
-        UpdateQuery.prepare("UPDATE paiements SET IdTable=:IdTable WHERE IdPaiement=:IdPaiement");
-        qDebug()<<query.lastInsertId().toInt();
-        UpdateQuery.bindValue(":IdTable",query.lastInsertId().toInt());
-        UpdateQuery.bindValue(":IdPaiement",IdPaiementVector.at(i));
-        if(!UpdateQuery.exec())
-        {
-            qDebug()<< "Mise à jour paiement : " << getLastExecutedQuery(UpdateQuery) << UpdateQuery.lastError();
         }
     }
 

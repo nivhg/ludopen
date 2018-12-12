@@ -5,7 +5,7 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport
+QT        = widgets sql network core printsupport script
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -56,7 +56,10 @@ SOURCES += \
     tableviewtooltipmodifier.cpp \
     f_imprimermalle.cpp \
     d_releve.cpp \
-    d_popupcode.cpp
+    d_popupcode.cpp \
+    f_panier.cpp \
+    f_imprimerfacture.cpp \
+    d_ajoutelementpanier.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -99,7 +102,10 @@ HEADERS  += \
     tableviewtooltipmodifier.h \
     f_imprimermalle.h \
     d_releve.h \
-    d_popupcode.h
+    d_popupcode.h \
+    f_panier.h \
+    f_imprimerfacture.h \
+    d_ajoutelementpanier.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -132,9 +138,12 @@ FORMS    += \
     f_malles.ui \
     f_imprimermalle.ui \
     d_releve.ui \
-    d_popupcode.ui
+    d_popupcode.ui \
+    f_panier.ui \
+    f_imprimerfacture.ui \
+    d_ajoutelementpanier.ui
 
-VERSION = "2.02"
+VERSION = "2.03"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 

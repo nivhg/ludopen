@@ -62,3 +62,9 @@ void SearchBox::mousePressEvent(QMouseEvent* event)
     emit(this->SignalMousePressEvent());
     QComboBox::mousePressEvent(event);
 }
+
+void SearchBox::keyPressEvent(QKeyEvent* event)
+{
+    emit(this->SignalKeyPressEvent());
+    QComboBox::keyPressEvent(event);
+}
