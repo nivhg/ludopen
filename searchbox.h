@@ -58,10 +58,12 @@ signals:
     */
     void SignalSuggestionFini();
     void SignalMousePressEvent();
+    void SignalKeyPressEvent();
 
 private:
     Suggest *completer;
     void mousePressEvent(QMouseEvent* event);
+    void keyPressEvent(QKeyEvent* event);
     QComboBox parent;
 };
 

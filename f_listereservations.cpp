@@ -342,7 +342,7 @@ bool F_ListeReservations::AffichageListe()
     sRequeteWHERE.remove( sRequeteWHERE.size()-5 , 5) ;
 
     // Assemblage des différents morceaux de la requête
-    sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdReservation" ;
+    sRequete = sRequeteSELECTFROM + " " + sRequeteWHERE + " GROUP BY IdReservation ORDER BY DatePrevuEmprunt" ;
 
     qDebug() << "F_ListeReservations::AffichageListe " << sRequete ;
 

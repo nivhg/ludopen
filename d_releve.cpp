@@ -22,12 +22,7 @@ D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
     ui->setupUi(this);
 
     DebutFin=false;
-    ui->DtE_Releve->setVisible(false);
-    ui->Lb_Releve->setVisible(false);
     this->iIdBenevole=iIdBenevole;
-    QDateTime DateActuelle;
-    DateActuelle=DateActuelle.currentDateTime();
-    ui->DtE_Releve->setDateTime(DateActuelle);
 
     ui->TbV_Releves->clearSpans() ;
     ui->TbV_Releves->setModel(&ModeleReleves) ;
@@ -40,6 +35,8 @@ D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
     ModeleReleves.setHorizontalHeaderItem(2, new QStandardItem("ou différence"));
     ModeleReleves.setHorizontalHeaderItem(3, new QStandardItem("Nom"));
     ModeleReleves.setHorizontalHeaderItem(4, new QStandardItem("Remarque"));
+
+    ui->Bt_PlusTard->setText("Plus tard dans "+F_Preferences::ObtenirValeur("RelanceReleveCaisse")+" minutes");
 
     MajReleves();
 
@@ -230,7 +227,7 @@ void D_Releve::on_Bt_Valider_clicked()
         "(:Membres_IdMembre,:DateHeureReleve,:Montant,:Difference,:Remarque,:UnCent,:DeuxCents,:CinqCents,:DixCents,:VingtCents,:CinquanteCents,"
         ":UnEuro,:DeuxEuros,:CinqEuros,:DixEuros,:VingtEuros,:CinquanteEuros,:CentEuros)") ;
     Requete.bindValue(":Membres_IdMembre", this->iIdBenevole);
-    Requete.bindValue(":DateHeureReleve", ui->DtE_Releve->dateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    Requete.bindValue(":DateHeureReleve", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     Requete.bindValue(":Montant", QString::number(ui->SBx_Total->value(), 'f', ui->SBx_Total->decimals()));
     Requete.bindValue(":Difference", ui->SBx_Difference->value());
     Requete.bindValue(":Remarque", ui->Le_Remarques->text());

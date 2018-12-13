@@ -26,7 +26,7 @@
  *  @param  F_Membres * pRechercheMembres
  *
  */
-F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
+F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite,F_Panier *pPanier):
     QWidget( parent ),
     ui( new Ui::F_Membres )
 {
@@ -35,6 +35,7 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     this->nIdCollectivite = nIdCollectivite;
     //Indique le mode : Administration, utilisation standard ou membres associés
     this->iMode = iMode ;
+    this->pPanier = pPanier;
 
     if(this->iMode!=MODE_ADMIN)
     {
@@ -95,6 +96,8 @@ F_Membres::F_Membres( int iMode, QWidget *parent, int nIdCollectivite ):
     connect( this->pTypeAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauType() ) ) ;
     connect( this->pDomaineEmailAjMod, SIGNAL(SignalValider()), this, SLOT( slot_ChoisirNouveauDomaineEmail() ) ) ;
     connect( this->pAjouterCotiCarte, SIGNAL( SignalAjoutCotisationCarte() ), this, SLOT( slot_ActualiserAbonnements() ) ) ;
+    connect( this->pAjouterCotiCarte, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
+             SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) ) ;
     connect( this->Bt_ValiderVille, SIGNAL( clicked() ), this, SLOT( slot_ValiderAjoutVille() ) ) ;
     connect( this->Bt_AnnuerVille, SIGNAL( clicked() ), this, SLOT(slot_AnnulerAjoutVille()) ) ;
     // Connecte l'évenement textEdited à la fonction toUpper
@@ -1975,6 +1978,7 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
     {
         qDebug() << "F_Membres::AjouterMembre() : RequeteCodeMembre :" << RequeteCodeMembre.lastQuery()  ;
     }
+    emit(Signal_Adherent_Cree());
 }
 //==========================================================================================================
 /** Affiche l'historique des jeux empruntés

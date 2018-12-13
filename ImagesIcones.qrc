@@ -51,5 +51,9 @@
         <file>50_euro.png</file>
         <file>100_euro.jpg</file>
         <file>20_cent.png</file>
+        <file>Listes.png</file>
+        <file>Modele_facture_devis.html</file>
+        <file>logo-ludo.png</file>
+        <file>carte.jpg</file>
     </qresource>
 </RCC>

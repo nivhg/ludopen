@@ -445,21 +445,6 @@
    <item row="7" column="9">
     <widget class="QLineEdit" name="Le_Remarques"/>
    </item>
-   <item row="4" column="9">
-    <widget class="QDateTimeEdit" name="DtE_Releve"/>
-   </item>
-   <item row="4" column="8">
-    <widget class="QLabel" name="Lb_Releve">
-     <property name="font">
-      <font>
-       <pointsize>11</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Date et heure du relevé :</string>
-     </property>
-    </widget>
-   </item>
    <item row="7" column="8">
     <widget class="QLabel" name="label_17">
      <property name="font">

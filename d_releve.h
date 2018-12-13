@@ -6,6 +6,7 @@
 #include <QtSql>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include "f_preferences.h"
 #include "fonctions_globale.h"
 
 namespace Ui {

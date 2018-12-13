@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QStandardItem>
 #include "TitreType.h"
+#include "fonctions_globale.h"
 
 namespace Ui {
 class F_ListeMembres;

@@ -524,7 +524,7 @@ bool F_ListeMembres::AffichageListe()
     }
     else //Sinon on affiche un message d'erreur et on retourne Faux
     {
-        qDebug() << "F_ListeMembres:: : RequeteListeMembres :" << RequeteListemembres.lastQuery()  ;
+        qDebug() << getLastExecutedQuery(RequeteListemembres)<<RequeteListemembres.lastError();
     }
 
     ui->Lb_Resultat->setNum( i ) ;

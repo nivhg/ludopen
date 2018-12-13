@@ -4,6 +4,7 @@
 #include "f_historiquejeux.h"
 #include "f_ajoutercoticarte.h"
 #include "f_popupclesttem.h"
+#include "f_panier.h"
 #include "TitreType.h"
 
 #include <QtSql>
@@ -55,7 +56,7 @@ public:
      *  @test   Voir la procédure dans le fichier associé.
      */
     explicit F_Membres(int iMode = MODE_UTILISATEUR, QWidget *parent = 0,
-                       int nIdCollectivite=0) ;
+                       int nIdCollectivite=0,F_Panier *pPanier=0) ;
     ~F_Membres() ;
 
 
@@ -152,6 +153,8 @@ public:
 signals:
     //! Signal indiquant qu'un non-adhérent a été crée et envoie son Code
     void Signal_Non_Adherent_Cree(int iCodeMembre);
+    //! Signal indiquant qu'un adhérent a été crée
+    void Signal_Adherent_Cree();
 
 public slots:
 
@@ -311,6 +314,7 @@ private:
     QPushButton * Bt_AnnuerVille ;           //! Bouton Annuler pour la fenêtre d'ajout d'une ville
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville
     F_Membres * pAssocies;
+    F_Panier *pPanier;
 };
 
 #endif // F_MEMBRES_H

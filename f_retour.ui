@@ -984,7 +984,8 @@ QGroupBox::indicator:checked {
               </font>
              </property>
              <property name="text">
-              <string>Remarques sur le jeu/malle :</string>
+              <string>Maintenance sur le jeu
+ou remarque sur la malle :</string>
              </property>
             </widget>
            </item>

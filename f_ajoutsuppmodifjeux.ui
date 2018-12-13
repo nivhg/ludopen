@@ -581,7 +581,7 @@
           <item row="20" column="1">
            <widget class="QRadioButton" name="RBt_Occasion">
             <property name="text">
-             <string>Occasion</string>
+             <string>Occa&amp;sion</string>
             </property>
            </widget>
           </item>

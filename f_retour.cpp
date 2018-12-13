@@ -282,7 +282,7 @@ void F_Retour::AfficherMembre()
     QSqlQuery Requete;
 
     //Prépare la requête
-    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque FROM membres WHERE CodeMembre=:CodeDuMembre");
+    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque,Email FROM membres WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",this->MembreActif);
 
     if (!Requete.exec())
@@ -293,6 +293,12 @@ void F_Retour::AfficherMembre()
 
     Requete.next();
 
+    IdDuMembre=ObtenirValeurParNom(Requete,"IdMembre").toInt();
+
+    if(ObtenirValeurParNom(Requete,"Email").toString().trimmed()=="" || ObtenirValeurParNom(Requete,"Email").toString().trimmed()=="@")
+    {
+        QMessageBox::information(this,"Adresse email manquante","Le membre n'a pas de courriel de saisie, merci de la saisir dans l'onglet membre","OK");
+    }
     //Récupère le Nom dans la base de données puis l'affiche
     ui->LE_NomARemplir->setText(Requete.value(0).toString());
 
@@ -328,7 +334,7 @@ void F_Retour::AfficherMembre()
     QSqlQuery RequeteMembreAssocier ;
     RequeteMembreAssocier.prepare("SELECT CodeMembre FROM membresassocies,membres WHERE "
                                   "Membres_IdMembre=:IdMembre AND Membres_IdCollectivite=IdMembre");
-    RequeteMembreAssocier.bindValue(":IdMembre",ObtenirValeurParNom(Requete,"IdMembre").toString());
+    RequeteMembreAssocier.bindValue(":IdMembre",IdDuMembre);
 
     if (!RequeteMembreAssocier.exec())
     {
@@ -822,7 +828,8 @@ void F_Retour::on_Bt_Prolonger_clicked()
     // Création de la fenêtre du paiement
     // TODO : Regarder les jeux réservés avant de demander le paiement
     F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,RequeteCredit.value(0).toInt(),VENTILATION_PRET,NULL,NULL,NULL,true,NULL);
+    int MontantPanier=RequeteCredit.value(0).toInt();
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,&MontantPanier);
     if (FenetrePaiement.exec()==1)
     {
         QSqlQuery RequeteProlongation;
@@ -1254,23 +1261,17 @@ void F_Retour::on_Bt_ToutDeselectionner_clicked()
 void F_Retour::on_Bt_PayerAmende_clicked()
 {
     bool ok;
-    QString MontantAmende = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Montant de l'amende:"), QLineEdit::Normal,
-                                         "", &ok);
+    double MontantAmende = QInputDialog::getDouble(this, tr("QInputDialog::getText()"),
+                                         tr("Montant de l'amende à mettre au panier:"),0, 0,2147483647, 2, &ok);
     if (!ok) return;
-    F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,MontantAmende.toInt(),VENTILATION_AMENDE,NULL,NULL,NULL,true,NULL);
-    FenetrePaiement.exec();
+    emit(Signal_AjouterAuPanier("Amende",IdDuMembre,MontantAmende,VENTILATION_AMENDE,"",NULL));
 }
 
 void F_Retour::on_Bt_PayerRetard_clicked()
 {
     bool ok;
-    QString MontantAmende = QInputDialog::getText(this, tr("QInputDialog::getText()"),
-                                         tr("Montant du retard:"), QLineEdit::Normal,
-                                         "", &ok);
+    double MontantAmende = QInputDialog::getDouble(this, tr("QInputDialog::getText()"),
+                                         tr("Montant du retard à mettre au panier:"), 0, 0,2147483647, 2, &ok);
     if (!ok) return;
-    F_Paiement FenetrePaiement;
-    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,MontantAmende.toInt(),VENTILATION_RETARD,NULL,NULL,NULL,true,NULL);
-    FenetrePaiement.exec();
+    emit(Signal_AjouterAuPanier("Amende",IdDuMembre,MontantAmende,VENTILATION_RETARD,"",NULL));
 }
