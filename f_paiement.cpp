@@ -309,7 +309,7 @@ void F_Paiement::on_TW_PaiementCarte_clicked(const QModelIndex &index)
 void F_Paiement::on_Bt_Annuler_clicked()
 {
     this->setResult(0);
-    this->accept();
+    this->reject();
 }
 
 void F_Paiement::on_Bt_OK_clicked()

@@ -2658,7 +2658,7 @@ bool F_Emprunt::VerifJeuReserve()
     if ( RequeteJeuReserve.size() !=0 )
     {
         //si l'id du membre actuellement sélectionné n'est le même que celui du réserveur,
-        if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toString() != this->IdDuMembre )
+        if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toInt() != this->IdDuMembre )
         {
             QString sMessage;
             if(ObtenirValeurParNom(RequeteJeuReserve,"ConfirmationReservation").toInt()==1)
@@ -2666,7 +2666,7 @@ bool F_Emprunt::VerifJeuReserve()
                 sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()
                         +" est réservé à aux dates "+ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuEmprunt").toDate().toString("dd-MM-yy")+" au "+
                         ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuRetour").toDate().toString("dd-MM-yy")+", êtes-vous sûr de vouloir l'emprunter ou le réserver?";
-                if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") == 0)
+                if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") != 0)
                 {
                     return false;
                 }

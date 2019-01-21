@@ -193,7 +193,12 @@ void F_Panier::on_Bt_OK_clicked()
     RequetePaiement.bindValue(":Montant",ui->SBx_Total->value());
     RequetePaiement.bindValue(":IdModePaiement",ui->CBx_ModePaiement->currentData());
     RequetePaiement.bindValue(":IdCheque",IdCheque);
-    RequetePaiement.bindValue(":NumeroFacture",QString(QString::number(ui->SB_NumFacture->value())+"/"+QString::number(ui->SB_AnneeFacture->value())));
+    QString NumeroFacture="";
+    if(ui->SB_NumFacture->value()!=0 || ui->SB_AnneeFacture->value()!=0)
+    {
+        NumeroFacture=QString(QString::number(ui->SB_NumFacture->value())+"/"+QString::number(ui->SB_AnneeFacture->value()));
+    }
+    RequetePaiement.bindValue(":NumeroFacture",NumeroFacture);
     if(ui->CB_PaiementDiffere->isChecked())
     {
         RequetePaiement.bindValue(":DatePaye",QVariant(QVariant::Date));
@@ -594,6 +599,7 @@ void F_Panier::on_CBx_Mois_currentIndexChanged(int index)
 
 void F_Panier::on_Bt_AjoutAnimation_clicked()
 {
+    qDebug()<<HInfosMembre["IdMembre"].toInt();
     D_AjoutElementPanier dAjoutElementPanier(this,HInfosMembre["IdMembre"].toInt());
     connect( &dAjoutElementPanier, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this,
              SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) ) ;
