@@ -55,7 +55,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>8</number>
       </property>
       <property name="iconSize">
        <size>
@@ -454,21 +454,6 @@ Membres</string>
            </widget>
           </item>
          </layout>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="Retards">
-       <attribute name="icon">
-        <iconset>
-         <normalon>:/Sablier.png</normalon>
-        </iconset>
-       </attribute>
-       <attribute name="title">
-        <string>Retards</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="Lay_Retards"/>
         </item>
        </layout>
       </widget>

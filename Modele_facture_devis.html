@@ -59,10 +59,6 @@ T&eacute;l: #NumeroTel#</p>
 		</td>
 	</tr>
 </table>
-<p align="left" style="background: transparent">
-<br/>
-
-</p>
 <table width="100%" cellpadding="4" cellspacing="0" style="border-width: 1px; border-style: solid" align="right">
 	<col width="214*">
 	<col width="42*">
@@ -91,14 +87,23 @@ Total&nbsp;: #Total# €
 	</tr>
 </table>
 <br/><br/>
-<u>Paiement</u>
-<p align="left" style="background: transparent">
-Date&nbsp;: #DatePaye#</p>
-<p align="left" style="background: transparent">
-Mode(s) de r&egrave;glement&nbsp;: #ModePaiement#</p>
-<p align="left" style="background: transparent">
-Remarque&nbsp;: #Remarque#</p>
-<br>
+<table width="100%" cellpadding="4" cellspacing="0" style="border-width: 0px; border-style: solid">
+    <col width="200*">
+        <tr>
+            <td>
+                <p align="left">Date de paiement&nbsp;: #DatePaye#</p>
+            </td>
+            <td>
+                <p align="left">Mode(s) de r&egrave;glement&nbsp;: #ModePaiement#</p>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+            <p align="left" style="background: transparent">
+            Remarque&nbsp;: #Remarque#</p>
+            </td>
+        </tr>
+</table>
 #PiedPageFacture#
 </body>
 </html>

@@ -37,7 +37,7 @@ void F_ImprimerFacture::ImprimerFacture(uint nIdPaiement, bool EstCeFacture,QHas
     if(EstCeFacture)
     {
         contenu.replace("#Titre#","FACTURE",Qt::CaseInsensitive);
-        RequetePaiement.prepare("SELECT *,pa.Montant as Montants,p.Remarque as RemarquePaiement FROM paiements as p LEFT JOIN membres as m ON m.IdMembre=p.Membres_IdMembre "
+        RequetePaiement.prepare("SELECT *,p.Montant as PaieMontant, pa.Montant as Montants,p.Remarque as RemarquePaiement FROM paiements as p LEFT JOIN membres as m ON m.IdMembre=p.Membres_IdMembre "
                                 "LEFT JOIN paiementsachats as pa ON pa.Paiements_IdPaiement=p.IdPaiement LEFT JOIN modepaiement as mo ON "
                                 "mo.IdModePaiement=ModePaiement_IdModePaiement WHERE IdPaiement=:IdPaiement");
         RequetePaiement.bindValue(":IdPaiement",nIdPaiement);
@@ -54,6 +54,7 @@ void F_ImprimerFacture::ImprimerFacture(uint nIdPaiement, bool EstCeFacture,QHas
         {
             HPaiement[RequetePaiement.record().fieldName(i)]=RequetePaiement.value(i);
         }
+        HPaiement["Montant"]=QString::number(HPaiement["PaieMontant"].toDouble());
     }
     else
     {
@@ -91,7 +92,7 @@ void F_ImprimerFacture::ImprimerFacture(uint nIdPaiement, bool EstCeFacture,QHas
     qDebug()<<DatePaye;
     if(DatePaye=="")
     {
-        DatePaye="En attente de paiement";
+        DatePaye="Attente paiement";
     }
     contenu.replace("#DatePaye#",DatePaye,Qt::CaseInsensitive);
     contenu.replace("#ModePaiement#",HPaiement["NomPaiement"].toString(),Qt::CaseInsensitive);

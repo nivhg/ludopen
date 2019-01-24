@@ -38,7 +38,7 @@ public:
     ~F_Paiement();
     /** @brief affiche les informations du paiement
      */
-    void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int *Somme,int *retour=0,bool PanierIndispo=false);
+    void AfficherPaiement(QDateTime DatePaiement, QString CodeMembre,int *Somme,int *retour,bool PanierIndispo=false);
     void MaJBanques(QComboBox *ComboBoxBanque);
 
 private slots:

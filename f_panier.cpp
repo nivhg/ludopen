@@ -345,7 +345,7 @@ void F_Panier::ActualiserPaiements()
            <<ObtenirValeurParNom(RequetePaiements,"NumeroFacture").toString()
          <<ObtenirValeurParNom(RequetePaiements,"DatePaiement").toDate().toString("dd/MM/yyyy")
         <<ObtenirValeurParNom(RequetePaiements,"NomPaiement").toString()
-        <<ObtenirValeurParNom(RequetePaiements,"Montant").toString()
+        <<QString::number(ObtenirValeurParNom(RequetePaiements,"Montant").toDouble())
         <<ObtenirValeurParNom(RequetePaiements,"DatePaye").toDate().toString("dd/MM/yyyy")
         <<ObtenirValeurParNom(RequetePaiements,"Remarque").toString();
         QTreeWidgetItem *Racine=new QTreeWidgetItem(List);
@@ -567,7 +567,7 @@ void F_Panier::on_Bt_ImprimerDevis_clicked()
     QHash<QString, QVariant> HPaiement;
     HPaiement=HInfosMembre;
     HPaiement["Remarque"]=ui->LE_Remarque->text();
-    HPaiement["Montant"]=ui->SBx_Total->value();
+    HPaiement["Montant"]=QString::number(ui->SBx_Total->value());
     HPaiement["DatePaiement"]=QDate::currentDate();
     // On ajoute tous les achats du panier dans la table paiementsachats
     QString Designations,Montants;

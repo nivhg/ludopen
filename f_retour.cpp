@@ -829,17 +829,27 @@ void F_Retour::on_Bt_Prolonger_clicked()
     // TODO : Regarder les jeux réservés avant de demander le paiement
     F_Paiement FenetrePaiement;
     int MontantPanier=RequeteCredit.value(0).toInt();
-    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,&MontantPanier);
+    int retour=0;
+    FenetrePaiement.AfficherPaiement(QDateTime::currentDateTime(),this->MembreActif,&MontantPanier,&retour);
     if (FenetrePaiement.exec()==1)
     {
-        QSqlQuery RequeteProlongation;
-        RequeteProlongation.prepare("UPDATE emprunts as e LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
+        QSqlQuery *RequeteProlongation=new QSqlQuery();
+        RequeteProlongation->prepare("UPDATE emprunts as e LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
                                     " WHERE j.CodeJeu IN ("+CodesJeux.join(",")+") AND e.DateRetour IS NULL");
-        RequeteProlongation.bindValue(":DateRetour",ui->DtE_Prolonger->date());
+        RequeteProlongation->bindValue(":DateRetour",ui->DtE_Prolonger->date());
 
-        if (!RequeteProlongation.exec())
+        if(retour==2)
         {
-           qDebug()<<"RequeteProlongation "<<getLastExecutedQuery(RequeteProlongation)<<RequeteProlongation.lastError();
+            QList<QSqlQuery *> *ListeRequetes=new QList<QSqlQuery *>();
+            ListeRequetes->append(RequeteProlongation);
+            emit(Signal_AjouterAuPanier("Prolongation d'emprunt(s)",this->IdDuMembre,(double) MontantPanier,VENTILATION_PRET,"emprunts",ListeRequetes));
+        }
+        else
+        {
+            if (!RequeteProlongation->exec())
+            {
+               qDebug()<<"RequeteProlongation "<<getLastExecutedQuery(*RequeteProlongation)<<RequeteProlongation->lastError();
+            }
         }
         ViderJeu();
         ActualiserMembre();
