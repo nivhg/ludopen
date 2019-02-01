@@ -238,6 +238,9 @@ private:
 //! Indique le mode dans lequel se trouve la classe (emprunt ou résa malles)
     bool NonAdherent;
 
+//! Indique si les dates de réservations ont été changées par rapport à celle mise par défaut
+    bool DatesResaChangees;
+
 //! Tableau associatif pour stocker la table TypeMalle
     QHash< int, QHash<QString, QVariant> > HashTypeEmprunt;
 

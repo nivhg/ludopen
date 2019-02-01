@@ -422,7 +422,6 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     }
     else if(tab=="listes") //Listes
     {
-        //Widget-admin/////////
         CreerListeJeux();
         ui->menuImprimer->setEnabled(false);
     }
@@ -489,7 +488,7 @@ void F_MainWindow::CreerMembre()
         connect( this->pListeMembresAdmin, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this->pMembres, SLOT( slot_AfficherMembre( uint ) ) ) ;
         connect( this->pMembres, SIGNAL( Signal_Adherent_Cree() ), this->pEmprunt, SLOT( slot_ActualiserMembres() ) ) ;
         connect( this->pMembres, SIGNAL( Signal_Adherent_Cree() ), this->pMalles, SLOT( slot_ActualiserMembres() ) ) ;
-
+//        connect( this->pMembres, SIGNAL( Signal_Adherent_Cree() ), this->pEmprunt, SLOT( slot_ActualiserMembres() ) ) ;
     }
 }
 
@@ -538,8 +537,6 @@ void F_MainWindow::CreerListeJeux()
         // Si double clic dans la liste des jeux sur un jeu, affiche la fiche détaillée du jeu sélectionné
         connect( this->pListeJeux, SIGNAL( Signal_DoubleClic_ListeJeux( QString ) ), this, SLOT( slot_DoubleClic_ListeJeux(QString) )) ;
     }
-    ChangerFenetreListes(this->pListeJeux);
-//        this->pListeJeux->setVisible(false);
 }
 
 void F_MainWindow::CreerEmprunt()
@@ -966,7 +963,7 @@ void F_MainWindow::closeEvent(QCloseEvent *event)
 
 void F_MainWindow::on_Bt_ListeJeux_clicked()
 {
-    CreerListeJeux();
+    ChangerFenetreListes(this->pListeJeux);
 }
 
 void F_MainWindow::on_Bt_ListeReservations_clicked()

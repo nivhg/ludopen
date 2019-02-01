@@ -5,7 +5,7 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport script
+QT        = widgets sql network core printsupport script multimediawidgets
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -59,7 +59,8 @@ SOURCES += \
     d_popupcode.cpp \
     f_panier.cpp \
     f_imprimerfacture.cpp \
-    d_ajoutelementpanier.cpp
+    d_ajoutelementpanier.cpp \
+    d_aide.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -105,7 +106,8 @@ HEADERS  += \
     d_popupcode.h \
     f_panier.h \
     f_imprimerfacture.h \
-    d_ajoutelementpanier.h
+    d_ajoutelementpanier.h \
+    d_aide.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -141,7 +143,8 @@ FORMS    += \
     d_popupcode.ui \
     f_panier.ui \
     f_imprimerfacture.ui \
-    d_ajoutelementpanier.ui
+    d_ajoutelementpanier.ui \
+    d_aide.ui
 
 VERSION = "2.03"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string

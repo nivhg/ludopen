@@ -1901,6 +1901,14 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
 {
     if(ui->rB_Mode_Resa->isChecked())
     {
+        if(!DatesResaChangees)
+        {
+            if(QMessageBox::question(this, "Date de départ", "Attention, la date de début de réservation n'a pas été changée,"
+                                     "êtes-vous sûr de vouloir continuer ?", "Oui", "Non") != 0)
+            {
+                return;
+            }
+        }
         Reserver();
         return;
     }
@@ -2253,7 +2261,7 @@ void F_Emprunt::on_Bt_AnnulerRemarques_clicked()
 
 void F_Emprunt::on_LE_SearchJeux_returnPressed()
 {
-    if(SearchJeux->currentText()!="")
+    if(SearchJeux->currentText()!="" && ui->Bt_AjouterJeu->isEnabled())
     {
         on_Bt_AjouterJeu_clicked();
         SearchJeux->setCurrentText("");
@@ -2612,11 +2620,11 @@ void F_Emprunt::on_rB_Mode_Emprunt_toggled(bool checked)
     {
         if(iMode==MODE_MALLES)
         {
-            ui->Bt_Emprunter->setText("Réserver");
+            ui->Bt_Emprunter->setText("Réserver malle");
         }
         else
         {
-            ui->Bt_Emprunter->setText("Réserver malle");
+            ui->Bt_Emprunter->setText("Réserver");
         }
         ui->DtE_Depart->setVisible(true);
         ui->Lb_Depart->setVisible(true);
@@ -2629,13 +2637,15 @@ void F_Emprunt::on_rB_Mode_Emprunt_toggled(bool checked)
         ui->Bt_Emprunter->setVisible(true);
         ui->Lb_LieuRetrait->setVisible(true);
         ui->CBx_Retrait->setVisible(true);
+        DatesResaChangees=false;
     }
 }
 
 void F_Emprunt::on_DtE_Depart_dateChanged(const QDate &date)
 {
-    ui->Bt_Emprunter->setEnabled(false);
+//    ui->Bt_Emprunter->setEnabled(false);
     on_CBx_TypeEmprunt_currentIndexChanged(ui->CBx_TypeEmprunt->currentIndex());
+    DatesResaChangees=true;
 }
 
 bool F_Emprunt::VerifJeuReserve()

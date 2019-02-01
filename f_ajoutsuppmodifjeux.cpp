@@ -637,13 +637,13 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
                                      "NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
                                      "DescriptionJeu,CodeJeu,EtatInitial,MotCle1,MotCle2,MotCle3,"
                                      "TypeJeux_Classification,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,"
-                                     "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,SiteWeb2) "
+                                     "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,Duree) "
                                      "VALUES (:NomDuJeu,:NomDuCreateurJeu,:DateDeAchat,:PrixDeAchat,:PrixDeLoc,"
                                      ":NbrDeJoueurMin,:NbrDeJoueurMax,:LeAgeMin,:LeAgeMax,:LaRemarque,:ContenuDuJeu,"
                                      ":LaCaution,:DescriptionDuJeu,:CodeDuJeu,"
                                      ":LeEtatInitial,:LeMotCle1,:LeMotCle2,:LeMotCle3,:LeTypeJeux_Classification,"
                                      ":StatutDuJeux_IdStatutJeux,:EtatsDuJeu_IdEtatsJeu,:Emplacement_IdDeEmplacement,"
-                                     ":LeFournisseurs_IdFournisseur,:LeEditeur_IdEditeur,:LeSiteWeb1,:LeSiteWeb2)" ) ;
+                                     ":LeFournisseurs_IdFournisseur,:LeEditeur_IdEditeur,:LeSiteWeb1,:LeDuree)" ) ;
            RequeteAjouterJeu.bindValue(":NomDuJeu", this->ui->LE_Nom->text());
            RequeteAjouterJeu.bindValue(":NomDuCreateurJeu", this->ui->LE_Createur->text());
            RequeteAjouterJeu.bindValue(":DateDeAchat", this->ui->DtE_Achat->date());
@@ -668,7 +668,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteAjouterJeu.bindValue(":LeMotCle2", RequeteMotCle2.value(0).toString() );
            RequeteAjouterJeu.bindValue(":LeMotCle3", RequeteMotCle3.value(0).toString() );
            RequeteAjouterJeu.bindValue(":LeSiteWeb1", this->ui->LE_SiteWeb1->text() );
-           RequeteAjouterJeu.bindValue(":LeSiteWeb2", this->ui->LE_SiteWeb2->text() );
+           RequeteAjouterJeu.bindValue(":LeDuree", this->ui->LE_Duree->text() );
 
            if(ui->RBt_Neuf->isChecked())
            {
@@ -771,14 +771,14 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          QSqlQuery RequeteModifTxE ;
          //prépare le requête de mise à jour
          RequeteModifTxE.prepare("UPDATE jeux SET DescriptionJeu=:DescriptionDuJeu,Remarque=:RemarqueDuJeu,"
-                                 "ContenuJeu=:ContenuDuJeu, SiteWeb1=:LeSiteWeb1, SiteWeb2=:LeSiteWeb2 WHERE CodeJeu=:CodeDuJeu");
+                                 "ContenuJeu=:ContenuDuJeu, SiteWeb1=:LeSiteWeb1, Duree=:LeDuree WHERE CodeJeu=:CodeDuJeu");
          //Entre les valeurs de la requête
          RequeteModifTxE.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifTxE.bindValue(":DescriptionDuJeu", ui->TxE_Description->toPlainText());
          RequeteModifTxE.bindValue(":RemarqueDuJeu", ui->TxE_Remarques->toPlainText());
          RequeteModifTxE.bindValue(":ContenuDuJeu", ui->TxE_Contenu->toPlainText());
          RequeteModifTxE.bindValue(":LeSiteWeb1", ui->LE_SiteWeb1->text());
-         RequeteModifTxE.bindValue(":LeSiteWeb2", ui->LE_SiteWeb2->text());
+         RequeteModifTxE.bindValue(":LeDuree", ui->LE_Duree->text());
          //Exécute la requête
          if (!RequeteModifTxE.exec())
          {
@@ -999,7 +999,7 @@ void F_AjoutSuppModifJeux::ActiveChamps(bool etat)
     ui->LE_Createur->setEnabled(etat);
     ui->LE_Nom->setEnabled(etat);
     ui->LE_SiteWeb1->setEnabled(etat);
-    ui->LE_SiteWeb2->setEnabled(etat);
+    ui->LE_Duree->setEnabled(etat);
     ui->DtE_Achat->setEnabled(etat);
     ui->SBx_AgeMax->setEnabled(etat);
     ui->SBx_AgeMin->setEnabled(etat);
@@ -1035,7 +1035,7 @@ void F_AjoutSuppModifJeux::VideChamps()
     ui->LE_Createur->clear();
     ui->LE_Nom->clear();
     ui->LE_SiteWeb1->setText("http://");
-    ui->LE_SiteWeb2->setText("http://");
+    ui->LE_Duree->setText("");
     ui->SBx_AgeMax->setValue(99);
     ui->SBx_AgeMin->setValue(1);
     ui->SBx_Caution->setValue(0);
@@ -1071,7 +1071,7 @@ void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
     ui->LE_Createur->blockSignals(etat);
     ui->LE_Nom->blockSignals(etat);
     ui->LE_SiteWeb1->blockSignals(etat);
-    ui->LE_SiteWeb2->blockSignals(etat);
+    ui->LE_Duree->blockSignals(etat);
     ui->DtE_Achat->blockSignals(etat);
     ui->SBx_AgeMax->blockSignals(etat);
     ui->SBx_AgeMin->blockSignals(etat);
@@ -1243,7 +1243,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         ////////////////////////////////////////////////
         QSqlQuery RequeteAnnulerNomJeu;
 
-        RequeteAnnulerNomJeu.prepare("SELECT NomJeu,SiteWeb1,SiteWeb2 FROM jeux WHERE CodeJeu=:CodeDuJeu");
+        RequeteAnnulerNomJeu.prepare("SELECT NomJeu,SiteWeb1,Duree FROM jeux WHERE CodeJeu=:CodeDuJeu");
         RequeteAnnulerNomJeu.bindValue(":CodeDuJeu",ui->LE_Code->text());
 
         //Exécutee la requête
@@ -1257,10 +1257,10 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         //Récupère les informations dans la base de données et les affiches
         QString NomJeu = (RequeteAnnulerNomJeu.value(0).toString());
         QString SiteWeb1 = (RequeteAnnulerNomJeu.value(1).toString());
-        QString SiteWeb2 = (RequeteAnnulerNomJeu.value(1).toString());
+        QString Duree = (RequeteAnnulerNomJeu.value(1).toString());
         ui->LE_Nom->setText(NomJeu);
         ui->LE_SiteWeb1->setText(SiteWeb1);
-        ui->LE_SiteWeb2->setText(SiteWeb2);
+        ui->LE_Duree->setText(Duree);
 
         //Grise le bouton annuler
         ActiveBoutons(false);
@@ -1713,7 +1713,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
                                     "PrixLoc,NbrJoueurMin,NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
                                     "DescriptionJeu,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,Editeur_IdEditeur,"
                                     "Fournisseurs_IdFournisseur,Emplacement_IdEmplacement,MotCle1,MotCle2,MotCle3,"
-                                    "EtatInitial,SiteWeb1,SiteWeb2 "
+                                    "EtatInitial,SiteWeb1,Duree "
                                     "FROM jeux WHERE CodeJeu=:CodeDuJeu");
         RequeteRechercheJeu.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
         if(!RequeteRechercheJeu.exec())
@@ -1732,8 +1732,8 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QString SiteWeb1Jeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("SiteWeb1")).toString() ;
         ui->LE_SiteWeb1->setText(SiteWeb1Jeu);
         //-------------------------------------------------------------------------------------------------
-        QString SiteWeb2Jeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("SiteWeb2")).toString() ;
-        ui->LE_SiteWeb2->setText(SiteWeb2Jeu);
+        QString DureeJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Duree")).toString() ;
+        ui->LE_Duree->setText(DureeJeu);
         //-------------------------------------------------------------------------------------------------
         QString NomCreateurJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("NomCreateurJeu")).toString() ;
         ui->LE_Createur->setText(NomCreateurJeu);

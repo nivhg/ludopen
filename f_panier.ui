@@ -383,6 +383,23 @@
         </layout>
        </widget>
       </item>
+      <item row="0" column="6">
+       <widget class="QCommandLinkButton" name="Bt_Aide">
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Aide2.png</normaloff>:/Aide2.png</iconset>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

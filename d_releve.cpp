@@ -253,6 +253,7 @@ void D_Releve::on_Bt_Valider_clicked()
     }
     MajReleves();
     emit(SignalReleveFini());
+    ui->Bt_Valider->setEnabled(false);
 }
 
 void D_Releve::TbV_Releves_ItemChanged(QStandardItem *item)

@@ -299,7 +299,8 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
 
     QString requeteSQL;
     requeteSQL="SELECT DISTINCT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres as m "
-            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0 AND Supprimer=0 AND ";
+            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0 AND "
+            "(a.Supprimer=0 OR a.Supprimer IS NULL) AND ";
     QDate DateAnnePasse;
     DateAnnePasse=DateAnnePasse.currentDate();
     DateAnnePasse.setDate(DateAnnePasse.year()-1,DateAnnePasse.month(),DateAnnePasse.day());
@@ -356,7 +357,7 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
         qDebug()<< getLastExecutedQuery(query) << query.lastError();
         bRetourner = false ;
     }
-    qDebug()<< getLastExecutedQuery(query) << query.lastError();
+//    qDebug()<< getLastExecutedQuery(query) << query.lastError();
 
     this->VecteurRechercheMembres = VecteurMembres ;
     ui->LE_Nom->clear() ;
@@ -1089,15 +1090,18 @@ bool F_Membres::AjouterMembre()
     {
         this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt();
 
-        QList <QStandardItem *> ListStandardItem;
-        ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
-        ListStandardItem.append(new QStandardItem(ui->Le_Nom->text()));
-        ListStandardItem.append(new QStandardItem(ui->Le_Prenom->text()));
-        ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
-        ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
+        if(this->iMode==MODE_MEMBRE_ASSOCIE)
+        {
+            QList <QStandardItem *> ListStandardItem;
+            ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
+            ListStandardItem.append(new QStandardItem(ui->Le_Nom->text()));
+            ListStandardItem.append(new QStandardItem(ui->Le_Prenom->text()));
+            ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
+            ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
 
-        AjouterAssocie(ListStandardItem);
-        if(this->iMode==MODE_NON_ADHERENT)
+            AjouterAssocie(ListStandardItem);
+        }
+        else if(this->iMode==MODE_NON_ADHERENT)
         {
             emit(Signal_Non_Adherent_Cree(ui->Le_Code->text().toInt()));
             this->close();

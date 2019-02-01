@@ -1,11 +1,14 @@
 #include "f_panier.h"
 #include "ui_f_panier.h"
+#include "QtMultimedia/QMediaPlayer"
 
 F_Panier::F_Panier(QWidget *parent) :
   QWidget(parent),
   ui(new Ui::F_Panier)
 {
     ui->setupUi(this);
+
+    ui->Bt_Aide->setVisible(false);
 
     for(int i=1;i<13;i++)
     {
@@ -633,4 +636,10 @@ void F_Panier::on_TW_Paiements_itemChanged(QTreeWidgetItem *item, int column)
 void F_Panier::on_CBx_Annee_currentIndexChanged(int index)
 {
     ActualiserPaiements();
+}
+
+void F_Panier::on_Bt_Aide_clicked()
+{
+    D_aide daide;
+    daide.exec() ;
 }

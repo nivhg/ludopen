@@ -457,7 +457,7 @@
             </property>
            </widget>
           </item>
-          <item row="28" column="0">
+          <item row="29" column="0">
            <widget class="QLabel" name="Lb_Fournisseur">
             <property name="maximumSize">
              <size>
@@ -496,7 +496,7 @@
             </property>
            </widget>
           </item>
-          <item row="49" column="3">
+          <item row="50" column="3">
            <widget class="QCommandLinkButton" name="Bt_Annuler">
             <property name="enabled">
              <bool>false</bool>
@@ -571,7 +571,7 @@
           <item row="16" column="1">
            <widget class="QComboBox" name="CBx_MotCle3"/>
           </item>
-          <item row="30" column="1" colspan="3">
+          <item row="31" column="1" colspan="3">
            <widget class="QLineEdit" name="LE_Createur">
             <property name="maxLength">
              <number>100</number>
@@ -585,7 +585,7 @@
             </property>
            </widget>
           </item>
-          <item row="31" column="0">
+          <item row="32" column="0">
            <widget class="QLabel" name="Lb_SiteWeb1">
             <property name="text">
              <string>Site Web 1</string>
@@ -595,7 +595,7 @@
             </property>
            </widget>
           </item>
-          <item row="49" column="1">
+          <item row="50" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
              <widget class="QCommandLinkButton" name="Bt_Valider">
@@ -696,7 +696,7 @@
             </property>
            </widget>
           </item>
-          <item row="29" column="0">
+          <item row="30" column="0">
            <widget class="QLabel" name="Lb_Editeur">
             <property name="maximumSize">
              <size>
@@ -728,7 +728,7 @@
             </property>
            </widget>
           </item>
-          <item row="29" column="1" colspan="3">
+          <item row="30" column="1" colspan="3">
            <widget class="QComboBox" name="CBx_Editeur">
             <property name="minimumSize">
              <size>
@@ -862,7 +862,7 @@
             </property>
            </widget>
           </item>
-          <item row="30" column="0">
+          <item row="31" column="0">
            <widget class="QLabel" name="Lb_Createur">
             <property name="text">
              <string>Créateur</string>
@@ -882,7 +882,7 @@
             </property>
            </widget>
           </item>
-          <item row="31" column="1" colspan="5">
+          <item row="32" column="1" colspan="5">
            <widget class="QLineEdit" name="LE_SiteWeb1">
             <property name="enabled">
              <bool>true</bool>
@@ -899,7 +899,7 @@
             </property>
            </widget>
           </item>
-          <item row="28" column="1" colspan="3">
+          <item row="29" column="1" colspan="3">
            <widget class="QComboBox" name="CBx_Fournisseur">
             <property name="minimumSize">
              <size>
@@ -969,7 +969,7 @@
             </property>
            </widget>
           </item>
-          <item row="21" column="0">
+          <item row="22" column="0">
            <widget class="QLabel" name="Lb_Emplacement">
             <property name="minimumSize">
              <size>
@@ -991,7 +991,7 @@
             </property>
            </widget>
           </item>
-          <item row="21" column="1" colspan="3">
+          <item row="22" column="1" colspan="3">
            <widget class="QComboBox" name="CBx_Emplacement">
             <property name="minimumSize">
              <size>
@@ -1004,16 +1004,6 @@
               <width>16777215</width>
               <height>16777215</height>
              </size>
-            </property>
-           </widget>
-          </item>
-          <item row="32" column="0">
-           <widget class="QLabel" name="Lb_SiteWeb2">
-            <property name="text">
-             <string>Site Web 2</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
@@ -1056,8 +1046,18 @@
             </property>
            </widget>
           </item>
-          <item row="32" column="1" colspan="5">
-           <widget class="QLineEdit" name="LE_SiteWeb2">
+          <item row="21" column="0">
+           <widget class="QLabel" name="Lb_SiteWeb2">
+            <property name="text">
+             <string>Durée</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="21" column="1" colspan="2">
+           <widget class="QLineEdit" name="LE_Duree">
             <property name="enabled">
              <bool>true</bool>
             </property>

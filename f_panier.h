@@ -10,6 +10,7 @@
 #include "f_popupclesttem.h"
 #include "f_imprimerfacture.h"
 #include "d_ajoutelementpanier.h"
+#include "d_aide.h"
 
 #define VENTILATION_PRET 1
 #define VENTILATION_RETARD 3
@@ -100,6 +101,8 @@ private slots:
     void on_TW_Paiements_itemChanged(QTreeWidgetItem *item, int column);
 
     void on_CBx_Annee_currentIndexChanged(int index);
+
+    void on_Bt_Aide_clicked();
 
 private:
     // ATTRIBUTs ----------------------------------------------------------------
