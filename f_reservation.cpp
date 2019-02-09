@@ -138,7 +138,7 @@ void F_Reservation::on_LE_RechercheMembre_textChanged(const QString &arg1)
       QSqlQuery RequeteMembre;
       NumeroLigne=0;
 
-      RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres WHERE Nom LIKE (:Nom) GROUP BY Nom");
+      RequeteMembre.prepare("SELECT CodeMembre,Nom,Prenom,DateNaissance FROM membres WHERE Nom LIKE (:Nom)");
       RequeteMembre.bindValue(":Nom",Nom);
       RequeteMembre.exec();
 

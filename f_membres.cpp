@@ -299,8 +299,7 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
 
     QString requeteSQL;
     requeteSQL="SELECT DISTINCT IdMembre, Nom, Prenom, Ville, CodeMembre, Email FROM membres as m "
-            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre WHERE Ecarte=0 AND "
-            "(a.Supprimer=0 OR a.Supprimer IS NULL) AND ";
+            "LEFT JOIN abonnements as a ON a.Membres_IdMembre=m.IdMembre AND (a.Supprimer=0 OR a.Supprimer IS NULL)  WHERE Ecarte=0 AND ";
     QDate DateAnnePasse;
     DateAnnePasse=DateAnnePasse.currentDate();
     DateAnnePasse.setDate(DateAnnePasse.year()-1,DateAnnePasse.month(),DateAnnePasse.day());
@@ -323,7 +322,7 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
         // SI choix membre sans adhésion
         case 2 :
             {
-            requeteSQL+="a.Prestations_IdPrestation IS NULL AND a.CartesPrepayees_IdCarte IS NULL";
+            requeteSQL+="NOT EXISTS (SELECT 1 FROM abonnements as a2 WHERE a2.Membres_IdMembre=m.IdMembre AND (a2.Supprimer=0 OR a2.Supprimer IS NULL) AND a2.Prestations_IdPrestation IS NOT NULL LIMIT 1)";
             }
             break;
         // Si choix membres associés à une collectivité
