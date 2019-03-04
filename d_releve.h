@@ -59,6 +59,10 @@ private slots:
 
     void on_Bt_PlusTard_clicked();
 
+    void on_CBx_Mois_currentIndexChanged(int index);
+
+    void on_CBx_Annee_currentIndexChanged(int index);
+
 private:
     void VerifChampsSaisis();
     void CalculTotal();

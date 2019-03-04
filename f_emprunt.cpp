@@ -294,6 +294,7 @@ void F_Emprunt::ViderJeu()
     ui->TxE_RemarquesJeu->setText("");
     ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
     ui->Bt_ValiderRemarquesJeu->setEnabled(false);
+    ui->TxE_ContenuBoite->setText("");
     ui->Bt_AjouterJeu->setEnabled(false);
     // Plus de jeu actif sélectionné
     this->JeuActif = "" ;
@@ -1710,10 +1711,6 @@ void F_Emprunt::Reserver()
         {
             DansPanier=QMessageBox::question(this,"Réglement de la malle","Régler la malle immédiatement ? Celle-ci sera rajouté au panier.",
                                              "Oui","Non")==0;
-            if (DansPanier)
-            {
-                this->bRegle=true;
-            }
         }
 
         // Si il ne s'agit pas de mettre à jour une malle
@@ -1731,7 +1728,7 @@ void F_Emprunt::Reserver()
             RequeteMalle->bindValue(":DateReservation",DateActuelle);
             RequeteMalle->bindValue(":DatePrevuEmprunt",ui->DtE_Depart->dateTime());
             RequeteMalle->bindValue(":DateRetourPrevu",ui->DtE_Retour->dateTime());
-            RequeteMalle->bindValue(":Regle",this->bRegle);
+            RequeteMalle->bindValue(":Regle",DansPanier);
             // Si un élement de prêt est dans le panier, on n'exécute pas la requête mais on ajoute la requête dans un tableau
             if (DansPanier)
             {
@@ -1810,7 +1807,7 @@ void F_Emprunt::Reserver()
             RequeteReservation->bindValue(":Malles_IdMalle",IdMalle);
 
             //Execute la requête
-            // Si un élement de prêt est dans le panier, on n'exécute pas la requête mais on ajoute la requête dans un tableau
+            // Si la malle doit être réglée, on ajoute la requete dans le tableau des requêtes, sinon on exécute directement la requête
             if (DansPanier)
             {
                 ListeRequetes->append(RequeteReservation);
@@ -1826,7 +1823,7 @@ void F_Emprunt::Reserver()
             QSqlQuery *RequeteStatut=new QSqlQuery();
             RequeteStatut->prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=1 WHERE IdJeux=:IdDuJeu");
             RequeteStatut->bindValue(":IdDuJeu",NouveauEmprunts[i].idJeu);
-            // Si un élement de prêt est dans le panier, on n'exécute pas la requête mais on ajoute la requête dans un tableau
+            // Si la malle doit être réglée, on ajoute la requete dans le tableau des requêtes, sinon on exécute directement la requête
             if (DansPanier)
             {
                 ListeRequetes->append(RequeteStatut);
@@ -1843,7 +1840,10 @@ void F_Emprunt::Reserver()
         this->iMalleActive=0;
         ui->DtE_Depart->setEnabled(true);
         ui->DtE_Retour->setEnabled(true);
-        emit(Signal_AjouterAuPanier(ui->CBx_TypeEmprunt->currentText(),this->IdDuMembre,(double) NbCredits,VENTILATION_MALLES,"malles",ListeRequetes));
+        if (DansPanier)
+        {
+            emit(Signal_AjouterAuPanier(ui->CBx_TypeEmprunt->currentText(),this->IdDuMembre,(double) NbCredits,VENTILATION_MALLES,"malles",ListeRequetes));
+        }
     }
     else
     {

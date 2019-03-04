@@ -21,6 +21,19 @@ D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
 {
     ui->setupUi(this);
 
+    for(int i=1;i<13;i++)
+    {
+        QString mois=QDate::longMonthName(i);
+        mois[0]=mois[0].toUpper();
+        ui->CBx_Mois->addItem(mois,i);
+    }
+    ui->CBx_Mois->setCurrentIndex(QDate::currentDate().month()-1);
+
+    ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()-1));
+    ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()));
+    ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()+1));
+    ui->CBx_Annee->setCurrentIndex(1);
+
     DebutFin=false;
     this->iIdBenevole=iIdBenevole;
 
@@ -53,8 +66,10 @@ void D_Releve::MajReleves()
 {
     QSqlQuery RequeteReleves;
     //Enregistrement d'un nouveau membre dans la base de données
-    RequeteReleves.prepare( "SELECT IdReleveCaisse,DateHeureReleve,Montant,Difference,Concat(m.Prenom,' ',m.Nom) as Nom,r.Remarque FROM relevescaisse as r LEFT JOIN membres as m ON "
-                            "r.Membres_IdMembre=m.IdMembre WHERE DATEDIFF(NOW(),DateHeureReleve)<30 ORDER BY DateHeureReleve") ;
+    RequeteReleves.prepare( "SELECT IdReleveCaisse,DateHeureReleve,Montant,Difference,Concat(m.Prenom,' ',m.Nom) as Nom,r.Remarque FROM "
+                            "relevescaisse as r LEFT JOIN membres as m ON "
+                            "r.Membres_IdMembre=m.IdMembre WHERE MONTH(DateHeureReleve)="+ui->CBx_Mois->currentData().toString()+
+                            " AND YEAR(DateHeureReleve)="+ui->CBx_Annee->currentText() +" ORDER BY DateHeureReleve") ;
     //Exectution de la requête
     if( !RequeteReleves.exec() )
     {
@@ -63,6 +78,8 @@ void D_Releve::MajReleves()
     else
     {
         int i=0;
+        ui->TbV_Releves->blockSignals(true);
+        ModeleReleves.removeRows(0,ModeleReleves.rowCount());
         while(RequeteReleves.next())
         {
             QStandardItem *item=new QStandardItem(ObtenirValeurParNom(RequeteReleves,"DateHeureReleve").toDateTime().toString("dd/MM hh:mm"));
@@ -77,6 +94,7 @@ void D_Releve::MajReleves()
             ModeleReleves.setItem(i,4,new QStandardItem(ObtenirValeurParNom(RequeteReleves,"Remarque").toString()));
             i++;
         }
+        ui->TbV_Releves->blockSignals(false);
     }
 }
 
@@ -282,7 +300,7 @@ void D_Releve::TbV_Releves_ItemChanged(QStandardItem *item)
 
     Requete.prepare("UPDATE relevescaisse SET "+NomChamps+"=:"+NomChamps+" WHERE IdReleveCaisse=:IdReleveCaisse");
     Requete.bindValue(":"+NomChamps, item->text());
-    qDebug()<<ModeleReleves.item(item->row(),0)->data();
+    //qDebug()<<ModeleReleves.item(item->row(),0)->data();
     Requete.bindValue(":IdReleveCaisse", ModeleReleves.item(item->row(),0)->data().toInt());
     if(!Requete.exec())
     {
@@ -306,4 +324,14 @@ void D_Releve::keyPressEvent(QKeyEvent *e)
     if(e->key() != Qt::Key_Escape)
         QDialog::keyPressEvent(e);
     else {/* minimize */}
+}
+
+void D_Releve::on_CBx_Mois_currentIndexChanged(int index)
+{
+    MajReleves();
+}
+
+void D_Releve::on_CBx_Annee_currentIndexChanged(int index)
+{
+    MajReleves();
 }
