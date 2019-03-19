@@ -617,7 +617,7 @@ void F_Membres::MaJDomaineEmail ()
      ui->CBx_DomaineEmail->clear() ;
 
      //Exécution de la requête qui sélectionne le contenu de la table tytremembres
-     if( Requete.exec( "SELECT * FROM domaineemail" ) )
+     if( Requete.exec( "SELECT * FROM domaineemail ORDER BY NomDomaine" ) )
      {
          oDomaineEmail.id = 0 ;
          oDomaineEmail.sType = "" ;

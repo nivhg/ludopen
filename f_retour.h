@@ -19,6 +19,7 @@
 #include "searchbox.h"
 #include "f_emprunt.h"
 #include "f_panier.h"
+#include "fonctions_globale.h"
 
 namespace Ui {
     class F_Retour;

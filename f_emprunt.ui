@@ -57,7 +57,7 @@
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QGroupBox  {color: white;}
+         <string notr="true">QGroupBox  {color: grey;}
 QGroupBox::indicator {
     width: 32px;
     height: 32px;

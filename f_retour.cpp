@@ -282,7 +282,8 @@ void F_Retour::AfficherMembre()
     QSqlQuery Requete;
 
     //Prépare la requête
-    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque,Email FROM membres WHERE CodeMembre=:CodeDuMembre");
+    Requete.prepare("SELECT Nom,Prenom,IdMembre,Ecarte,Remarque,Email,NbrJeuxEmpruntables FROM membres "
+                    "LEFT JOIN titremembre ON TitreMembre_IdTitreMembre=IdTitreMembre WHERE CodeMembre=:CodeDuMembre");
     Requete.bindValue(":CodeDuMembre",this->MembreActif);
 
     if (!Requete.exec())
@@ -327,7 +328,7 @@ void F_Retour::AfficherMembre()
     ui->Bt_AnnulerRemarqueMembre->setEnabled(false);
 
     //Récupère le nombre de jeux empruntables dans la base de données puis l'afficher
-    ui->LE_JeuxMaxARemplir->setText(Requete.value(5).toString());
+    ui->LE_JeuxMaxARemplir->setText(ObtenirValeurParNom(Requete,"NbrJeuxEmpruntables").toString());
 
     //Affiche l'état de la cotisation
     //Savoir si le membre a un membre associé
@@ -443,13 +444,14 @@ void F_Retour::AfficherEtatCotisation(QString CodeMembre)
     QSqlQuery RequeteCotisation ;
     RequeteCotisation.prepare("SELECT DateExpiration FROM abonnements, membres"
                              " WHERE Prestations_IdPrestation IS NOT NULL AND Membres_IdMembre=IdMembre"
-                             " AND CodeMembre=:CodeDuMembre AND supprimer=0 ORDER BY DateExpiration DESC");
+                             " AND CodeMembre=:CodeDuMembre AND supprimer=0 AND Prestations_IdPrestation!=5 ORDER BY DateExpiration DESC");
     RequeteCotisation.bindValue(":CodeDuMembre",CodeMembre );
 
     if(!RequeteCotisation.exec())
     {
         qDebug()<<"Retour affiche Cotisation  requete état cotisation  "<<RequeteCotisation.lastQuery();
     }
+    qDebug()<<"Retour affiche Cotisation  requete état cotisation  "<<RequeteCotisation.lastQuery();
 
     RequeteCotisation.next();
 
@@ -526,9 +528,11 @@ void F_Retour::AfficherEtatCotisation(QString CodeMembre)
  */
 void F_Retour::AfficherJeuxEnEmprunt()
 {
-   QString NbreJeuxRendre,AmendeAPayer;
-   F_Emprunt::AfficherJeuxEnEmprunt(this->ModelJeuEmpruntes,this->MembreActif,true,&NbreJeuxRendre,&AmendeAPayer);
-   ui->LE_NbreJeuxRendre->setText(NbreJeuxRendre);
+   QString AmendeAPayer,NbreJeuxARendre;
+   int NbreJeuxRendre;
+   // Paramètre NbreJeuxARendre renvoie la mauvaise valeur, la fonction retourne la bonne valeur
+   NbreJeuxRendre=F_Emprunt::AfficherJeuxEnEmprunt(this->ModelJeuEmpruntes,this->MembreActif,true,&NbreJeuxARendre,&AmendeAPayer);
+   ui->LE_NbreJeuxRendre->setText(QString::number(NbreJeuxRendre));
    ui->Lb_AmendeAPayer->setText(AmendeAPayer);
    resizeColumnsToContents(this->ModelJeuEmpruntes,ui->Tv_JeuxEmprunte);
 }

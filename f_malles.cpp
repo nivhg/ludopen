@@ -114,7 +114,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(r.DatePrevuEmprunt)="+
                     QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(r.DatePrevuEmprunt)="+ui->CBx_Annee->currentText()+
-                    " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
+                    "   UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
                     "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt FROM emprunts as e "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=e.TypeEmprunt_IdTypeEmprunt "

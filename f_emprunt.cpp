@@ -1093,8 +1093,6 @@ int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QSt
                    //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
                 }
                 NumeroLigne++;
-                // Affichage du nombre de jeux à rendre
-                NbreJeuxRendre->setNum(NumeroLigne);
             }
             else
             {
@@ -1123,6 +1121,11 @@ int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QSt
         {
            AmendeAPayer->setNum(Amende);
         }
+    }
+    // Affichage du nombre de jeux à rendre
+    if(NbreJeuxRendre!=0)
+    {
+        NbreJeuxRendre->setNum(NumeroLigne);
     }
     return iNbEmpruntEnCours;
 }
