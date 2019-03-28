@@ -58,7 +58,15 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         {
             ui->CBx_Annee->setCurrentText(QString::number(annee));
         }
-        return;
+    }
+    QDate DateCourante=DateCourante.currentDate();
+    if(mois==0)
+    {
+        ui->CBx_Mois->setCurrentIndex(DateCourante.month()-1);
+    }
+    if(annee==0)
+    {
+        ui->CBx_Annee->setCurrentText(QString::number(DateCourante.year()));
     }
     int i;
     QStandardItem *item;
@@ -231,7 +239,7 @@ void F_Malles::on_CBx_Mois_currentIndexChanged(int index)
     {
         pCalendrierMalles->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
     }
-    this->AfficherCalendrier();
+    this->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
 }
 
 void F_Malles::on_CBx_Annee_currentIndexChanged(int index)
@@ -240,7 +248,7 @@ void F_Malles::on_CBx_Annee_currentIndexChanged(int index)
     {
         pCalendrierMalles->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
     }
-    this->AfficherCalendrier();
+    this->AfficherCalendrier(ui->CBx_Mois->currentIndex()+1,ui->CBx_Annee->currentText().toInt());
 }
 
 void F_Malles::on_TbV_CalendrierMalles_clicked(const QModelIndex &index)
@@ -324,5 +332,5 @@ bool F_Malles::eventFilter(QObject *obj, QEvent *event)
 
 void F_Malles::slot_actualiserCalendrier()
 {
-    AfficherCalendrier(0,0);
+    AfficherCalendrier();
 }

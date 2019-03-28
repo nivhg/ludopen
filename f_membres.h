@@ -150,6 +150,9 @@ public:
     //! Récupère la liste des activités et la mets dans une combobox
     static void ChargerActivites(QComboBox * scombobox);
 
+    //! Vérifie la présence d'une email existante dans la base
+    QString EmailExistante(QString Email);
+
 signals:
     //! Signal indiquant qu'un non-adhérent a été crée et envoie son Code
     void Signal_Non_Adherent_Cree(int iCodeMembre);

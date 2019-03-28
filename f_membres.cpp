@@ -1012,6 +1012,24 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
     }
 
 }
+
+QString F_Membres::EmailExistante(QString Email)
+{
+    QSqlQuery RequeteMembre ;
+
+    RequeteMembre.prepare( "SELECT CONCAT(Nom,' ',Prenom) as NomMembre FROM membres WHERE Email=:Email AND IdMembre!=:IdMembre" ) ;
+    RequeteMembre.bindValue( ":Email", Email ) ;
+    RequeteMembre.bindValue( ":IdMembre", this->nIdMembreSelectionne ) ;
+
+    if( !RequeteMembre.exec() )
+    {
+        qDebug()<< getLastExecutedQuery(RequeteMembre) << RequeteMembre.lastError();
+        return "";
+    }
+    RequeteMembre.next();
+    return ObtenirValeurParNom(RequeteMembre,"NomMembre").toString();
+}
+
 //==========================================================================================================
 /** Permet d'ajouter un membre
   *  @pre    Accès à la base de données
@@ -1022,7 +1040,6 @@ bool F_Membres::AjouterMembre()
 {
    qDebug()<< "F_Membres::AjouterMembre";
 
-    bool bRetourne( true ) ;
     QSqlQuery RequeteMembre ;
 
     //Enregistrement d'un nouveau membre dans la base de données
@@ -1063,8 +1080,25 @@ bool F_Membres::AjouterMembre()
     //Fax
     RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
+    QString Email=ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
+    // Si l'email est vide
+    if(Email=="@")
+    {
+        Email=QString();
+    }
+    else
+    {
+        QString NomMembre;
+        if((NomMembre=EmailExistante(Email))!="")
+        {
+            QMessageBox::information(this,"Adresse email déjà existante",
+                      "Cette adresse email est déjà assigné au membre '"+NomMembre+"'. Chaque membre doit avoir une adresse unique.","Ok");
+            return false;
+        }
+    }
+
     //Email
-    RequeteMembre.bindValue( ":Email", QString(ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText()) ) ;
+    RequeteMembre.bindValue( ":Email", Email ) ;
 
     //Domaine Email
     RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id );
@@ -1085,34 +1119,33 @@ bool F_Membres::AjouterMembre()
     RequeteMembre.bindValue( ":CodeMembre", ui->Le_Code->text() ) ;
 
     //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
-    if( RequeteMembre.exec() )
-    {
-        this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt();
-
-        if(this->iMode==MODE_MEMBRE_ASSOCIE)
-        {
-            QList <QStandardItem *> ListStandardItem;
-            ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
-            ListStandardItem.append(new QStandardItem(ui->Le_Nom->text()));
-            ListStandardItem.append(new QStandardItem(ui->Le_Prenom->text()));
-            ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
-            ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
-
-            AjouterAssocie(ListStandardItem);
-        }
-        else if(this->iMode==MODE_NON_ADHERENT)
-        {
-            emit(Signal_Non_Adherent_Cree(ui->Le_Code->text().toInt()));
-            this->close();
-        }
-    }
-    else//Sinon on affiche un message d'erreur et on retourne Faux
+    if( !RequeteMembre.exec() )
     {
         qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
-        bRetourne = false ;
+        return false ;
     }
+    qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
 
-    return bRetourne ;
+    this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt();
+
+    if(this->iMode==MODE_MEMBRE_ASSOCIE)
+    {
+        QList <QStandardItem *> ListStandardItem;
+        ListStandardItem.append(new QStandardItem(QString::number(this->nIdMembreSelectionne)));
+        ListStandardItem.append(new QStandardItem(ui->Le_Nom->text()));
+        ListStandardItem.append(new QStandardItem(ui->Le_Prenom->text()));
+        ListStandardItem.append(new QStandardItem(ui->CBx_Ville->currentText()));
+        ListStandardItem.append(new QStandardItem(ui->Le_Code->text()));
+
+        AjouterAssocie(ListStandardItem);
+    }
+    else if(this->iMode==MODE_NON_ADHERENT)
+    {
+        emit(Signal_Non_Adherent_Cree(ui->Le_Code->text().toInt()));
+        this->close();
+    }
+    VerrouillerActivite(false);
+    return true;
 }
 //==========================================================================================================
 /** Permet de modifier le membre dans la base de données
@@ -1193,8 +1226,25 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         //Fax
         RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
+        QString Email=ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
+        // Si l'email est vide
+        if(Email=="@")
+        {
+            Email=QString();
+        }
+        else
+        {
+            QString NomMembre;
+            if((NomMembre=EmailExistante(Email))!="")
+            {
+                QMessageBox::information(this,"Adresse email déjà existante",
+                          "Cette adresse email est déjà assigné au membre '"+NomMembre+"'. Chaque membre doit avoir une adresse unique.","Ok");
+                return false;
+            }
+        }
+
         //Email
-        RequeteMembre.bindValue( ":Email", QString(ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText()) ) ;
+        RequeteMembre.bindValue( ":Email", Email ) ;
 
         //Domaine Email
         RequeteMembre.bindValue( ":DomaineEmail_IdDomaineEmail", this->VectorDomaineEmail[ui->CBx_DomaineEmail->currentIndex()].id ) ;
