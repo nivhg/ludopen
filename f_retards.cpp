@@ -110,14 +110,14 @@ F_Retards::F_Retards(QWidget *parent) :
        ui->gridLayout_3->setEnabled(false);
        return;
     }
-    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmail")) ;
-    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmail")) ;
+    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmailRetard")) ;
+    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmailRetard")) ;
 
     ui->Bt_Enregistrer->setDisabled( true ) ;
     ui->Bt_Annuler->setDisabled( true ) ;
 
     //On crée l'objet Courriel qui permettra l'envoi des emails
-    pCourriel = new Courriel( ServeurSMTP , PortSMTP , &this->ListeEMailAEnvoyer ) ;
+    pCourriel = new Courriel( ServeurSMTP , PortSMTP , this->ListeEMailAEnvoyer ) ;
 
     //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
     connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
@@ -364,8 +364,8 @@ void F_Retards::on_Bt_Envoyer_clicked()
         {
             bSelection = true ;
             //On met l'objet et le corps du mail recuperé dans la base de données dans des QString
-            sSujetEmail = F_Preferences::ObtenirValeur("SujetEmail") ;
-            sCorpsEmail = F_Preferences::ObtenirValeur("CorpsEmail") ;
+            sSujetEmail = F_Preferences::ObtenirValeur("SujetEmailRetard") ;
+            sCorpsEmail = F_Preferences::ObtenirValeur("CorpsEmailRetard") ;
 
             //On remplace les sigles par les données définies.
             // 0 IdMembre, 1 case à cocher, 2 Nom, 3 Prénom, 4 Nb Email envoyé, 5 Nb de Jours de retard, 6 Amende, 7 Ville, 8 Email, 9 Telephone, 10 Mobile, 11 liste des jeux en retard
@@ -477,7 +477,7 @@ void F_Retards::on_Bt_Enregistrer_clicked()
     Requete.addBindValue(valeurs);
 
     QVariantList nomChamps;
-    nomChamps << "SujetEmail" << "CorpsEmail";
+    nomChamps << "SujetEmailRetard" << "CorpsEmailRetard";
     Requete.addBindValue(nomChamps);
 
     if( Requete.execBatch() )
@@ -497,8 +497,8 @@ void F_Retards::on_Bt_Enregistrer_clicked()
  */
 void F_Retards::on_Bt_Annuler_clicked()
 {
-    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmail") ) ;
-    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmail") ) ;
+    ui->LE_Sujet->setText( F_Preferences::ObtenirValeur("SujetEmailRetard") ) ;
+    ui->TE_Corps->setPlainText( F_Preferences::ObtenirValeur("CorpsEmailRetard") ) ;
 
     ui->Bt_Enregistrer->setDisabled( true ) ;
     ui->Bt_Annuler->setDisabled( true ) ;

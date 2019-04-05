@@ -55,7 +55,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>7</number>
       </property>
       <property name="iconSize">
        <size>
@@ -345,17 +345,11 @@ Cotisations</string>
        <attribute name="title">
         <string>Listes</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_15">
+       <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="Lay_Listes">
           <item>
            <widget class="QSplitter" name="SP_Listes">
-            <property name="maximumSize">
-             <size>
-              <width>150</width>
-              <height>188</height>
-             </size>
-            </property>
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -443,6 +437,33 @@ Membres</string>
               <iconset>
                <normalon>:/Adherents_liste.png</normalon>
               </iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+            </widget>
+            <widget class="QPushButton" name="Bt_Retards">
+             <property name="minimumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Retards</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Sablier.png</normaloff>:/Sablier.png</iconset>
              </property>
              <property name="iconSize">
               <size>

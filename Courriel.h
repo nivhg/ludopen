@@ -50,7 +50,7 @@ Q_OBJECT
 
 public:
     //! Permet d'initialiser tous les attributs de la classe et les 'connect' avec le socket.
-    Courriel(const QString sAdresseServeurSNMP, const uint nPort, QVector<EMail> *ListeEMailAEnvoyer ) ;
+    Courriel(const QString sAdresseServeurSNMP, const uint nPort, QVector<EMail> ListeEMailAEnvoyer ) ;
     //! Détruit les objets créé par le pointeur
     ~Courriel() ;
 
@@ -81,11 +81,10 @@ private:
     QString sTo ;              ///< Email du destinataire
     QString sMessage ;         ///< le message à envoyer au serveur
 
-    QVector <EMail> * ListeEMailAEnvoyer ;  ///< vecteur qui contient la liste des emails à envoyer.
+    QVector <EMail> ListeEMailAEnvoyer ;  ///< vecteur qui contient la liste des emails à envoyer.
     unsigned short NumeroEmailATraiter ;  ///< Numéro de la case du vecteur qui contient la liste des emails à envoyer
 
 private:
-    QTextStream FluxSMTP ;       ///< Permet d'utiliser le socket avec un flux. Plus facile à utiliser
     QTcpSocket *SocketSMTP ;      ///< socket pour l'envoi d'email
 
 signals:

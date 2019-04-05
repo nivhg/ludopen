@@ -60,7 +60,8 @@ SOURCES += \
     f_panier.cpp \
     f_imprimerfacture.cpp \
     d_ajoutelementpanier.cpp \
-    d_aide.cpp
+    d_aide.cpp \
+    d_resamisdecote.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -107,7 +108,8 @@ HEADERS  += \
     f_panier.h \
     f_imprimerfacture.h \
     d_ajoutelementpanier.h \
-    d_aide.h
+    d_aide.h \
+    d_resamisdecote.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -144,9 +146,10 @@ FORMS    += \
     f_panier.ui \
     f_imprimerfacture.ui \
     d_ajoutelementpanier.ui \
-    d_aide.ui
+    d_aide.ui \
+    d_resamisdecote.ui
 
-VERSION = "2.03"
+VERSION = "2.04"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 

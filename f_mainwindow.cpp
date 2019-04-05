@@ -119,6 +119,11 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     TimerProchainePermanence();
     connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
     qDebug()<<"Constructeur F_MainWindow = OK";
+
+    Reservationtimer = new QTimer(this);
+    Reservationtimer ->setInterval(F_Preferences::ObtenirValeur("IntervalVerifResa").toInt()*60*1000);
+    verifReservation();
+    connect(Reservationtimer, SIGNAL(timeout()), SLOT(verifReservation()));
 }
 
 void F_MainWindow::VerifierConnexionBDD()
@@ -394,7 +399,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     }
     else if(tab=="retards") //retards
     {
-        //CreerRetards();
+        CreerRetards();
         ui->menuImprimer->setEnabled(false);
         this->pRetards->MaJListe();
     }
@@ -453,18 +458,17 @@ void F_MainWindow::CreerAdminMembres()
     }
 }
 
-/*void F_MainWindow::CreerRetards()
+void F_MainWindow::CreerRetards()
 {
     if(!this->pRetards)
     {
         qDebug()<<"Création F_Retards";
-        this->pRetards=new F_Retards (this->ui->Retards);
-        //Retards
-        this->ui->Layout_Retards->addWidget(this->pRetards);
-        // Si double clic dans la liste des retards sur un membre, affiche la fiche détaillée du membre sélectionné
-        connect( this->pRetards, SIGNAL( Signal_DoubleClic_ListeMembres( uint ) ), this , SLOT( slot_DoubleClic_ListeMembres ( uint )) ) ;
+        this->pRetards=new F_Retards (this->ui->Listes);
+        this->ui->Lay_Listes->addWidget(this->pRetards);
     }
-}*/
+    ChangerFenetreListes(this->pRetards);
+
+}
 
 void F_MainWindow::CreerReservations()
 {
@@ -974,4 +978,74 @@ void F_MainWindow::on_Bt_ListeReservations_clicked()
 void F_MainWindow::slot_MiseAJourNbItemsPanier(uint iNbItems)
 {
     ui->TbW_Main->setTabText(trouveOnglet("Panier"),"Panier ("+QString::number(iNbItems)+")");
+}
+
+
+void F_MainWindow::on_Bt_Retards_clicked()
+{
+    CreerRetards();
+}
+
+void F_MainWindow::verifReservation()
+{
+    // Recherche des réservations à mettre de côté
+    QSqlQuery Requete;
+    // On recherche les réservations pas encore mise de côté, non supprimer par l'utilisateur et disponible
+    QString RequeteStr="SELECT IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON m.IdMembre=r.Membres_IdMembre "
+                       "LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+QString::number(STATUTJEUX_DISPONIBLE)+
+                       " AND ASupprimer=0";
+    Requete.prepare(RequeteStr);
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    // Si on obtient un résultat, c'est qu'il y a eu un relevé, on attends
+    while(Requete.next())
+    {
+        QString NomJeu=ObtenirValeurParNom(Requete,"NomJeu").toString();
+        QString CodeJeu=ObtenirValeurParNom(Requete,"CodeJeu").toString();
+        int IdMembre=ObtenirValeurParNom(Requete,"IdMembre").toInt();
+        int IdJeu=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+        QString Email=ObtenirValeurParNom(Requete,"Email").toString();
+
+        // On affiche le dialog demandant si le jeu a été mis de coté ou non
+        D_ResaMisDeCote D_ResaMisDeCote(this,CodeJeu,NomJeu,IdMembre,IdJeu,Email);
+        D_ResaMisDeCote.exec();
+    }
+
+    // Recherche des réservations à ranger
+    // On recherche les réservations mise de côté, et supprimer ainsi que les réservations qui ont dépassé la durée de réservation
+    Requete.prepare("SELECT Idreservation,DateReservation,IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON "
+                    "m.IdMembre=r.Membres_IdMembre LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+
+                    QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DateReservation)>:DelaiJeuMisDeCote)");
+    Requete.bindValue(":DelaiJeuMisDeCote",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote").toInt()*7);
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    // Si on obtient un résultat, c'est qu'il y a eu un relevé, on attends
+    while(Requete.next())
+    {
+        QString NomJeu=ObtenirValeurParNom(Requete,"NomJeu").toString();
+        QString CodeJeu=ObtenirValeurParNom(Requete,"CodeJeu").toString();
+        int IdMembre=ObtenirValeurParNom(Requete,"IdMembre").toInt();
+        int IdJeu=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+        QString Email=ObtenirValeurParNom(Requete,"Email").toString();
+
+        QMessageBox::information(this, "Jeu à ranger", "Le jeu "+NomJeu+" ("+CodeJeu+")\nqui a été mis de côté pour une réservation,\nest à ranger, "
+                "l'adhérent aillant supprimé sa réservation\nou la réservation aillant expirée.", "OK") ;
+        QSqlQuery RequeteSuppressionResa;
+        RequeteSuppressionResa.prepare("DELETE FROM reservation WHERE IdReservation=:IdReservation");
+        RequeteSuppressionResa.bindValue(":IdReservation",ObtenirValeurParNom(Requete,"Idreservation").toInt());
+        //Exectution de la requête
+        if( !RequeteSuppressionResa.exec() )
+        {
+            qDebug() << getLastExecutedQuery(RequeteSuppressionResa) << RequeteSuppressionResa.lastError();
+            return;
+        }
+    }
 }

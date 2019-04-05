@@ -20,6 +20,7 @@
 #include "f_emprunt.h"
 #include "f_panier.h"
 #include "fonctions_globale.h"
+#include "d_resamisdecote.h"
 
 namespace Ui {
     class F_Retour;

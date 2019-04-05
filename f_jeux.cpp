@@ -53,7 +53,6 @@ F_Jeux::F_Jeux(QWidget *parent) :
     pDeclarerIntervention=new F_DeclarerIntervention;
     // pas de jeu actuellement choisi
     JeuEnConsultation = "" ;
-    ui->Bt_Reserve->setVisible(false);
 
     /////////////////////////////////////////////////////////
     //////////////////Création table view //////////////////
@@ -96,40 +95,7 @@ F_Jeux::~F_Jeux()
 {
     delete ui;
 }
-////////////////////////////////////////////////////////////
-///////////////// Clique sur le bouton reserver////////////
-//////////////////////////////////////////////////////////
-/**
- * @brief Méthode qui lance la fenêtre de réservation d'un jeu
- *
- */
-void F_Jeux::on_Bt_Reserver_clicked()
-{
-    //Savoir si le jeux existe
-    QSqlQuery RequeteJeu;
-    RequeteJeu.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    RequeteJeu.bindValue(":CodeDuJeu",this->JeuEnConsultation);
-    RequeteJeu.exec();
-    if (!RequeteJeu.exec())
-    {
-        qDebug() << "F_Jeux::on_Bt_reserver_clicked() : RequeteJeu :" << RequeteJeu.lastQuery()  ;
-    }
-    RequeteJeu.next();
 
-    if(RequeteJeu.size()==0)
-    {
-        QMessageBox::information(this,"Réservation impossible !","Ce jeu n'existe pas\n"
-                                 "Sélectionnez un jeu valide","Ok");
-        return;
-    }
-    else
-    {
-         pReservation->setWindowModality(Qt::ApplicationModal);
-         pReservation->set_JeuActif(this->JeuEnConsultation);
-         pReservation->AfficherJeu();
-         pReservation->show();
-    }
-}
 ////////////////////////////////////////////////////////////
 ///////////////// Clique sur le bouton Details/////////////
 //////////////////////////////////////////////////////////
@@ -459,14 +425,12 @@ void F_Jeux::on_Le_nom_textChanged(const QString &arg1)
    if ( ui->Le_nom->text().isEmpty() )
    {
       ui->Bt_DeclarerIntervention->setDisabled(true);
-      ui->Bt_Reserver->setDisabled(true);
    }
    else
    {
       // Rendre possible la réservation et les interventions pour ce jeu affiché
       // et seulement si un jeu a été choisi
       ui->Bt_DeclarerIntervention->setEnabled(true);
-      ui->Bt_Reserver->setEnabled(true);
    }
 }
 
@@ -631,9 +595,8 @@ void F_Jeux::AfficherJeu(QString Jeu)
     ///////////////////////////////////////////////////////////
     /////////// Affichage du bouton réservé ///////////////////
     ///////////////////////////////////////////////////////////
-    RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu AND JeuEmprunte=1");
+    RequeteResa.prepare("SELECT idReservation FROM reservation WHERE Jeux_IdJeux=:IdDuJeu");
     RequeteResa.bindValue(":IdDuJeu",ObtenirValeurParNom(RequeteRechercheCode,"IdJeux").toString());
-    ui->Bt_Reserve->setVisible(false);
     if (!RequeteResa.exec())
     {
         qDebug() << "F_Jeux::AfficherJeu() : RequeteResa :" << RequeteResa.lastQuery()  ;
@@ -643,7 +606,6 @@ void F_Jeux::AfficherJeu(QString Jeu)
         RequeteResa.next();
         if(RequeteResa.size()!=0)
         {
-            ui->Bt_Reserve->setVisible(true);
             this->IdReservation=ObtenirValeurParNom(RequeteResa,"idReservation").toInt();
         }
     }
@@ -791,9 +753,4 @@ void F_Jeux::ActualiserJeux()
 {
     AfficherJeu(this->JeuEnConsultation);
     ui->Le_recherchenom->setFocus();
-}
-
-void F_Jeux::on_Bt_Reserve_clicked()
-{
-    emit Signal_Clic_Reserve( this->IdReservation );
 }

@@ -625,13 +625,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="Bt_Reserve">
-           <property name="text">
-            <string>et réservé</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="1" colspan="2">
           <widget class="QLineEdit" name="Le_etat">
            <property name="readOnly">

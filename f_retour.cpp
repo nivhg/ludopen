@@ -376,7 +376,7 @@ void F_Retour::AfficherDetailDuJeu()
    //Recherche d'une éventuelle réservation du jeux
    QSqlQuery RequeteJeuReserve;
    RequeteJeuReserve.prepare("SELECT idReservation FROM reservation,jeux "
-                             "WHERE CodeJeu=:JeuActif AND Jeux_IdJeux=IdJeux AND JeuEmprunte=1");
+                             "WHERE CodeJeu=:JeuActif AND Jeux_IdJeux=IdJeux");
    RequeteJeuReserve.bindValue(":JeuActif",this->JeuActif);
 
    if (!RequeteJeuReserve.exec())
@@ -920,7 +920,7 @@ void F_Retour::on_LE_SearchJeux_returnPressed()
 
         //Savoir si le jeu est déja réservé
         QSqlQuery RequeteResa;
-        RequeteResa.prepare("SELECT idReservation,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour "
+        RequeteResa.prepare("SELECT idReservation,DatePrevuEmprunt,DatePrevuRetour "
                             "FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux "
                             "WHERE CodeJeu=:CodeJeu");
         RequeteResa.bindValue(":CodeJeu",CodeJeu);
@@ -1146,7 +1146,7 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     //Rechercher la date prévu de l'emprunt
     QSqlQuery RequeteDateRetour;
-    RequeteDateRetour.prepare("SELECT DateRetourPrevu"
+    RequeteDateRetour.prepare("SELECT DateRetourPrevu, IdJeu"
                               " FROM emprunts,jeux"
                               " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux AND DateRetour IS NULL");
     RequeteDateRetour.bindValue(":CodeDuJeu",CodeJeu);
@@ -1159,7 +1159,9 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     //Comparaison entre la date prévue du retour et la date du jour, on récupère un int
     unsigned int EcartJours (0);
-    EcartJours= RequeteDateRetour.value(0).toDateTime().daysTo(DateDeRetourToleree);
+    EcartJours= ObtenirValeurParNom(RequeteDateRetour,"DateRetourPrevu").toDateTime().daysTo(DateDeRetourToleree);
+
+    unsigned int IdJeu=ObtenirValeurParNom(RequeteDateRetour,"IdJeu").toInt();
 
     unsigned int NbJoursRetardToleres(0);
     // Calculer la date de retour avec la tolérance du nombre de jours
@@ -1206,8 +1208,8 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     //Savoir si le jeu est réservé
     QSqlQuery RequeteJeu;
-    RequeteJeu.prepare("SELECT idReservation FROM reservation,jeux"
-                       " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
+    RequeteJeu.prepare("SELECT idReservation,IdMembre,Email FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux LEFT JOIN membres ON "
+                       "Membres_IdMembre=IdMembre WHERE CodeJeu=:CodeDuJeu");
     RequeteJeu.bindValue(":CodeDuJeu",CodeJeu);
 
     if(!RequeteJeu.exec())
@@ -1219,21 +1221,10 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     if(RequeteJeu.size()>0)
     {
-        //Modifier la réservation de ce jeu pour qu'il soit marqué "Disponible" pour l'emprunt
-        QSqlQuery RequeteJeuEmprunte;
-        RequeteJeuEmprunte.prepare("UPDATE reservation FROM reservation,jeux SET JeuEmprunte=1"
-                                   " WHERE CodeJeu=:CodeDuJeu AND Jeux_IdJeux=IdJeux");
-        RequeteJeuEmprunte.bindValue(":CodeDuJeu",CodeJeu);
-        if (!RequeteJeuEmprunte.exec())
-        {
-            qDebug()<<"F_Retour::on_Bt_Ajouter_clicked || RequeteJeuEmprunte "<<RequeteJeuEmprunte.lastQuery() ;
-        }
-        //
-        // TODO message avec le nom de la personne qui a réservé+mettre dans la BDD info que le jeu a été mis de coté
-        //
-        QMessageBox::information(this,"Le jeu "+NomJeu+" ("+CodeJeu+") est réservé !",
-                                 "Vous devriez mettre ce jeu de coté.","Mis de coté","Pas mis de coté");
-
+        // On affiche le dialog demandant si le jeu a été mis de coté ou non
+        D_ResaMisDeCote D_ResaMisDeCote(this,CodeJeu,NomJeu,ObtenirValeurParNom(RequeteJeu,"IdMembre").toInt(),IdJeu,
+                                        ObtenirValeurParNom(RequeteJeu,"Email").toString());
+        D_ResaMisDeCote.exec() ;
     }
 }
 

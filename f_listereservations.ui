@@ -76,13 +76,13 @@
       </item>
       <item row="0" column="2">
        <layout class="QGridLayout" name="GLay3">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="ChBx_StatutJeu">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
+        <item row="2" column="1" colspan="2">
+         <widget class="QComboBox" name="CBx_MallesJeux"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QCheckBox" name="ChBx_MallesJeux">
           <property name="text">
-           <string>Statut du jeu</string>
+           <string>Malles/Jeux</string>
           </property>
          </widget>
         </item>
@@ -93,20 +93,23 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="3">
-         <widget class="QCheckBox" name="ChBx_NonConfirme">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="ChBx_StatutJeu">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
           <property name="text">
-           <string>Non confirmée</string>
+           <string>Statut du jeu</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1" colspan="2">
-         <widget class="QComboBox" name="CBx_MallesJeux"/>
-        </item>
-        <item row="2" column="0">
-         <widget class="QCheckBox" name="ChBx_MallesJeux">
+        <item row="1" column="0" colspan="3">
+         <widget class="QCheckBox" name="ChBx_NonConfirme">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
-           <string>Malles/Jeux</string>
+           <string>Non confirmée</string>
           </property>
          </widget>
         </item>

@@ -51,8 +51,7 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Retour prévu le" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Lieu de réservation" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de retrait" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Confirmé?" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Type de malle" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Type de malle" ) ) ;
 
     // Règle la largeur des colonnes
     /*ui->Tv_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
@@ -284,8 +283,8 @@ bool F_ListeReservations::AffichageListe()
 
     // Création de la requête pour filtrer les réservations
     sRequeteSELECTFROM = "SELECT CodeJeu,NomJeu,StatutJeu,idReservation, r.Membres_IdMembre,Jeux_IdJeux, "
-            "r.DateReservation, Nom, Prenom, r.DatePrevuEmprunt, r.DatePrevuRetour, JeuEmprunte, JeuMisDeCote, "
-            "ConfirmationReservation, L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait, "
+            "r.DateReservation, Nom, Prenom, r.DatePrevuEmprunt, r.DatePrevuRetour, "
+            "L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait, "
             "IFNULL(TypeEmprunt,'Aucune') as TypeEmprunt, IdMalle "
             "FROM membres,statutjeux,jeux,reservation as r "
             "LEFT JOIN lieux as L1 ON L1.IdLieux=Lieux_IdLieuxReservation "
@@ -335,8 +334,6 @@ bool F_ListeReservations::AffichageListe()
             sRequeteWHERE = sRequeteWHERE + " Malle IS NULL AND " ;
         }
     }
-
-    sRequeteWHERE = sRequeteWHERE + " ConfirmationReservation="+QString::number(!ui->ChBx_NonConfirme->isChecked())+" AND ";
 
     // Vire le dernier mot AND dans la requête WHERE ou le WHERE si requête sans WHERE nécessaire
     sRequeteWHERE.remove( sRequeteWHERE.size()-5 , 5) ;
@@ -393,8 +390,6 @@ bool F_ListeReservations::AffichageListe()
             ModeleReservations.setItem( i, 9, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
             ModeleReservations.setItem( i, 10, new QStandardItem(
-                 (ObtenirValeurParNom(RequeteDesReservations,"ConfirmationReservation").toString()=="1")?"OUI":"NON") );
-            ModeleReservations.setItem( i, 11, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"TypeEmprunt").toString() ) );
             i++ ;
         }

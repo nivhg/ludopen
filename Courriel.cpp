@@ -27,7 +27,7 @@
  *  @param const QString sAdresseSmtp, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps
  *  @test   Voir la procédure dans le fichier associé.
  */
-Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> *ListeEMailAEnvoyer) :
+Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> ListeEMailAEnvoyer) :
     QThread()
 {
    //  avoir accès au vecteur qui contient les emails à envoyer
@@ -50,7 +50,6 @@ Courriel::~Courriel()
    {
         SocketSMTP->disconnectFromHost();
    }
-   this->FluxSMTP.flush();
    qDebug("Courriel::~Courriel FIN") ;
 }
 
@@ -94,24 +93,24 @@ void Courriel::slot_Connecte()
  */
 void Courriel::run()
 {
-    qDebug()<<"Courriel::run DEB="<<this ;
+    qDebug()<<"Courriel::run DEB";
 
     // On traite le premier email :
     this->NumeroEmailATraiter = 0 ;
 
-    this->sFrom = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sFrom ;
-    this->sTo = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sTo ;
+    this->sFrom = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sFrom ;
+    this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo ;
 
     this->sMessage="From: " + this->sFrom + "\n";
     this->sMessage.append("To: " + this->sTo + "\n");
-    this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+    this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sSujet + "\n") ;
     this->sMessage.append("Content-Type: text/plain; charset=\"UTF-8\"\n\n");
-    this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
+    this->sMessage.append( this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCorps ) ;
     this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
     this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
+    qDebug()<<sMessage;
 
     this->SocketSMTP=new QTcpSocket(this);
-    this->FluxSMTP.setDevice( SocketSMTP ) ;
 
     //connect avec le socket-----------------------------------------------------------------------------------------------
     connect( this->SocketSMTP, SIGNAL( readyRead() ), this, SLOT( slot_ReceptionDonnees() ) ) ;
@@ -155,8 +154,8 @@ void Courriel::slot_ReceptionDonnees()
         if( ReponseServeurSMTP == "220" )
         {
             //Bannière, On dit bonjour au serveur
-            this->FluxSMTP << "HELO there\r\n" ;
-            this->FluxSMTP.flush() ;
+            this->SocketSMTP->write(QByteArray("HELO there\r\n"));
+            this->SocketSMTP->flush();
             qDebug() << "Etape : INIT-----------------";
             this->EtapeConnexion = From ;
         }
@@ -177,8 +176,9 @@ void Courriel::slot_ReceptionDonnees()
         {
             // Expediteur. On indique le mail de l'expediteur
             qDebug() << "Etape : FROM=" << this->sFrom;
-            this->FluxSMTP << "MAIL FROM: " << this->sFrom << "\r\n" ;
-            this->FluxSMTP.flush() ;
+            QString requete ="MAIL FROM: "+this->sFrom+"\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
             this->EtapeConnexion = To ;
         }
         else
@@ -200,8 +200,9 @@ void Courriel::slot_ReceptionDonnees()
         {
             //Destinataire. On indique le mail du destinataire
             qDebug() << "Etape : To=" << this->sTo;
-            this->FluxSMTP << "RCPT TO: " << this->sTo << "\r\n" ;
-            this->FluxSMTP.flush() ;
+            QString requete="RCPT TO: "+this->sTo+"\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
             this->EtapeConnexion = Data ;
         }
         else
@@ -223,8 +224,8 @@ void Courriel::slot_ReceptionDonnees()
         {
             //Indique au serveur que l'on va lui envoyer un message
             qDebug() << "Etape : DATA------------------";
-            this->FluxSMTP << "DATA\r\n" ;
-            this->FluxSMTP.flush() ;
+            this->SocketSMTP->write(QByteArray("DATA\r\n"));
+            this->SocketSMTP->flush();
             this->EtapeConnexion = Body ;
         }
         else
@@ -247,9 +248,10 @@ void Courriel::slot_ReceptionDonnees()
             //Message, Envoi du message au serveur
 
             qDebug() << "Etape Body=" ; //<<this ->sMessage ;
-            this->FluxSMTP << this->sMessage << "\r\n.\r\n" ;
-            this->FluxSMTP.flush() ;
-            emit( this->SignalMailEnvoyer(  this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).IDMembre ) ) ;
+            QString requete =this->sMessage+"\r\n.\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
+            emit( this->SignalMailEnvoyer(  this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).IDMembre ) ) ;
             // On passe à l'email suivant:
             this->TraiterEMailSuivant();
         }
@@ -271,9 +273,9 @@ void Courriel::slot_ReceptionDonnees()
         if ( ReponseServeurSMTP == "250" )
         {
             //On termine la connection
-
-            this->FluxSMTP << "QUIT\r\n" ;
-            this->FluxSMTP.flush() ;
+            QString requete=this->sMessage+"QUIT\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
             qDebug() << "Etape QUIT--------------------" ;
             emit( this->Signal_Fermer_Thread_EMail( ) ) ;
         }
@@ -291,8 +293,9 @@ void Courriel::slot_ReceptionDonnees()
     //S'il y a une erreur on indique qu'il y a une erreur et on quitte la connexion
     default :
         qDebug() << "Erreur de connection" ;
-        this->FluxSMTP << "QUIT\r\n" ;
-        this->FluxSMTP.flush() ;
+        QString requete=this->sMessage+"QUIT\r\n";
+        this->SocketSMTP->write(requete.toUtf8());
+        this->SocketSMTP->flush();
         emit( this->Signal_Erreur_EMail( "EMAIL : Fin de connexion impossible" ) ) ;
         emit( this->Signal_Fermer_Thread_EMail( ) ) ;
     }
@@ -306,15 +309,15 @@ void Courriel::TraiterEMailSuivant()
    // On passe à l'email suivant:
    this->NumeroEmailATraiter++ ;
 
-   if ( this->NumeroEmailATraiter < this->ListeEMailAEnvoyer->count() )
+   if ( this->NumeroEmailATraiter < this->ListeEMailAEnvoyer.count() )
    {
-      this->sFrom = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sFrom ;
-      this->sTo = this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sTo ;
+      this->sFrom = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sFrom ;
+      this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo ;
       this->sMessage = "To: " + this->sTo + "\n" ;
       this->sMessage.append("From: " + this->sFrom + "\n") ;
-      this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sSujet + "\n") ;
+      this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sSujet + "\n") ;
       this->sMessage.append("Content-Type: text/plain; charset=\"UTF-8\"\n\n");
-      this->sMessage.append( this->ListeEMailAEnvoyer->at(this->NumeroEmailATraiter).sCorps ) ;
+      this->sMessage.append( this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCorps ) ;
       this->sMessage.replace( QString::fromLatin1( "\n" ), QString::fromLatin1( "\r\n" ) ) ;
       this->sMessage.replace( QString::fromLatin1( "\r\n.\r\n" ), QString::fromLatin1( "\r\n..\r\n" ) ) ;
       this->EtapeConnexion = From ;

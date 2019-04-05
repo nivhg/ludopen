@@ -1797,9 +1797,9 @@ void F_Emprunt::Reserver()
             QSqlQuery *RequeteReservation=new QSqlQuery();
             RequeteReservation->prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
                                        "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,"
-                                       "Lieux_IdLieuxRetrait,ConfirmationReservation,Malles_IdMalle) "
+                                       "Lieux_IdLieuxRetrait,Malles_IdMalle) "
                                        "values (:Lieux_IdLieuxReservation,:IdMembre,:IdJeu,:DateReservation,:DatePrevuEmprunt,:DateRetour,"
-                                       ":IdLieuRetrait,1,:Malles_IdMalle)");
+                                       ":IdLieuRetrait,:Malles_IdMalle)");
             RequeteReservation->bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("IdLieux").toInt());
             RequeteReservation->bindValue(":IdMembre",NouveauEmprunts[i].idMembre);
             RequeteReservation->bindValue(":IdJeu",NouveauEmprunts[i].idJeu);
@@ -1858,10 +1858,10 @@ void F_Emprunt::Reserver()
         QSqlQuery RequeteReservation;
         RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
                                    "Jeux_IdJeux,DateReservation,DatePrevuEmprunt,DatePrevuRetour,"
-                                   "Lieux_IdLieuxRetrait,ConfirmationReservation,Malles_IdMalle) "
+                                   "Lieux_IdLieuxRetrait,Malles_IdMalle) "
                                    "values (:Lieux_IdLieuxReservation,(SELECT IdMembre FROM membres WHERE CodeMembre=:CodeMembre),"
                                    "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu),:DateReservation,:DatePrevuEmprunt,:DateRetour,"
-                                   ":IdLieuRetrait,1,:Malles_IdMalle)");
+                                   ":IdLieuRetrait,:Malles_IdMalle)");
         RequeteReservation.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("IdLieux").toInt());
         RequeteReservation.bindValue(":CodeMembre",this->MembreActif);
         RequeteReservation.bindValue(":CodeJeu",this->JeuActif);
@@ -2142,30 +2142,9 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     // Si ce jeu était un jeu réservé par cet adhérent
     //Recherche de l'id du jeu à modifier
     int IdDuJeu = this->NouveauEmprunts[ui->TbV_EmpruntAValider->currentIndex().row()].idJeu ;
-    QSqlQuery RequeteJeuReserve;
-    RequeteJeuReserve.prepare("SELECT Membres_IdMembre FROM reservation WHERE JeuEmprunte=0 AND Jeux_IdJeux=:IdDuJeu");
-    RequeteJeuReserve.bindValue(":IdDuJeu",IdDuJeu);
-    if (!RequeteJeuReserve.exec())
-    {
-        qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuReserve : "<< RequeteJeuReserve.lastQuery() ;
-    }
-    RequeteJeuReserve.next();
-    // Si ce jeu était bien réservé
-    if ( RequeteJeuReserve.size() !=0 )
-    {
-        //Modifier la réservation de ce jeu pour qu'il soit marqué "Disponible"
-        //et apparaisse à nouveau dans le tableau des jeux réservés pour cet adhérent
-        QSqlQuery RequeteJeuEmprunte ;
-        RequeteJeuEmprunte.prepare("UPDATE reservation SET JeuEmprunte=1 WHERE Jeux_IdJeux=:IdDuJeu");
-        RequeteJeuEmprunte.bindValue(":IdDuJeu",IdDuJeu);
-        if (!RequeteJeuEmprunte.exec())
-        {
-            qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
 
-        }
-        AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
-        ui->Bt_SupprimerReservation->setEnabled(false);
-    }
+    AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
+    ui->Bt_SupprimerReservation->setEnabled(false);
 
     //Supprimer la ligne du vecteur
     this->NouveauEmprunts.remove(ui->TbV_EmpruntAValider->currentIndex().row());
@@ -2352,7 +2331,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     QCalendarWidget * Calendrier=new QCalendarWidget();
     QCalendarWidget * Calendrier2=new QCalendarWidget();
     QSqlQuery RequeteResa;
-    RequeteResa.prepare("SELECT idReservation,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour "
+    RequeteResa.prepare("SELECT idReservation,DatePrevuEmprunt,DatePrevuRetour "
                         "FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux "
                         "WHERE CodeJeu=:CodeJeu AND idReservation!=:idReservation");
     RequeteResa.bindValue(":CodeJeu",this->JeuActif);
@@ -2656,7 +2635,7 @@ bool F_Emprunt::VerifJeuReserve()
     //Vérifier si ce jeu est réservé
     //Recherche de l'id du membre qui a réservé le jeu
     QSqlQuery RequeteJeuReserve;
-    RequeteJeuReserve.prepare("SELECT Membres_IdMembre,ConfirmationReservation,DatePrevuEmprunt,DatePrevuRetour FROM reservation as r "
+    RequeteJeuReserve.prepare("SELECT Membres_IdMembre,DatePrevuEmprunt,DatePrevuRetour FROM reservation as r "
                               "LEFT JOIN jeux as j ON j.IdJeux=Jeux_IdJeux "
                               "WHERE DATE(DatePrevuEmprunt)<'"+
                               ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' AND DATE(DatePrevuRetour)>'"+
@@ -2674,39 +2653,16 @@ bool F_Emprunt::VerifJeuReserve()
         if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toInt() != this->IdDuMembre )
         {
             QString sMessage;
-            if(ObtenirValeurParNom(RequeteJeuReserve,"ConfirmationReservation").toInt()==1)
+            sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()
+                    +" est réservé à aux dates "+ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuEmprunt").toDate().toString("dd-MM-yy")+" au "+
+                    ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuRetour").toDate().toString("dd-MM-yy")+", êtes-vous sûr de vouloir l'emprunter ou le réserver?";
+            if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") != 0)
             {
-                sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()
-                        +" est réservé à aux dates "+ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuEmprunt").toDate().toString("dd-MM-yy")+" au "+
-                        ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuRetour").toDate().toString("dd-MM-yy")+", êtes-vous sûr de vouloir l'emprunter ou le réserver?";
-                if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") != 0)
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()+
-                        " est en attente de confirmation de réservation.\n"+
-                        "Soit la personne validera la réservation, "+
-                        "soit celle-ci sera automatiquement supprimée.";
-                // Le jeu est réservé mais pas par l'adhérent sélectionné actuellement
-                QMessageBox::warning(this,"Jeu réservé !",sMessage,"Ok");
-                return false;  // Mettre fin à cette fonction pour empêcher l'emprunt pour ce jeu
+                return false;
             }
         }
         else
         {
-            //Modifier la réservation de ce jeu pour qu'il ne soit plus marqué "Emprunté"
-            //et n'apparaisse plus dans les jeux réservés pour cet adhérent
-            QSqlQuery RequeteJeuEmprunte;
-            RequeteJeuEmprunte.prepare("UPDATE reservation SET JeuEmprunte=0 LEFT JOIN jeux as j ON j.IdJeux=Jeux_IdJeux WHERE CodeJeu=:CodeJeu");
-            RequeteJeuEmprunte.bindValue(":CodeJeu",this->JeuActif);
-            if (!RequeteJeuEmprunte.exec())
-            {
-                qDebug()<<"RequeteJeuEmprunte : "<< RequeteJeuEmprunte.lastQuery() ;
-
-            }
             AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
             ui->Bt_SupprimerReservation->setEnabled(false);
         }

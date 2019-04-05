@@ -26,6 +26,7 @@
 #include "f_imprimermalle.h"
 #include "f_panier.h"
 #include "d_releve.h"
+#include "d_resamisdecote.h"
 #include "fonctions_globale.h"
 #include "majeur.h"
 
@@ -62,6 +63,7 @@ public:
     void CreerReservations();
     void CreerMalle();
     void CreerReleve();
+    void verifReservation();
 
 public slots:
     void slot_ChangerOnglet();
@@ -95,8 +97,9 @@ private slots:
     void on_Menu_Imprimer_Malle_Empruntee_triggered();
     void verifReleve();
     void on_Bt_ListeJeux_clicked();
-
     void on_Bt_ListeReservations_clicked();
+
+    void on_Bt_Retards_clicked();
 
 private:
     Ui::F_MainWindow *ui;
@@ -123,6 +126,7 @@ private:
     D_Releve * pReleve;
     F_Panier * pPanier;
     QTimer *Relevetimer;
+    QTimer *Reservationtimer;
     uint iIdBenevole;
 
     void TimerProchainePermanence();

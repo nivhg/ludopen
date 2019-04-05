@@ -106,11 +106,6 @@ private slots:
      */
     void on_Bt_AnnulerDescription_clicked();
 
-    /** @brief Appeler lorsque l'on clic sur le bouton Valider
-     *
-     */
-    void on_Bt_Reserver_clicked();
-
     /** @brief Appeler lorsque l'on clic sur le bouton Détails
      *
      */
@@ -140,8 +135,6 @@ private slots:
     void on_Lb_Image_clicked();
 
     void SlotRegleTelecharger(QString CheminFichier);
-
-    void on_Bt_Reserve_clicked();
 
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé
