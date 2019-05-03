@@ -501,7 +501,7 @@ QGroupBox::indicator:checked {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QGroupBox  {color: yellow;}
+         <string notr="true">QGroupBox  {color: orange;}
 QGroupBox::indicator {
     width: 32px;
     height: 32px;
@@ -862,7 +862,7 @@ QGroupBox::indicator:checked {
          </font>
         </property>
         <property name="styleSheet">
-         <string notr="true">QGroupBox  {color: cyan ;}
+         <string notr="true">QGroupBox  {color: blue ;}
 QGroupBox::indicator {
     width: 32px;
     height: 32px;
