@@ -477,7 +477,7 @@ void F_Emprunt::AfficherMalle(int iIdMalle)
                            ObtenirValeurParNom(Requete,
                            F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")).toString()==F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
     }
-    ui->Bt_Emprunter->setText("Modifier Malle");
+    ui->Bt_Emprunter->setText("Emprunter/Modifier Malle");
     ui->Bt_Emprunter->setEnabled(true);
     ui->rB_Mode_Emprunt->setChecked(true);
     this->AfficherEtatPaiement();

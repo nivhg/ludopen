@@ -2427,8 +2427,8 @@ void F_Membres::EnvoiEmailSite()
     EMailProchainAEnvoyer.sCorps = F_Preferences::ObtenirValeur("CorpsEmailMotDePasseTemp");
     EMailProchainAEnvoyer.sCorps.replace("%MOTDEPASSE",pass);
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
-//    EMailProchainAEnvoyer.sTo = Email;
-    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+    EMailProchainAEnvoyer.sTo = ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
+//    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
     EMailProchainAEnvoyer.IDMembre =  nIdMembreSelectionne;
 
     ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

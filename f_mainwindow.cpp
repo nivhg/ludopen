@@ -794,7 +794,7 @@ void F_MainWindow::slot_Reservation_Malle(int iIdMalle)
     CreerMalle();
     this->pMalles->AfficherMalle(iIdMalle);
     // Faire apparaître l'onglet Malle
-    ui->TbW_Main->setCurrentIndex(6);
+    ui->TbW_Main->setCurrentIndex(trouveOnglet("malles"));
 }
 
 void F_MainWindow::verifReleve()

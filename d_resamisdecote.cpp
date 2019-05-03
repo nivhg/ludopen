@@ -82,8 +82,8 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
     ListeEMailAEnvoyer[0].sCorps = F_Preferences::ObtenirValeur("CorpsEmailMisDeCote");
     ListeEMailAEnvoyer[0].sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%NB_SEMAINE",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote"));
     ListeEMailAEnvoyer[0].sFrom = F_Preferences::ObtenirValeur("Email");
-//    ListeEMailAEnvoyer[0].sTo = Email;
-    ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
+    ListeEMailAEnvoyer[0].sTo = Email;
+    //ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
     ListeEMailAEnvoyer[0].sBcc = F_Preferences::ObtenirValeur("Email");
     ListeEMailAEnvoyer[0].IDMembre =  IdMembre;
 
@@ -174,8 +174,8 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
     EMailProchainAEnvoyer.sCorps = F_Preferences::ObtenirValeur("CorpsEmailNonMisDeCote");
     EMailProchainAEnvoyer.sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%RAISON",ui->Te_NonMisDeCote->toPlainText());
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
-//    EMailProchainAEnvoyer.sTo = Email;
-    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+    EMailProchainAEnvoyer.sTo = Email;
+//    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
     EMailProchainAEnvoyer.IDMembre =  IdMembre;
 
     this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;
