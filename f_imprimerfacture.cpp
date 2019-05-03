@@ -29,7 +29,7 @@ void F_ImprimerFacture::ImprimerFacture(uint nIdPaiement, bool EstCeFacture,QHas
     contenu.replace("#Nom#",F_Preferences::ObtenirValeur("Nom"),Qt::CaseInsensitive);
     contenu.replace("#Adresse#",F_Preferences::ObtenirValeur("Adresse"),Qt::CaseInsensitive);
     contenu.replace("#CodePostal#",F_Preferences::ObtenirValeur("CodePostal"),Qt::CaseInsensitive);
-    contenu.replace("#Ville#",F_Preferences::ObtenirValeur("Ville"),Qt::CaseInsensitive);
+    contenu.replace("#VilleLudo#",F_Preferences::ObtenirValeur("Ville"),Qt::CaseInsensitive);
     contenu.replace("#NumeroTel#",F_Preferences::ObtenirValeur("NumeroTel"),Qt::CaseInsensitive);
     contenu.replace("#PiedPageFacture#",F_Preferences::ObtenirValeur("PiedPageFacture"),Qt::CaseInsensitive);
 

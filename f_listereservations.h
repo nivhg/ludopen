@@ -40,9 +40,10 @@ public:
     //! Met à jour la liste des types de malles
     void MaJMalles ();
 
-    bool AffichageListe () ;
-
     void SelectionnerReservation(int IdReservation);
+
+public slots:
+    bool AffichageListe () ;
 
 signals:
     void Signal_DoubleClic_ListeMembres( unsigned int nIdMembre ) ;

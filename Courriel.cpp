@@ -27,11 +27,13 @@
  *  @param const QString sAdresseSmtp, const int nPort, const QString sFrom, const QString sTo, const QString sSujet, const QString sCorps
  *  @test   Voir la procédure dans le fichier associé.
  */
-Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QVector <EMail> ListeEMailAEnvoyer) :
+Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QList <EMail> ListeEMailAEnvoyer) :
     QThread()
 {
+    qDebug()<<ListeEMailAEnvoyer[0].sCc;
    //  avoir accès au vecteur qui contient les emails à envoyer
    this->ListeEMailAEnvoyer = ListeEMailAEnvoyer ;
+    qDebug()<<this->ListeEMailAEnvoyer[0].sCc;
 
    //Récupération des données passées en paramètre
    this->sAdresseSmtp = sAdresseServeurSNMP ;
@@ -100,9 +102,12 @@ void Courriel::run()
 
     this->sFrom = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sFrom ;
     this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo ;
+    this->sCc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCc ;
+    this->sBcc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sBcc ;
 
     this->sMessage="From: " + this->sFrom + "\n";
     this->sMessage.append("To: " + this->sTo + "\n");
+    this->sMessage.append("Cc: " + this->sCc + "\n");
     this->sMessage.append("Subject: " + this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sSujet + "\n") ;
     this->sMessage.append("Content-Type: text/plain; charset=\"UTF-8\"\n\n");
     this->sMessage.append( this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCorps ) ;
@@ -117,7 +122,7 @@ void Courriel::run()
     connect( this->SocketSMTP, SIGNAL( connected() ), this, SLOT( slot_Connecte() ) ) ;
     connect( this->SocketSMTP, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( slot_ErreurRecue( QAbstractSocket::SocketError ) ) ) ;
     connect( this->SocketSMTP, SIGNAL( disconnected() ), this, SLOT( slot_Deconnecte() ) ) ;
-    //connect( this, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( TraiterEMailSuivant( uint ) ) ) ;
+    connect( this, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( TraiterEMailSuivant( uint ) ) ) ;
     // start the tcp thread
     //SocketSMTP->moveToThread(this);    // move events to thread
     //this->start();   // start the thread
@@ -203,7 +208,23 @@ void Courriel::slot_ReceptionDonnees()
             QString requete="RCPT TO: "+this->sTo+"\r\n";
             this->SocketSMTP->write(requete.toUtf8());
             this->SocketSMTP->flush();
-            this->EtapeConnexion = Data ;
+            // Si le champs CC est vide, on passe à l'étape Bcc sauf si le champs Bcc est aussi vide, auquel cas on passe à l'étape Data
+            // Si le champs CC n'est pas, on passe à l'étape CC
+            if(this->sCc.trimmed()=="")
+            {
+                if(this->sBcc.trimmed()=="")
+                {
+                    this->EtapeConnexion = Data ;
+                }
+                else
+                {
+                    this->EtapeConnexion = Bcc ;
+                }
+            }
+            else
+            {
+                this->EtapeConnexion = Cc ;
+            }
         }
         else
         {
@@ -211,6 +232,61 @@ void Courriel::slot_ReceptionDonnees()
             this->EtapeConnexion = Erreur ;
             qDebug() << "Erreur, Etape : To";
             emit( this->Signal_Erreur_EMail( this->sTo + ": Adresse email de l'expediteur incorrect." ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
+        }
+        break ;
+    }
+
+    case Cc :
+    {
+        if ( ReponseServeurSMTP == "250" )
+        {
+            //Destinataire. On indique le mail du destinataire
+            qDebug() << "Etape : Cc=" << this->sCc;
+            QString requete="RCPT TO: "+this->sCc+"\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
+            if(this->sBcc.trimmed()=="")
+            {
+                this->EtapeConnexion = Data ;
+            }
+            else
+            {
+                this->EtapeConnexion = Bcc ;
+            }
+        }
+        else
+        {
+            //Indique qu'il y a une erreur lors de l'envoi du mail de l'expediteur
+            this->EtapeConnexion = Erreur ;
+            qDebug() << "Erreur, Etape : Cc";
+            emit( this->Signal_Erreur_EMail( this->sCc + ": Adresse email de l'expediteur en copie incorrect." ) ) ;
+            // On passe à l'email suivant:
+            this->TraiterEMailSuivant();
+            //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
+        }
+        break ;
+    }
+
+    case Bcc :
+    {
+        if ( ReponseServeurSMTP == "250" )
+        {
+            //Destinataire. On indique le mail du destinataire
+            qDebug() << "Etape : Bcc=" << this->sBcc;
+            QString requete="RCPT TO: "+this->sBcc+"\r\n";
+            this->SocketSMTP->write(requete.toUtf8());
+            this->SocketSMTP->flush();
+            this->EtapeConnexion = Data ;
+        }
+        else
+        {
+            //Indique qu'il y a une erreur lors de l'envoi du mail de l'expediteur
+            this->EtapeConnexion = Erreur ;
+            qDebug() << "Erreur, Etape : Bcc";
+            emit( this->Signal_Erreur_EMail( this->sBcc + ": Adresse email de l'expediteur en copie caché incorrect." ) ) ;
             // On passe à l'email suivant:
             this->TraiterEMailSuivant();
             //emit( this->Signal_Fermer_Thread_EMail( ) ) ;
@@ -251,9 +327,9 @@ void Courriel::slot_ReceptionDonnees()
             QString requete =this->sMessage+"\r\n.\r\n";
             this->SocketSMTP->write(requete.toUtf8());
             this->SocketSMTP->flush();
-            emit( this->SignalMailEnvoyer(  this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).IDMembre ) ) ;
-            // On passe à l'email suivant:
             this->TraiterEMailSuivant();
+            emit( this->SignalMailEnvoyer(  this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter-1).IDMembre ) ) ;
+            // On passe à l'email suivant:
         }
         else
         {

@@ -79,7 +79,7 @@
    </property>
    <property name="text">
     <string>Le jeu #CODENOMJEU# est réservé ! Merci de mettre ce jeu de coté.
-Un courriel sera envoyé à l'adhérent pour le prévenir.</string>
+Un courriel sera automatiquement envoyé à l'adhérent pour le prévenir.</string>
    </property>
    <property name="wordWrap">
     <bool>true</bool>

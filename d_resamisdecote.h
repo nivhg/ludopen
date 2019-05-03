@@ -57,7 +57,7 @@ private:
     bool enableClose;
     Courriel *pCourriel;
     /// vecteur qui contient la liste des emails à envoyer
-    QVector <EMail> ListeEMailAEnvoyer ;
+    QList <EMail> ListeEMailAEnvoyer ;
     int IdMembre=0;
     int IdJeu=0;
     QString Email;

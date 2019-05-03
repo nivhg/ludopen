@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include "f_preferences.h"
 #include "fonctions_globale.h"
+class F_MainWindow;
 
 namespace Ui {
 class D_Releve;
@@ -18,7 +19,7 @@ class D_Releve : public QDialog
     Q_OBJECT
 
 public:
-    explicit D_Releve(QWidget *parent,uint iIdBenevole);
+    explicit D_Releve(QWidget *parent);
     ~D_Releve();
     void ChangementModeSaisie(bool DebutFin);
 
@@ -68,10 +69,10 @@ private:
     void CalculTotal();
     Ui::D_Releve *ui;
     QStandardItemModel ModeleReleves;
-    uint iIdBenevole;
     void MajReleves();
     bool DebutFin;
     void keyPressEvent(QKeyEvent *e);
+    F_MainWindow *main;
 
 signals:
     void SignalPlusTard();

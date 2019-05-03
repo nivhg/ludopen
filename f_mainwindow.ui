@@ -556,10 +556,25 @@ Membres</string>
     </property>
     <addaction name="Menu_Edition_Preferences"/>
    </widget>
+   <widget class="QMenu" name="menuUtilisateurEnCours">
+    <property name="title">
+     <string>Uti&amp;lisateur en cours :</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuUtilisateur">
+    <property name="styleSheet">
+     <string notr="true">color: red</string>
+    </property>
+    <property name="title">
+     <string>Aucun</string>
+    </property>
+   </widget>
    <addaction name="menuFichier"/>
    <addaction name="menu_Edition"/>
    <addaction name="menuImprimer"/>
    <addaction name="menuAide"/>
+   <addaction name="menuUtilisateurEnCours"/>
+   <addaction name="menuUtilisateur"/>
   </widget>
   <action name="Menu_Fichier_Quitter">
    <property name="text">

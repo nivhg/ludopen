@@ -37,7 +37,7 @@ D_PopUpCode::D_PopUpCode(QWidget *parent) :
     QSqlQuery RequeteBenevoles;
 
     // Récupère toutes les activités
-    RequeteBenevoles.prepare("SELECT CONCAT(Nom,\" \",Prenom) as NomPrenom,IdMembre FROM membres WHERE TypeMembres_IdTypeMembres=2 ORDER BY NomPrenom") ;
+    RequeteBenevoles.prepare("SELECT Prenom as NomPrenom,IdMembre FROM membres WHERE TypeMembres_IdTypeMembres=2 ORDER BY NomPrenom") ;
 
     //Exectution de la requête
     if( !RequeteBenevoles.exec() )

@@ -68,32 +68,6 @@
       <item row="2" column="0">
        <layout class="QHBoxLayout" name="horizontalLayout"/>
       </item>
-      <item row="5" column="0" alignment="Qt::AlignHCenter">
-       <widget class="QCommandLinkButton" name="Bt_DeclarerIntervention">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Intervention sur ce jeu</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Reparation.png</normaloff>:/Reparation.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="0">
        <widget class="QTableView" name="TbV_NomJeux">
         <property name="minimumSize">
@@ -119,7 +93,7 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+      <item row="6" column="0" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
        <widget class="QCommandLinkButton" name="Bt_Reserver">
         <property name="enabled">
          <bool>false</bool>
@@ -140,6 +114,49 @@
         </property>
        </widget>
       </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Saisir le nom du jeu ou son code :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0" alignment="Qt::AlignHCenter">
+       <widget class="QCommandLinkButton" name="Bt_DeclarerIntervention">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Intervention sur ce jeu</string>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Reparation.png</normaloff>:/Reparation.png</iconset>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>30</width>
+          <height>30</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QTableWidget" name="TbW_LiensJeux">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
+       </widget>
+      </item>
       <item row="1" column="0">
        <widget class="QLineEdit" name="Le_recherchenom">
         <property name="inputMethodHints">
@@ -147,10 +164,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="label_6">
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_7">
         <property name="text">
-         <string>Saisir le nom du jeu ou son code :</string>
+         <string>Liens avec d'autres jeux :</string>
         </property>
        </widget>
       </item>

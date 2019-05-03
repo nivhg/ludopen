@@ -35,6 +35,29 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui->Menu_Jeux_Imprimer_Etiquette->setShortcut(tr("Ctrl+E"));
     ui->Menu_Jeux_Imprimer_Fiche_Complete->setShortcut(tr("Ctrl+F"));
 
+    QSqlQuery RequeteBenevoles;
+
+    // Récupère toutes les activités
+    RequeteBenevoles.prepare("SELECT Prenom,IdMembre FROM membres WHERE TypeMembres_IdTypeMembres=2 ORDER BY Prenom") ;
+
+    //Exectution de la requête
+    if( !RequeteBenevoles.exec() )
+    {
+        qDebug() << getLastExecutedQuery(RequeteBenevoles) << RequeteBenevoles.lastError() ;
+    }
+    else
+    {
+        while( RequeteBenevoles.next() )
+        {
+            // Récupère la valeurs des champs
+            //CBx_Benevoles->addItem(,);
+            QAction *sousmenu=ui->menuUtilisateurEnCours->addAction(ObtenirValeurParNom(RequeteBenevoles,"Prenom").toString());
+            sousmenu->setData(ObtenirValeurParNom(RequeteBenevoles,"IdMembre").toInt());
+            connect(sousmenu,SIGNAL(triggered(QAction *)),this,SLOT(on_menuUtilisateurEnCours_triggered(QAction *)));
+        }
+    }
+
+
     //Layout///////////////
 
     //Widgets-onglets//////
@@ -61,7 +84,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 //    this->pPopUpCode = 0;
     /*****************************************************************************/
 
-    this->pPopUpCode = new D_PopUpCode;
+/*    this->pPopUpCode = new D_PopUpCode;
     this->pPopUpCode->setWindowFlag(Qt::Dialog);
     this->pPopUpCode->setWindowFlag(Qt::WindowCloseButtonHint,false);
     this->pPopUpCode->setWindowFlag(Qt::WindowMaximizeButtonHint,false);
@@ -69,7 +92,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     //this->pPopUpCode->setWindowModality(Qt::ApplicationModal);
 
     connect(this->pPopUpCode, SIGNAL(SignalMembreIdentifier(uint)), this, SLOT(slot_MembreIdentifier(uint)));
-    this->pPopUpCode->exec();
+    this->pPopUpCode->exec();*/
 
     MAJeur *MAJ=new MAJeur(this);
 
@@ -121,9 +144,10 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     qDebug()<<"Constructeur F_MainWindow = OK";
 
     Reservationtimer = new QTimer(this);
-    Reservationtimer ->setInterval(F_Preferences::ObtenirValeur("IntervalVerifResa").toInt()*60*1000);
-    verifReservation();
-    connect(Reservationtimer, SIGNAL(timeout()), SLOT(verifReservation()));
+    Reservationtimer->setInterval(F_Preferences::ObtenirValeur("IntervalVerifResa").toInt()*60*1000);
+    slot_verifReservation();
+    connect(Reservationtimer, SIGNAL(timeout()), SLOT(slot_verifReservation()));
+    Reservationtimer->start();
 }
 
 void F_MainWindow::VerifierConnexionBDD()
@@ -478,6 +502,11 @@ void F_MainWindow::CreerReservations()
         this->pListeReservations=new F_ListeReservations(this->ui->Listes);
         this->ui->Lay_Listes->addWidget(this->pListeReservations);
     }
+    // Si l'onglet Emprunt a été crée, on connecte le signal et le slot
+    if(this->pEmprunt)
+    {
+        connect( this->pEmprunt, SIGNAL( Signal_Nouvelle_Reservation() ), this->pListeReservations, SLOT( AffichageListe() ) ) ;
+    }
     ChangerFenetreListes(this->pListeReservations);
 }
 
@@ -559,6 +588,11 @@ void F_MainWindow::CreerEmprunt()
         if(!pCalendrierMalles)
             connect(this->pEmprunt,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
     }
+    // Si l'onglet Liste réservations a été crée, on connecte le signal et le slot
+    if(this->pListeReservations)
+    {
+        connect( this->pEmprunt, SIGNAL( Signal_Nouvelle_Reservation() ), this->pListeReservations, SLOT( AffichageListe() ) ) ;
+    }
 }
 
 void F_MainWindow::CreerRetour()
@@ -596,7 +630,7 @@ void F_MainWindow::CreerReleve()
     if(!this->pReleve)
     {
         qDebug()<<"Création D_Releve";
-        this->pReleve=new D_Releve(NULL,iIdBenevole);
+        this->pReleve=new D_Releve(this);
         this->ui->Lay_Releve->addWidget(this->pReleve);
     }
 }
@@ -986,14 +1020,21 @@ void F_MainWindow::on_Bt_Retards_clicked()
     CreerRetards();
 }
 
-void F_MainWindow::verifReservation()
+void F_MainWindow::slot_verifReservation()
 {
+    // Si on n'est pas sur le lieu où se trouve les jeux, on ne demande pas de mettre de coté les jeux
+    if(F_Preferences::ObtenirValeur("IdLieux")!=F_Preferences::ObtenirValeur("LieuDesJeux"))
+    {
+        return;
+    }
     // Recherche des réservations à mettre de côté
     QSqlQuery Requete;
     // On recherche les réservations pas encore mise de côté, non supprimer par l'utilisateur et disponible
     QString RequeteStr="SELECT IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON m.IdMembre=r.Membres_IdMembre "
                        "LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+QString::number(STATUTJEUX_DISPONIBLE)+
-                       " AND ASupprimer=0";
+                       " AND ASupprimer=0 AND "+
+                        F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+
+                        "  GROUP BY IdJeux ORDER BY DateReservation";
     Requete.prepare(RequeteStr);
     //Exectution de la requête
     if( !Requete.exec() )
@@ -1019,7 +1060,8 @@ void F_MainWindow::verifReservation()
     // On recherche les réservations mise de côté, et supprimer ainsi que les réservations qui ont dépassé la durée de réservation
     Requete.prepare("SELECT Idreservation,DateReservation,IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON "
                     "m.IdMembre=r.Membres_IdMembre LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+
-                    QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DateReservation)>:DelaiJeuMisDeCote)");
+                    QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DateReservation)>:DelaiJeuMisDeCote) AND "+
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
     Requete.bindValue(":DelaiJeuMisDeCote",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote").toInt()*7);
     //Exectution de la requête
     if( !Requete.exec() )
@@ -1037,7 +1079,7 @@ void F_MainWindow::verifReservation()
         QString Email=ObtenirValeurParNom(Requete,"Email").toString();
 
         QMessageBox::information(this, "Jeu à ranger", "Le jeu "+NomJeu+" ("+CodeJeu+")\nqui a été mis de côté pour une réservation,\nest à ranger, "
-                "l'adhérent aillant supprimé sa réservation\nou la réservation aillant expirée.", "OK") ;
+                "le membre aillant supprimé sa réservation\nou la réservation aillant expirée.", "OK") ;
         QSqlQuery RequeteSuppressionResa;
         RequeteSuppressionResa.prepare("DELETE FROM reservation WHERE IdReservation=:IdReservation");
         RequeteSuppressionResa.bindValue(":IdReservation",ObtenirValeurParNom(Requete,"Idreservation").toInt());
@@ -1048,4 +1090,15 @@ void F_MainWindow::verifReservation()
             return;
         }
     }
+}
+
+void F_MainWindow::on_menuUtilisateurEnCours_triggered(QAction *caller)
+{
+    ui->menuUtilisateur->setTitle(caller->text());
+    iIdBenevole=caller->data().toInt();
+}
+
+uint F_MainWindow::RecupereIdBenevole()
+{
+    return iIdBenevole;
 }

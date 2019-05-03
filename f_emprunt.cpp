@@ -90,6 +90,10 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
         ui->Bt_AjoutNonAdherent->setVisible(false);
         ui->Bt_Emprunter->setText("Réserver");
         ui->Bt_CalendrierMalles->setVisible(false);
+        ui->Lb_Depart->setVisible(false);
+        ui->DtE_Depart->setVisible(false);
+        ui->Lb_Retour_2->setVisible(false);
+        ui->DtE_Retour->setVisible(false);
     }
     on_rB_Mode_Emprunt_toggled(true);
     SearchJeux->show();
@@ -154,13 +158,15 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     this->ModeleJeuxReserves->setHorizontalHeaderItem(1, new QStandardItem("Code"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
-    this->ModeleJeuxReserves->setHorizontalHeaderItem(4, new QStandardItem("lieu"));
+    this->ModeleJeuxReserves->setHorizontalHeaderItem(4, new QStandardItem("Lieu retrait"));
     this->ModeleJeuxReserves->setHorizontalHeaderItem(5, new QStandardItem("Date réservation"));
+
     ui->Tv_JeuxReserves->setColumnWidth(0,140);
     ui->Tv_JeuxReserves->setColumnWidth(1,40);
     ui->Tv_JeuxReserves->setColumnWidth(2,100);
     ui->Tv_JeuxReserves->setColumnWidth(3,100);
-    ui->Tv_JeuxReserves->setColumnWidth(4,100);
+    ui->Tv_JeuxReserves->setColumnWidth(4,80);
+    ui->Tv_JeuxReserves->setColumnWidth(5,100);
 
     this->iNbEmpruntEnCours=0;
     this->iNbJeuxEmpruntables=0;
@@ -543,8 +549,8 @@ void F_Emprunt::AfficherJeuxReserve(QStandardItemModel *ModeleJeuxReserves,QStri
                               "r.DateReservation,r.DatePrevuEmprunt,r.DatePrevuRetour,NomLieux,NomJeu,m.IdMalle,"
                               "CodeJeu FROM reservation as r LEFT JOIN malles as m ON r.Malles_IdMalle=m.IdMalle "
                               "LEFT JOIN typeemprunt as t ON m.TypeEmprunt_IdTypeEmprunt=t.IdTypeEmprunt "
-                              "LEFT JOIN jeux ON IdJeux=Jeux_IdJeux LEFT JOIN lieux ON IdLieux=Lieux_IdLieuxReservation "
-                              "WHERE r.Membres_IdMembre=:IdMembre");
+                              "LEFT JOIN jeux ON IdJeux=Jeux_IdJeux LEFT JOIN lieux ON IdLieux=Lieux_IdLieuxRetrait "
+                              "WHERE r.Membres_IdMembre=:IdMembre AND (m.NonValider IS NULL OR m.NonValider=0)");
 
     RequeteJeuReserve.bindValue(":IdMembre",IdDuMembre);
 
@@ -770,7 +776,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
     ActualiserListeJeux();
 
     resizeColumnsToContents(this->ModeleJeuxEmpruntes,ui->Tv_JeuxMembres);
-    resizeColumnsToContents(this->ModeleJeuxReserves,ui->Tv_JeuxReserves);
+    //resizeColumnsToContents(this->ModeleJeuxReserves,ui->Tv_JeuxReserves);
     ui->CBx_TypeEmprunt->setEnabled(true);
 }
 
@@ -1850,10 +1856,6 @@ void F_Emprunt::Reserver()
     }
     else
     {
-        if(!VerifJeuReserve())
-        {
-            return;
-        }
         //Création de la réservation dans la table des réservations
         QSqlQuery RequeteReservation;
         RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
@@ -1875,7 +1877,6 @@ void F_Emprunt::Reserver()
         {
             qDebug()<<getLastExecutedQuery(RequeteReservation)<<RequeteReservation.lastError();
         }
-        qDebug()<<getLastExecutedQuery(RequeteReservation)<<RequeteReservation.lastError();
     }
     this->AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,false);
     this->SearchMembre->setEnabled(true);
@@ -1888,6 +1889,7 @@ void F_Emprunt::Reserver()
     EffacerJeuAValider();
     AfficherNbEmpruntsEnCours();
     ActualiserListeJeux();
+    emit(Signal_Nouvelle_Reservation());
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1904,7 +1906,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
 {
     if(ui->rB_Mode_Resa->isChecked())
     {
-        if(!DatesResaChangees)
+        if(!DatesResaChangees&&this->iMode==MODE_MALLES)
         {
             if(QMessageBox::question(this, "Date de départ", "Attention, la date de début de réservation n'a pas été changée,"
                                      "êtes-vous sûr de vouloir continuer ?", "Oui", "Non") != 0)
@@ -2603,13 +2605,15 @@ void F_Emprunt::on_rB_Mode_Emprunt_toggled(bool checked)
         if(iMode==MODE_MALLES)
         {
             ui->Bt_Emprunter->setText("Réserver malle");
+            ui->DtE_Depart->setVisible(true);
+            ui->Lb_Depart->setVisible(true);
         }
         else
         {
             ui->Bt_Emprunter->setText("Réserver");
+            ui->DtE_Depart->setVisible(false);
+            ui->Lb_Depart->setVisible(false);
         }
-        ui->DtE_Depart->setVisible(true);
-        ui->Lb_Depart->setVisible(true);
         if(iMode!=MODE_MALLES)
         {
             ui->TbV_EmpruntAValider->setEnabled(false);
@@ -2653,9 +2657,7 @@ bool F_Emprunt::VerifJeuReserve()
         if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toInt() != this->IdDuMembre )
         {
             QString sMessage;
-            sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()
-                    +" est réservé à aux dates "+ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuEmprunt").toDate().toString("dd-MM-yy")+" au "+
-                    ObtenirValeurParNom(RequeteJeuReserve,"DatePrevuRetour").toDate().toString("dd-MM-yy")+", êtes-vous sûr de vouloir l'emprunter ou le réserver?";
+            sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()+" est réservé, êtes-vous sûr de vouloir l'emprunter?";
             if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") != 0)
             {
                 return false;

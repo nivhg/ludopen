@@ -546,9 +546,6 @@ QGroupBox::indicator:checked {
          </item>
          <item row="5" column="0" colspan="2">
           <layout class="QGridLayout" name="gridLayout_20">
-           <item row="2" column="0">
-            <layout class="QHBoxLayout" name="horizontalLayout"/>
-           </item>
            <item row="0" column="0">
             <widget class="QLabel" name="Lb_RechercheMembre">
              <property name="maximumSize">
@@ -574,6 +571,9 @@ QGroupBox::indicator:checked {
               <string>Ajouter un non-adhérent</string>
              </property>
             </widget>
+           </item>
+           <item row="1" column="0">
+            <layout class="QHBoxLayout" name="horizontalLayout"/>
            </item>
           </layout>
          </item>

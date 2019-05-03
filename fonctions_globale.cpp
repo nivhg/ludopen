@@ -67,3 +67,18 @@ void resizeColumnsToContents( QStandardItemModel *Modele,QTreeView *TreeView )
         TreeView->setColumnWidth(i,TreeView->columnWidth(i)-15);
     }
 }
+
+QString GetRandomString()
+{
+   const QString possibleCharacters("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+   const int randomStringLength = 8; // assuming you want random strings of 12 characters
+
+   QString randomString;
+   for(int i=0; i<randomStringLength; ++i)
+   {
+       int index = qrand() % possibleCharacters.length();
+       QChar nextChar = possibleCharacters.at(index);
+       randomString.append(nextChar);
+   }
+   return randomString;
+}

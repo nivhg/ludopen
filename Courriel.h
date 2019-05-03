@@ -19,8 +19,10 @@
 typedef enum
 {
     Init,      ///< initialisation
-    From,      /// < envoie du mail de l'expediteur
-    To,        ///< envoie du mail du destinataire
+    From,      /// < courriel de l'expediteur
+    To,        ///< courriel du destinataire
+    Cc,        ///< courriel du destinataire en copie
+    Bcc,        ///< courriel du destinataire en copie caché
     Data,      ///< Indique que l'on va envoyer les différentes information du mail
     Body,      ///< envoie du mail
     Quitter,   ///< envoie un signal pour arrêter la connexion
@@ -30,10 +32,12 @@ typedef enum
 typedef struct
 {
    uint    IDMembre ;         ///< ID du membre destinataire de l'email
-   QString sFrom ;            ///< Email de l'expéditeur
-   QString sTo ;              ///< Email du destinataire
    QString sSujet ;           ///< Sujet de l'email
    QString sCorps ;           ///< Corps de l'email
+   QString sFrom ;            ///< Email de l'expéditeur
+   QString sTo ;              ///< Email du destinataire
+   QString sCc ;              ///< Email du destinataire en copie
+   QString sBcc ;              ///< Email du destinataire en copie caché
 } EMail ;
 
 /** @brief Permet l'envoie d'un mail via un serveur smpt ne demandant pas d'authentification
@@ -50,7 +54,7 @@ Q_OBJECT
 
 public:
     //! Permet d'initialiser tous les attributs de la classe et les 'connect' avec le socket.
-    Courriel(const QString sAdresseServeurSNMP, const uint nPort, QVector<EMail> ListeEMailAEnvoyer ) ;
+    Courriel(const QString sAdresseServeurSNMP, const uint nPort, QList <EMail> ListeEMailAEnvoyer ) ;
     //! Détruit les objets créé par le pointeur
     ~Courriel() ;
 
@@ -79,9 +83,11 @@ private:
 
     QString sFrom ;            ///< Email de l'expéditeur
     QString sTo ;              ///< Email du destinataire
+    QString sCc ;              ///< Email du destinataire en copie
+    QString sBcc ;              ///< Email du destinataire en copie caché
     QString sMessage ;         ///< le message à envoyer au serveur
 
-    QVector <EMail> ListeEMailAEnvoyer ;  ///< vecteur qui contient la liste des emails à envoyer.
+    QList <EMail> ListeEMailAEnvoyer ;  ///< vecteur qui contient la liste des emails à envoyer.
     unsigned short NumeroEmailATraiter ;  ///< Numéro de la case du vecteur qui contient la liste des emails à envoyer
 
 private:

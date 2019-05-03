@@ -61,7 +61,12 @@ SOURCES += \
     f_imprimerfacture.cpp \
     d_ajoutelementpanier.cpp \
     d_aide.cpp \
-    d_resamisdecote.cpp
+    d_resamisdecote.cpp \
+    bcrypt.c \
+    crypt_blowfish/crypt_blowfish.c \
+    crypt_blowfish/crypt_gensalt.c \
+    crypt_blowfish/wrapper.c \
+    d_lienjeux.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -109,7 +114,13 @@ HEADERS  += \
     f_imprimerfacture.h \
     d_ajoutelementpanier.h \
     d_aide.h \
-    d_resamisdecote.h
+    d_resamisdecote.h \
+    bcrypt.h \
+    crypt_blowfish/crypt.h \
+    crypt_blowfish/crypt_blowfish.h \
+    crypt_blowfish/crypt_gensalt.h \
+    crypt_blowfish/ow-crypt.h \
+    d_lienjeux.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -147,7 +158,8 @@ FORMS    += \
     f_imprimerfacture.ui \
     d_ajoutelementpanier.ui \
     d_aide.ui \
-    d_resamisdecote.ui
+    d_resamisdecote.ui \
+    d_lienjeux.ui
 
 VERSION = "2.04"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string

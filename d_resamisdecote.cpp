@@ -59,7 +59,7 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
 {
     // On passe le jeu dans le statut "En réservation"
     QSqlQuery Requete;
-    Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux="+QString::number(STATUTJEUX_ENRESERVATION)+" WHERE Jeux_IdJeux=:Jeux_IdJeux");
+    Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux="+QString::number(STATUTJEUX_ENRESERVATION)+" WHERE IdJeux=:Jeux_IdJeux");
     Requete.bindValue(":Membres_IdMembre",this->IdMembre);
     Requete.bindValue(":Jeux_IdJeux",this->IdJeu);
     //Exectution de la requête
@@ -68,17 +68,24 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
         qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
     }
 
+    // Si l'email est vide, on quitte et ferme la fenêtre
+    if(Email.trimmed()==""||Email.trimmed()=="@")
+    {
+        enableClose=true;
+        close();
+        return;
+    }
     EMail EMailProchainAEnvoyer;
-    //On remplie le vecteur des EMails avec les données de ce membre actuel
-    EMailProchainAEnvoyer.sSujet = F_Preferences::ObtenirValeur("SujetEmailMisDeCote");
-    EMailProchainAEnvoyer.sCorps = F_Preferences::ObtenirValeur("CorpsEmailMisDeCote");
-    EMailProchainAEnvoyer.sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%NB_SEMAINE",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote"));
-    EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
-//    EMailProchainAEnvoyer.sTo = Email;
-    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
-    EMailProchainAEnvoyer.IDMembre =  IdMembre;
-
     this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;
+    //On remplie le vecteur des EMails avec les données de ce membre actuel
+    ListeEMailAEnvoyer[0].sSujet = F_Preferences::ObtenirValeur("SujetEmailMisDeCote");
+    ListeEMailAEnvoyer[0].sCorps = F_Preferences::ObtenirValeur("CorpsEmailMisDeCote");
+    ListeEMailAEnvoyer[0].sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%NB_SEMAINE",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote"));
+    ListeEMailAEnvoyer[0].sFrom = F_Preferences::ObtenirValeur("Email");
+//    ListeEMailAEnvoyer[0].sTo = Email;
+    ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
+    ListeEMailAEnvoyer[0].sBcc = F_Preferences::ObtenirValeur("Email");
+    ListeEMailAEnvoyer[0].IDMembre =  IdMembre;
 
     //On crée l'objet Courriel qui permettra l'envoi des emails
     pCourriel = new Courriel( ServeurSMTP , PortSMTP , this->ListeEMailAEnvoyer ) ;
@@ -142,6 +149,25 @@ void D_ResaMisDeCote::slot_AfficherErreurMail( QString sErreur )
 
 void D_ResaMisDeCote::on_Bt_Valider_clicked()
 {
+    // On supprime la réservation
+    QSqlQuery Requete;
+    Requete.prepare("DELETE FROM reservation WHERE Jeux_IdJeux=:Jeux_IdJeux AND Membres_IdMembre=:Membres_IdMembre");
+    Requete.bindValue(":Membres_IdMembre",this->IdMembre);
+    Requete.bindValue(":Jeux_IdJeux",this->IdJeu);
+
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+    }
+
+    // Si l'email est vide, on quitte et ferme la fenêtre
+    if(Email.trimmed()==""||Email.trimmed()=="@")
+    {
+        close();
+        return;
+    }
+
     EMail EMailProchainAEnvoyer;
     //On remplie le vecteur des EMails avec les données de ce membre actuel
     EMailProchainAEnvoyer.sSujet = F_Preferences::ObtenirValeur("SujetEmailNonMisDeCote");

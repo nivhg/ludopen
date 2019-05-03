@@ -6,6 +6,10 @@
 #include "f_popupclesttem.h"
 #include "f_panier.h"
 #include "TitreType.h"
+#include "bcrypt.h"
+#include "crypt_blowfish/ow-crypt.h"
+#include "Courriel.h"
+#include "fonctions_globale.h"
 
 #include <QtSql>
 #include <QtWidgets>
@@ -153,6 +157,9 @@ public:
     //! Vérifie la présence d'une email existante dans la base
     QString EmailExistante(QString Email);
 
+    //! Envoie un courriel avec un mot de passe temporaire de connexion au site Web
+    void EnvoiEmailSite();
+
 signals:
     //! Signal indiquant qu'un non-adhérent a été crée et envoie son Code
     void Signal_Non_Adherent_Cree(int iCodeMembre);
@@ -213,9 +220,6 @@ private slots:
 
     //! Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
     void on_Le_TelMobile_textEdited(const QString &arg1) ;
-
-    //! Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
-    void on_LE_Fax_textEdited(const QString &arg1) ;
 
     //! Affiche l'historique des jeux empruntés
     void on_Bt_Historique_clicked() ;
@@ -283,6 +287,12 @@ private slots:
 
     void on_CBx_Filtre_currentIndexChanged(int index);
 
+    void on_Bt_RenvoiEmailSite_clicked();
+
+    void slot_FermerThreadCourriel( );
+    void slot_ConfirmerMailEnvoyer( uint );
+    void slot_AfficherErreurMail( QString );
+
 private:
 
     // ATTRIBUTs ----------------------------------------------------------------
@@ -318,6 +328,7 @@ private:
     QLabel * Lb_NomVille ;                   //! Label pour la fenêtre d'ajout d'une ville
     F_Membres * pAssocies;
     F_Panier *pPanier;
+    Courriel *pCourriel;
 };
 
 #endif // F_MEMBRES_H

@@ -140,6 +140,10 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
 
     AfficherJeux() ;
 
+    ui->TbW_LiensJeux->setColumnCount(3);
+    ui->TbW_LiensJeux->setHorizontalHeaderItem(0,new QTableWidgetItem("Nom du jeu"));
+    ui->TbW_LiensJeux->setHorizontalHeaderItem(1,new QTableWidgetItem("Descriptif du jeu"));
+    ui->TbW_LiensJeux->setHorizontalHeaderItem(2,new QTableWidgetItem("Type de lien"));
     ////////////////////////////////////////////////////////////////////
     ///// Bloque tout et connecte les événements à cacherboutons ///////
     ////////////////////////////////////////////////////////////////////
@@ -528,6 +532,23 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
        QMessageBox::warning(this, "Erreur de saisie !", "Le nombre de joueur minimu ne pas être plus grand que le nombre de joueur maximun !", "OK") ;
        return ;
    }
+   QSqlQuery RequeteVerificationCode;
+   RequeteVerificationCode.prepare("SELECT CodeJeu FROM jeux WHERE CodeJeu=:CodeJeu");
+   RequeteVerificationCode.bindValue(":CodeJeu",this->ui->LE_Code->text());
+   if(!RequeteVerificationCode.exec())
+   {
+      qDebug()<<getLastExecutedQuery(RequeteVerificationCode)<<RequeteVerificationCode.lastError();
+   }
+   if(RequeteVerificationCode.next())
+   {
+       // Si c'est un nouveau jeu ou si c'est un jeu existant avec un code différent, on affiche une erreur et on sort
+       if((!AjoutOuModif&&nIdJeuSelectionne!=this->ui->LE_Code->text())||AjoutOuModif)
+       {
+           QMessageBox::critical(this, "Code Jeu déjà utilisé", "Le code jeu indiqué est déjà utilisé par un autre jeu. Merci de choisir un autre code.", "OK") ;
+           return ;
+       }
+   }
+
 
     // CREATION D'UN NOUVEAU JEU : vaut true en cas de création sinon false en cas de mise à jour
     if(AjoutOuModif == true)
@@ -704,10 +725,11 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          ////////////// MAJ du Nbr de joueurs /////////------------------------------------------------------------
          QSqlQuery RequeteModifNbrJoueurs ;
          //prépare le requête de mise à jour
-         RequeteModifNbrJoueurs.prepare("UPDATE jeux SET NbrJoueurMin=:NbrDeJoueurMin,NbrJoueurMax=:NbrDeJoueurMax "
+         RequeteModifNbrJoueurs.prepare("UPDATE jeux SET CodeJeu=:NouveauCodeDuJeu,NbrJoueurMin=:NbrDeJoueurMin,NbrJoueurMax=:NbrDeJoueurMax "
                                         "WHERE CodeJeu=:CodeDuJeu");
          //Entre les valeurs de la requête
-         RequeteModifNbrJoueurs.bindValue(":CodeDuJeu",ui->LE_Code->text());
+         RequeteModifNbrJoueurs.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
+         RequeteModifNbrJoueurs.bindValue(":NouveauCodeDuJeu",ui->LE_Code->text());
          RequeteModifNbrJoueurs.bindValue(":NbrDeJoueurMin", ui->SBx_JoueursMin->value());
          RequeteModifNbrJoueurs.bindValue(":NbrDeJoueurMax", ui->SBx_JoueursMax->value());
          //Exécutee la requête
@@ -2232,7 +2254,9 @@ void F_AjoutSuppModifJeux::toUpper(const QString &text)
 void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
 {
     this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
+    ui->Bt_AjouterLienJeux->setEnabled(true);
     AfficherJeu() ;
+    ActualiserLienJeux();
 }
 
 void F_AjoutSuppModifJeux::slot_ActiverClicImage()
@@ -2241,4 +2265,58 @@ void F_AjoutSuppModifJeux::slot_ActiverClicImage()
     connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     lb_image->setCursor(Qt::CrossCursor);
     ChargementImageFini=true;
+}
+
+void F_AjoutSuppModifJeux::on_Bt_AjouterLienJeux_clicked()
+{
+    D_LienJeux dLienJeux(this,nIdJeuSelectionne);
+    dLienJeux.exec() ;
+    ActualiserLienJeux();
+}
+
+void F_AjoutSuppModifJeux::ActualiserLienJeux()
+{
+    ui->TbW_LiensJeux->clearContents();
+    ui->TbW_LiensJeux->setRowCount(0);
+    int i=0;
+    QSqlQuery Requete;
+    Requete.prepare("SELECT IdLienJeuxJeux,NomJeu,IF(Jeux_IdJeuxSource=(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu),DescriptifDestination,DescriptifSource) "
+                    "as Descriptif,NomLien FROM lienjeuxjeux LEFT JOIN jeux ON IdJeux="
+                    "IF(Jeux_IdJeuxSource=(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu),Jeux_IdJeuxDestination,Jeux_IdJeuxSource)  "
+                    "LEFT JOIN typelien ON TypeLien_IdTypeLien=IdTypeLien WHERE Jeux_IdJeuxSource="
+                    "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu) OR Jeux_IdJeuxDestination="
+                    "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu)");
+    Requete.bindValue(":CodeJeu",nIdJeuSelectionne);
+
+    if(!Requete.exec())
+    {
+        qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    else
+    {
+        while(Requete.next())
+        {
+            ui->TbW_LiensJeux->setRowCount(i+1);
+            QTableWidgetItem *item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"NomJeu").toString());
+            item->setData(Qt::UserRole,ObtenirValeurParNom(Requete,"IdLienJeuxJeux").toInt());
+            ui->TbW_LiensJeux->setItem(i,0,item);
+            ui->TbW_LiensJeux->setItem(i,1,new QTableWidgetItem(ObtenirValeurParNom(Requete,"Descriptif").toString()));
+            ui->TbW_LiensJeux->setItem(i++,2,new QTableWidgetItem(ObtenirValeurParNom(Requete,"NomLien").toString()));
+        }
+    }
+}
+
+void F_AjoutSuppModifJeux::on_TbW_LiensJeux_clicked(const QModelIndex &index)
+{
+    ui->Bt_SupprimerLienJeux->setEnabled(true);
+}
+
+void F_AjoutSuppModifJeux::on_Bt_SupprimerLienJeux_clicked()
+{
+    QSqlQuery Requete;
+    Requete.prepare("DELETE FROM lienjeuxjeux WHERE IdLienJeuxJeux=:IdLienJeuxJeux");
+    Requete.bindValue(":IdLienJeuxJeux",ui->TbW_LiensJeux->currentItem()->data(Qt::UserRole));
+    Requete.exec();
+    ActualiserLienJeux();
+    ui->Bt_Supprimer->setEnabled(false);
 }

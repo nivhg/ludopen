@@ -47,11 +47,13 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ModeleReservations.setHorizontalHeaderItem( 3, new QStandardItem( "Statut" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 4, new QStandardItem( "Nom" ) ) ;
     ModeleReservations.setHorizontalHeaderItem( 5, new QStandardItem( "Prénom" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 6, new QStandardItem( "Emprunt prévu le" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Retour prévu le" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Lieu de réservation" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de retrait" ) ) ;
-    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Type de malle" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 6, new QStandardItem( "Date de réservation" ) ) ;
+    ui->Tv_ListeReservations->setColumnWidth( 6, 150 ) ;
+    ModeleReservations.setHorizontalHeaderItem( 7, new QStandardItem( "Emprunt prévu le" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 8, new QStandardItem( "Retour prévu le" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 9, new QStandardItem( "Lieu de réservation" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 10, new QStandardItem( "Lieu de retrait" ) ) ;
+    ModeleReservations.setHorizontalHeaderItem( 11, new QStandardItem( "Type de malle" ) ) ;
 
     // Règle la largeur des colonnes
     /*ui->Tv_ListeReservations->setColumnWidth( 0, 20 ) ;  // case à cocher pour la suppression
@@ -267,6 +269,7 @@ void F_ListeReservations::MiseAJourStatutJeu()
     }
 }
 
+// Met à jour la liste des réservations
 bool F_ListeReservations::AffichageListe()
 {
     QString sRequeteSELECTFROM ;
@@ -283,7 +286,7 @@ bool F_ListeReservations::AffichageListe()
 
     // Création de la requête pour filtrer les réservations
     sRequeteSELECTFROM = "SELECT CodeJeu,NomJeu,StatutJeu,idReservation, r.Membres_IdMembre,Jeux_IdJeux, "
-            "r.DateReservation, Nom, Prenom, r.DatePrevuEmprunt, r.DatePrevuRetour, "
+            "r.DateReservation as DateReservation, Nom, Prenom, r.DatePrevuEmprunt, r.DatePrevuRetour, "
             "L1.NomLieux as NomReservation, L2.NomLieux as NomRetrait, "
             "IFNULL(TypeEmprunt,'Aucune') as TypeEmprunt, IdMalle "
             "FROM membres,statutjeux,jeux,reservation as r "
@@ -293,6 +296,15 @@ bool F_ListeReservations::AffichageListe()
             "L2.IdLieux=Lieux_IdLieuxRetrait ";
     sRequeteWHERE = "WHERE IdJeux=Jeux_IdJeux AND IdStatutJeux=StatutJeux_IdStatutJeux AND "
             "IdMembre=r.Membres_IdMembre AND " ;
+
+    if( ui->ChBx_NonConfirme->isChecked() )
+    {
+        sRequeteWHERE += " m.NonValider=1 AND ";
+    }
+    else
+    {
+        sRequeteWHERE += " (m.NonValider IS NULL OR m.NonValider=0) AND ";
+    }
 
     if( ui->ChBx_DateReservation->isChecked() )
     {       
@@ -378,18 +390,21 @@ bool F_ListeReservations::AffichageListe()
             // Prénom de l'adhérent qui a réservé
             ModeleReservations.setItem( i,5, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"Prenom").toString() ) ) ;
-            // Date d'emprunt prévue
+            // Date de réservation
             ModeleReservations.setItem( i, 6, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"DateReservation").toDateTime().toString("dd-MM-yyyy h:m" ) ) ) ;
+            // Date d'emprunt prévue
+            ModeleReservations.setItem( i, 7, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"DatePrevuEmprunt").toDate().toString("dd-MM-yyyy" ) ) ) ;
             // Date de retour prévue
-            ModeleReservations.setItem( i, 7, new QStandardItem(
+            ModeleReservations.setItem( i, 8, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"DatePrevuRetour").toDate().toString( "dd-MM-yyyy" ) ) ) ;
             // Lieu de réservation
-            ModeleReservations.setItem( i, 8, new QStandardItem(
-                 ObtenirValeurParNom(RequeteDesReservations,"NomReservation").toString() ) ) ;
             ModeleReservations.setItem( i, 9, new QStandardItem(
-                 ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
+                 ObtenirValeurParNom(RequeteDesReservations,"NomReservation").toString() ) ) ;
             ModeleReservations.setItem( i, 10, new QStandardItem(
+                 ObtenirValeurParNom(RequeteDesReservations,"NomRetrait").toString() ) ) ;
+            ModeleReservations.setItem( i, 11, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"TypeEmprunt").toString() ) );
             i++ ;
         }
@@ -447,6 +462,12 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
                 int IdMalle=ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole+1).toInt();
                 if( IdMalle==0 )
                 {
+                    QSqlQuery RequeteChangerStatus;
+                    // Si le jeu est en réservation, pPassage du statut du jeu en disponible
+                    RequeteChangerStatus.prepare( "UPDATE jeux,reservation SET StatutJeux_IdStatutJeux=1 WHERE Jeux_IdJeux=IdJeux AND "
+                                              "StatutJeux_IdStatutJeux=7 AND idReservation=:IdReservation" ) ;
+                    RequeteChangerStatus.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                    RequeteChangerStatus.exec();
                     //Préparation de la requête permettant la suppression dans la table reservation
                     RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
                     RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;

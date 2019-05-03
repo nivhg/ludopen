@@ -106,10 +106,10 @@
         <item row="1" column="0" colspan="3">
          <widget class="QCheckBox" name="ChBx_NonConfirme">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
-           <string>Non confirmée</string>
+           <string>Réservation de malle non validée</string>
           </property>
          </widget>
         </item>

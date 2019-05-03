@@ -187,6 +187,7 @@ signals:
     bool Signal_VerifMembrePanier(uint IdDuMembre);
     //! Signal indiquant qu'il y a une nouvelle malle
     void Signal_Nouvelle_Malle();
+    void Signal_Nouvelle_Reservation();
 
 private:
     Ui::F_Emprunt *ui;

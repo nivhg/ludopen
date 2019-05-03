@@ -141,7 +141,7 @@ private:
     /// Modèle pour l'affichage dans le tableau des retards
     QStandardItemModel modeleTabRetard ;
     /// vecteur qui contient la liste des emails à envoyer
-    QVector <EMail> ListeEMailAEnvoyer ;
+    QList <EMail> ListeEMailAEnvoyer ;
     /// le thread qui gère l'envoie des emails
     Courriel * pCourriel ;
     std::vector<QStandardItem*> Items;      //! Liste des checkboxes dans la combobox d'export

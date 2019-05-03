@@ -63,7 +63,7 @@ public:
     void CreerReservations();
     void CreerMalle();
     void CreerReleve();
-    void verifReservation();
+    uint RecupereIdBenevole();
 
 public slots:
     void slot_ChangerOnglet();
@@ -77,6 +77,7 @@ public slots:
     void slot_ReleveFini();
     void slot_MembreIdentifier(uint iIdMembre);
     void slot_MiseAJourNbItemsPanier(uint iNbItems);
+    void slot_verifReservation();
 
 private slots:
     void on_Bt_Membre_clicked();
@@ -98,7 +99,7 @@ private slots:
     void verifReleve();
     void on_Bt_ListeJeux_clicked();
     void on_Bt_ListeReservations_clicked();
-
+    void on_menuUtilisateurEnCours_triggered(QAction *);
     void on_Bt_Retards_clicked();
 
 private:

@@ -53,6 +53,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     pDeclarerIntervention=new F_DeclarerIntervention;
     // pas de jeu actuellement choisi
     JeuEnConsultation = "" ;
+    ui->Bt_Reserver->setVisible(false);
 
     /////////////////////////////////////////////////////////
     //////////////////Création table view //////////////////
@@ -83,6 +84,9 @@ F_Jeux::F_Jeux(QWidget *parent) :
     connect(ui->TbV_NomJeux->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_NomJeux_clicked(QModelIndex)));
     // Initialise la table view avec tous les jeux
     AfficherJeux() ;
+    ui->TbW_LiensJeux->setColumnCount(2);
+    ui->TbW_LiensJeux->setHorizontalHeaderItem(0,new QTableWidgetItem("Nom du jeu"));
+    ui->TbW_LiensJeux->setHorizontalHeaderItem(1,new QTableWidgetItem("Descriptif du jeu"));
 }
 ////////////////////////////////////////////////////////////
 ///////////////// Destructeur /////////////////////////////
@@ -413,6 +417,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
 void F_Jeux::on_TbV_NomJeux_clicked(const QModelIndex &index)
 {
     AfficherJeu(this->ModelJeu->index(index.row(), 0).data().toString());
+    ActualiserLienJeux();
 }
 
 /**
@@ -711,6 +716,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
     QStringList ListeExtension;
     ListeExtension<<"pdf"<<"docx"<<"doc"<<"html"<<"htm";
     acces->LancerTelechargements(F_Preferences::ObtenirValeur("CheminReglesJeux"),code,ListeExtension);
+    ActualiserLienJeux();
 }
 
 void F_Jeux::AfficherJeux()
@@ -753,4 +759,47 @@ void F_Jeux::ActualiserJeux()
 {
     AfficherJeu(this->JeuEnConsultation);
     ui->Le_recherchenom->setFocus();
+}
+
+void F_Jeux::ActualiserLienJeux()
+{
+    ui->TbW_LiensJeux->clearContents();
+    ui->TbW_LiensJeux->setRowCount(0);
+    int i=0;
+    QSqlQuery Requete;
+    Requete.prepare("SELECT CodeJeu,IdLienJeuxJeux,NomJeu,IF(Jeux_IdJeuxSource=(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu),"
+                    "DescriptifDestination,DescriptifSource) "
+                    "as Descriptif,NomLien FROM lienjeuxjeux LEFT JOIN jeux ON IdJeux="
+                    "IF(Jeux_IdJeuxSource=(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu),Jeux_IdJeuxDestination,Jeux_IdJeuxSource)  "
+                    "LEFT JOIN typelien ON TypeLien_IdTypeLien=IdTypeLien WHERE Jeux_IdJeuxSource="
+                    "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu) OR Jeux_IdJeuxDestination="
+                    "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu)");
+    Requete.bindValue(":CodeJeu",JeuEnConsultation);
+
+    if(!Requete.exec())
+    {
+        qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    else
+    {
+        while(Requete.next())
+        {
+            ui->TbW_LiensJeux->setRowCount(i+1);
+            QTableWidgetItem *item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"NomJeu").toString());
+            item->setData(Qt::UserRole,ObtenirValeurParNom(Requete,"CodeJeu").toInt());
+            QFont font=item->font();
+            font.setUnderline(true);
+            item->setFont(font);
+            item->setTextColor(Qt::blue);
+            ui->TbW_LiensJeux->setItem(i,0,item);
+            ui->TbW_LiensJeux->setItem(i,1,new QTableWidgetItem(ObtenirValeurParNom(Requete,"Descriptif").toString()));
+            ui->TbW_LiensJeux->setItem(i++,2,new QTableWidgetItem(ObtenirValeurParNom(Requete,"NomLien").toString()));
+        }
+    }
+    ui->TbW_LiensJeux->resizeColumnsToContents();
+}
+
+void F_Jeux::on_TbW_LiensJeux_clicked(const QModelIndex &index)
+{
+    AfficherJeu(ui->TbW_LiensJeux->currentItem()->data(Qt::UserRole).toString());
 }

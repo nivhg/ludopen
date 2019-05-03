@@ -12,14 +12,17 @@
  *  @todo       Classe terminée.
  */
 
+#include "f_mainwindow.h"
 #include "d_releve.h"
 #include "ui_d_releve.h"
 
-D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
+D_Releve::D_Releve(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::D_Releve)
 {
     ui->setupUi(this);
+
+    main=dynamic_cast <F_MainWindow *>(parent);
 
     for(int i=1;i<13;i++)
     {
@@ -35,7 +38,6 @@ D_Releve::D_Releve(QWidget *parent,uint iIdBenevole) :
     ui->CBx_Annee->setCurrentIndex(1);
 
     DebutFin=false;
-    this->iIdBenevole=iIdBenevole;
 
     ui->TbV_Releves->clearSpans() ;
     ui->TbV_Releves->setModel(&ModeleReleves) ;
@@ -196,6 +198,13 @@ void D_Releve::VerifChampsSaisis()
 
 void D_Releve::on_Bt_Valider_clicked()
 {
+    uint iIdBenevole=main->RecupereIdBenevole();
+    if(iIdBenevole==0)
+    {
+        QMessageBox::critical(this,"Aucun utilisateur choisir",
+                              "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
+        return;
+    }
     QSqlQuery Requete;
     // Seulement en fin de perm
     if(this->DebutFin)
@@ -244,7 +253,7 @@ void D_Releve::on_Bt_Valider_clicked()
         "UnEuro,DeuxEuros,CinqEuros,DixEuros,VingtEuros,CinquanteEuros,CentEuros) VALUES "
         "(:Membres_IdMembre,:DateHeureReleve,:Montant,:Difference,:Remarque,:UnCent,:DeuxCents,:CinqCents,:DixCents,:VingtCents,:CinquanteCents,"
         ":UnEuro,:DeuxEuros,:CinqEuros,:DixEuros,:VingtEuros,:CinquanteEuros,:CentEuros)") ;
-    Requete.bindValue(":Membres_IdMembre", this->iIdBenevole);
+    Requete.bindValue(":Membres_IdMembre", iIdBenevole);
     Requete.bindValue(":DateHeureReleve", QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
     Requete.bindValue(":Montant", QString::number(ui->SBx_Total->value(), 'f', ui->SBx_Total->decimals()));
     Requete.bindValue(":Difference", ui->SBx_Difference->value());

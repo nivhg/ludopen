@@ -13,6 +13,7 @@ class F_AjoutSuppModifJeux;
 #include "f_popupclesttem.h"
 #include "lb_image.h"
 #include "d_image.h"
+#include "d_lienjeux.h"
 
 using namespace std;
 
@@ -88,6 +89,9 @@ public:
     */
     void BloquerSignalsChamps(bool etat);
 
+    /** @brief Actualise les liens avec d'autres jeux
+    */
+    void ActualiserLienJeux();
 
 public slots:
     void slot_ValiderClassification();
@@ -174,6 +178,12 @@ private slots:
     /** @brief Pour gérer le jeu de cache cache des boutons Valider/Annuler/Ajouter/Supprimer
      */
     void CacherBoutons() ;
+
+    void on_Bt_AjouterLienJeux_clicked();
+
+    void on_TbW_LiensJeux_clicked(const QModelIndex &index);
+
+    void on_Bt_SupprimerLienJeux_clicked();
 
 private:
     // ATTRIBUTs ----------------------------------------------------------------

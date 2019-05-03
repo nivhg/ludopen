@@ -958,9 +958,6 @@ void F_Membres::AfficherMembre( unsigned int nIdMembre )
                 ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone(
                                      ObtenirValeurParNom(RequeteMembre,"Mobile").toString() ) ) ;
 
-                ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone(
-                                     ObtenirValeurParNom(RequeteMembre,"Fax").toString() ) ) ;
-
                 ui->LE_Email->setText( ObtenirValeurParNom(RequeteMembre,"Email2").toString() ) ;
 
                 ui->SBx_NbrePersonne->setValue( ObtenirValeurParNom(RequeteMembre,"NbrePersonne").toInt() ) ;
@@ -1044,10 +1041,10 @@ bool F_Membres::AjouterMembre()
 
     //Enregistrement d'un nouveau membre dans la base de données
     RequeteMembre.prepare( "INSERT INTO membres (TitreMembre_IdTitreMembre,TypeMembres_IdTypeMembres,"
-        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Fax,Email,DomaineEmail_IdDomaineEmail,DateInscription,"
+        "Nom,Prenom,Rue,CP,Ville,Telephone,Mobile,Email,DomaineEmail_IdDomaineEmail,DateInscription,"
         "Remarque,Ecarte,CodeMembre,NbreRetard,NbrePersonne) "
         "VALUES (:TitreMembre_IdTitreMembre,:TypeMembres_IdTypeMembres,:Nom,:Prenom,:Rue,:CP,:Ville,"
-        ":Telephone,:Mobile,:Fax,:Email,:DomaineEmail_IdDomaineEmail,:DateInscription,:Remarque,"
+        ":Telephone,:Mobile,:Email,:DomaineEmail_IdDomaineEmail,:DateInscription,:Remarque,"
         ":Ecarte,:CodeMembre,:NbreRetard,:NbrePersonne)" ) ;
 
     //Titre Membre
@@ -1076,9 +1073,6 @@ bool F_Membres::AjouterMembre()
 
     //Mobile
     RequeteMembre.bindValue( ":Mobile", ui->Le_TelMobile->text() ) ;
-
-    //Fax
-    RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
     QString Email=ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
     // Si l'email est vide
@@ -1187,7 +1181,7 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
         RequeteMembre.prepare( "UPDATE membres SET TitreMembre_IdTitreMembre=:TitreMembre_IdTitreMembre,"
                                "TypeMembres_IdTypeMembres=:TypeMembres_IdTypeMembres,Nom=:Nom,"
                                "Prenom=:Prenom,Rue=:Rue,CP=:CP,Ville=:Ville,"
-                               "Telephone=:Telephone,Mobile=:Mobile,Fax=:Fax,"
+                               "Telephone=:Telephone,Mobile=:Mobile,"
                                "Email=:Email,DomaineEmail_IdDomaineEmail=:DomaineEmail_IdDomaineEmail,"
                                "DateInscription=:DateInscription,NbreRetard=:NbreRetard,Remarque=:Remarque,"
                                "NbrePersonne=:NbrePersonne,Ecarte=:Ecarte,CodeMembre=:CodeMembre "
@@ -1222,9 +1216,6 @@ bool F_Membres::ModifierMembre( unsigned int nIdMembre )
 
         //Mobile
         RequeteMembre.bindValue( ":Mobile", ui->Le_TelMobile->text() ) ;
-
-        //Fax
-        RequeteMembre.bindValue( ":Fax", ui->LE_Fax->text() ) ;
 
         QString Email=ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
         // Si l'email est vide
@@ -1412,7 +1403,6 @@ void F_Membres::VerrouillerInfosPerso ( bool bVerrouille )
     ui->Le_Prenom->setReadOnly( bVerrouille ) ;
     ui->Le_TelFix->setReadOnly( bVerrouille ) ;
     ui->Le_TelMobile->setReadOnly( bVerrouille ) ;
-    ui->LE_Fax->setReadOnly( bVerrouille ) ;
     ui->LE_Email->setReadOnly( bVerrouille ) ;
     ui->Le_Code->setReadOnly( bVerrouille ) ;
     ui->Te_Rue->setReadOnly( bVerrouille ) ;
@@ -1436,7 +1426,6 @@ void F_Membres::EffacerTousLesChamps ()
     ui->Le_Prenom->clear() ;
     ui->Le_TelFix->clear() ;
     ui->Le_TelMobile->clear() ;
-    ui->LE_Fax->clear() ;
     ui->LE_Email->clear() ;
     ui->Le_Code->clear() ;
     ui->Te_Rue->clear() ;
@@ -1763,13 +1752,6 @@ void F_Membres::on_Le_TelMobile_textEdited( const QString &arg1 )
     ui->Le_TelMobile->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
 }
 //==========================================================================================================
-/** Met en forme (du type "00 00 00 00 00")  le numéro de télephone quand il est modifié
- */
-void F_Membres::on_LE_Fax_textEdited( const QString &arg1 )
-{
-    ui->LE_Fax->setText( this->ModifierSyntaxeNumTelephone( arg1 ) ) ;
-}
-//==========================================================================================================
 /** Active ou désactive le bouton valider en fonction de lineedit nom
  */
 void F_Membres::on_Le_Nom_textEdited( const QString &arg1 )
@@ -1984,6 +1966,13 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
             {
                 if ( this->AjouterMembre() )
                 {
+                    if(ui->LE_Email->text()!="" && ui->CBx_DomaineEmail->currentText()!="")
+                    {
+                        if(QMessageBox::question( this, "Envoi du courriel de connexion au site","Le membre a été créé avec succès. Voulez-vous lui envoyé un courriel pour qu'il puisse se connecter au site ? (le membre doit être adhérent)", "Oui","Non" )!= 0)
+                        {
+                            EnvoiEmailSite();
+                        }
+                    }
                     this->MaJListeMembres() ;
                     this->AfficherListe() ;
                     this->VerrouillerAbonnements( false ) ;
@@ -2397,4 +2386,105 @@ void F_Membres::on_CBx_Filtre_currentIndexChanged(int index)
 {
     this->MaJListeMembres(index);
     this->AfficherListe();
+}
+
+void F_Membres::on_Bt_RenvoiEmailSite_clicked()
+{
+    if(ui->LE_Email->text()==""||ui->CBx_DomaineEmail->currentText()=="")
+    {
+        QMessageBox::critical(this,"Courriel vide","Le courriel du membre doit être renseigné complètement (identifiant@domaine).");
+        return;
+    }
+    EnvoiEmailSite();
+}
+
+void F_Membres::EnvoiEmailSite()
+{
+    char salt[BCRYPT_HASHSIZE];
+    char hash[BCRYPT_HASHSIZE];
+    int ret;
+
+    const QString pass = GetRandomString();
+
+    ret = bcrypt_gensalt(12, salt);
+    ret = bcrypt_hashpw(pass.toStdString().c_str(), salt, hash);
+
+    QSqlQuery RequeteMembre;
+    RequeteMembre.prepare( "UPDATE membres SET MotDePasse=:MotDePasse,ChangerMotDePasse=1 WHERE IdMembre=:IdMembre" ) ;
+
+    RequeteMembre.bindValue( ":MotDePasse", hash);
+    RequeteMembre.bindValue( ":IdMembre", nIdMembreSelectionne);
+
+    RequeteMembre.exec();
+
+    QString ServeurSMTP =  F_Preferences::ObtenirValeur("AdresseServeurSMTP");
+    int PortSMTP = F_Preferences::ObtenirValeur("PortSMTP").toInt();
+    QList <EMail> ListeEMailAEnvoyer ;
+
+    EMail EMailProchainAEnvoyer;
+    //On remplie le vecteur des EMails avec les données de ce membre actuel
+    EMailProchainAEnvoyer.sSujet = F_Preferences::ObtenirValeur("SujetEmailMotDePasseTemp");
+    EMailProchainAEnvoyer.sCorps = F_Preferences::ObtenirValeur("CorpsEmailMotDePasseTemp");
+    EMailProchainAEnvoyer.sCorps.replace("%MOTDEPASSE",pass);
+    EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
+//    EMailProchainAEnvoyer.sTo = Email;
+    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+    EMailProchainAEnvoyer.IDMembre =  nIdMembreSelectionne;
+
+    ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;
+
+    //On crée l'objet Courriel qui permettra l'envoi des emails
+    pCourriel = new Courriel( ServeurSMTP , PortSMTP , ListeEMailAEnvoyer ) ;
+
+    //Connecter les bons signaux pour être prévenu ici des étapes et problèmes d'envoi d'email
+    connect( pCourriel, SIGNAL( Signal_Fermer_Thread_EMail( ) ), this, SLOT( slot_FermerThreadCourriel( ) ) ) ;
+    connect( pCourriel, SIGNAL( SignalMailEnvoyer( uint ) ), this, SLOT( slot_ConfirmerMailEnvoyer( uint ) ) ) ;
+    connect( pCourriel, SIGNAL( Signal_Erreur_EMail( QString ) ), this, SLOT( slot_AfficherErreurMail( QString ) ) ) ;
+
+    pCourriel->start();
+}
+
+/**
+ * @brief Permet de supprimer un objet dynamique de type Courriel une fois qu'il fait son travail
+ *
+ * @param pCourriel
+ */
+void F_Membres::slot_FermerThreadCourriel( )
+{
+   //On vérifie que le thread est en route puis on arrête le thread d'envoi d'email.
+   if( this->pCourriel->isRunning() )
+   {
+      this->pCourriel->terminate();
+      this->pCourriel->wait();
+   }
+   else
+   {
+      qDebug() << "thread Courrier pas running" ;
+   }
+}
+
+/**
+ * @brief Permet de supprimer un objet dynamique de type Courriel une fois que le mail est envoyé et
+ * met à jour la base données pour dire que le mail a bien été envoyé
+ *
+ * @param pCourriel
+ */
+void F_Membres::slot_ConfirmerMailEnvoyer( uint IDMembre  )
+{
+    if( pCourriel == NULL)
+    {
+       qDebug() << "Pointeur pCourriel retourné est NULL" ;
+    }
+    QMessageBox::information(this,"Courriel envoyé avec succès","Le courriel au membre a été envoyé avec succès.");
+}
+
+/**
+ * @brief Afficher les erreurs qu'il peut y avoir lors de l'envoie d'un mail
+ *
+ * @param sErreur
+ */
+void F_Membres::slot_AfficherErreurMail( QString sErreur )
+{
+    //Affiche l'erreur en paramètre dans le label prévu à  cette effet
+    QMessageBox::critical(this, "Erreur lors de l'envoi du courriel",sErreur);
 }

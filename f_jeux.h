@@ -53,6 +53,10 @@ public:
      */
     void AfficherJeux();
 
+    /** @brief Actualiser la liste des liens du jeu
+     */
+    void ActualiserLienJeux();
+
 private slots:
     // METHODES---------------------------------------------------
 
@@ -135,6 +139,8 @@ private slots:
     void on_Lb_Image_clicked();
 
     void SlotRegleTelecharger(QString CheminFichier);
+
+    void on_TbW_LiensJeux_clicked(const QModelIndex &index);
 
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé
