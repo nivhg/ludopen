@@ -533,7 +533,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
    // Paramètre NbreJeuxARendre renvoie la mauvaise valeur, la fonction retourne la bonne valeur
    NbreJeuxRendre=F_Emprunt::AfficherJeuxEnEmprunt(this->ModelJeuEmpruntes,this->MembreActif,true,&NbreJeuxARendre,&AmendeAPayer);
    ui->LE_NbreJeuxRendre->setText(QString::number(NbreJeuxRendre));
-   ui->Lb_AmendeAPayer->setText(AmendeAPayer);
+   ui->Lb_AmendeAPayer->setText("Amende de "+AmendeAPayer+"€");
    resizeColumnsToContents(this->ModelJeuEmpruntes,ui->Tv_JeuxEmprunte);
 }
 

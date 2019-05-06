@@ -14,7 +14,7 @@ D_ResaMisDeCote::D_ResaMisDeCote(QWidget *parent,QString CodeJeu,QString NomJeu,
     setWindowFlag(Qt::Dialog);
     setWindowFlag(Qt::WindowCloseButtonHint,false);
     setWindowFlag(Qt::WindowMaximizeButtonHint,false);
-    this->setFixedWidth(289);
+    this->resize(297,this->height());
     ui->Lb_Reserve->setText(ui->Lb_Reserve->text().replace("#CODENOMJEU#",NomJeu+" ("+CodeJeu+")"));
     //Recupération du corps de l'email et des paramètre de connection
     ServeurSMTP =  F_Preferences::ObtenirValeur("AdresseServeurSMTP");
@@ -34,6 +34,17 @@ D_ResaMisDeCote::D_ResaMisDeCote(QWidget *parent,QString CodeJeu,QString NomJeu,
         return;
     }
     qRegisterMetaType<QAbstractSocket::SocketError>("QAbstractSocket::SocketError");
+    QSqlQuery RequeteStatut;
+    RequeteStatut.exec("SELECT IdStatutJeux,StatutJeu FROM statutjeux") ;
+    while(RequeteStatut.next())
+    {
+        QString NomStatut = RequeteStatut.value(1).toString();
+        ui->Cbx_StatutJeu->addItem(ObtenirValeurParNom(RequeteStatut,"StatutJeu").toString(),ObtenirValeurParNom(RequeteStatut,"IdStatutJeux").toString());
+    }
+    ui->Cbx_StatutJeu->setCurrentIndex(4);
+
+    ui->Te_NonMisDeCote->setPlainText(F_Preferences::ObtenirValeur("CorpsEmailNonMisDeCote")
+                                      .replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%STATUT",ui->Cbx_StatutJeu->currentText()));
 }
 
 D_ResaMisDeCote::~D_ResaMisDeCote()
@@ -44,7 +55,7 @@ D_ResaMisDeCote::~D_ResaMisDeCote()
 
 void D_ResaMisDeCote::on_Bt_NonMisDeCote_clicked()
 {
-    this->setFixedWidth(647);
+    this->resize(815,this->height());
 }
 
 void D_ResaMisDeCote::closeEvent(QCloseEvent *event)
@@ -149,12 +160,12 @@ void D_ResaMisDeCote::slot_AfficherErreurMail( QString sErreur )
 
 void D_ResaMisDeCote::on_Bt_Valider_clicked()
 {
-    // On supprime la réservation
+    // On passe le jeu dans le statut "En réservation"
     QSqlQuery Requete;
-    Requete.prepare("DELETE FROM reservation WHERE Jeux_IdJeux=:Jeux_IdJeux AND Membres_IdMembre=:Membres_IdMembre");
+    Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=:StatutJeux_IdStatutJeux WHERE IdJeux=:Jeux_IdJeux");
     Requete.bindValue(":Membres_IdMembre",this->IdMembre);
     Requete.bindValue(":Jeux_IdJeux",this->IdJeu);
-
+    Requete.bindValue(":StatutJeux_IdStatutJeux",ui->Cbx_StatutJeu->currentData());
     //Exectution de la requête
     if( !Requete.exec() )
     {
@@ -171,8 +182,7 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
     EMail EMailProchainAEnvoyer;
     //On remplie le vecteur des EMails avec les données de ce membre actuel
     EMailProchainAEnvoyer.sSujet = F_Preferences::ObtenirValeur("SujetEmailNonMisDeCote");
-    EMailProchainAEnvoyer.sCorps = F_Preferences::ObtenirValeur("CorpsEmailNonMisDeCote");
-    EMailProchainAEnvoyer.sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%RAISON",ui->Te_NonMisDeCote->toPlainText());
+    EMailProchainAEnvoyer.sCorps = ui->Te_NonMisDeCote->toPlainText();
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = Email;
 //    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
@@ -192,4 +202,16 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
 
     enableClose=true;
     close();
+}
+
+void D_ResaMisDeCote::on_Bt_PlusTard_clicked()
+{
+    enableClose=true;
+    close();
+}
+
+void D_ResaMisDeCote::on_Cbx_StatutJeu_currentIndexChanged(int index)
+{
+    ui->Te_NonMisDeCote->setPlainText(F_Preferences::ObtenirValeur("CorpsEmailNonMisDeCote")
+                                      .replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%STATUT",ui->Cbx_StatutJeu->currentText()));
 }

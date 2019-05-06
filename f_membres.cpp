@@ -1968,7 +1968,9 @@ void F_Membres::on_Bt_ValiderMembre_clicked()
                 {
                     if(ui->LE_Email->text()!="" && ui->CBx_DomaineEmail->currentText()!="")
                     {
-                        if(QMessageBox::question( this, "Envoi du courriel de connexion au site","Le membre a été créé avec succès. Voulez-vous lui envoyé un courriel pour qu'il puisse se connecter au site ? (le membre doit être adhérent)", "Oui","Non" )!= 0)
+                        if(QMessageBox::question( this, "Envoi du courriel de connexion au site",
+                                  "Le membre a été créé avec succès. Voulez-vous lui envoyé un courriel pour "
+                                  "qu'il puisse se connecter au site ? (le membre doit être adhérent)", "Oui","Non" )== 0)
                         {
                             EnvoiEmailSite();
                         }
@@ -2428,7 +2430,7 @@ void F_Membres::EnvoiEmailSite()
     EMailProchainAEnvoyer.sCorps.replace("%MOTDEPASSE",pass);
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
-//    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+//  EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
     EMailProchainAEnvoyer.IDMembre =  nIdMembreSelectionne;
 
     ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

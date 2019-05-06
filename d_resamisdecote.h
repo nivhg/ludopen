@@ -9,6 +9,7 @@
 
 #define STATUTJEUX_DISPONIBLE 1
 #define STATUTJEUX_ENRESERVATION 7
+#define STATUTJEUX_INDISPONIBLE 5
 
 namespace Ui {
 class D_ResaMisDeCote;
@@ -50,6 +51,10 @@ private slots:
     void on_Bt_MisDeCote_clicked();
 
     void on_Bt_Valider_clicked();
+
+    void on_Bt_PlusTard_clicked();
+
+    void on_Cbx_StatutJeu_currentIndexChanged(int index);
 
 private:
     Ui::D_ResaMisDeCote *ui;

@@ -6,62 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>691</width>
-    <height>198</height>
+    <width>815</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Jeu à mettre de côté</string>
   </property>
-  <widget class="QPushButton" name="Bt_MisDeCote">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>150</y>
-     <width>101</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Mis de côté</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="Bt_NonMisDeCote">
-   <property name="geometry">
-    <rect>
-     <x>129</x>
-     <y>150</y>
-     <width>151</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Non mis de côté &gt;&gt;</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>0</y>
-     <width>341</width>
-     <height>91</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Merci d'indiquer à l'adhérent les raisons de l'indisponibilité du jeu. Sa réservation sera supprimée. Pensez à changer le statut du jeu si nécessaire (en réparation, indisponible...)</string>
-   </property>
-   <property name="wordWrap">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="Line" name="line">
    <property name="geometry">
     <rect>
-     <x>280</x>
-     <y>0</y>
-     <width>20</width>
-     <height>211</height>
+     <x>290</x>
+     <y>10</y>
+     <width>16</width>
+     <height>401</height>
     </rect>
    </property>
    <property name="orientation">
@@ -71,10 +29,10 @@
   <widget class="QLabel" name="Lb_Reserve">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>251</width>
-     <height>121</height>
+     <x>9</x>
+     <y>9</y>
+     <width>271</width>
+     <height>331</height>
     </rect>
    </property>
    <property name="text">
@@ -85,27 +43,108 @@ Un courriel sera automatiquement envoyé à l'adhérent pour le prévenir.</stri
     <bool>true</bool>
    </property>
   </widget>
-  <widget class="QPlainTextEdit" name="Te_NonMisDeCote">
+  <widget class="QPushButton" name="Bt_PlusTard">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>100</y>
-     <width>331</width>
-     <height>51</height>
+     <x>0</x>
+     <y>380</y>
+     <width>271</width>
+     <height>25</height>
     </rect>
+   </property>
+   <property name="text">
+    <string>Me le rappeler plus tard</string>
    </property>
   </widget>
   <widget class="QPushButton" name="Bt_Valider">
    <property name="geometry">
     <rect>
-     <x>530</x>
-     <y>160</y>
-     <width>80</width>
+     <x>710</x>
+     <y>380</y>
+     <width>101</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
     <string>Valider</string>
+   </property>
+  </widget>
+  <widget class="QPlainTextEdit" name="Te_NonMisDeCote">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>110</y>
+     <width>491</width>
+     <height>261</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Bt_MisDeCote">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>350</y>
+     <width>101</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Mis de côté</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="Bt_NonMisDeCote">
+   <property name="geometry">
+    <rect>
+     <x>101</x>
+     <y>350</y>
+     <width>171</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Non mis de côté &gt;&gt;</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="Cbx_StatutJeu">
+   <property name="geometry">
+    <rect>
+     <x>650</x>
+     <y>30</y>
+     <width>151</width>
+     <height>25</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>10</y>
+     <width>311</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Merci d'indiquer le nouveau staut du jeu (ceci sera indiqué dans le courriel ci-dessous) :</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>80</y>
+     <width>471</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Le courriel suivant sera envoyé au membre :</string>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
  </widget>
