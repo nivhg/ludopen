@@ -6,6 +6,7 @@
 #include <QSqlRecord>
 #include <QStandardItemModel>
 #include <QTreeView>
+#include <QTime>
 
 QVariant ObtenirValeurParNom(QSqlQuery requete,QString NomChamps);
 bool EstCeURL(QString chaine);

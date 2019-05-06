@@ -101,7 +101,11 @@ void Courriel::run()
     this->NumeroEmailATraiter = 0 ;
 
     this->sFrom = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sFrom ;
-    this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo ;
+    this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo;
+    // Si mode debug
+    #ifndef QT_NO_DEBUG
+    this->sTo="vincent.victorin@envelo.fr";
+    #endif
     this->sCc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCc ;
     this->sBcc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sBcc ;
 

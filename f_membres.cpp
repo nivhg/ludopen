@@ -2431,6 +2431,7 @@ void F_Membres::EnvoiEmailSite()
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = ui->LE_Email->text()+"@"+ui->CBx_DomaineEmail->currentText();
 //  EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+    EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.IDMembre =  nIdMembreSelectionne;
 
     ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

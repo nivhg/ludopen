@@ -392,6 +392,7 @@ void F_Retards::on_Bt_Envoyer_clicked()
             EMailProchainAEnvoyer.sSujet = sSujetEmail ;
             EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
             EMailProchainAEnvoyer.sTo = ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,8)).toString() ;
+            EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
             EMailProchainAEnvoyer.IDMembre =  ui->TbW_Retards->model()->data( ui->TbW_Retards->model()->index(i ,0 )).toUInt() ;
 
             this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

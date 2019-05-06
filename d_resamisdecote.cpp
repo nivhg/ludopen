@@ -186,6 +186,7 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = Email;
 //    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
+    EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.IDMembre =  IdMembre;
 
     this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;
