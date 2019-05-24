@@ -118,6 +118,8 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(ui->TbW_Main->count()-1);
 
+    this->showMaximized();
+
     // Si il y a plus d'un écran, on affiche le calendrier des malles aux adhérents
     if(QApplication::desktop()->screenCount() > 1)
     {
@@ -1060,7 +1062,7 @@ void F_MainWindow::slot_verifReservation()
     // On recherche les réservations mise de côté, et supprimer ainsi que les réservations qui ont dépassé la durée de réservation
     Requete.prepare("SELECT Idreservation,DateReservation,IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON "
                     "m.IdMembre=r.Membres_IdMembre LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+
-                    QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DateReservation)>:DelaiJeuMisDeCote) AND "+
+                    QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DatePrevuEmprunt)>:DelaiJeuMisDeCote) AND "+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
     Requete.bindValue(":DelaiJeuMisDeCote",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote").toInt()*7);
     //Exectution de la requête
@@ -1088,6 +1090,17 @@ void F_MainWindow::slot_verifReservation()
         {
             qDebug() << getLastExecutedQuery(RequeteSuppressionResa) << RequeteSuppressionResa.lastError();
             return;
+        }
+
+        // On passe le jeu dans le statut "Disponible"
+        QSqlQuery Requete;
+        Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux="+QString::number(STATUTJEUX_DISPONIBLE)+" WHERE IdJeux=:Jeux_IdJeux");
+        Requete.bindValue(":Membres_IdMembre",IdMembre);
+        Requete.bindValue(":Jeux_IdJeux",IdJeu);
+        //Exectution de la requête
+        if( !Requete.exec() )
+        {
+            qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
         }
     }
 }

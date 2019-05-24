@@ -52,7 +52,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>Saisir le nom ou le code du jeux :</string>
+           <string>Saisir le nom ou le code du jeu :</string>
           </property>
          </widget>
         </item>

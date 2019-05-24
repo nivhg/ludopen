@@ -476,7 +476,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
         case 2: // Emplacement Jeu.
             if(this->bCLESTTEM == true)
             {
-                RequeteValider.prepare("INSERT INTO emplacement (Nom) VALUES (:Nom)");
+                RequeteValider.prepare("INSERT INTO emplacement (NomEmplacement) VALUES (:Nom)");
                 RequeteValider.bindValue(":Nom", ui->LE_CLESTTEM->text());
                 RequeteValider.exec();
             }
@@ -484,8 +484,8 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             {
                 if(this->bCLESTTEM == false)
                 {
-                    RequeteValider.prepare("UPDATE emplacement SET Nom=:Nom WHERE Nom=:NomPrecedent");
-                    RequeteValider.bindValue(":Nom", ui->LE_CLESTTEM->text());
+                    RequeteValider.prepare("UPDATE emplacement SET NomEmplacement=:NomEmplacement WHERE NomEmplacement=:NomPrecedent");
+                    RequeteValider.bindValue(":NomEmplacement", ui->LE_CLESTTEM->text());
                     RequeteValider.bindValue(":NomPrecedent", this->sCLESTTEM);
                     RequeteValider.exec();
                 }

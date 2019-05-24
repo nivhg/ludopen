@@ -162,7 +162,9 @@ private:
     int iLbImageSelectionnee;
     QStringList sNomImagesAjoutees;
     SecureFileUploader * uploader;
+    // Indique le numéro de lecture des images au cas où l'on serait sur une autre page (les images s'affichent 3 par 3)
     int iDecalage;
+    // Paramètre de décalage par rapport à une autre image dans le cas d'un changement d'état (site web par défaut, ludopen par défaut...)
     int iInversionDecalage;
     int iOperationServeur;
 };

@@ -171,7 +171,7 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
 
     QSqlQuery RequeteEmplacement ;
     QString Emplacement = RequeteFicheJeuComplete.value(16).toString() ;
-    RequeteEmplacement.prepare("SELECT IdEmplacement, Nom FROM emplacement WHERE IdEmplacement =:idDeEmplacement") ;
+    RequeteEmplacement.prepare("SELECT IdEmplacement, NomEmplacement FROM emplacement WHERE IdEmplacement =:idDeEmplacement") ;
     RequeteEmplacement.bindValue(":idDeEmplacement", Emplacement);
     RequeteEmplacement.exec() ;
     RequeteEmplacement.next() ;

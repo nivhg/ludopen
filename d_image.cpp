@@ -588,14 +588,18 @@ void D_Image::Suppression(int emplacement)
 {
     QString NomFichierSource(sCheminImage[iLbImageSelectionnee+iDecalage]);
     QFileInfo InfoFichierSource,InfoFichierDestination;
+    InfoFichierSource.setFile(NomFichierSource);
     if(emplacement==EMPLACEMENT_SERVEUR)
     {
-        InfoFichierSource.setFile(NomFichierSource);
         uploader->AjouterCommande(COMMANDE_SUPPRIMER,
             F_Preferences::ObtenirValeur("CheminPhotosServeur")+"/"+InfoFichierSource.fileName(),"");
     }
     else
     {
+        if(emplacement==EMPLACEMENT_LOCAL)
+        {
+            NomFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+InfoFichierSource.fileName();
+        }
         QFile FichierSource(NomFichierSource);
         FichierSource.remove();
     }
@@ -831,6 +835,7 @@ void D_Image::DefinirDeux(int emplacement)
         QString CheminFichierSource;
         CheminFichierSource=sCheminImage[0];
         QFileInfo InfoFichierSource(CheminFichierSource);
+        CheminFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+InfoFichierSource.fileName();
         QFile FichierSource;
         QString NouveauNomFichierDestination(sCodeJeu+"-"+QString::number(sCheminImage.count()+1)+
                                              "."+InfoFichierSource.completeSuffix());

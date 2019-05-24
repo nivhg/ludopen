@@ -894,7 +894,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          QSqlQuery RequeteModifEmplacement ;
          //prépare le requête de mise à jour
          RequeteModifEmplacement.prepare("UPDATE jeux,emplacement SET Emplacement_IdEmplacement=IdEmplacement "
-                                         "WHERE CodeJeu=:CodeDuJeu AND Nom=:NomEmplacement");
+                                         "WHERE CodeJeu=:CodeDuJeu AND NomEmplacement=:NomEmplacement");
          //Entre les valeurs de la requête
          RequeteModifEmplacement.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifEmplacement.bindValue(":NomEmplacement", ui->CBx_Emplacement->currentText());
@@ -1435,7 +1435,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         ////////////////////////////////////////////////
         QSqlQuery RequeteAnnulerEmplacement;
 
-        RequeteAnnulerEmplacement.prepare("SELECT Emplacement_IdEmplacement,IdEmplacement,Nom "
+        RequeteAnnulerEmplacement.prepare("SELECT Emplacement_IdEmplacement,IdEmplacement,NomEmplacement "
                                           "FROM jeux,emplacement "
                                           "WHERE CodeJeu=:CodeDuJeu AND IdEmplacement=Emplacement_IdEmplacement");
         RequeteAnnulerEmplacement.bindValue(":CodeDuJeu",ui->LE_Code->text());
@@ -1617,19 +1617,31 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
                 //Test permettant de savoir quel bouton a été appuyé, entre dans cette méthode si le bouton oui a été cliqué
                 if((QMessageBox::information(this, "Confirmation suppression","Voulez-vous vraiment supprimer le jeu "+ui->LE_Nom->text()+"?","Oui", "Non")) == 0)
                 {
-                    // Récupère le chemin de la clé privée de la machine
-                    SecureFileUploader * uploader = new SecureFileUploader(this);
-
-                    uploader->EffacerCommandes();
-                    uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
-                                   F_Preferences::ObtenirValeur("LoginServeur"),
-                                   F_Preferences::ObtenirValeur("CheminClePrivee"));
-                    foreach(QString nom, lb_image->ObtenirsNomImage())
+                    if(EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
                     {
-                        uploader->AjouterCommande(COMMANDE_SUPPRIMER,
-                            F_Preferences::ObtenirValeur("CheminPhotosServeur") + "/" + nom,"");
-                       }
-                    uploader->FaireCommandes();
+                        // Récupère le chemin de la clé privée de la machine
+                        SecureFileUploader * uploader = new SecureFileUploader(this);
+
+                        uploader->EffacerCommandes();
+                        uploader->init(F_Preferences::ObtenirValeur("AdresseServeur"),
+                                       F_Preferences::ObtenirValeur("LoginServeur"),
+                                       F_Preferences::ObtenirValeur("CheminClePrivee"));
+                        foreach(QString nom, lb_image->ObtenirsNomImage())
+                        {
+                            uploader->AjouterCommande(COMMANDE_SUPPRIMER,
+                                F_Preferences::ObtenirValeur("CheminPhotosServeur") + "/" + nom,"");
+                        }
+                        uploader->FaireCommandes();
+                    }
+                    else
+                    {
+                        foreach(QString nom, lb_image->ObtenirsNomImage())
+                        {
+                            QString NomFichierSource=F_Preferences::ObtenirValeur("CheminPhotosJeux") + "/" + nom;
+                            QFile FichierSource(NomFichierSource);
+                            FichierSource.remove();
+                        }
+                    }
 
                     // Sélection de l'Id correspondant au code //
                     QSqlQuery RequeteSelectionJeux ;
@@ -1887,7 +1899,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QString IdEmplacement = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Emplacement_IdEmplacement")).toString() ;
         if(IdEmplacement != 0)
         {
-            RequeteEmplacement.prepare("SELECT IdEmplacement,Nom FROM emplacement WHERE IdEmplacement =:IdDeEmplacement") ;
+            RequeteEmplacement.prepare("SELECT IdEmplacement,NomEmplacement FROM emplacement WHERE IdEmplacement =:IdDeEmplacement") ;
             RequeteEmplacement.bindValue(":IdDeEmplacement", IdEmplacement);
             if(!RequeteEmplacement.exec())
             {
@@ -2143,7 +2155,7 @@ void F_AjoutSuppModifJeux::ActualiserCBx_Emplacement()
 
     QSqlQuery RequeteEmplacement ;
 
-    RequeteEmplacement.exec("SELECT DISTINCT Nom FROM emplacement") ;
+    RequeteEmplacement.exec("SELECT DISTINCT NomEmplacement FROM emplacement") ;
     ui->CBx_Emplacement->addItem("Sélectionner un emplacement");
     while(RequeteEmplacement.next())
     {

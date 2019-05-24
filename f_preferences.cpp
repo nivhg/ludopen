@@ -494,7 +494,7 @@ void F_Preferences::AfficherTousLesTableaux()
     this->TbJeuxEmplacement->setHorizontalHeaderItem(0, new QStandardItem("Emplacement"));
     ui->TbV_JeuxEmplacement->setColumnWidth(0, 180);
 
-    RechercheTableau.exec("SELECT Nom,IdEmplacement FROM emplacement");
+    RechercheTableau.exec("SELECT NomEmplacement,IdEmplacement FROM emplacement");
     while (RechercheTableau.next())
     {
         this->TbJeuxEmplacement->setItem(nNombreLigne, 0, new QStandardItem(RechercheTableau.value(0).toString()));
@@ -1348,8 +1348,8 @@ void F_Preferences::on_Bt_ModifierEmplacement_clicked()
 {
     QSqlQuery RequeteModifier;
 
-    RequeteModifier.prepare("SELECT Nom FROM emplacement WHERE Nom=:Nom");
-    RequeteModifier.bindValue(":Nom", ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(0).first().data().toString());
+    RequeteModifier.prepare("SELECT NomEmplacement FROM emplacement WHERE NomEmplacement=:NomEmplacement");
+    RequeteModifier.bindValue(":NomEmplacement", ui->TbV_JeuxEmplacement->selectionModel()->selectedRows(0).first().data().toString());
     RequeteModifier.exec();
     RequeteModifier.next();
 
@@ -1374,7 +1374,7 @@ void F_Preferences::on_Bt_SupprimerEmplacement_clicked()
         RequeteSupprimer.exec();
         if(RequeteSupprimer.size()!=0)
         {
-            RequeteSupprimer.prepare("SELECT Nom,IdEmplacement FROM emplacement WHERE "
+            RequeteSupprimer.prepare("SELECT NomEmplacement,IdEmplacement FROM emplacement WHERE "
                               "IdEmplacement!=:IdEmplacement");
             RequeteSupprimer.bindValue(":IdEmplacement", IdEmplacement);
             RequeteSupprimer.exec();

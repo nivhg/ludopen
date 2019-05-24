@@ -36,7 +36,10 @@ F_ListeReservations::F_ListeReservations(QWidget *parent) :
     ui->setupUi(this);
 
     // Création du tableau pour afficher les réservations
-    ui->Tv_ListeReservations->setModel(&ModeleReservations) ;
+    QSortFilterProxyModel *sortProxyModel = new QSortFilterProxyModel(this);
+    sortProxyModel->setSortLocaleAware(true);
+    sortProxyModel->setSourceModel(&ModeleReservations);
+    ui->Tv_ListeReservations->setModel(sortProxyModel) ;
     ui->Tv_ListeReservations->setEditTriggers(QAbstractItemView::SelectedClicked);
     //Affiche les noms des colonnes dans le tableau
     //ui->Tv_ListeReservations->horizontalHeader()->setVisible(true);

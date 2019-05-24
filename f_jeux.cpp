@@ -663,7 +663,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
     QSqlQuery RequeteEmplacement;
     QString TxE_Emplacement ;
 
-    RequeteEmplacement.prepare("SELECT Nom FROM emplacement WHERE IdEmplacement=:IdEmplacementDuJeu");
+    RequeteEmplacement.prepare("SELECT NomEmplacement FROM emplacement WHERE IdEmplacement=:IdEmplacementDuJeu");
     RequeteEmplacement.bindValue(":IdEmplacementDuJeu",IdEmplacement);
     RequeteEmplacement.exec() ;
     RequeteEmplacement.next();

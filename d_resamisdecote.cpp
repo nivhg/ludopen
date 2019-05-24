@@ -68,8 +68,20 @@ void D_ResaMisDeCote::closeEvent(QCloseEvent *event)
 
 void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
 {
-    // On passe le jeu dans le statut "En réservation"
     QSqlQuery Requete;
+    // On met à jour la DatePrevuEmprunt avec la date du jour pour connaitre la durée où le jeu a été mis de côté
+    Requete.prepare("UPDATE reservation SET DatePrevuEmprunt=:DatePrevuEmprunt WHERE Jeux_IdJeux=:Jeux_IdJeux AND Membres_IdMembre=:Membres_IdMembre");
+    Requete.bindValue(":Membres_IdMembre",this->IdMembre);
+    Requete.bindValue(":Jeux_IdJeux",this->IdJeu);
+    Requete.bindValue(":DatePrevuEmprunt",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+    }
+
+    // On passe le jeu dans le statut "En réservation"
     Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux="+QString::number(STATUTJEUX_ENRESERVATION)+" WHERE IdJeux=:Jeux_IdJeux");
     Requete.bindValue(":Membres_IdMembre",this->IdMembre);
     Requete.bindValue(":Jeux_IdJeux",this->IdJeu);
@@ -78,6 +90,7 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
     {
         qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
     }
+
 
     // Si l'email est vide, on quitte et ferme la fenêtre
     if(Email.trimmed()==""||Email.trimmed()=="@")
@@ -95,7 +108,9 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
     ListeEMailAEnvoyer[0].sFrom = F_Preferences::ObtenirValeur("Email");
     ListeEMailAEnvoyer[0].sTo = Email;
     //ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
-    ListeEMailAEnvoyer[0].sBcc = F_Preferences::ObtenirValeur("Email");
+    #ifndef QT_NO_DEBUG
+        ListeEMailAEnvoyer[0].sBcc = F_Preferences::ObtenirValeur("Email");
+    #endif
     ListeEMailAEnvoyer[0].IDMembre =  IdMembre;
 
     //On crée l'objet Courriel qui permettra l'envoi des emails
@@ -186,7 +201,10 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = Email;
 //    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
-    EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
+    // Si mode debug
+    #ifndef QT_NO_DEBUG
+        EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
+    #endif
     EMailProchainAEnvoyer.IDMembre =  IdMembre;
 
     this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

@@ -99,7 +99,7 @@ void F_ListeJeux::on_LE_Nom_textChanged(const QString &arg1)
         QSqlQuery RequeteRechercheJeu;
 
         RequeteRechercheJeu.prepare("SELECT CodeJeu, NomJeu, TypeJeux_Classification, NbrJoueurMin, "
-                  "NbrJoueurMax, AgeMin, AgeMax, DateAchat,Nom FROM jeux,emplacement WHERE "
+                  "NbrJoueurMax, AgeMin, AgeMax, DateAchat,NomEmplacement FROM jeux,emplacement WHERE "
                   "Emplacement_IdEmplacement=IdEmplacement AND NomJeu LIKE (:NomJeu)");
         RequeteRechercheJeu.bindValue(":NomJeu",NomJeu);
         RequeteRechercheJeu.exec();
@@ -154,7 +154,7 @@ void F_ListeJeux::RecupererContenuIndex()
     QSqlQuery RequeteFiltreJeux ;
     FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin,"
             "NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux,"
-            "TypeJeux_Classification, NomJeu, CodeJeu, Nom FROM jeux,emplacement ";
+            "TypeJeux_Classification, NomJeu, CodeJeu, NomEmplacement FROM jeux,emplacement ";
 
     if(ui->CBx_DateAcquisition->currentIndex() != 0)
     {
@@ -706,11 +706,11 @@ void F_ListeJeux::RAZCriteres()
     //////////////////////////////////
     QSqlQuery RequeteEmplacement ;
 
-    RequeteEmplacement.exec("SELECT IdEmplacement,Nom FROM emplacement ORDER BY Nom") ;
+    RequeteEmplacement.exec("SELECT IdEmplacement,NomEmplacement FROM emplacement ORDER BY NomEmplacement") ;
     i=1;
     while(RequeteEmplacement.next())
     {
-        QString Emplacement = ObtenirValeurParNom(RequeteEmplacement,"Nom").toString();
+        QString Emplacement = ObtenirValeurParNom(RequeteEmplacement,"NomEmplacement").toString();
         ui->CBx_Emplacement->addItem(Emplacement);
         ui->CBx_Emplacement->setItemData(i++,ObtenirValeurParNom(RequeteEmplacement,"IdEmplacement").toString());
     }
