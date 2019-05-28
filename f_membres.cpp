@@ -1666,9 +1666,10 @@ void F_Membres::AfficherVilles( QString VilleSelectionne )
 void F_Membres::toUpper(const QString &text)
 {
     QLineEdit *le = qobject_cast<QLineEdit *>(sender());
-    if (!le)
-    return;
+    if (!le) return;
+    int curPos=le->cursorPosition();
     le->setText(text.toUpper());
+    le->setCursorPosition(curPos);
 }
 
 //==========================================================================================================

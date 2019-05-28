@@ -2255,7 +2255,9 @@ void F_AjoutSuppModifJeux::toUpper(const QString &text)
     QLineEdit *le = qobject_cast<QLineEdit *>(sender());
     if (!le)
     return;
+    int curPos=le->cursorPosition();
     le->setText(text.toUpper());
+    le->setCursorPosition(curPos);
 }
 
 /**

@@ -1080,8 +1080,11 @@ void F_MainWindow::slot_verifReservation()
         int IdJeu=ObtenirValeurParNom(Requete,"IdJeux").toInt();
         QString Email=ObtenirValeurParNom(Requete,"Email").toString();
 
-        QMessageBox::information(this, "Jeu à ranger", "Le jeu "+NomJeu+" ("+CodeJeu+")\nqui a été mis de côté pour une réservation,\nest à ranger, "
-                "le membre aillant supprimé sa réservation\nou la réservation aillant expirée.", "OK") ;
+        if(QMessageBox::question(this, "Jeu à ranger", "Le jeu "+NomJeu+" ("+CodeJeu+")\nqui a été mis de côté pour une réservation,\nest à ranger, "
+                "le membre aillant supprimé sa réservation\nou la réservation aillant expirée.", "OK", "Plus tard") != 0)
+        {
+            return;
+        }
         QSqlQuery RequeteSuppressionResa;
         RequeteSuppressionResa.prepare("DELETE FROM reservation WHERE IdReservation=:IdReservation");
         RequeteSuppressionResa.bindValue(":IdReservation",ObtenirValeurParNom(Requete,"Idreservation").toInt());

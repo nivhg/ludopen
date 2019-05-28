@@ -2186,6 +2186,11 @@
          <widget class="QComboBox" name="CBx_Filtre">
           <item>
            <property name="text">
+            <string>Tous les membres</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>Membres à jour ou expiré de 1 an max</string>
            </property>
           </item>
