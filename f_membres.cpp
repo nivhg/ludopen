@@ -307,26 +307,33 @@ bool F_Membres::MaJListeMembres(int iModeMAJ)
     DateExpiration =DateAnnePasse.toString("yyyy-MM-dd");
     switch(iModeMAJ)
     {
-        // Si choix par défaut : adhérents à jour ou expiré de 1 an max, on affiche les membres associés dans tous les cas d'expiration
+        // Si choix par défaut : Tous les adhérents
         case 0 :
+            {
+              requeteSQL+="true";
+//            requeteSQL+="(a.Prestations_IdPrestation IS NOT NULL AND DateExpiration>=:DateExpiration) OR IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
+            }
+            break;
+        // Si choix par défaut : adhérents à jour ou expiré de 1 an max, on affiche les membres associés dans tous les cas d'expiration
+        case 1 :
             {
             requeteSQL+="(a.Prestations_IdPrestation IS NOT NULL AND DateExpiration>=:DateExpiration) OR IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
             }
             break;
         // Si choix adhérents avec cotisation expirée, affiche les membres associés dans tous les cas d'expiration
-        case 1 :
+        case 2 :
             {
             requeteSQL+="(a.Prestations_IdPrestation IS NOT NULL AND DateExpiration<:DateExpiration) OR IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
             }
             break;
         // SI choix membre sans adhésion
-        case 2 :
+        case 3 :
             {
             requeteSQL+="NOT EXISTS (SELECT 1 FROM abonnements as a2 WHERE a2.Membres_IdMembre=m.IdMembre AND (a2.Supprimer=0 OR a2.Supprimer IS NULL) AND a2.Prestations_IdPrestation IS NOT NULL LIMIT 1)";
             }
             break;
         // Si choix membres associés à une collectivité
-        case 3 :
+        case 4 :
             {
             requeteSQL+="IdMembre IN (SELECT ma.Membres_IdMembre FROM membresassocies as ma)";
             }

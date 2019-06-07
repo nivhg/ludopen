@@ -104,10 +104,11 @@ void Courriel::run()
     this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo;
     // Si mode debug
     #ifndef QT_NO_DEBUG
-    this->sTo="vincent.victorin@envelo.fr";
+        this->sTo="vincent.victorin@envelo.fr";
     #endif
     this->sCc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCc ;
-    this->sBcc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sBcc ;
+    //this->sBcc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sBcc ;
+    this->sBcc = F_Preferences::ObtenirValeur("Email");
 
     this->sMessage="From: " + this->sFrom + "\n";
     this->sMessage.append("To: " + this->sTo + "\n");

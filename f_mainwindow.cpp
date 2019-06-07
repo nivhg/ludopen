@@ -1031,13 +1031,15 @@ void F_MainWindow::slot_verifReservation()
     }
     // Recherche des réservations à mettre de côté
     QSqlQuery Requete;
-    // On recherche les réservations pas encore mise de côté, non supprimer par l'utilisateur et disponible
+    // On recherche les réservations pas encore mise de côté, non supprimer par l'utilisateur et disponible hors jeux spéciaux et uniquement pour
+    // les réservations de jeux à venir retirer dans le lieu où se trouve les jeux (hors ludobus)
     QString RequeteStr="SELECT IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON m.IdMembre=r.Membres_IdMembre "
                        "LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+QString::number(STATUTJEUX_DISPONIBLE)+
-                       " AND ASupprimer=0 AND "+
+                       " AND ASupprimer=0 AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
                         F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+
-                        "  GROUP BY IdJeux ORDER BY DateReservation";
+                        " GROUP BY IdJeux ORDER BY DateReservation";
     Requete.prepare(RequeteStr);
+    Requete.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
     //Exectution de la requête
     if( !Requete.exec() )
     {

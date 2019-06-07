@@ -1521,8 +1521,8 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
     // Nombre de crédit à demander
     int NbCredits (0);
 
-    //Si le jeu est disponible ou si on est en mode réservation
-    if (ui->Le_StatutJeuARemplir->text()=="Disponible"||ui->rB_Mode_Resa->isChecked())
+    //Si le jeu est marqué vert (Disponible, réservé ou autre) ou si on est en mode réservation
+    if (ui->Le_StatutJeuARemplir->styleSheet()=="QLineEdit {color:green;}"||ui->rB_Mode_Resa->isChecked())
     {
         bool Verification=false;
         QString Message ;
@@ -1671,15 +1671,17 @@ void F_Emprunt::AjouterJeuAValider(int iIdMembre, int iIdJeu, int iIdReservation
     ModeleEmpruntsAValider->setData(ModeleEmpruntsAValider->index(this->NbLignesEmpruntsAValider,0),QVariant(bJeuSpecial),Qt::UserRole);
     this->NbLignesEmpruntsAValider++;
 
-    //Mettre le statut du jeux à "Emprunt à valider"
+// Pb avec les jeux réservé, on perds ce statut si on mets de la liste des emprunts et qu'on le retire
+/*    //Mettre le statut du jeux à "Emprunt à valider"
     QSqlQuery RequeteStatut;
-    RequeteStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=2 WHERE IdJeux=:IdDuJeu");
+    RequeteStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=:StatutJeux_IdStatutJeux WHERE IdJeux=:IdDuJeu");
     RequeteStatut.bindValue(":IdDuJeu",iIdJeu);
+    RequeteStatut.bindValue(":StatutJeux_IdStatutJeux",STATUTJEUX_EMPRUNTAVALIDER);
 
     if ( ! RequeteStatut.exec())
     {
         qDebug()<<"RequeteStatut "<< RequeteStatut.lastQuery() ;
-    }
+    }*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2383,7 +2385,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     switch(IdStatut)
     {
         //si le statut est marqué comme "Emprunt à valider", demander s'il faut changer ce statut pour le rendre disponible.
-        case 2:
+        case STATUTJEUX_EMPRUNTAVALIDER:
         {
             // Vérifier si le jeu n'est pas déjà dans la liste des emprunts du jour
             // TO DO
@@ -2419,7 +2421,9 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
                 break;
             }
         }
-        case 1:
+        case STATUTJEUX_DISPONIBLE:
+        {
+        case STATUTJEUX_ENRESERVATION:
         {
             //Le mettre en vert
             ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:green;}");
@@ -2427,6 +2431,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
             //Met le bouton "Ajouté" en cliquable
             ui->Bt_AjouterJeu->setEnabled(true);
             break;
+        }
         }
     // pour tous les autres statuts autre que disponible
         default:

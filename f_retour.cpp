@@ -1206,16 +1206,20 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
         qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastQuery();
     }
 
-    //Savoir si le jeu est réservé
+    //Savoir si le jeu est réservé uniquement pour les jeux hors jeux spéciaux (grands jeux) et pour ceux réserver là où se trouve les jeux (hors ludobus)
     QSqlQuery RequeteJeu;
     RequeteJeu.prepare("SELECT idReservation,IdMembre,Email FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux LEFT JOIN membres ON "
-                       "Membres_IdMembre=IdMembre WHERE CodeJeu=:CodeDuJeu");
+                       "Membres_IdMembre=IdMembre WHERE CodeJeu=:CodeDuJeu AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
+                       F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
     RequeteJeu.bindValue(":CodeDuJeu",CodeJeu);
+    RequeteJeu.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
+
 
     if(!RequeteJeu.exec())
     {
-        qDebug()<<"RequeteJeu "<< RequeteJeu.lastQuery();
+        qDebug()<<getLastExecutedQuery(RequeteJeu)<<RequeteJeu.lastError();
     }
+    qDebug()<<getLastExecutedQuery(RequeteJeu)<<RequeteJeu.lastError();
 
     RequeteJeu.next();
 

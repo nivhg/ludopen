@@ -8,6 +8,11 @@
 #include <QTreeView>
 #include <QTime>
 
+#define STATUTJEUX_DISPONIBLE 1
+#define STATUTJEUX_EMPRUNTAVALIDER 2
+#define STATUTJEUX_ENRESERVATION 7
+#define STATUTJEUX_INDISPONIBLE 5
+
 QVariant ObtenirValeurParNom(QSqlQuery requete,QString NomChamps);
 bool EstCeURL(QString chaine);
 bool EstCeNomFichierContient(QString CheminFichier,QString achercher);

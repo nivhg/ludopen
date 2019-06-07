@@ -10,6 +10,7 @@
 #include <QMessageBox>
 #include <QThread>
 #include <QVector>
+#include "f_preferences.h"
 
 
 /** @enum   Etape

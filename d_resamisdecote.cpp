@@ -108,9 +108,6 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
     ListeEMailAEnvoyer[0].sFrom = F_Preferences::ObtenirValeur("Email");
     ListeEMailAEnvoyer[0].sTo = Email;
     //ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
-    #ifndef QT_NO_DEBUG
-        ListeEMailAEnvoyer[0].sBcc = F_Preferences::ObtenirValeur("Email");
-    #endif
     ListeEMailAEnvoyer[0].IDMembre =  IdMembre;
 
     //On crée l'objet Courriel qui permettra l'envoi des emails
@@ -201,10 +198,6 @@ void D_ResaMisDeCote::on_Bt_Valider_clicked()
     EMailProchainAEnvoyer.sFrom = F_Preferences::ObtenirValeur("Email");
     EMailProchainAEnvoyer.sTo = Email;
 //    EMailProchainAEnvoyer.sTo = "vincent.victorin@envelo.fr";
-    // Si mode debug
-    #ifndef QT_NO_DEBUG
-        EMailProchainAEnvoyer.sBcc = F_Preferences::ObtenirValeur("Email");
-    #endif
     EMailProchainAEnvoyer.IDMembre =  IdMembre;
 
     this->ListeEMailAEnvoyer.append( EMailProchainAEnvoyer ) ;

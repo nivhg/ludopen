@@ -57,6 +57,7 @@ F_Panier::F_Panier(QWidget *parent) :
       ui->CBx_ModePaiement->addItem(RequeteMode.value(0).toString(),RequeteMode.value(1).toInt());
     }
     ControleChequeVisible(false);
+    ControlePanierVide(false);
     ActualiserPaiements();
 }
 
@@ -123,8 +124,19 @@ void F_Panier::ControlePanierVide(bool etat)
         ControleChequeVisible(false);
         emit(SignalMiseAJourNbItemsPanier(0));
         ModelePanier.removeRows(0,ModelePanier.rowCount());
-        ui->SB_NumFacture->setValue(0);
-        ui->SB_AnneeFacture->setValue(0);
+        int annee=QDate::currentDate().year()%2000;
+        QSqlQuery Requete;
+        Requete.prepare("SELECT MAX(CAST(SUBSTRING(NumeroFacture,1,LENGTH(NumeroFacture)-3) as unsigned))+1 as NumFac "
+                        "FROM paiements WHERE NumeroFacture LIKE '%/"+QString::number(annee)+"'");
+        Requete.bindValue(":annee",annee);
+
+        if(!Requete.exec())
+        {
+            qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        }
+        Requete.next();
+        ui->SB_NumFacture->setValue(ObtenirValeurParNom(Requete,"NumFac").toInt());
+        ui->SB_AnneeFacture->setValue(annee);
     }
     ui->Bt_OK->setEnabled(false);
     // Si on active les controles et qu'un mode de paiement a été choisi, on active le bouton Valider

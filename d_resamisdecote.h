@@ -7,10 +7,6 @@
 #include "fonctions_globale.h"
 #include <QAbstractSocket>
 
-#define STATUTJEUX_DISPONIBLE 1
-#define STATUTJEUX_ENRESERVATION 7
-#define STATUTJEUX_INDISPONIBLE 5
-
 namespace Ui {
 class D_ResaMisDeCote;
 }

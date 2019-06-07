@@ -119,17 +119,20 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
                     "LEFT JOIN membres as me ON r.Membres_IdMembre=me.IdMembre WHERE "+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(r.DatePrevuEmprunt)="+
-                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(r.DatePrevuEmprunt)="+ui->CBx_Annee->currentText()+
-                    "   UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"=:JeuxSpeciauxValeur AND "
+                    "((MONTH(r.DatePrevuEmprunt)=:Mois AND YEAR(r.DatePrevuEmprunt)=:Annee) OR "
+                    "(MONTH(r.DatePrevuRetour)=:Mois AND YEAR(r.DatePrevuRetour)=:Annee)) "
+                    " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
                     "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt FROM emprunts as e "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=e.TypeEmprunt_IdTypeEmprunt "
                     "LEFT JOIN membres as me ON e.Membres_IdMembre=me.IdMembre WHERE "+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+" AND MONTH(e.DateEmprunt)="+
-                    QString::number(ui->CBx_Mois->currentIndex()+1)+" AND YEAR(e.DateEmprunt)="+ui->CBx_Annee->currentText()+") ORDER BY emprunt,IdMalle DESC");
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"=:JeuxSpeciauxValeur AND "
+                    "((MONTH(e.DateEmprunt)=:Mois AND YEAR(e.DateEmprunt)=:Annee) OR (MONTH(e.DateRetourPrevu)=:Mois AND YEAR(e.DateRetourPrevu)=:Annee))) "
+                    "ORDER BY emprunt,IdMalle DESC");
+    Requete.bindValue(":JeuxSpeciauxValeur",F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
+    Requete.bindValue(":Mois",QString::number(ui->CBx_Mois->currentIndex()+1));
+    Requete.bindValue(":Annee",ui->CBx_Annee->currentText());
     //Exécute la requête
     if (!Requete.exec())
     {
@@ -195,6 +198,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         }
         int iRetourEmprunt;
         QDate DateRetourEmprunt=ObtenirValeurParNom(Requete,"DateRetour").toDate();
+        qDebug()<<ObtenirValeurParNom(Requete,"NomMembre").toString();
         if(DateRetourEmprunt.month()==(ui->CBx_Mois->currentIndex()+1))
         {
             iRetourEmprunt=DateRetourEmprunt.day();
