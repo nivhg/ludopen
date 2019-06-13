@@ -470,7 +470,7 @@ void D_Image::on_Bt_Ajouter_clicked()
     iOperationServeur=OP_AJOUT;
     QString sCheminImage ;
     // Affiche la boite de dialogue de sélection de plusieurs fichiers
-    sNomImagesAjoutees = QFileDialog::getOpenFileNames( this,tr( "Ouvrir une image." ), "", "Fichier image (*.png *.jpg *.bmp *.jpeg *.gif *.tif)" ) ;
+    sNomImagesAjoutees = QFileDialog::getOpenFileNames( this,tr( "Ouvrir une image." ), "", "Fichier image (*.png *.jpg *.bmp *.jpeg *.gif *.tif *.PNG *.JPG *.BMP *.JPEG *.GIF *.TIF)" ) ;
     // Si aucun fichier n'a été sélectionné on quitte la fonction
     if(sNomImagesAjoutees.count()==0)
     {

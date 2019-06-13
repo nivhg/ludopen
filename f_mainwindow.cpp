@@ -1037,7 +1037,7 @@ void F_MainWindow::slot_verifReservation()
                        "LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+QString::number(STATUTJEUX_DISPONIBLE)+
                        " AND ASupprimer=0 AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
                         F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+
-                        " GROUP BY IdJeux ORDER BY DateReservation";
+                        " AND Malles_IdMalle IS NULL GROUP BY IdJeux ORDER BY DateReservation";
     Requete.prepare(RequeteStr);
     Requete.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
     //Exectution de la requête
@@ -1065,7 +1065,8 @@ void F_MainWindow::slot_verifReservation()
     Requete.prepare("SELECT Idreservation,DateReservation,IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON "
                     "m.IdMembre=r.Membres_IdMembre LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+
                     QString::number(STATUTJEUX_ENRESERVATION)+" AND (ASupprimer=1 OR DATEDIFF(NOW(),DatePrevuEmprunt)>:DelaiJeuMisDeCote) AND "+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+
+                    " AND Malles_IdMalle IS NULL");
     Requete.bindValue(":DelaiJeuMisDeCote",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote").toInt()*7);
     //Exectution de la requête
     if( !Requete.exec() )

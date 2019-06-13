@@ -127,8 +127,8 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=e.TypeEmprunt_IdTypeEmprunt "
                     "LEFT JOIN membres as me ON e.Membres_IdMembre=me.IdMembre WHERE "+
-                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"=:JeuxSpeciauxValeur AND "
-                    "((MONTH(e.DateEmprunt)=:Mois AND YEAR(e.DateEmprunt)=:Annee) OR (MONTH(e.DateRetourPrevu)=:Mois AND YEAR(e.DateRetourPrevu)=:Annee))) "
+                    F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"=:JeuxSpeciauxValeur HAVING "
+                    "((MONTH(e.DateEmprunt)=:Mois AND YEAR(e.DateEmprunt)=:Annee) OR (MONTH(DateRetour)=:Mois AND YEAR(DateRetour)=:Annee))) "
                     "ORDER BY emprunt,IdMalle DESC");
     Requete.bindValue(":JeuxSpeciauxValeur",F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
     Requete.bindValue(":Mois",QString::number(ui->CBx_Mois->currentIndex()+1));
@@ -145,6 +145,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
     int iIdMalleCourant=ObtenirValeurParNom(Requete,"IdMalle").toInt();
     do
     {
+        qDebug()<<ObtenirValeurParNom(Requete,"Jeux_IdJeux").toInt();
         // Recherche de numéro du ligne du jeu
         for(i=0;i<this->ModeleMalle->rowCount();i++)
         {
@@ -185,7 +186,15 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         if(((CouleurFond->color().red()+CouleurFond->color().green()+
              CouleurFond->color().blue())/3)<128)
         {
-            item->setForeground(Qt::white);
+            // Si la couleur est blanc
+            if(CouleurFond->color().red()+CouleurFond->color().green()+CouleurFond->color().blue()==0)
+            {
+                item->setForeground(Qt::black);
+            }
+            else
+            {
+                item->setForeground(Qt::white);
+            }
         }
         else
         {
@@ -209,6 +218,13 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         }
         int iPremiereColonne=ObtenirValeurParNom(Requete,"JourEmprunt").toInt()-1;
         int iDerniereColonne=iRetourEmprunt-iPremiereColonne;
+        // Si iDerniereColonne est négatif, c'est que la malle chevauche 2 mois,
+        // on part du 1° à la date du retour
+        if(iDerniereColonne<0)
+        {
+            iPremiereColonne=0;
+            iDerniereColonne=iRetourEmprunt;
+        }
         // Liste qui servira pour la sélection de toute la période de réservation
         QVariantList vListe;
         vListe.append(iPremiereColonne);
