@@ -34,6 +34,7 @@ F_Retour::F_Retour(QWidget *parent) :
     this->MembreActif = "";
     // pas de jeu choisi
     this->JeuActif = "";
+    this->iMalleActive=0;
     // Amende à 0€
 //    this->Amende = 0.0 ;
     ui->Lb_AmendeAPayer->setStyleSheet("QLabel {color:red;}");
