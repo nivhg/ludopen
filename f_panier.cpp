@@ -37,9 +37,11 @@ F_Panier::F_Panier(QWidget *parent) :
     ui->GB_Collectivite->setVisible(false);
 
     //Associe le modèle au TableView
-    ui->TW_Paiements->setColumnCount(7);
+    ui->TW_Paiements->setColumnCount(6);
     QStringList Liste;
-    Liste<<"Nom du membre"<<"N° facture"<<"Date"<<"Mode de paiement"<<"Total"<<"Date de paiement"<<"Remarque";
+    Liste<<"Nom du membre"<<"N° facture"<<"Date"<<"Mode de paiement"<<"Total"
+        //<<"Date de paiement"
+        <<"Remarque";
     ui->TW_Paiements->setHeaderLabels(Liste);
     ui->TW_Paiements->setColumnWidth(0,200);
 
@@ -358,10 +360,10 @@ void F_Panier::ActualiserPaiements()
 
         List<<ObtenirValeurParNom(RequetePaiements,"Nom").toString()+" "+ObtenirValeurParNom(RequetePaiements,"Prenom").toString()
            <<ObtenirValeurParNom(RequetePaiements,"NumeroFacture").toString()
-         <<ObtenirValeurParNom(RequetePaiements,"DatePaiement").toDate().toString("dd/MM/yyyy")
+         <<ObtenirValeurParNom(RequetePaiements,"DatePaiement").toDateTime().toString("dd/MM/yyyy hh:mm")
         <<ObtenirValeurParNom(RequetePaiements,"NomPaiement").toString()
         <<QString::number(ObtenirValeurParNom(RequetePaiements,"Montant").toDouble())
-        <<ObtenirValeurParNom(RequetePaiements,"DatePaye").toDate().toString("dd/MM/yyyy")
+        //<<ObtenirValeurParNom(RequetePaiements,"DatePaye").toDate().toString("dd/MM/yyyy")
         <<ObtenirValeurParNom(RequetePaiements,"Remarque").toString();
         QTreeWidgetItem *Racine=new QTreeWidgetItem(List);
         Racine->setFlags(Racine->flags() | Qt::ItemIsEditable);

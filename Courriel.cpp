@@ -30,10 +30,10 @@
 Courriel::Courriel( const QString sAdresseServeurSNMP, const uint nPort, QList <EMail> ListeEMailAEnvoyer) :
     QThread()
 {
-    qDebug()<<ListeEMailAEnvoyer[0].sCc;
+    //qDebug()<<ListeEMailAEnvoyer[0].sCc;
    //  avoir accès au vecteur qui contient les emails à envoyer
    this->ListeEMailAEnvoyer = ListeEMailAEnvoyer ;
-    qDebug()<<this->ListeEMailAEnvoyer[0].sCc;
+   //qDebug()<<this->ListeEMailAEnvoyer[0].sCc;
 
    //Récupération des données passées en paramètre
    this->sAdresseSmtp = sAdresseServeurSNMP ;

@@ -395,7 +395,7 @@ bool F_ListeReservations::AffichageListe()
                  ObtenirValeurParNom(RequeteDesReservations,"Prenom").toString() ) ) ;
             // Date de réservation
             ModeleReservations.setItem( i, 6, new QStandardItem(
-                 ObtenirValeurParNom(RequeteDesReservations,"DateReservation").toDateTime().toString("dd-MM-yyyy h:m" ) ) ) ;
+                 ObtenirValeurParNom(RequeteDesReservations,"DateReservation").toDateTime().toString("dd-MM-yyyy hh:mm" ) ) ) ;
             // Date d'emprunt prévue
             ModeleReservations.setItem( i, 7, new QStandardItem(
                  ObtenirValeurParNom(RequeteDesReservations,"DatePrevuEmprunt").toDate().toString("dd-MM-yyyy" ) ) ) ;

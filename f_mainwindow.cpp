@@ -15,6 +15,8 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->VerifierConnexionBDD() ;
     this->pPreferences->ChargerPreferencesBDD();
 
+    this->iIdBenevole=0;
+
     // Création de la fenêtre de choix des préférences du logiciel
     this->pPanier=new F_Panier(this);
     this->ui->Lay_Panier->addWidget(this->pPanier);
@@ -53,7 +55,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
             //CBx_Benevoles->addItem(,);
             QAction *sousmenu=ui->menuUtilisateurEnCours->addAction(ObtenirValeurParNom(RequeteBenevoles,"Prenom").toString());
             sousmenu->setData(ObtenirValeurParNom(RequeteBenevoles,"IdMembre").toInt());
-            connect(sousmenu,SIGNAL(triggered(QAction *)),this,SLOT(on_menuUtilisateurEnCours_triggered(QAction *)));
+            //connect(sousmenu,SIGNAL(triggered(QAction *)),this,SLOT(on_menuUtilisateurEnCours_triggered(QAction *)));
         }
     }
 
@@ -579,7 +581,7 @@ void F_MainWindow::CreerEmprunt()
     if(!this->pEmprunt)
     {
         qDebug()<<"Création F_Emprunt";
-        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this->ui->Emprunt);
+        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
         connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
@@ -615,7 +617,7 @@ void F_MainWindow::CreerMalle()
     if(!this->pMalles)
     {
         qDebug()<<"Création F_Emprunt pour onglet réservation Malles";
-        this->pMalles=new F_Emprunt (MODE_MALLES, this->ui->Malles,pCalendrierMalles);
+        this->pMalles=new F_Emprunt (MODE_MALLES, this,pCalendrierMalles);
         this->ui->Lay_Malles->addWidget(this->pMalles);
         connect( this->pMalles, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
         connect( this->pMalles, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,

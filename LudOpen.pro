@@ -66,7 +66,8 @@ SOURCES += \
     crypt_blowfish/crypt_blowfish.c \
     crypt_blowfish/crypt_gensalt.c \
     crypt_blowfish/wrapper.c \
-    d_lienjeux.cpp
+    d_lienjeux.cpp \
+    spinboxdelegate.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -120,7 +121,8 @@ HEADERS  += \
     crypt_blowfish/crypt_blowfish.h \
     crypt_blowfish/crypt_gensalt.h \
     crypt_blowfish/ow-crypt.h \
-    d_lienjeux.h
+    d_lienjeux.h \
+    spinboxdelegate.h
 
 FORMS    += \
     f_statistiques.ui \

@@ -207,6 +207,32 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     connect( this->lb_image, SIGNAL( SignalChargementFini() ), this, SLOT( slot_ActiverClicImage() ) ) ;
     // Faire défiler le tableau des jeux avec les flèches du clavier
     connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+    QMenu *menu = new QMenu;
+    QAction *actionGroupe=menu->addAction("un groupe de pièces");
+    actionGroupe->setData("groupe");
+    QAction *actionPiece=menu->addAction("une pièce");
+    actionPiece->setData("piece");
+    actionPieceDsGroupe=menu->addAction("une pièce dans ce groupe");
+    actionPieceDsGroupe->setData("pieceDsGroupe");
+    actionPieceDsGroupe->setEnabled(false);
+    ui->TB_Ajouter->setMenu(menu);
+    ui->TB_Ajouter->setPopupMode(QToolButton::InstantPopup);
+    connect(actionGroupe,SIGNAL(triggered()),this,SLOT(on_menuAjouterPiece_triggered()));
+    connect(actionPiece,SIGNAL(triggered()),this,SLOT(on_menuAjouterPiece_triggered()));
+    connect(actionPieceDsGroupe,SIGNAL(triggered()),this,SLOT(on_menuAjouterPiece_triggered()));
+    //Associe le modèle au TableView
+    ModeleContenu=new QStandardItemModel();
+    ui->Tv_Contenu->setModel(this->ModeleContenu);
+    DelegateContenu=new SpinBoxDelegate();
+    ui->Tv_Contenu->setItemDelegate(DelegateContenu);
+
+    ActualiserContenu();
+    connect(ModeleContenu,SIGNAL(itemChanged(QStandardItem *)),this,SLOT(on_Tv_Contenu_itemChanged(QStandardItem *)));
+
+    QItemSelectionModel *selectionModel = ui->Tv_Contenu->selectionModel();
+
+    connect(selectionModel, SIGNAL(selectionChanged(const QItemSelection&,const QItemSelection&)), this,
+            SLOT(SelectionChanged_Tv_Contenu(const QItemSelection&,const QItemSelection&)));
 }
 //###################################################################
 /**
@@ -655,12 +681,12 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteEditeur.next() ;
 
            RequeteAjouterJeu.prepare("INSERT INTO jeux(NomJeu,NomCreateurJeu,DateAchat,PrixAchat,PrixLoc,NbrJoueurMin,"
-                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
+                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,Caution,"
                                      "DescriptionJeu,CodeJeu,EtatInitial,MotCle1,MotCle2,MotCle3,"
                                      "TypeJeux_Classification,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,"
                                      "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,Duree) "
                                      "VALUES (:NomDuJeu,:NomDuCreateurJeu,:DateDeAchat,:PrixDeAchat,:PrixDeLoc,"
-                                     ":NbrDeJoueurMin,:NbrDeJoueurMax,:LeAgeMin,:LeAgeMax,:LaRemarque,:ContenuDuJeu,"
+                                     ":NbrDeJoueurMin,:NbrDeJoueurMax,:LeAgeMin,:LeAgeMax,:LaRemarque,"
                                      ":LaCaution,:DescriptionDuJeu,:CodeDuJeu,"
                                      ":LeEtatInitial,:LeMotCle1,:LeMotCle2,:LeMotCle3,:LeTypeJeux_Classification,"
                                      ":StatutDuJeux_IdStatutJeux,:EtatsDuJeu_IdEtatsJeu,:Emplacement_IdDeEmplacement,"
@@ -675,7 +701,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteAjouterJeu.bindValue(":LeAgeMin", this->ui->SBx_AgeMin->value());
            RequeteAjouterJeu.bindValue(":LeAgeMax", this->ui->SBx_AgeMax->value());
            RequeteAjouterJeu.bindValue(":LaRemarque", this->ui->TxE_Remarques->toPlainText());
-           RequeteAjouterJeu.bindValue(":ContenuDuJeu", this->ui->TxE_Contenu->toPlainText());
            RequeteAjouterJeu.bindValue(":LaCaution", this->ui->SBx_Caution->value());
            RequeteAjouterJeu.bindValue(":DescriptionDuJeu", this->ui->TxE_Description->toPlainText());
            RequeteAjouterJeu.bindValue(":CodeDuJeu", this->ui->LE_Code->text());
@@ -789,16 +814,15 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
          {
              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked() : MajCréateur" << RequeteModifCreateur.lastQuery() ;
          }
-         ///////// MAJ des Textes Edit (contenu,description,remarque du jeu ///////----------------------------
+         ///////// MAJ des Textes Edit (description,remarque du jeu ///////----------------------------
          QSqlQuery RequeteModifTxE ;
          //prépare le requête de mise à jour
          RequeteModifTxE.prepare("UPDATE jeux SET DescriptionJeu=:DescriptionDuJeu,Remarque=:RemarqueDuJeu,"
-                                 "ContenuJeu=:ContenuDuJeu, SiteWeb1=:LeSiteWeb1, Duree=:LeDuree WHERE CodeJeu=:CodeDuJeu");
+                                 "SiteWeb1=:LeSiteWeb1, Duree=:LeDuree WHERE CodeJeu=:CodeDuJeu");
          //Entre les valeurs de la requête
          RequeteModifTxE.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifTxE.bindValue(":DescriptionDuJeu", ui->TxE_Description->toPlainText());
          RequeteModifTxE.bindValue(":RemarqueDuJeu", ui->TxE_Remarques->toPlainText());
-         RequeteModifTxE.bindValue(":ContenuDuJeu", ui->TxE_Contenu->toPlainText());
          RequeteModifTxE.bindValue(":LeSiteWeb1", ui->LE_SiteWeb1->text());
          RequeteModifTxE.bindValue(":LeDuree", ui->LE_Duree->text());
          //Exécute la requête
@@ -1030,7 +1054,7 @@ void F_AjoutSuppModifJeux::ActiveChamps(bool etat)
     ui->SBx_JoueursMin->setEnabled(etat);
     ui->SBx_PrixAchat->setEnabled(etat);
     ui->SBx_PrixLocation->setEnabled(etat);
-    ui->TxE_Contenu->setEnabled(etat);
+    ui->Tv_Contenu->setEnabled(etat);
     ui->TxE_Description->setEnabled(etat);
     ui->TxE_Remarques->setEnabled(etat);
     ui->RBt_Neuf->setEnabled(etat);
@@ -1065,7 +1089,8 @@ void F_AjoutSuppModifJeux::VideChamps()
     ui->SBx_JoueursMin->setValue(1);
     ui->SBx_PrixAchat->setValue(0);
     ui->SBx_PrixLocation->setValue(0);
-    ui->TxE_Contenu->clear();
+    ModeleContenu->clear();
+    ActiverBoutonsContenu(false);
     ui->TxE_Description->clear();
     ui->TxE_Remarques->clear();
     ui->RBt_Neuf->setChecked(true);
@@ -1102,7 +1127,7 @@ void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
     ui->SBx_JoueursMin->blockSignals(etat);
     ui->SBx_PrixAchat->blockSignals(etat);
     ui->SBx_PrixLocation->blockSignals(etat);
-    ui->TxE_Contenu->blockSignals(etat);
+    ui->Tv_Contenu->blockSignals(etat);
     ui->TxE_Description->blockSignals(etat);
     ui->TxE_Remarques->blockSignals(etat);
     ui->RBt_Neuf->blockSignals(etat);
@@ -1240,7 +1265,7 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
         ////////////////////////////////////////////////
         QSqlQuery RequeteAnnulerTxE;
 
-        RequeteAnnulerTxE.prepare("SELECT Remarque,ContenuJeu,DescriptionJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
+        RequeteAnnulerTxE.prepare("SELECT Remarque,DescriptionJeu FROM jeux WHERE CodeJeu=:CodeDuJeu");
         RequeteAnnulerTxE.bindValue(":CodeDuJeu",this->nIdJeuSelectionne);
 
         //Exécute la requête
@@ -1253,10 +1278,9 @@ void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
 
         //Récupère les informations dans la base de données et les affiches
         QString Remarque = (RequeteAnnulerTxE.value(0).toString());
-        QString ContenuJeu = (RequeteAnnulerTxE.value(1).toString()) ;
         QString DescriptionJeu = (RequeteAnnulerTxE.value(2).toString()) ;
         ui->TxE_Remarques->setText(Remarque);
-        ui->TxE_Contenu->setText(ContenuJeu);
+        ActualiserContenu();
         ui->TxE_Description->setText(DescriptionJeu);
 
         //--------------------------------------------------------------------------------------------------------------------------
@@ -1744,7 +1768,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QSqlQuery RequeteRechercheJeu;
 
         RequeteRechercheJeu.prepare("SELECT CodeJeu,NomJeu,TypeJeux_Classification,NomCreateurJeu,DateAchat,PrixAchat,"
-                                    "PrixLoc,NbrJoueurMin,NbrJoueurMax,AgeMin,AgeMax,Remarque,ContenuJeu,Caution,"
+                                    "PrixLoc,NbrJoueurMin,NbrJoueurMax,AgeMin,AgeMax,Remarque,Caution,"
                                     "DescriptionJeu,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,Editeur_IdEditeur,"
                                     "Fournisseurs_IdFournisseur,Emplacement_IdEmplacement,MotCle1,MotCle2,MotCle3,"
                                     "EtatInitial,SiteWeb1,Duree "
@@ -1796,8 +1820,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QString Remarques = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Remarque")).toString() ;
         ui->TxE_Remarques->setText(Remarques);
         //-------------------------------------------------------------------------------------------------
-        QString ContenuJeu = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("ContenuJeu")).toString() ;
-        ui->TxE_Contenu->setText(ContenuJeu);
+        ActualiserContenu();
         //-------------------------------------------------------------------------------------------------
         unsigned int Caution = RequeteRechercheJeu.value(RequeteRechercheJeu.record().indexOf("Caution")).toInt() ;
         ui->SBx_Caution->setValue(Caution);
@@ -1827,13 +1850,6 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         QSqlQuery RequeteStatut ;
         QString IdStatut = RequeteRechercheJeu.value(RequeteRechercheJeu.record().
                                                      indexOf("StatutJeux_IdStatutJeux")).toString() ;
-        /*RequeteStatut.prepare("SELECT StatutJeu,IdStatutJeux FROM statutjeux WHERE IdStatutJeux =:IdStatutDuJeu") ;
-        RequeteStatut.bindValue(":IdStatutDuJeu", IdStatut);
-        if(!RequeteStatut.exec())
-        {
-            qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() : RequeteStatut="<<RequeteStatut.lastQuery() ;
-        }
-        RequeteStatut.next() ;*/
         ui->CBx_Statut->setCurrentIndex(ui->CBx_Statut->findData(IdStatut)+1);
 
         TableauPositionIndex[1] = ui->CBx_Statut->currentIndex() ;
@@ -2010,6 +2026,7 @@ void F_AjoutSuppModifJeux::AfficherJeu()
         ActiveBoutons(false);
         ui->Bt_Supprimer->setEnabled(true);
         ui->Bt_Ajouter->setEnabled(true);
+        ui->TB_Ajouter->setEnabled(true);
         AjoutOuModif = false ;
     }
     BloquerSignalsChamps(false);
@@ -2333,4 +2350,365 @@ void F_AjoutSuppModifJeux::on_Bt_SupprimerLienJeux_clicked()
     Requete.exec();
     ActualiserLienJeux();
     ui->Bt_Supprimer->setEnabled(false);
+}
+
+void F_AjoutSuppModifJeux::on_menuAjouterPiece_triggered()
+{
+    QSqlQuery Requete;
+    QAction *menu = qobject_cast<QAction *>(sender());
+    QList<QStandardItem *> Liste;
+    QStandardItem *Item=new QStandardItem();
+    QStandardItem *Item2=new QStandardItem("");
+    Item->setFlags(Qt::ItemIsEditable|Qt::ItemIsEnabled);
+    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu", nIdJeuSelectionne);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+    if(menu->data().toString()=="groupe")
+    {
+        Requete.prepare("INSERT INTO pieces(OrdrePieces,NombrePieces,DescriptionPieces,PieceGroupe,IdJeuxOuIdPieces) VALUES "
+                        "(:OrdrePieces,NULL,NULL,1,(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu))");
+        Requete.bindValue(":OrdrePieces", ModeleContenu->rowCount());
+        Requete.bindValue(":CodeJeu", nIdJeuSelectionne);
+        if(!Requete.exec())
+        {
+            qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        }
+
+        Item->setData(GROUPE,Qt::UserRole);
+        Item->setData(IdJeux,Qt::UserRole+2);
+        Item2->setIcon(QIcon(":/Sac.svg"));
+        Liste<<Item<<Item2;
+        ModeleContenu->appendRow(Liste);
+        actionPieceDsGroupe->setEnabled(true);
+    }
+    else
+    {
+        Item2->setIcon(QIcon(":/Item.svg"));
+        Requete.prepare("INSERT INTO pieces(OrdrePieces,NombrePieces,DescriptionPieces,PieceGroupe,IdJeuxOuIdPieces) VALUES "
+                        "(:OrdrePieces,NULL,NULL,:PieceGroupe,:IdGroupeOuJeu)");
+
+        // Si l'item en cours est un groupe (n'a pas de parent et que son UserRole vaut 1) et que l'utilisateur a choisi le menu d'ajout dans un groupe
+        if(ui->Tv_Contenu->currentIndex().parent()==QModelIndex()&&ModeleContenu->index(ui->Tv_Contenu->currentIndex().row(),0).data(Qt::UserRole)==1
+                &&menu->data().toString()=="pieceDsGroupe")
+        {
+            int IdGroupe=ModeleContenu->itemFromIndex(ui->Tv_Contenu->currentIndex())->data(Qt::UserRole+1).toInt();
+            Item->setData(IdGroupe,Qt::UserRole+2);
+            Liste<<Item<<Item2;
+            qDebug()<<ui->Tv_Contenu->currentIndex();
+            qDebug()<<ModeleContenu->itemFromIndex(ui->Tv_Contenu->currentIndex());
+            ModeleContenu->itemFromIndex(ui->Tv_Contenu->currentIndex())->appendRow(Liste);
+            ui->Tv_Contenu->expand(ui->Tv_Contenu->currentIndex());
+            Item->setData(PIECE_GROUPE,Qt::UserRole);
+            Requete.bindValue(":PieceGroupe",PIECE_GROUPE);
+            Requete.bindValue(":IdGroupeOuJeu", ModeleContenu->index(ui->Tv_Contenu->currentIndex().row(),0).data(Qt::UserRole+1));
+            Requete.bindValue(":OrdrePieces", ModeleContenu->indexFromItem(Item).row());
+        }
+        else
+        {
+            Item->setData(IdJeux,Qt::UserRole+2);
+            Item->setData(PIECE_SEULE,Qt::UserRole);
+            Requete.bindValue(":OrdrePieces", ModeleContenu->rowCount());
+            Requete.bindValue(":PieceGroupe",PIECE_SEULE);
+            Requete.bindValue(":IdGroupeOuJeu", IdJeux);
+            Liste<<Item<<Item2;
+            ModeleContenu->appendRow(Liste);
+        }
+        if(!Requete.exec())
+        {
+            qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        }
+    }
+    Item->setData(Requete.lastInsertId(),Qt::UserRole+1);
+    ui->Tv_Contenu->setCurrentIndex(ModeleContenu->indexFromItem(Item));
+    ui->Tv_Contenu->edit(ui->Tv_Contenu->currentIndex());
+}
+
+void F_AjoutSuppModifJeux::ActualiserContenu()
+{
+    QSqlQuery Requete;
+    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu",nIdJeuSelectionne);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+
+    Requete.prepare("SELECT *,IF(PieceGroupe=2,"
+                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces"
+                    " FROM pieces as p WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+" Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+")) ORDER By OrdreGroupePieces");
+    Requete.bindValue(":IdJeux",IdJeux);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    ModeleContenu->clear();
+    //Initialise les colones du TableView des nouveaux emprunts
+    this->ModeleContenu->setColumnCount(2);
+    this->ModeleContenu->setHorizontalHeaderItem(0, new QStandardItem("Nombre"));
+    this->ModeleContenu->setHorizontalHeaderItem(1, new QStandardItem("Libellé"));
+
+    int DernierIdGroupe=0;
+    QStandardItem *DernierGroupe;
+    while(Requete.next())
+    {
+        int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
+        QList<QStandardItem *>liste;
+        QStandardItem *Item=new QStandardItem(ObtenirValeurParNom(Requete,"NombrePieces").toString());
+        Item->setData(PieceGroupe,Qt::UserRole);
+        Item->setData(ObtenirValeurParNom(Requete,"IdPieces").toInt(),Qt::UserRole+1);
+        Item->setData(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt(),Qt::UserRole+2);
+        QStandardItem *Item2=new QStandardItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
+        liste<<Item<<Item2;
+        // S'il s'agit d'un groupe
+        if(PieceGroupe==1)
+        {
+            Item2->setIcon(QIcon(":/Sac.svg"));
+            DernierIdGroupe=ObtenirValeurParNom(Requete,"IdPieces").toInt();
+            DernierGroupe=Item;
+        }
+        else
+        {
+            Item2->setIcon(QIcon(":/Item.svg"));
+            // Si IdJeuxOuIdPieces est égale à l'id du dernier groupe vu, il s'agit d'une pièce d'un groupe
+            if(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt()==DernierIdGroupe)
+            {
+                DernierGroupe->appendRow(liste);
+                DernierGroupe->child(DernierGroupe->rowCount()-1,0)->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
+                ui->Tv_Contenu->expand(ModeleContenu->indexFromItem(DernierGroupe));
+                continue;
+            }
+        }
+        ModeleContenu->appendRow(liste);
+        QModelIndex index=ModeleContenu->indexFromItem(Item);
+        if(Requete.value("NombrePieces").isNull())
+        {
+            ModeleContenu->itemFromIndex(index.sibling(index.row(),0))->setData(QVariant(QVariant::Int),Qt::DisplayRole);
+        }
+        else
+        {
+            ModeleContenu->itemFromIndex(index.sibling(index.row(),0))->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
+        }
+    }
+    ui->Tv_Contenu->setColumnWidth(0,90);
+    ui->Tv_Contenu->setColumnWidth(1,180);
+    ActiverBoutonsContenu(false);
+}
+
+void F_AjoutSuppModifJeux::on_Tv_Contenu_itemChanged(QStandardItem *item)
+{
+    QModelIndex index=ModeleContenu->indexFromItem(item).sibling(ModeleContenu->indexFromItem(item).row(),0);
+    QSqlQuery Requete;
+    QString Champs;
+    // Si on est sur la 2° colonne, on mets à jour la description sinon c'est le nombre
+    if(ModeleContenu->indexFromItem(item).column()==1)
+    {
+        Champs="DescriptionPieces";
+    }
+    else
+    {
+        Champs="NombrePieces";
+    }
+    Requete.prepare("UPDATE pieces SET "+Champs+"=:Valeur WHERE IdPieces=:IdPieces");
+    Requete.bindValue(":Valeur",item->text());
+    Requete.bindValue(":IdPieces",index.data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+}
+
+void F_AjoutSuppModifJeux::SelectionChanged_Tv_Contenu(const QItemSelection&selected,const QItemSelection&deselected)
+{
+    // On active les boutons contenu si un élement a été sélectionné, sinon on les désactive
+    ActiverBoutonsContenu(true);
+
+    // Si l'élement choisi n'a pas de parent et qu'il s'agit d'un groupe
+    if(ui->Tv_Contenu->currentIndex().parent()==QModelIndex()&&
+            ModeleContenu->index(ui->Tv_Contenu->currentIndex().row(),0).data(Qt::UserRole)==GROUPE)
+    {
+        actionPieceDsGroupe->setEnabled(true);
+    }
+    else
+    {
+        actionPieceDsGroupe->setEnabled(false);
+    }
+}
+
+void F_AjoutSuppModifJeux::on_TB_Haut_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    int LigneElement=ElementChoisi.row();
+    InverserElement(ElementChoisi,LigneElement-1,LigneElement);
+}
+
+void F_AjoutSuppModifJeux::InverserElement(QModelIndex ElementChoisi,int LigneSource,int LigneDestination)
+{
+    QSqlQuery Requete;
+    Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces WHERE IdPieces=:IdPieces");
+    Requete.bindValue(":OrdrePieces",LigneSource);
+    Requete.bindValue(":IdPieces",ElementChoisi.data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces WHERE IdPieces=:IdPieces");
+    Requete.bindValue(":OrdrePieces",LigneDestination);
+    Requete.bindValue(":IdPieces",ElementChoisi.sibling(LigneSource,0).data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    ActualiserContenu();
+}
+
+void F_AjoutSuppModifJeux::ActiverBoutonsContenu(bool Etat)
+{
+    ui->TB_Ajouter->setEnabled(Etat);
+    ui->TB_Supprimer->setEnabled(Etat);
+    if(Etat)
+    {
+        QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+        // S'active uniquement si l'élement choisi est un pièce d'un groupe
+        ui->TB_Gauche->setEnabled(ElementChoisi.data(Qt::UserRole)==PIECE_GROUPE);
+        int FrereHaut=ElementChoisi.sibling(ElementChoisi.row()-1,0).data(Qt::UserRole).toInt();
+        int FrereBas=ElementChoisi.sibling(ElementChoisi.row()+1,0).data(Qt::UserRole).toInt();
+        // S'active uniquement si l'élement choisi est une pièce seule et qu'il y a un groupe en haut ou en bas
+        ui->TB_Droite->setEnabled(ElementChoisi.data(Qt::UserRole)==PIECE_SEULE&&(FrereHaut==GROUPE||FrereBas==GROUPE));
+        ui->TB_Haut->setEnabled(ElementChoisi.row()>0);
+        ui->TB_Bas->setEnabled(ElementChoisi.row()<ModeleContenu->rowCount()-1);
+    }
+    else
+    {
+        ui->TB_Gauche->setEnabled(false);
+        ui->TB_Droite->setEnabled(false);
+        ui->TB_Haut->setEnabled(false);
+        ui->TB_Bas->setEnabled(false);
+    }
+}
+
+void F_AjoutSuppModifJeux::on_TB_Bas_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    int LigneElement=ElementChoisi.row();
+    InverserElement(ElementChoisi,LigneElement+1,LigneElement);
+}
+
+void F_AjoutSuppModifJeux::on_TB_Droite_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    int FrereHaut=ElementChoisi.sibling(ElementChoisi.row()-1,0).data(Qt::UserRole).toInt();
+    int FrereBas=ElementChoisi.sibling(ElementChoisi.row()+1,0).data(Qt::UserRole).toInt();
+    // Si le frère haut est un groupe, on ajoute la pièce à ce groupe, sinon il faut utiliser le frère bas
+    QModelIndex Frere;
+    if(FrereHaut==GROUPE)
+    {
+        Frere=ElementChoisi.sibling(ElementChoisi.row()-1,0);
+    }
+    else
+    {
+        Frere=ElementChoisi.sibling(ElementChoisi.row()+1,0);
+    }
+    QSqlQuery Requete;
+    Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces,IdJeuxOuIdPieces=:IdJeuxOuIdPieces,PieceGroupe=:PieceGroupe WHERE IdPieces=:IdPieces");
+    Requete.bindValue(":OrdrePieces",ModeleContenu->itemFromIndex(Frere)->rowCount());
+    Requete.bindValue(":IdJeuxOuIdPieces",Frere.data(Qt::UserRole+1).toInt());
+    Requete.bindValue(":PieceGroupe",2);
+    Requete.bindValue(":IdPieces",ElementChoisi.sibling(ElementChoisi.row(),0).data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+
+    // S'il s'agit du premier élément, il n'y a rien à faire
+    ActualiserContenu();
+}
+
+void F_AjoutSuppModifJeux::on_TB_Gauche_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+
+    QModelIndex Pere=ElementChoisi.parent();
+    QSqlQuery Requete;
+    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu",nIdJeuSelectionne);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+
+    for(int i=Pere.row()+1;i<ModeleContenu->rowCount();i++)
+    {
+        Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces WHERE IdPieces=:IdPieces");
+        Requete.bindValue(":OrdrePieces",i+1);
+        Requete.bindValue(":IdPieces",ModeleContenu->item(i,0)->data(Qt::UserRole+1).toInt());
+        if(!Requete.exec())
+        {
+            qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        }
+    }
+    Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces,IdJeuxOuIdPieces=:IdJeuxOuIdPieces,PieceGroupe=:PieceGroupe WHERE IdPieces=:IdPieces");
+    Requete.bindValue(":OrdrePieces",Pere.row()+1);
+    Requete.bindValue(":IdJeuxOuIdPieces",IdJeux);
+    Requete.bindValue(":PieceGroupe",0);
+    Requete.bindValue(":IdPieces",ElementChoisi.sibling(ElementChoisi.row(),0).data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+
+    // S'il s'agit du premier élément, il n'y a rien à faire
+    ActualiserContenu();
+}
+
+void F_AjoutSuppModifJeux::on_TB_Supprimer_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+
+    if(ElementChoisi.data(Qt::UserRole).toInt()==GROUPE&&QMessageBox::question(this, "Confirmation",
+            "Êtes-vous sûr de vouloir supprimer ce groupe ainsi que toutes les pièces qu'il contient ?", "Oui", "Non") != 0)
+    {
+        return;
+    }
+
+    QSqlQuery Requete;
+    Requete.prepare("DELETE FROM pieces WHERE IdPieces=:IdPieces") ;
+    Requete.bindValue(":IdPieces", ElementChoisi.sibling(ElementChoisi.row(),0).data(Qt::UserRole+1).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    for(int i=ElementChoisi.row()+1;i<ModeleContenu->rowCount();i++)
+    {
+        Requete.prepare("UPDATE pieces SET OrdrePieces=:OrdrePieces WHERE IdPieces=:IdPieces");
+        Requete.bindValue(":OrdrePieces",i-1);
+        Requete.bindValue(":IdPieces",ModeleContenu->item(i,0)->data(Qt::UserRole+1).toInt());
+        if(!Requete.exec())
+        {
+            qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+        }
+    }
+    if(ElementChoisi.data(Qt::UserRole).toInt()==GROUPE)
+    {
+        int Fin=ModeleContenu->rowCount(ElementChoisi)-1;
+        for(int i=Fin;i>=0;i--)
+        {
+            Requete.prepare("DELETE FROM pieces WHERE IdPieces=:IdPieces") ;
+            Requete.bindValue(":IdPieces", ElementChoisi.child(i,0).data(Qt::UserRole+1).toInt());
+            if(!Requete.exec())
+            {
+                qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+            }
+        }
+    }
+    ActualiserContenu();
 }

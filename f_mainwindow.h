@@ -1,9 +1,12 @@
 #ifndef F_MAINWINDOW_H
 #define F_MAINWINDOW_H
 
+class F_Retour;
+
 #include <QDebug>
 #include <QMainWindow>
 #include <QHostInfo>
+
 #include "f_emprunt.h"
 #include "f_jeux.h"
 #include "f_retour.h"

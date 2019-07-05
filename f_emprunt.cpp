@@ -27,6 +27,7 @@
 #include "fonctions_globale.h"
 #include "f_preferences.h"
 #include "f_paiement.h"
+#include "f_mainwindow.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////Constructeur///////////////////////////////////////////////////
@@ -40,10 +41,25 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
 {
     ui->setupUi(this);
 
+
+    main=dynamic_cast <F_MainWindow *>(parent);
+
     this->pPaiement=new F_Paiement;
     this->pMalles=new F_Malles(this,pCalendrierMalles);
     // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné
     connect( this->pMalles, SIGNAL( Signal_Clic_Emprunter( int ) ), this, SLOT( slot_Clic_Emprunter(int) )) ;
+
+    //Associe le modèle au TableView
+    ModeleContenu=new QStandardItemModel();
+    ui->Tv_Contenu->setModel(this->ModeleContenu);
+    SpinBoxDelegate *DelegateContenu=new SpinBoxDelegate(2, 1, true,this);
+    ui->Tv_Contenu->setItemDelegate(DelegateContenu);
+
+    ActualiserContenu();
+    connect(ModeleContenu,SIGNAL(itemChanged(QStandardItem *)),this,SLOT(on_Tv_Contenu_itemChanged(QStandardItem *)));
+
+    ui->Tv_Contenu->setColumnWidth(0,140);
+    ui->Tv_Contenu->setColumnWidth(1,40);
 
     MembreActif="";
     JeuActif="";
@@ -176,6 +192,10 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     // Bloque la saisie de code jeu à emprunter et du bouton OK tant que pas d'adhérent sélectionné
     ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy hh:mm");
     ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy hh:mm");
+
+    /*DelegateDetect=new DetectDelegate(this);
+    ui->Tw_HistoriqueMaintenance->setItemDelegate(DelegateDetect);
+    connect(DelegateDetect,SIGNAL(editingStartedSignal()),this,SLOT(editingStartedHistorique()));*/
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -297,10 +317,9 @@ void F_Emprunt::ViderJeu()
     ui->Le_StatutJeuARemplir->setText("");
     ui->Lb_StatutJeu->setStyleSheet("QLabel {color:black;}");
     ui->Le_PrixEmpruntARemplir->setText("");
-    ui->TxE_RemarquesJeu->setText("");
-    ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
-    ui->Bt_ValiderRemarquesJeu->setEnabled(false);
-    ui->TxE_ContenuBoite->setText("");
+    ui->Tw_HistoriqueMaintenance->setColumnCount(0);
+    ui->Tw_HistoriqueMaintenance->clear();
+    ModeleContenu->clear();
     ui->Bt_AjouterJeu->setEnabled(false);
     // Plus de jeu actif sélectionné
     this->JeuActif = "" ;
@@ -398,7 +417,7 @@ void F_Emprunt::ActualiserListeJeux()
                 F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
     }
     // Pour les malles, on exclue les jeux qui sont empruntés et réservés aux dates définies
-    if(this->iMode==MODE_MALLES)
+    /*if(this->iMode==MODE_MALLES)
     {
         if(ArgMAJListeJeux!="")
         {
@@ -413,7 +432,8 @@ void F_Emprunt::ActualiserListeJeux()
                 ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' AND DATE(e.DateRetourPrevu)>='"+
                 ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' AND e.DateRetour IS NULL OR e.DateRetourPrevu IS NULL)";
     }
-    else if(ArgMAJListeJeux!="")
+    else */
+    if(ArgMAJListeJeux!="")
     {
         ArgMAJListeJeux=" WHERE "+ArgMAJListeJeux;
     }
@@ -1251,25 +1271,6 @@ void F_Emprunt::on_TxE_Remarques_textChanged()
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////Changement de la remaque du jeu/////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données, un jeu est actif dans la classe
- *  @post
- *  @param
- *  @retval
- *  @return
- *  @test
- *  @see
- */
-void F_Emprunt::on_TxE_RemarquesJeu_textChanged()
-{
-    //Affiche les boutons de modification de la remarque du jeu
-    ui->Bt_ValiderRemarquesJeu->setEnabled(true);
-    ui->Bt_AnnulerRemarquesJeu->setEnabled(true);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////Clic sur un jeu chez le membre dans le tableau///////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /**
@@ -1831,7 +1832,7 @@ void F_Emprunt::Reserver()
                 }
             }
             //Mettre le statut du jeux à "Disponible"
-            QSqlQuery *RequeteStatut=new QSqlQuery();
+            /*QSqlQuery *RequeteStatut=new QSqlQuery();
             RequeteStatut->prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=1 WHERE IdJeux=:IdDuJeu");
             RequeteStatut->bindValue(":IdDuJeu",NouveauEmprunts[i].idJeu);
             // Si la malle doit être réglée, on ajoute la requete dans le tableau des requêtes, sinon on exécute directement la requête
@@ -1845,7 +1846,7 @@ void F_Emprunt::Reserver()
                 {
                     qDebug()<<"requête statut" << getLastExecutedQuery(*RequeteStatut)<<RequeteStatut->lastError();
                 }
-            }
+            }*/
         }
         ui->Bt_Emprunter->setText("Réserver Malle");
         this->iMalleActive=0;
@@ -2318,14 +2319,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     //Récupère le prix de l'emprunt et l'affiche
     ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
 
-    //Récupère la remarque et l'affiche
-    ui->TxE_RemarquesJeu->setText(ObtenirValeurParNom(Requete,"Remarque").toString());
-
-    ui->TxE_ContenuBoite->setText(ObtenirValeurParNom(Requete,"ContenuJeu").toString());
-
-    //Grise les boutons de modification de la remarque du jeu
-    ui->Bt_ValiderRemarquesJeu->setEnabled(false);
-    ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
+    ActualiserContenu();
 
     QDateTime DateActuelle;
     DateActuelle= DateActuelle.currentDateTime();
@@ -2460,74 +2454,6 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     //met le focus sur le bouton "Ajouter"
     //ui->Bt_AjouterJeu->setFocus(Qt::TabFocusReason);
     //ui->Bt_AjouterJeu->setFocusPolicy(Qt::StrongFocus);
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////Enregistrer la remarque du jeu/////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données, un jeu est actif dans la classe, la remarque a été modifiée
- *  @post
- *  @param
- *  @retval
- *  @return
- *  @test
- *  @see    JeuActif
- */
-void F_Emprunt::on_Bt_ValiderRemarquesJeu_clicked()
-{
-    QSqlQuery Requete;
-
-    //prépare le requête de mise à jour
-    Requete.prepare("UPDATE jeux SET Remarque=:NouvelRemarque WHERE CodeJeu=:CodeDuJeu");
-
-    //Entre les valeurs de la requête
-    Requete.bindValue(":CodeDuJeu",JeuActif);
-    Requete.bindValue(":NouvelRemarque",ui->TxE_RemarquesJeu->toPlainText());
-    if (!Requete.exec())
-    {
-        qDebug()<<"F_Emprunt::on_Bt_ValiderRemarquesJeu_clicked => Requete : "<<Requete.lastQuery() ;
-    }
-
-    //Grise les boutons de modification de le remarque
-    ui->Bt_ValiderRemarquesJeu->setEnabled(false);
-    ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
-}
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////Anuler le changement de la remarque du jeu///////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- *  @pre    Connexion avec la base de données, un jeu est actif dans la classe, la remarque a été modifiée
- *  @post
- *  @param
- *  @retval
- *  @return
- *  @test
- *  @see    JeuActif
- */
-void F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked()
-{
-    QSqlQuery Requete;
-
-    //prépare le requête d'annulation
-    Requete.prepare("SELECT Remarque FROM jeux WHERE CodeJeu=:CodeDuJeu");
-    Requete.bindValue(":CodeDuJeu",JeuActif);
-    if (!Requete.exec())
-    {
-        qDebug()<<"F_Emprunt::on_Bt_AnnulerRemarquesJeu_clicked => Requete : "<<Requete.lastQuery() ;
-    }
-
-    Requete.next();
-
-    //Récupère les remarques dans la base de données
-    QString TextTemporaire = (Requete.value(0).toString());
-    ui->TxE_RemarquesJeu->setText(TextTemporaire);
-
-    //grise les boutons de modification des remarques du jeu
-    ui->Bt_ValiderRemarquesJeu->setEnabled(false);
-    ui->Bt_AnnulerRemarquesJeu->setEnabled(false);
 }
 
 void F_Emprunt::on_Bt_CalendrierMalles_clicked()
@@ -2675,4 +2601,259 @@ bool F_Emprunt::VerifJeuReserve()
         }
     }
     return true;
+}
+
+void F_Emprunt::ActualiserContenu()
+{
+    QSqlQuery Requete;
+    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu",JeuActif);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+
+    Requete.prepare("SELECT *,IF(PieceGroupe=2,"
+                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces,"
+                    "(SELECT SUM(NombrePiecesManquantes) FROM piecesmanquantes WHERE IdPieces=IdPieces_Pieces AND Abimee=0) as NombrePiecesManquantes "
+                    "FROM pieces as p WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+" Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+")) ORDER By OrdreGroupePieces");
+    Requete.bindValue(":IdJeux",IdJeux);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    ModeleContenu->clear();
+    //Initialise les colones du TableView des nouveaux emprunts
+    this->ModeleContenu->setColumnCount(2);
+    this->ModeleContenu->setHorizontalHeaderItem(0, new QStandardItem("Libellé"));
+    this->ModeleContenu->setHorizontalHeaderItem(1, new QStandardItem("Nombre"));
+    QStandardItem *Item=new QStandardItem("Manquant\nou abimé");
+    Item->setBackground(QColor(0, 255, 0));
+    this->ModeleContenu->setHorizontalHeaderItem(2, Item);
+
+    int DernierIdGroupe=0;
+    QStandardItem *DernierGroupe;
+    while(Requete.next())
+    {
+        int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
+        QList<QStandardItem *>liste;
+        Item=new QStandardItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
+        Item->setData(PieceGroupe,Qt::UserRole);
+        Item->setData(ObtenirValeurParNom(Requete,"IdPieces").toInt(),Qt::UserRole+1);
+        Item->setData(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt(),Qt::UserRole+2);
+        QStandardItem *Item2=new QStandardItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt());
+        Item2->setData(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt(),Qt::UserRole+3);
+        Item2->setData(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt(),Qt::DisplayRole);
+        liste<<Item<<new QStandardItem(ObtenirValeurParNom(Requete,"NombrePieces").toInt())<<Item2;
+        // S'il s'agit d'un groupe
+        if(PieceGroupe==1)
+        {
+            Item->setIcon(QIcon(":/Sac.svg"));
+            DernierIdGroupe=ObtenirValeurParNom(Requete,"IdPieces").toInt();
+            DernierGroupe=Item;
+        }
+        else
+        {
+            Item->setIcon(QIcon(":/Item.svg"));
+            // Si IdJeuxOuIdPieces est égale à l'id du dernier groupe vu, il s'agit d'une pièce d'un groupe
+            if(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt()==DernierIdGroupe)
+            {
+                ModeleContenu->blockSignals(true);
+                DernierGroupe->appendRow(liste);
+                DernierGroupe->child(DernierGroupe->rowCount()-1,1)->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
+                ModeleContenu->blockSignals(false);
+                ui->Tv_Contenu->expand(ModeleContenu->indexFromItem(DernierGroupe));
+                continue;
+            }
+        }
+        ModeleContenu->blockSignals(true);
+        ModeleContenu->appendRow(liste);
+        QModelIndex index=ModeleContenu->indexFromItem(Item);
+        ModeleContenu->itemFromIndex(index.sibling(index.row(),1))->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
+        ModeleContenu->blockSignals(false);
+    }
+    ui->Tv_Contenu->setColumnWidth(0,370);
+    ui->Tv_Contenu->setColumnWidth(1,70);
+    ui->Tv_Contenu->setColumnWidth(2,60);
+    ActualiserHistoriqueMaintenance();
+}
+
+void F_Emprunt::on_Tv_Contenu_itemChanged(QStandardItem *item)
+{
+    QModelIndex index=ModeleContenu->indexFromItem(item).sibling(item->row(),0);
+
+    QSqlQuery Requete;
+    QString Champs;
+    Requete.prepare("INSERT INTO piecesmanquantes(DatePiecesManquantes,IdMembre_Membres,"
+                    "IdPieces_Pieces,NombrePiecesManquantes,RemarquePiecesManquantes) VALUES (:DatePiecesManquantes,"
+                    ":IdMembre_Membres,:IdPieces_Pieces,:NombrePiecesManquantes,:RemarquePiecesManquantes)");
+    // Si on est sur la 1° colonne, on mets à jour la description sinon c'est le nombre
+    Requete.bindValue(":DatePiecesManquantes",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    Requete.bindValue(":IdMembre_Membres",main->RecupereIdBenevole());
+    Requete.bindValue(":IdPieces_Pieces",index.data(Qt::UserRole+1));
+    QModelIndex index2=ModeleContenu->indexFromItem(item).sibling(item->row(),item->column());
+    int NbPiecesManquantes=item->text().toInt()-index2.data(Qt::UserRole+3).toInt();
+    Requete.bindValue(":NombrePiecesManquantes",NbPiecesManquantes);
+    if(NbPiecesManquantes<0)
+    {
+        Requete.bindValue(":RemarquePiecesManquantes","Pièce(s) rendue");
+    }
+    else
+    {
+        Requete.bindValue(":RemarquePiecesManquantes","Au départ du jeu");
+    }
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    ActualiserHistoriqueMaintenance();
+}
+
+void F_Emprunt::ActualiserHistoriqueMaintenance()
+{
+    ui->Tw_HistoriqueMaintenance->clear();
+    ui->Tw_HistoriqueMaintenance->setColumnCount(6);
+    QStringList m_TableHeader;
+    m_TableHeader<<"Date"<<"Membre"<<"Pièce";
+    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderLabels(m_TableHeader);
+
+    QTableWidgetItem *Item=new QTableWidgetItem("Nb\nmanquant");
+    Item->setBackground(QColor(0, 255, 0));
+    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(3,Item);
+    Item=new QTableWidgetItem("Abimée?");
+    Item->setBackground(QColor(0, 255, 0));
+    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(4,Item);
+    Item=new QTableWidgetItem("Remarque");
+    Item->setBackground(QColor(0, 255, 0));
+    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(5,Item);
+
+    QSqlQuery Requete;
+    Requete.prepare("SELECT * FROM piecesmanquantes as pm LEFT JOIN pieces as p ON p.IdPieces=IdPieces_Pieces "
+                    "LEFT JOIN jeux as j ON p.IdJeuxOuIdPieces=IdJeux LEFT JOIN membres as m ON IdMembre_Membres=m.IdMembre "
+                    "WHERE j.CodeJeu=:CodeJeu AND p.PieceGroupe!=2");
+    Requete.bindValue(":CodeJeu",JeuActif);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    int i=0;
+    while(Requete.next())
+    {
+        ui->Tw_HistoriqueMaintenance->blockSignals(true);
+        ui->Tw_HistoriqueMaintenance->setRowCount(i+1);
+        QTableWidgetItem *Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DatePiecesManquantes").toDate().toString("dd-MM-yy"));
+        Item->setData(Qt::UserRole,ObtenirValeurParNom(Requete,"IdPiecesManquantes").toInt());
+
+        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 0, Item);
+        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"Prenom").toString());
+        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 1, Item);
+        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
+        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 2, Item);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 3, new QTableWidgetItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toString()));
+        Item = new QTableWidgetItem();
+        Item->setFlags(Item->flags() | Qt::ItemIsUserCheckable );
+        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+        if(ObtenirValeurParNom(Requete,"Abimee").toBool())
+        {
+            Item->setCheckState(Qt::Checked);
+        }
+        else
+        {
+            Item->setCheckState(Qt::Unchecked);
+        }
+
+        ui->Tw_HistoriqueMaintenance->setItem(i, 4, Item);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 5, new QTableWidgetItem(ObtenirValeurParNom(Requete,"RemarquePiecesManquantes").toString()));
+        ui->Tw_HistoriqueMaintenance->blockSignals(false);
+        i++;
+    }
+    ui->Tw_HistoriqueMaintenance->resizeColumnsToContents();
+    ui->Tw_HistoriqueMaintenance->setColumnWidth(5,300);
+    ui->Bt_SupprimerEvenement->setEnabled(false);
+}
+
+bool F_Emprunt::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    uint iIdBenevole=main->RecupereIdBenevole();
+    if(iIdBenevole==0)
+    {
+        QMessageBox::critical(this,"Aucun utilisateur choisir",
+                              "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
+        return true;
+    }
+    return false;
+}
+
+void F_Emprunt::on_Bt_Aide_PiecesManquantes_clicked()
+{
+    QMessageBox::information(this,"Déclarer une pièce manquante ou abimée",
+                             "Il suffit de cliquer sur la ligne correspondante à la pièce manquante ou abimée dans la colonne \"Manquant ou abimé\".\n"
+                             "Il est possible de rajouter une remarque dans l'historique de maintenance et de préciser qu'il s'agit d'une pièce abimée","OK");
+}
+
+void F_Emprunt::on_Bt_SupprimerEvenement_clicked()
+{
+    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()==0)
+    {
+        return;
+    }
+    QSqlQuery Requete;
+    Requete.prepare("DELETE FROM piecesmanquantes WHERE IdPiecesManquantes=:IdPiecesManquantes");
+    Requete.bindValue(":IdPiecesManquantes",ui->Tw_HistoriqueMaintenance->item(ui->Tw_HistoriqueMaintenance
+                                             ->selectedItems().at(0)->row(),0)->data(Qt::UserRole).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    ActualiserHistoriqueMaintenance();
+}
+
+void F_Emprunt::editingStartedHistorique()
+{
+}
+
+void F_Emprunt::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item)
+{
+    QSqlQuery Requete;
+    QString Champs;
+    QString Valeur;
+    // Si on est sur la 2° colonne, on mets à jour la description sinon c'est le nombre
+    switch(item->column())
+    {
+        case 3:
+            Champs="NombrePiecesManquantes";
+            Valeur=item->text();
+            break;
+        case 4:
+            Champs="Abimee";
+            Valeur=QString::number(item->checkState()==Qt::Checked?1:0);
+            break;
+        case 5:
+            Champs="RemarquePiecesManquantes";
+            Valeur=item->text();
+            break;
+    }
+    Requete.prepare("UPDATE piecesmanquantes SET "+Champs+"=:Valeur WHERE IdPiecesManquantes=:IdPiecesManquantes");
+    Requete.bindValue(":Valeur",Valeur);
+    Requete.bindValue(":IdPiecesManquantes",ui->Tw_HistoriqueMaintenance->item(item->row(),0)->data(Qt::UserRole).toInt());
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    ActualiserContenu();
+}
+
+void F_Emprunt::on_Tw_HistoriqueMaintenance_clicked(const QModelIndex &index)
+{
+    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
+    {
+        ui->Bt_SupprimerEvenement->setEnabled(true);
+    }
 }

@@ -3,6 +3,10 @@
 #define F_EMPRUNT_H
 
 class F_Emprunt;
+class F_MainWindow;
+
+#include "f_mainwindow.h"
+
 
 #include <QStandardItem>
 #include <QDate>
@@ -14,6 +18,7 @@ class F_Emprunt;
 #include "f_malles.h"
 #include "f_membres.h"
 #include "searchbox.h"
+#include "spinboxdelegate.h"
 
 
 #define MODE_EMPRUNT 0
@@ -123,8 +128,11 @@ public:
     //! Vérifier si ce jeu est réservé
     bool VerifJeuReserve();
 
+    void ActualiserHistoriqueMaintenance();
+
     //! modèle du TableView des nouveaux emprunts
     QStandardItemModel * ModeleEmpruntsAValider;
+
 
 private slots:
     void on_TxE_Remarques_textChanged();
@@ -132,12 +140,6 @@ private slots:
     void on_Bt_ValiderRemarques_clicked();
 
     void on_Bt_AnnulerRemarques_clicked();
-
-    void on_TxE_RemarquesJeu_textChanged();
-
-    void on_Bt_ValiderRemarquesJeu_clicked();
-
-    void on_Bt_AnnulerRemarquesJeu_clicked();
 
     void on_CBx_TypeEmprunt_currentIndexChanged(int index);
 
@@ -173,12 +175,28 @@ private slots:
 
     void on_DtE_Depart_dateChanged(const QDate &date);
 
+    void ActualiserContenu();
+
+    bool on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+
+    void on_Bt_Aide_PiecesManquantes_clicked();
+
+    void on_Bt_SupprimerEvenement_clicked();
+
+    void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
+
+    void on_Tw_HistoriqueMaintenance_clicked(const QModelIndex &index);
+
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);
 
     void slot_Non_Adherent_Cree(int iCodeMembre);
 
     void slot_ActualiserMembres();
+
+    void on_Tv_Contenu_itemChanged(QStandardItem *item);
+
+    void editingStartedHistorique();
 
 signals:
     void Signal_Reservation_Malle(int iIdMalle);
@@ -251,6 +269,12 @@ private:
     int iNbNouveauxEmprunts;
 
     void Reserver();
+
+    //! modèle du TreeView du contenu des jeux
+    QStandardItemModel * ModeleContenu;
+
+    F_MainWindow *main;
+    DetectDelegate *DelegateDetect;
 };
 
 #endif // F_EMPRUNT_H

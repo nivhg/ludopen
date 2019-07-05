@@ -56,5 +56,7 @@
         <file>logo-ludo.png</file>
         <file>carte.jpg</file>
         <file>Aide2.png</file>
+        <file>Item.svg</file>
+        <file>Sac.svg</file>
     </qresource>
 </RCC>

@@ -145,7 +145,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
     int iIdMalleCourant=ObtenirValeurParNom(Requete,"IdMalle").toInt();
     do
     {
-        qDebug()<<ObtenirValeurParNom(Requete,"Jeux_IdJeux").toInt();
+        //qDebug()<<ObtenirValeurParNom(Requete,"Jeux_IdJeux").toInt();
         // Recherche de numéro du ligne du jeu
         for(i=0;i<this->ModeleMalle->rowCount();i++)
         {
@@ -207,7 +207,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         }
         int iRetourEmprunt;
         QDate DateRetourEmprunt=ObtenirValeurParNom(Requete,"DateRetour").toDate();
-        qDebug()<<ObtenirValeurParNom(Requete,"NomMembre").toString();
+        //qDebug()<<ObtenirValeurParNom(Requete,"NomMembre").toString();
         if(DateRetourEmprunt.month()==(ui->CBx_Mois->currentIndex()+1))
         {
             iRetourEmprunt=DateRetourEmprunt.day();
