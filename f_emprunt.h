@@ -185,8 +185,6 @@ private slots:
 
     void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
 
-    void on_Tw_HistoriqueMaintenance_clicked(const QModelIndex &index);
-
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);
 

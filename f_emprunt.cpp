@@ -193,9 +193,9 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy hh:mm");
     ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy hh:mm");
 
-    /*DelegateDetect=new DetectDelegate(this);
+    DelegateDetect=new DetectDelegate(this);
     ui->Tw_HistoriqueMaintenance->setItemDelegate(DelegateDetect);
-    connect(DelegateDetect,SIGNAL(editingStartedSignal()),this,SLOT(editingStartedHistorique()));*/
+    connect(DelegateDetect,SIGNAL(editingStartedSignal()),this,SLOT(editingStartedHistorique()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2817,6 +2817,10 @@ void F_Emprunt::on_Bt_SupprimerEvenement_clicked()
 
 void F_Emprunt::editingStartedHistorique()
 {
+    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
+    {
+        ui->Bt_SupprimerEvenement->setEnabled(true);
+    }
 }
 
 void F_Emprunt::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item)
@@ -2848,12 +2852,4 @@ void F_Emprunt::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item)
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
     ActualiserContenu();
-}
-
-void F_Emprunt::on_Tw_HistoriqueMaintenance_clicked(const QModelIndex &index)
-{
-    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
-    {
-        ui->Bt_SupprimerEvenement->setEnabled(true);
-    }
 }
