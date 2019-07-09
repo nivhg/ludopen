@@ -2618,8 +2618,8 @@ void F_Emprunt::ActualiserContenu()
     Requete.prepare("SELECT *,IF(PieceGroupe=2,"
                     "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces,"
                     "(SELECT SUM(NombrePiecesManquantes) FROM piecesmanquantes WHERE IdPieces=IdPieces_Pieces AND Abimee=0) as NombrePiecesManquantes "
-                    "FROM pieces as p WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+" Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
-                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+")) ORDER By OrdreGroupePieces");
+                    "FROM pieces as p WHERE IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux)) ORDER By OrdreGroupePieces");
     Requete.bindValue(":IdJeux",IdJeux);
     if(!Requete.exec())
     {
@@ -2630,7 +2630,7 @@ void F_Emprunt::ActualiserContenu()
     this->ModeleContenu->setColumnCount(2);
     this->ModeleContenu->setHorizontalHeaderItem(0, new QStandardItem("Libellé"));
     this->ModeleContenu->setHorizontalHeaderItem(1, new QStandardItem("Nombre"));
-    QStandardItem *Item=new QStandardItem("Manquant\nou abimé");
+    QStandardItem *Item=new QStandardItem("Manquant\n(abimé)");
     Item->setBackground(QColor(0, 255, 0));
     this->ModeleContenu->setHorizontalHeaderItem(2, Item);
 
@@ -2657,7 +2657,6 @@ void F_Emprunt::ActualiserContenu()
         }
         else
         {
-            Item->setIcon(QIcon(":/Item.svg"));
             // Si IdJeuxOuIdPieces est égale à l'id du dernier groupe vu, il s'agit d'une pièce d'un groupe
             if(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt()==DernierIdGroupe)
             {
@@ -2666,7 +2665,12 @@ void F_Emprunt::ActualiserContenu()
                 DernierGroupe->child(DernierGroupe->rowCount()-1,1)->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
                 ModeleContenu->blockSignals(false);
                 ui->Tv_Contenu->expand(ModeleContenu->indexFromItem(DernierGroupe));
+                Item->setIcon(QIcon(":/ItemDansSac.svg"));
                 continue;
+            }
+            else
+            {
+                Item->setIcon(QIcon(":/Item.svg"));
             }
         }
         ModeleContenu->blockSignals(true);
@@ -2731,10 +2735,20 @@ void F_Emprunt::ActualiserHistoriqueMaintenance()
     ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(5,Item);
 
     QSqlQuery Requete;
+    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu",JeuActif);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+
     Requete.prepare("SELECT * FROM piecesmanquantes as pm LEFT JOIN pieces as p ON p.IdPieces=IdPieces_Pieces "
                     "LEFT JOIN jeux as j ON p.IdJeuxOuIdPieces=IdJeux LEFT JOIN membres as m ON IdMembre_Membres=m.IdMembre "
-                    "WHERE j.CodeJeu=:CodeJeu AND p.PieceGroupe!=2");
-    Requete.bindValue(":CodeJeu",JeuActif);
+                    "WHERE j.IdJeux=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux))");
+    Requete.bindValue(":IdJeux",IdJeux);
     if(!Requete.exec())
     {
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
@@ -2793,8 +2807,10 @@ bool F_Emprunt::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *mod
 void F_Emprunt::on_Bt_Aide_PiecesManquantes_clicked()
 {
     QMessageBox::information(this,"Déclarer une pièce manquante ou abimée",
-                             "Il suffit de cliquer sur la ligne correspondante à la pièce manquante ou abimée dans la colonne \"Manquant ou abimé\".\n"
-                             "Il est possible de rajouter une remarque dans l'historique de maintenance et de préciser qu'il s'agit d'une pièce abimée","OK");
+                             "Il suffit de cliquer sur la ligne correspondante à la pièce manquante ou abimée dans la colonne \"Manquant (abimé)\" du contenu du jeu.\n"
+                             "Il est possible de rajouter une remarque dans l'historique de maintenance et de préciser qu'il s'agit d'une pièce abimée."
+                             "Les pièces abimées seront retirées de la colonne \"Manquant (abimé)\" (elles sont encore présente dans le jeu, mais sont abimées)."
+                             ,"OK");
 }
 
 void F_Emprunt::on_Bt_SupprimerEvenement_clicked()
@@ -2852,4 +2868,9 @@ void F_Emprunt::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item)
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
     ActualiserContenu();
+}
+
+void F_Emprunt::on_Lb_NomJeu_linkActivated(const QString &link)
+{
+    emit(Signal_AfficherJeu(JeuActif));
 }

@@ -377,7 +377,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
         ui->menuImprimer->setEnabled(false);
         this->pListeMembres->AffichageListe() ;
     }
-    else if(tab=="jeu") //Jeux
+    else if(tab=="jeux") //Jeux
     {
         // Rendre visible le menu jeu pour imprimer les étiquettes et les fiches des jeux
         // A_FAIRE : ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
@@ -446,7 +446,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
 
                 connect(this->pPopUpCode, SIGNAL(SignalOnglet()), this, SLOT(slot_ChangerOnglet()));
         }*/
-        ui->menuImprimer->setEnabled(false);
+        ui->menuImprimer->setEnabled(true);
         this->pAdministrerMembres->MaJListeMembres() ;
         this->pAdministrerMembres->AfficherListe() ;
         this->pAdministrerMembres->MaJTitre() ;
@@ -554,7 +554,7 @@ void F_MainWindow::CreerJeux()
     if(!this->pJeux)
     {
         qDebug()<<"Création F_Jeux";
-        this->pJeux=new F_Jeux (this->ui->Jeu);
+        this->pJeux=new F_Jeux (this->ui->Jeux);
         //Jeux
         this->ui->Lay_Jeux->addWidget(this->pJeux);
         // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné
@@ -580,6 +580,7 @@ void F_MainWindow::CreerEmprunt()
 {
     if(!this->pEmprunt)
     {
+        CreerJeux();
         qDebug()<<"Création F_Emprunt";
         this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this);
         //Emprunt
@@ -591,6 +592,8 @@ void F_MainWindow::CreerEmprunt()
                  SLOT( slot_VerifMembrePanier(uint IdDuMembre)) );
         if(!pCalendrierMalles)
             connect(this->pEmprunt,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
+        connect( this->pEmprunt, SIGNAL( Signal_AfficherJeu(QString)), this,
+                 SLOT( slot_AfficherJeu(QString)) );
     }
     // Si l'onglet Liste réservations a été crée, on connecte le signal et le slot
     if(this->pListeReservations)
@@ -603,12 +606,16 @@ void F_MainWindow::CreerRetour()
 {
     if(!this->pRetour)
     {
+        CreerJeux();
         qDebug()<<"Création F_Retour";
-        this->pRetour=new F_Retour (this->ui->Retour);
+        this->pRetour=new F_Retour (this);
         //Retour
         this->ui->Lay_Retour->addWidget(this->pRetour);
         connect( this->pRetour, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
                  SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) ) ;
+        connect( this->pRetour, SIGNAL( Signal_AfficherJeu(QString)), this,
+                 SLOT( slot_AfficherJeu(QString)) );
+
     }
 }
 
@@ -721,7 +728,8 @@ void F_MainWindow::slot_DoubleClic_ListeMembresAdmin(uint IdMembre)
 void F_MainWindow::on_Menu_Jeux_Imprimer_Etiquette_triggered()
 {
    // ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
-   if ( !this->pJeux->get_JeuEnConsultation().isEmpty() )
+   if ( (ui->TbW_Main->currentIndex()==this->trouveOnglet("jeux") && !this->pJeux->get_JeuEnConsultation().isEmpty()) ||
+        (ui->TbW_Main->currentIndex()==this->trouveOnglet("administration") && !this->pAjoutSuppModifJeux->get_JeuEnConsultation().isEmpty()))
    {
        F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu ;
        f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(this->pJeux->get_JeuEnConsultation() ) ;
@@ -1122,4 +1130,10 @@ void F_MainWindow::on_menuUtilisateurEnCours_triggered(QAction *caller)
 uint F_MainWindow::RecupereIdBenevole()
 {
     return iIdBenevole;
+}
+
+void F_MainWindow::slot_AfficherJeu(QString CodeJeu)
+{
+    ui->TbW_Main->setCurrentIndex(this->trouveOnglet("jeux"));
+    pJeux->AfficherJeu(CodeJeu);
 }

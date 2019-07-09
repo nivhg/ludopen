@@ -81,6 +81,7 @@ public slots:
     void slot_MembreIdentifier(uint iIdMembre);
     void slot_MiseAJourNbItemsPanier(uint iNbItems);
     void slot_verifReservation();
+    void slot_AfficherJeu(QString CodeJeu);
 
 private slots:
     void on_Bt_Membre_clicked();

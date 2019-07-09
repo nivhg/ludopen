@@ -55,7 +55,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>1</number>
       </property>
       <property name="iconSize">
        <size>
@@ -78,7 +78,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="Jeu">
+      <widget class="QWidget" name="Jeux">
        <attribute name="icon">
         <iconset>
          <normalon>:/De_6_faces.png</normalon>

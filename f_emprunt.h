@@ -185,6 +185,8 @@ private slots:
 
     void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
 
+    void on_Lb_NomJeu_linkActivated(const QString &link);
+
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);
 
@@ -204,6 +206,7 @@ signals:
     //! Signal indiquant qu'il y a une nouvelle malle
     void Signal_Nouvelle_Malle();
     void Signal_Nouvelle_Reservation();
+    void Signal_AfficherJeu(QString CodeJeu);
 
 private:
     Ui::F_Emprunt *ui;

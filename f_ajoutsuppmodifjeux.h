@@ -99,6 +99,11 @@ public:
     void ActualiserLienJeux();
 
     void ActualiserContenu();
+    /** @brief Permet de récuperer le code du jeu en consultation
+     */
+    QString get_JeuEnConsultation() ;
+    /** @brief Permet de fixer le code du jeu en consultation
+     */
 
 public slots:
     void slot_ValiderClassification();
@@ -107,6 +112,7 @@ public slots:
     void slot_ValiderMotCle();
     void slot_ValiderStatut();
     void slot_ActiverClicImage();
+    static void on_TB_Supprimer_clicked(QTreeView *Tv_Contenu,QStandardItemModel *ModeleContenu,QWidget *parent);
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -209,8 +215,6 @@ private slots:
     void on_TB_Droite_clicked();
 
     void on_TB_Gauche_clicked();
-
-    void on_TB_Supprimer_clicked();
 
 private:
     // ATTRIBUTs ----------------------------------------------------------------

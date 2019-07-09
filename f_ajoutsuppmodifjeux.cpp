@@ -207,6 +207,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     connect( this->lb_image, SIGNAL( SignalChargementFini() ), this, SLOT( slot_ActiverClicImage() ) ) ;
     // Faire défiler le tableau des jeux avec les flèches du clavier
     connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
+
     QMenu *menu = new QMenu;
     QAction *actionGroupe=menu->addAction("un groupe de pièces");
     actionGroupe->setData("groupe");
@@ -223,7 +224,7 @@ F_AjoutSuppModifJeux::F_AjoutSuppModifJeux(QWidget *parent) :
     //Associe le modèle au TableView
     ModeleContenu=new QStandardItemModel();
     ui->Tv_Contenu->setModel(this->ModeleContenu);
-    DelegateContenu=new SpinBoxDelegate();
+    DelegateContenu=new SpinBoxDelegate(0,-1,false,this);
     ui->Tv_Contenu->setItemDelegate(DelegateContenu);
 
     ActualiserContenu();
@@ -2388,7 +2389,6 @@ void F_AjoutSuppModifJeux::on_menuAjouterPiece_triggered()
     }
     else
     {
-        Item2->setIcon(QIcon(":/Item.svg"));
         Requete.prepare("INSERT INTO pieces(OrdrePieces,NombrePieces,DescriptionPieces,PieceGroupe,IdJeuxOuIdPieces) VALUES "
                         "(:OrdrePieces,NULL,NULL,:PieceGroupe,:IdGroupeOuJeu)");
 
@@ -2407,6 +2407,7 @@ void F_AjoutSuppModifJeux::on_menuAjouterPiece_triggered()
             Requete.bindValue(":PieceGroupe",PIECE_GROUPE);
             Requete.bindValue(":IdGroupeOuJeu", ModeleContenu->index(ui->Tv_Contenu->currentIndex().row(),0).data(Qt::UserRole+1));
             Requete.bindValue(":OrdrePieces", ModeleContenu->indexFromItem(Item).row());
+            Item2->setIcon(QIcon(":/ItemDansSac.svg"));
         }
         else
         {
@@ -2417,6 +2418,7 @@ void F_AjoutSuppModifJeux::on_menuAjouterPiece_triggered()
             Requete.bindValue(":IdGroupeOuJeu", IdJeux);
             Liste<<Item<<Item2;
             ModeleContenu->appendRow(Liste);
+            Item2->setIcon(QIcon(":/Item.svg"));
         }
         if(!Requete.exec())
         {
@@ -2442,8 +2444,8 @@ void F_AjoutSuppModifJeux::ActualiserContenu()
 
     Requete.prepare("SELECT *,IF(PieceGroupe=2,"
                     "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces"
-                    " FROM pieces as p WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+" Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
-                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces="+QString::number(IdJeux)+")) ORDER By OrdreGroupePieces");
+                    " FROM pieces as p WHERE IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux)) ORDER By OrdreGroupePieces");
     Requete.bindValue(":IdJeux",IdJeux);
     if(!Requete.exec())
     {
@@ -2476,14 +2478,18 @@ void F_AjoutSuppModifJeux::ActualiserContenu()
         }
         else
         {
-            Item2->setIcon(QIcon(":/Item.svg"));
             // Si IdJeuxOuIdPieces est égale à l'id du dernier groupe vu, il s'agit d'une pièce d'un groupe
             if(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt()==DernierIdGroupe)
             {
                 DernierGroupe->appendRow(liste);
                 DernierGroupe->child(DernierGroupe->rowCount()-1,0)->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
                 ui->Tv_Contenu->expand(ModeleContenu->indexFromItem(DernierGroupe));
+                Item2->setIcon(QIcon(":/ItemDansSac.svg"));
                 continue;
+            }
+            else
+            {
+                Item2->setIcon(QIcon(":/Item.svg"));
             }
         }
         ModeleContenu->appendRow(liste);
@@ -2544,7 +2550,7 @@ void F_AjoutSuppModifJeux::SelectionChanged_Tv_Contenu(const QItemSelection&sele
 
 void F_AjoutSuppModifJeux::on_TB_Haut_clicked()
 {
-    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex().sibling(ui->Tv_Contenu->currentIndex().row(),0);
     int LigneElement=ElementChoisi.row();
     InverserElement(ElementChoisi,LigneElement-1,LigneElement);
 }
@@ -2575,7 +2581,7 @@ void F_AjoutSuppModifJeux::ActiverBoutonsContenu(bool Etat)
     ui->TB_Supprimer->setEnabled(Etat);
     if(Etat)
     {
-        QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+        QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex().sibling(ui->Tv_Contenu->currentIndex().row(),0);
         // S'active uniquement si l'élement choisi est un pièce d'un groupe
         ui->TB_Gauche->setEnabled(ElementChoisi.data(Qt::UserRole)==PIECE_GROUPE);
         int FrereHaut=ElementChoisi.sibling(ElementChoisi.row()-1,0).data(Qt::UserRole).toInt();
@@ -2596,7 +2602,7 @@ void F_AjoutSuppModifJeux::ActiverBoutonsContenu(bool Etat)
 
 void F_AjoutSuppModifJeux::on_TB_Bas_clicked()
 {
-    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex().sibling(ui->Tv_Contenu->currentIndex().row(),0);
     int LigneElement=ElementChoisi.row();
     InverserElement(ElementChoisi,LigneElement+1,LigneElement);
 }
@@ -2670,11 +2676,11 @@ void F_AjoutSuppModifJeux::on_TB_Gauche_clicked()
     ActualiserContenu();
 }
 
-void F_AjoutSuppModifJeux::on_TB_Supprimer_clicked()
+void F_AjoutSuppModifJeux::on_TB_Supprimer_clicked(QTreeView *Tv_Contenu,QStandardItemModel *ModeleContenu,QWidget *parent)
 {
-    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex();
+    QModelIndex ElementChoisi=Tv_Contenu->currentIndex();
 
-    if(ElementChoisi.data(Qt::UserRole).toInt()==GROUPE&&QMessageBox::question(this, "Confirmation",
+    if(ElementChoisi.data(Qt::UserRole).toInt()==GROUPE&&QMessageBox::question(parent, "Confirmation",
             "Êtes-vous sûr de vouloir supprimer ce groupe ainsi que toutes les pièces qu'il contient ?", "Oui", "Non") != 0)
     {
         return;
@@ -2710,5 +2716,15 @@ void F_AjoutSuppModifJeux::on_TB_Supprimer_clicked()
             }
         }
     }
-    ActualiserContenu();
+    ModeleContenu->removeRow(ElementChoisi.row());
+}
+
+/**
+ * @brief Méthode qui récupère le code du jeu en cours de consultation
+ *
+ * @return QString
+ */
+QString F_AjoutSuppModifJeux::get_JeuEnConsultation()
+{
+    return this->nIdJeuSelectionne ;
 }

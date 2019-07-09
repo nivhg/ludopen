@@ -11,6 +11,8 @@
 #include "f_declarerintervention.h"
 #include "f_detailsjeux.h"
 #include "f_reservation.h"
+#include "spinboxdelegate.h"
+#include "f_ajoutsuppmodifjeux.h"
 
 using namespace std;
 
@@ -45,10 +47,6 @@ public:
      */
     void set_JeuEnConsultation(QString CodeJeuChoisi);
 
-    /** @brief Affiche les information sur un jeu
-     */
-    void AfficherJeu(QString Jeu);
-
     /** @brief Affiche tous les jeux dans le tableau
      */
     void AfficherJeux();
@@ -57,6 +55,13 @@ public:
      */
     void ActualiserLienJeux();
 
+    void ActualiserContenu();
+
+public slots:
+    /** @brief Affiche les information sur un jeu
+     */
+    void AfficherJeu(QString Jeu);
+
 private slots:
     // METHODES---------------------------------------------------
 
@@ -64,11 +69,6 @@ private slots:
      *
      */
     void on_Bt_DeclarerIntervention_clicked();
-
-    /** @brief Appeler lorsque l'on modifier le contenu du champ remarques
-     *
-     */
-    void on_TxE_remarques_textChanged();
 
     /** @brief Appeler lorsque l'on valide la nouvelle remarque
      *
@@ -89,21 +89,6 @@ private slots:
      *
      */
     void on_Bt_ValiderDescription_clicked();
-
-    /** @brief Appeler lorsque l'on modifie le contenu du champ contenu
-     *
-     */
-    void on_TxE_contenu_textChanged();
-
-    /** @brief Appeler lorsque l'on valide le nouveau contenu
-     *
-     */
-    void on_Bt_ValiderContenu_clicked();
-
-    /** @brief Appeler lorsque l'on annuler le nouveau contenu
-     *
-     */
-    void on_Bt_AnnulerContenu_clicked();
 
     /** @brief Appeler lorsque l'on annule la nouvelle description
      *
@@ -142,6 +127,26 @@ private slots:
 
     void on_TbW_LiensJeux_clicked(const QModelIndex &index);
 
+    void on_menuAjouterPiece_triggered();
+
+    void on_Tv_Contenu_itemChanged(QStandardItem *item);
+
+    void SelectionChanged_Tv_Contenu(const QItemSelection&,const QItemSelection&);
+
+    void on_TB_Haut_clicked();
+
+    void ActiverBoutonsContenu(bool Etat);
+
+    void InverserElement(QModelIndex ElementChoisi,int LigneSource,int LigneDestination);
+
+    void on_TB_Bas_clicked();
+
+    void on_TB_Droite_clicked();
+
+    void on_TB_Gauche_clicked();
+
+    void on_TB_Supprimer_clicked();
+
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé
     void Signal_Clic_Reserve( int IdReservation);
@@ -175,6 +180,14 @@ private:
     QString sCheminFichier;
 
     AccesFichierParHTTP * acces;
+
+    //! modèle du TreeView du contenu des jeux
+    QStandardItemModel * ModeleContenu;
+
+    //! Choix du menu ajouter pour créer une pièce dans un groupe
+    QAction *actionPieceDsGroupe;
+
+    SpinBoxDelegate *DelegateContenu;
 };
 
 //-----------------------------------------------------------------

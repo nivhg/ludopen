@@ -58,5 +58,6 @@
         <file>Aide2.png</file>
         <file>Item.svg</file>
         <file>Sac.svg</file>
+        <file>ItemDansSac.svg</file>
     </qresource>
 </RCC>

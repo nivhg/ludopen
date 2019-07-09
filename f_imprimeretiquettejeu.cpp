@@ -54,25 +54,61 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     
     this->show();
     
-    QSqlQuery RequeteEtiquetteJeu ;
-    RequeteEtiquetteJeu.prepare("SELECT NomJeu, CodeJeu, ContenuJeu FROM jeux WHERE CodeJeu =:CodeDuJeu") ;
-    RequeteEtiquetteJeu.bindValue(":CodeDuJeu", CodeJeu);
-    if(!RequeteEtiquetteJeu.exec())
+    QSqlQuery Requete;
+    Requete.prepare("SELECT NomJeu,IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.bindValue(":CodeJeu",CodeJeu);
+    if(!Requete.exec())
     {
-        qDebug() << "F_Jeux::ImprimerEtiquetteJeu()";
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    RequeteEtiquetteJeu.next() ;
-    
+    Requete.next();
+    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+    QString NomJeu=ObtenirValeurParNom(Requete,"NomJeu").toString();
+
+    Requete.prepare("SELECT *,IF(PieceGroupe=2,"
+                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces"
+                    " FROM pieces as p WHERE IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
+                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux)) ORDER By OrdreGroupePieces");
+    Requete.bindValue(":IdJeux",IdJeux);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+
+    int DernierIdGroupe=0;
+    QString ContenuJeu;
+    while(Requete.next())
+    {
+        int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
+        // S'il s'agit d'un groupe
+        switch(PieceGroupe)
+        {
+            case PIECE_SEULE:
+            case GROUPE:
+                ContenuJeu+="- "+ObtenirValeurParNom(Requete,"NombrePieces").toString()+" "+
+                        ObtenirValeurParNom(Requete,"DescriptionPieces").toString();
+                if(PieceGroupe==PIECE_SEULE)
+                {
+                    ContenuJeu+="\n";
+                }
+                else
+                {
+                    ContenuJeu+=" :\n";
+                }
+                break;
+            case PIECE_GROUPE:
+                ContenuJeu+="\t* "+ObtenirValeurParNom(Requete,"NombrePieces").toString()+" "+
+                        ObtenirValeurParNom(Requete,"DescriptionPieces").toString()+"\n";
+                break;
+        }
+    }
     QString InfoLudo = F_Preferences::ObtenirValeur("Nom") + "\n" + F_Preferences::ObtenirValeur("Adresse")
             + "\n" + F_Preferences::ObtenirValeur("CodePostal") + "  " + F_Preferences::ObtenirValeur("Ville")
             + "\n" + F_Preferences::ObtenirValeur("NumeroTel") +"\n" ;
-    QString NomJeu = RequeteEtiquetteJeu.value(0).toString();
-    QString CodeDuJeu = RequeteEtiquetteJeu.value(1).toString() ;
-    QString ContenuJeu = RequeteEtiquetteJeu.value(2).toString() ;
     
     ui->Lb_NomJeu->setText(NomJeu);
     ui->Lb_InfoLudo->setText(InfoLudo);
-    ui->Le_CodeJeu->setText(CodeDuJeu);
+    ui->Le_CodeJeu->setText(CodeJeu);
     ui->TxE_Contenu->setText(ContenuJeu);
 }
 

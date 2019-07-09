@@ -21,6 +21,7 @@
 #include "f_panier.h"
 #include "fonctions_globale.h"
 #include "d_resamisdecote.h"
+#include "spinboxdelegate.h"
 
 namespace Ui {
     class F_Retour;
@@ -88,6 +89,8 @@ public:
     //! modèle du TableView des jeux empruntés
     QStandardItemModel * ModelJeuEmpruntes;
 
+    void ActualiserHistoriqueMaintenance();
+
 private slots:
     void on_LE_SearchMembre_returnPressed();
 
@@ -97,13 +100,13 @@ private slots:
 
     void on_Txe_RemarqueMembre_textChanged();
 
-    void on_Bt_ValiderRemarqueJeu_clicked();
+    void on_Bt_ValiderRemarqueMalle_clicked();
 
-    void on_Bt_AnnulerRemarqueJeu_clicked();
+    void on_Bt_AnnulerRemarqueMalle_clicked();
 
     void on_Bt_AnnulerRemarqueMembre_clicked();
 
-    void on_TxE_RemarquesJeu_textChanged();
+    void on_TxE_RemarquesMalle_textChanged();
 
     void on_Bt_RendreJeu_clicked();
 
@@ -125,9 +128,27 @@ private slots:
 
     void on_Bt_PayerRetard_clicked();
 
+    void ActualiserContenu();
+
+    bool on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
+
+    void on_Bt_Aide_PiecesManquantes_clicked();
+
+    void on_Bt_SupprimerEvenement_clicked();
+
+    void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
+
+    void on_Lb_NomJeu_linkActivated(const QString &link);
+
+public slots:
+    void on_Tv_Contenu_itemChanged(QStandardItem *item);
+
+    void editingStartedHistorique();
+
 signals:
     //! Signal emit lors de l'ajout au panier d'un abonnement
     bool Signal_AjouterAuPanier(QString Titre,uint nIDMembre,double Prix,int IdVentilation,QString Table,QList<QSqlQuery *> *requete);
+    void Signal_AfficherJeu(QString CodeJeu);
 
 private:
     Ui::F_Retour *ui;
@@ -155,6 +176,11 @@ private:
     //! Liste des jeux
     QVector<QVector <QString> > VecteurJeux;
 
+    //! modèle du TreeView du contenu des jeux
+    QStandardItemModel * ModeleContenu;
+
+    F_MainWindow *main;
+    DetectDelegate *DelegateDetect;
 };
 
 #endif // F_RETOUR_H
