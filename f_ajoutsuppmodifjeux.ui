@@ -41,7 +41,128 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <item row="0" column="2" rowspan="3">
+   <item row="1" column="2">
+    <widget class="QGroupBox" name="groupBox_10">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>220</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Image(s) pour ce jeu :</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_11">
+      <property name="topMargin">
+       <number>4</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="Bt_Droite">
+        <property name="maximumSize">
+         <size>
+          <width>20</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QPushButton" name="Bt_Gauche">
+        <property name="maximumSize">
+         <size>
+          <width>20</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="Lb_Image">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>140</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>200</width>
+          <height>140</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="cursor">
+         <cursorShape>CrossCursor</cursorShape>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="Lb_ImageName">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>18</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
+   </item>
+   <item row="2" column="2" rowspan="3">
     <widget class="QFrame" name="FrameGrosTexte">
      <property name="minimumSize">
       <size>
@@ -68,34 +189,7 @@
       <property name="bottomMargin">
        <number>2</number>
       </property>
-      <item row="6" column="0" colspan="7">
-       <widget class="QLabel" name="Lb_Remarques">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="text">
-         <string>Remarques :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QToolButton" name="TB_Supprimer">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0" colspan="7">
+      <item row="0" column="0">
        <widget class="QLabel" name="Lb_Description">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -114,171 +208,36 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0" colspan="7">
-       <widget class="QLabel" name="Lb_Contenu">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Contenu de la boite :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QToolButton" name="TB_Ajouter">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Ajouter</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0" colspan="7">
-       <widget class="QTextEdit" name="TxE_Remarques">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>300</width>
-          <height>150</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QToolButton" name="TB_Haut">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_haut.png</normaloff>:/Fleche_haut.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="7">
+      <item row="4" column="0">
        <widget class="QTextEdit" name="TxE_Description">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Ignored">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>0</height>
          </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="QToolButton" name="TB_Bas">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_bas.png</normaloff>:/Fleche_bas.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="7">
-       <widget class="QTreeView" name="Tv_Contenu">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>300</height>
-         </size>
-        </property>
-        <property name="styleSheet">
-         <string notr="true">QTreeWidget::item { border-bottom: 1px solid black;}</string>
-        </property>
-        <property name="editTriggers">
-         <set>QAbstractItemView::AllEditTriggers</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QToolButton" name="TB_Gauche">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="5">
-       <widget class="QToolButton" name="TB_Droite">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
         </property>
        </widget>
       </item>
      </layout>
-     <zorder>Lb_Contenu</zorder>
-     <zorder>TxE_Description</zorder>
-     <zorder>TxE_Remarques</zorder>
-     <zorder>Lb_Description</zorder>
-     <zorder>Lb_Remarques</zorder>
-     <zorder>Tv_Contenu</zorder>
-     <zorder>TB_Ajouter</zorder>
-     <zorder>TB_Supprimer</zorder>
-     <zorder>TB_Haut</zorder>
-     <zorder>TB_Bas</zorder>
-     <zorder>TB_Gauche</zorder>
-     <zorder>TB_Droite</zorder>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="3">
+   <item row="7" column="1" colspan="2">
+    <widget class="W_HistoriqueMaintenance" name="W_Historique" native="true"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLabel" name="Lb_Remarques">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string>Historique de maintenance :</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="8">
     <widget class="QFrame" name="FrameRechercheJeux">
      <property name="minimumSize">
       <size>
@@ -479,7 +438,7 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="1">
+   <item row="0" column="1" rowspan="5">
     <widget class="QFrame" name="FramePetitTexte">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -1203,126 +1162,22 @@
      </layout>
     </widget>
    </item>
-   <item row="0" column="1">
-    <widget class="QGroupBox" name="groupBox_10">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>220</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Image(s) pour ce jeu :</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_11">
-      <property name="topMargin">
-       <number>4</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Bt_Droite">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="Bt_Gauche">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="Lb_Image">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>140</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>140</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>CrossCursor</cursorShape>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="Lb_ImageName">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>300</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>W_HistoriqueMaintenance</class>
+   <extends>QWidget</extends>
+   <header>w_historiquemaintenance.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>W_ContenuJeu</class>
+   <extends>QWidget</extends>
+   <header>w_contenujeu.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="ImagesIcones.qrc"/>
  </resources>

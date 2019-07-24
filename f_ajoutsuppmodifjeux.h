@@ -16,10 +16,9 @@ class F_AjoutSuppModifJeux;
 #include "d_lienjeux.h"
 #include "spinboxdelegate.h"
 #include "fonctions_globale.h"
+#include "w_contenujeu.h"
+#include "ui_w_contenujeu.h"
 
-#define PIECE_SEULE 0
-#define GROUPE 1
-#define PIECE_GROUPE 2
 using namespace std;
 
 class D_AjoutSuppModifFournisseursEditeurs;
@@ -98,12 +97,9 @@ public:
     */
     void ActualiserLienJeux();
 
-    void ActualiserContenu();
     /** @brief Permet de récuperer le code du jeu en consultation
      */
     QString get_JeuEnConsultation() ;
-    /** @brief Permet de fixer le code du jeu en consultation
-     */
 
 public slots:
     void slot_ValiderClassification();
@@ -112,7 +108,6 @@ public slots:
     void slot_ValiderMotCle();
     void slot_ValiderStatut();
     void slot_ActiverClicImage();
-    static void on_TB_Supprimer_clicked(QTreeView *Tv_Contenu,QStandardItemModel *ModeleContenu,QWidget *parent);
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -198,24 +193,6 @@ private slots:
 
     void on_Bt_SupprimerLienJeux_clicked();
 
-    void on_menuAjouterPiece_triggered();
-
-    void on_Tv_Contenu_itemChanged(QStandardItem *item);
-
-    void SelectionChanged_Tv_Contenu(const QItemSelection&,const QItemSelection&);
-
-    void on_TB_Haut_clicked();
-
-    void ActiverBoutonsContenu(bool Etat);
-
-    void InverserElement(QModelIndex ElementChoisi,int LigneSource,int LigneDestination);
-
-    void on_TB_Bas_clicked();
-
-    void on_TB_Droite_clicked();
-
-    void on_TB_Gauche_clicked();
-
 private:
     // ATTRIBUTs ----------------------------------------------------------------
 
@@ -285,14 +262,6 @@ private:
 
     //! Booléen indiquant si le chargement des images est fini
     bool ChargementImageFini;
-
-    //! modèle du TreeView du contenu des jeux
-    QStandardItemModel * ModeleContenu;
-
-    //! Choix du menu ajouter pour créer une pièce dans un groupe
-    QAction *actionPieceDsGroupe;
-
-    SpinBoxDelegate *DelegateContenu;
 };
 
 //------------------------------------------------------------------------------

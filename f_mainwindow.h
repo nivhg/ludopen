@@ -2,6 +2,8 @@
 #define F_MAINWINDOW_H
 
 class F_Retour;
+class F_Jeux;
+class F_AjoutSuppModifFournisseursEditeurs;
 
 #include <QDebug>
 #include <QMainWindow>

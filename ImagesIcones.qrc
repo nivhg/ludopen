@@ -59,5 +59,8 @@
         <file>Item.svg</file>
         <file>Sac.svg</file>
         <file>ItemDansSac.svg</file>
+        <file>SacFlechesItem.png</file>
+        <file>GrilleVersTexte.png</file>
+        <file>ImporterTexte.png</file>
     </qresource>
 </RCC>

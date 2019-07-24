@@ -96,7 +96,7 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
                     ContenuJeu+=" :\n";
                 }
                 break;
-            case PIECE_GROUPE:
+            case PIECE_DANS_GROUPE:
                 ContenuJeu+="\t* "+ObtenirValeurParNom(Requete,"NombrePieces").toString()+" "+
                         ObtenirValeurParNom(Requete,"DescriptionPieces").toString()+"\n";
                 break;

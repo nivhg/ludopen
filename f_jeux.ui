@@ -216,166 +216,14 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="0" column="0" colspan="3">
-       <widget class="QGroupBox" name="groupBox_3">
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_nom">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_code">
-           <property name="text">
-            <string>Code :</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="label_classification">
-           <property name="maximumSize">
-            <size>
-             <width>110</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Classification :</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="2">
-          <widget class="QLineEdit" name="LE_NumClassification">
-           <property name="maximumSize">
-            <size>
-             <width>30</width>
-             <height>16777215</height>
-            </size>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="1">
-          <widget class="QLineEdit" name="Le_classification">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Le_code">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_nom">
-           <property name="maximumSize">
-            <size>
-             <width>16777215</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>Nom : </string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="0" colspan="3">
-       <widget class="QGroupBox" name="groupBox_4">
-        <property name="title">
-         <string/>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_7">
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_createur">
-           <property name="text">
-            <string>Créateur :</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QLineEdit" name="Le_editeur">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_editeur">
-           <property name="text">
-            <string>Éditeur :</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_createur">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="13" column="2">
-       <widget class="QPushButton" name="Bt_regle">
+      <item row="12" column="0">
+       <widget class="QPushButton" name="Bt_details">
         <property name="text">
-         <string>Voir les règles</string>
+         <string>Détails</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" colspan="3">
+      <item row="1" column="0" colspan="2">
        <widget class="QGroupBox" name="groupBox_2">
         <property name="title">
          <string/>
@@ -515,83 +363,14 @@
         </layout>
        </widget>
       </item>
-      <item row="13" column="0">
-       <widget class="QPushButton" name="Bt_details">
+      <item row="12" column="1">
+       <widget class="QPushButton" name="Bt_regle">
         <property name="text">
-         <string>Détails</string>
+         <string>Voir les règles</string>
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Maintenance à prévoir sur le jeu :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="1">
-       <widget class="QCommandLinkButton" name="Bt_ValiderRemarques">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>15</width>
-          <height>15</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="8" column="2">
-       <widget class="QCommandLinkButton" name="Bt_AnnulerRemarques">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>30</width>
-          <height>30</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-        </property>
-        <property name="iconSize">
-         <size>
-          <width>15</width>
-          <height>15</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="0" colspan="3">
-       <widget class="QTextEdit" name="TxE_remarques">
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0" colspan="3">
+      <item row="3" column="0" colspan="2">
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
          <string/>
@@ -652,7 +431,169 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="0" colspan="3">
+      <item row="0" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_3">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="Le_nom">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_code">
+           <property name="text">
+            <string>Code :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_classification">
+           <property name="maximumSize">
+            <size>
+             <width>110</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Classification :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QLineEdit" name="LE_NumClassification">
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLineEdit" name="Le_classification">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="Le_code">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>20</height>
+            </size>
+           </property>
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_nom">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Nom : </string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="9" column="0" colspan="2">
+       <widget class="W_HistoriqueMaintenance" name="W_Historique" native="true"/>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Historique de maintenance sur le jeu :</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QGroupBox" name="groupBox_4">
+        <property name="title">
+         <string/>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_7">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_createur">
+           <property name="text">
+            <string>Créateur :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLineEdit" name="Le_editeur">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_editeur">
+           <property name="text">
+            <string>Éditeur :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="Le_createur">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="6" column="0" colspan="2">
        <widget class="QGroupBox" name="groupBox_6">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -755,7 +696,7 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="15" column="0" colspan="9">
+      <item row="9" column="0" colspan="5">
        <widget class="QTextEdit" name="TxE_description">
         <property name="minimumSize">
          <size>
@@ -768,7 +709,7 @@
         </property>
        </widget>
       </item>
-      <item row="14" column="6">
+      <item row="8" column="3">
        <widget class="QCommandLinkButton" name="Bt_AnnulerDescription">
         <property name="enabled">
          <bool>false</bool>
@@ -794,7 +735,7 @@
         </property>
        </widget>
       </item>
-      <item row="14" column="5">
+      <item row="8" column="2">
        <widget class="QCommandLinkButton" name="Bt_ValiderDescription">
         <property name="enabled">
          <bool>false</bool>
@@ -820,7 +761,7 @@
         </property>
        </widget>
       </item>
-      <item row="14" column="0">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_4">
         <property name="minimumSize">
          <size>
@@ -833,33 +774,7 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_5">
-        <property name="minimumSize">
-         <size>
-          <width>30</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Contenu de ce jeu :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="12" column="4">
-       <spacer name="verticalSpacer">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="0" column="0" rowspan="3" colspan="9">
+      <item row="0" column="0" rowspan="3" colspan="5">
        <widget class="QGroupBox" name="groupBox_10">
         <property name="minimumSize">
          <size>
@@ -940,133 +855,41 @@
         </layout>
        </widget>
       </item>
-      <item row="3" column="4">
-       <widget class="QWidget" name="widget" native="true">
-        <layout class="QGridLayout" name="gridLayout"/>
-       </widget>
-      </item>
-      <item row="5" column="0" colspan="9">
-       <widget class="QTreeView" name="Tv_Contenu">
-        <property name="maximumSize">
+      <item row="6" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>16777215</width>
-          <height>300</height>
+          <width>20</width>
+          <height>40</height>
          </size>
         </property>
-        <property name="styleSheet">
-         <string notr="true">QTreeWidget::item { border-bottom: 1px solid black;}</string>
-        </property>
-        <property name="editTriggers">
-         <set>QAbstractItemView::AllEditTriggers</set>
-        </property>
-       </widget>
+       </spacer>
       </item>
-      <item row="4" column="0" colspan="9">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QToolButton" name="TB_Ajouter">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Ajouter</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="TB_Supprimer">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="TB_Haut">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Fleche_haut.png</normaloff>:/Fleche_haut.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="TB_Bas">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Fleche_bas.png</normaloff>:/Fleche_bas.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="TB_Gauche">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="TB_Droite">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>...</string>
-          </property>
-          <property name="icon">
-           <iconset resource="ImagesIcones.qrc">
-            <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-       </layout>
+      <item row="3" column="0" colspan="5">
+       <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>W_HistoriqueMaintenance</class>
+   <extends>QWidget</extends>
+   <header>w_historiquemaintenance.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>W_ContenuJeu</class>
+   <extends>QWidget</extends>
+   <header>w_contenujeu.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="ImagesIcones.qrc"/>
  </resources>

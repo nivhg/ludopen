@@ -70,16 +70,6 @@ private slots:
      */
     void on_Bt_DeclarerIntervention_clicked();
 
-    /** @brief Appeler lorsque l'on valide la nouvelle remarque
-     *
-     */
-    void on_Bt_ValiderRemarques_clicked();
-
-    /** @brief Appeler lorsque l'on annule la nouvelle remarque
-     *
-     */
-    void on_Bt_AnnulerRemarques_clicked();
-
     /** @brief Appeler lorsque l'on modifie le contenu du champ description
      *
      */
@@ -126,26 +116,6 @@ private slots:
     void SlotRegleTelecharger(QString CheminFichier);
 
     void on_TbW_LiensJeux_clicked(const QModelIndex &index);
-
-    void on_menuAjouterPiece_triggered();
-
-    void on_Tv_Contenu_itemChanged(QStandardItem *item);
-
-    void SelectionChanged_Tv_Contenu(const QItemSelection&,const QItemSelection&);
-
-    void on_TB_Haut_clicked();
-
-    void ActiverBoutonsContenu(bool Etat);
-
-    void InverserElement(QModelIndex ElementChoisi,int LigneSource,int LigneDestination);
-
-    void on_TB_Bas_clicked();
-
-    void on_TB_Droite_clicked();
-
-    void on_TB_Gauche_clicked();
-
-    void on_TB_Supprimer_clicked();
 
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé

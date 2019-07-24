@@ -261,49 +261,7 @@ QGroupBox::indicator:checked {
          </attribute>
          <layout class="QGridLayout" name="gridLayout_13">
           <item row="0" column="0">
-           <widget class="QTableWidget" name="Tw_HistoriqueMaintenance">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="editTriggers">
-             <set>QAbstractItemView::AllEditTriggers</set>
-            </property>
-            <property name="selectionMode">
-             <enum>QAbstractItemView::SingleSelection</enum>
-            </property>
-            <property name="selectionBehavior">
-             <enum>QAbstractItemView::SelectRows</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QCommandLinkButton" name="Bt_SupprimerEvenement">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="text">
-             <string>Supprimer l'évenement</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>15</width>
-              <height>15</height>
-             </size>
-            </property>
-           </widget>
+           <widget class="W_HistoriqueMaintenance" name="W_Historique" native="true"/>
           </item>
          </layout>
         </widget>
@@ -545,8 +503,15 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="2" column="0">
-          <widget class="QTreeView" name="Tv_Contenu"/>
+         <item row="2" column="0" rowspan="3" colspan="3">
+          <widget class="W_ContenuJeu" name="W_Contenu" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>200</height>
+            </size>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
@@ -1263,6 +1228,20 @@ QGroupBox::indicator:checked {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>W_HistoriqueMaintenance</class>
+   <extends>QWidget</extends>
+   <header>w_historiquemaintenance.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>W_ContenuJeu</class>
+   <extends>QWidget</extends>
+   <header>w_contenujeu.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="ImagesIcones.qrc"/>
  </resources>

@@ -15,6 +15,7 @@
 
 #include <QtWidgets>
 #include <QStandardItem>
+
 #include "f_paiement.h"
 #include "searchbox.h"
 #include "f_emprunt.h"
@@ -128,22 +129,9 @@ private slots:
 
     void on_Bt_PayerRetard_clicked();
 
-    void ActualiserContenu();
-
-    bool on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
-
     void on_Bt_Aide_PiecesManquantes_clicked();
 
-    void on_Bt_SupprimerEvenement_clicked();
-
-    void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
-
     void on_Lb_NomJeu_linkActivated(const QString &link);
-
-public slots:
-    void on_Tv_Contenu_itemChanged(QStandardItem *item);
-
-    void editingStartedHistorique();
 
 signals:
     //! Signal emit lors de l'ajout au panier d'un abonnement
@@ -175,12 +163,6 @@ private:
 
     //! Liste des jeux
     QVector<QVector <QString> > VecteurJeux;
-
-    //! modèle du TreeView du contenu des jeux
-    QStandardItemModel * ModeleContenu;
-
-    F_MainWindow *main;
-    DetectDelegate *DelegateDetect;
 };
 
 #endif // F_RETOUR_H

@@ -554,7 +554,7 @@ void F_MainWindow::CreerJeux()
     if(!this->pJeux)
     {
         qDebug()<<"Création F_Jeux";
-        this->pJeux=new F_Jeux (this->ui->Jeux);
+        this->pJeux=new F_Jeux (this);
         //Jeux
         this->ui->Lay_Jeux->addWidget(this->pJeux);
         // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné

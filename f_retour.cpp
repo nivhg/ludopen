@@ -39,24 +39,6 @@ F_Retour::F_Retour(QWidget *parent) :
 //    this->Amende = 0.0 ;
     ui->Lb_AmendeAPayer->setStyleSheet("QLabel {color:red;}");
 
-    main=dynamic_cast <F_MainWindow *>(parent);
-
-    //Associe le modèle au TableView
-    ModeleContenu=new QStandardItemModel();
-    ui->Tv_Contenu->setModel(this->ModeleContenu);
-    SpinBoxDelegate *DelegateContenu=new SpinBoxDelegate(2, 1, true,this);
-    ui->Tv_Contenu->setItemDelegate(DelegateContenu);
-
-    ActualiserContenu();
-    connect(ModeleContenu,SIGNAL(itemChanged(QStandardItem *)),this,SLOT(on_Tv_Contenu_itemChanged(QStandardItem *)));
-
-    ui->Tv_Contenu->setColumnWidth(0,140);
-    ui->Tv_Contenu->setColumnWidth(1,40);
-
-    DelegateDetect=new DetectDelegate(this);
-    ui->Tw_HistoriqueMaintenance->setItemDelegate(DelegateDetect);
-    connect(DelegateDetect,SIGNAL(editingStartedSignal()),this,SLOT(editingStartedHistorique()));
-
     MaJListeMembres();
 
     SearchMembre = new SearchBox(this);
@@ -136,6 +118,12 @@ F_Retour::F_Retour(QWidget *parent) :
 
    ui->LE_Caution->setVisible(false);
    ui->Lb_Caution->setVisible(false);
+
+   F_MainWindow *main=dynamic_cast <F_MainWindow *>(parent);
+   ui->W_Contenu->Definir_Main(main);
+   ui->W_Contenu->Definir_Mode(MODE_CONTENU_ET_MANQUANT);
+   connect(ui->W_Historique,SIGNAL(Signal_ActualiserContenu()),ui->W_Contenu,SLOT(ActualiserContenu()));
+   connect(ui->W_Contenu,SIGNAL(Signal_ActualiserHistoriqueMaintenance()),ui->W_Historique,SLOT(ActualiserHistoriqueMaintenance()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -410,7 +398,7 @@ void F_Retour::AfficherDetailDuJeu()
       ui->Bt_Prolonger->setEnabled(true);
    }
 
-    ActualiserContenu();
+    ui->W_Contenu->ActualiserContenu();
 
    //Calcule la date du retour
    on_CBx_TypeProlongation_currentIndexChanged(0);
@@ -585,7 +573,8 @@ void F_Retour::ViderJeu()
     SearchJeux->setCurrentText("");
     SearchJeux->blockSignals(false);
     ui->LE_NomJeuARemplir->setText("");
-    ModeleContenu->clear();
+    ui->W_Contenu->Vider();
+    ui->W_Historique->Vider();
     ui->LE_Caution->setText("");
     ui->TxE_RemarquesMalle->setText("");
     this->JeuActif="";
@@ -657,10 +646,10 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
         QString ListeJeux;
         QVariant DataEnCours;
         int i=0;
-        ModeleContenu->clear();
+        ui->W_Contenu->Vider();
         while((DataEnCours=this->ModelJeuEmpruntes->index(index.row(),0).child(i++,0).data())!=QVariant::Invalid)
         {
-            ModeleContenu->appendRow(new QStandardItem(DataEnCours.toString()));
+            ui->W_Contenu->ModeleContenu->appendRow(new QStandardItem(DataEnCours.toString()));
         }
         iMalleActive=hInfosMalle["IdMalle"].toInt();
         ui->LE_NomJeuARemplir->setText(hInfosMalle["TypeEmprunt"].toString());
@@ -688,6 +677,8 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
         SearchJeux->blockSignals(false);
         // Affiche les infos du jeu sélectionné
         this->JeuActif = SearchJeux->currentText();
+        ui->W_Contenu->Definir_CodeJeu(JeuActif);
+        ui->W_Historique->Definir_CodeJeu(JeuActif);
         //Affiche les informations du jeu actuellement choisi dans la liste des jeux empruntés de ce membre
         AfficherDetailDuJeu();
     }
@@ -884,6 +875,8 @@ void F_Retour::on_LE_SearchJeux_returnPressed()
     if(RequeteStatut.value(0)==3)
     {
         this->JeuActif = CodeJeu;
+        ui->W_Contenu->Definir_CodeJeu(JeuActif);
+        ui->W_Historique->Definir_CodeJeu(JeuActif);
         //Affiche les informations du jeu actuellement choisi dans la liste des jeux empruntés de ce membre
         AfficherDetailDuJeu();
 
@@ -1251,272 +1244,9 @@ void F_Retour::on_Bt_PayerRetard_clicked()
     emit(Signal_AjouterAuPanier("Amende",IdDuMembre,MontantAmende,VENTILATION_RETARD,"",NULL));
 }
 
-
-void F_Retour::ActualiserContenu()
-{
-    QSqlQuery Requete;
-    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
-    Requete.bindValue(":CodeJeu",JeuActif);
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    Requete.next();
-    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
-
-    Requete.prepare("SELECT *,IF(PieceGroupe=2,"
-                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces,"
-                    "(SELECT SUM(NombrePiecesManquantes) FROM piecesmanquantes WHERE IdPieces=IdPieces_Pieces AND Abimee=0) as NombrePiecesManquantes "
-                    "FROM pieces as p WHERE IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
-                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux)) ORDER By OrdreGroupePieces");
-    Requete.bindValue(":IdJeux",IdJeux);
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    ModeleContenu->clear();
-    //Initialise les colones du TableView des nouveaux emprunts
-    this->ModeleContenu->setColumnCount(2);
-    this->ModeleContenu->setHorizontalHeaderItem(0, new QStandardItem("Libellé"));
-    this->ModeleContenu->setHorizontalHeaderItem(1, new QStandardItem("Nombre"));
-    QStandardItem *Item=new QStandardItem("Manquant\n(abimé)");
-    Item->setBackground(QColor(0, 255, 0));
-    this->ModeleContenu->setHorizontalHeaderItem(2, Item);
-
-    int DernierIdGroupe=0;
-    QStandardItem *DernierGroupe;
-    while(Requete.next())
-    {
-        int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
-        QList<QStandardItem *>liste;
-        Item=new QStandardItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
-        Item->setData(PieceGroupe,Qt::UserRole);
-        Item->setData(ObtenirValeurParNom(Requete,"IdPieces").toInt(),Qt::UserRole+1);
-        Item->setData(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt(),Qt::UserRole+2);
-        QStandardItem *Item2=new QStandardItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt());
-        Item2->setData(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt(),Qt::UserRole+3);
-        Item2->setData(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toInt(),Qt::DisplayRole);
-        liste<<Item<<new QStandardItem(ObtenirValeurParNom(Requete,"NombrePieces").toInt())<<Item2;
-        // S'il s'agit d'un groupe
-        if(PieceGroupe==1)
-        {
-            Item->setIcon(QIcon(":/Sac.svg"));
-            DernierIdGroupe=ObtenirValeurParNom(Requete,"IdPieces").toInt();
-            DernierGroupe=Item;
-        }
-        else
-        {
-            // Si IdJeuxOuIdPieces est égale à l'id du dernier groupe vu, il s'agit d'une pièce d'un groupe
-            if(ObtenirValeurParNom(Requete,"IdJeuxOuIdPieces").toInt()==DernierIdGroupe)
-            {
-                ModeleContenu->blockSignals(true);
-                DernierGroupe->appendRow(liste);
-                DernierGroupe->child(DernierGroupe->rowCount()-1,1)->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
-                ModeleContenu->blockSignals(false);
-                ui->Tv_Contenu->expand(ModeleContenu->indexFromItem(DernierGroupe));
-                Item->setIcon(QIcon(":/ItemDansSac.svg"));
-                continue;
-            }
-            else
-            {
-                Item->setIcon(QIcon(":/Item.svg"));
-            }
-        }
-        ModeleContenu->blockSignals(true);
-        ModeleContenu->appendRow(liste);
-        QModelIndex index=ModeleContenu->indexFromItem(Item);
-        ModeleContenu->itemFromIndex(index.sibling(index.row(),1))->setData(ObtenirValeurParNom(Requete,"NombrePieces").toInt(),Qt::DisplayRole);
-        ModeleContenu->blockSignals(false);
-    }
-    ui->Tv_Contenu->setColumnWidth(0,370);
-    ui->Tv_Contenu->setColumnWidth(1,70);
-    ui->Tv_Contenu->setColumnWidth(2,60);
-    ActualiserHistoriqueMaintenance();
-}
-
-void F_Retour::on_Tv_Contenu_itemChanged(QStandardItem *item)
-{
-    QModelIndex index=ModeleContenu->indexFromItem(item).sibling(item->row(),0);
-
-    QSqlQuery Requete;
-    QString Champs;
-    Requete.prepare("INSERT INTO piecesmanquantes(DatePiecesManquantes,IdMembre_Membres,"
-                    "IdPieces_Pieces,NombrePiecesManquantes,RemarquePiecesManquantes) VALUES (:DatePiecesManquantes,"
-                    ":IdMembre_Membres,:IdPieces_Pieces,:NombrePiecesManquantes,:RemarquePiecesManquantes)");
-    // Si on est sur la 1° colonne, on mets à jour la description sinon c'est le nombre
-    Requete.bindValue(":DatePiecesManquantes",QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
-    Requete.bindValue(":IdMembre_Membres",main->RecupereIdBenevole());
-    Requete.bindValue(":IdPieces_Pieces",index.data(Qt::UserRole+1));
-    QModelIndex index2=ModeleContenu->indexFromItem(item).sibling(item->row(),item->column());
-    int NbPiecesManquantes=item->text().toInt()-index2.data(Qt::UserRole+3).toInt();
-    Requete.bindValue(":NombrePiecesManquantes",NbPiecesManquantes);
-    if(NbPiecesManquantes<0)
-    {
-        Requete.bindValue(":RemarquePiecesManquantes","Pièce(s) rendue");
-    }
-    else
-    {
-        Requete.bindValue(":RemarquePiecesManquantes","Au retour du jeu");
-    }
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    ActualiserHistoriqueMaintenance();
-}
-
-void F_Retour::ActualiserHistoriqueMaintenance()
-{
-    ui->Tw_HistoriqueMaintenance->clear();
-    ui->Tw_HistoriqueMaintenance->setColumnCount(6);
-    QStringList m_TableHeader;
-    m_TableHeader<<"Date"<<"Membre"<<"Pièce";
-    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderLabels(m_TableHeader);
-
-    QTableWidgetItem *Item=new QTableWidgetItem("Nb\nmanquant");
-    Item->setBackground(QColor(0, 255, 0));
-    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(3,Item);
-    Item=new QTableWidgetItem("Abimée?");
-    Item->setBackground(QColor(0, 255, 0));
-    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(4,Item);
-    Item=new QTableWidgetItem("Remarque");
-    Item->setBackground(QColor(0, 255, 0));
-    ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(5,Item);
-
-    QSqlQuery Requete;
-    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
-    Requete.bindValue(":CodeJeu",JeuActif);
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    Requete.next();
-    int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
-
-    Requete.prepare("SELECT * FROM piecesmanquantes as pm LEFT JOIN pieces as p ON p.IdPieces=IdPieces_Pieces "
-                    "LEFT JOIN jeux as j ON p.IdJeuxOuIdPieces=IdJeux LEFT JOIN membres as m ON IdMembre_Membres=m.IdMembre "
-                    "WHERE j.IdJeux=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
-                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux))");
-    Requete.bindValue(":IdJeux",IdJeux);
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    int i=0;
-    while(Requete.next())
-    {
-        ui->Tw_HistoriqueMaintenance->blockSignals(true);
-        ui->Tw_HistoriqueMaintenance->setRowCount(i+1);
-        QTableWidgetItem *Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DatePiecesManquantes").toDate().toString("dd-MM-yy"));
-        Item->setData(Qt::UserRole,ObtenirValeurParNom(Requete,"IdPiecesManquantes").toInt());
-
-        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 0, Item);
-        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"Prenom").toString());
-        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 1, Item);
-        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
-        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 2, Item);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 3, new QTableWidgetItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toString()));
-        Item = new QTableWidgetItem();
-        Item->setFlags(Item->flags() | Qt::ItemIsUserCheckable );
-        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
-        if(ObtenirValeurParNom(Requete,"Abimee").toBool())
-        {
-            Item->setCheckState(Qt::Checked);
-        }
-        else
-        {
-            Item->setCheckState(Qt::Unchecked);
-        }
-
-        ui->Tw_HistoriqueMaintenance->setItem(i, 4, Item);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 5, new QTableWidgetItem(ObtenirValeurParNom(Requete,"RemarquePiecesManquantes").toString()));
-        ui->Tw_HistoriqueMaintenance->blockSignals(false);
-        i++;
-    }
-    ui->Tw_HistoriqueMaintenance->resizeColumnsToContents();
-    ui->Tw_HistoriqueMaintenance->setColumnWidth(5,300);
-    ui->Bt_SupprimerEvenement->setEnabled(false);
-}
-
-bool F_Retour::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
-{
-    uint iIdBenevole=main->RecupereIdBenevole();
-    if(iIdBenevole==0)
-    {
-        QMessageBox::critical(this,"Aucun utilisateur choisir",
-                              "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
-        return true;
-    }
-    return false;
-}
-
 void F_Retour::on_Bt_Aide_PiecesManquantes_clicked()
 {
-    QMessageBox::information(this,"Déclarer une pièce manquante ou abimée",
-                             "Il suffit de cliquer sur la ligne correspondante à la pièce manquante ou abimée dans la colonne \"Manquant (abimé)\" du contenu du jeu.\n"
-                             "Il est possible de rajouter une remarque dans l'historique de maintenance et de préciser qu'il s'agit d'une pièce abimée."
-                             "Les pièces abimées seront retirées de la colonne \"Manquant (abimé)\" (elles sont encore présente dans le jeu, mais sont abimées)."
-                             ,"OK");
-}
-
-void F_Retour::on_Bt_SupprimerEvenement_clicked()
-{
-    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()==0)
-    {
-        return;
-    }
-    QSqlQuery Requete;
-    Requete.prepare("DELETE FROM piecesmanquantes WHERE IdPiecesManquantes=:IdPiecesManquantes");
-    Requete.bindValue(":IdPiecesManquantes",ui->Tw_HistoriqueMaintenance->item(ui->Tw_HistoriqueMaintenance
-                                             ->selectedItems().at(0)->row(),0)->data(Qt::UserRole).toInt());
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    ActualiserHistoriqueMaintenance();
-}
-
-void F_Retour::editingStartedHistorique()
-{
-    if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
-    {
-        ui->Bt_SupprimerEvenement->setEnabled(true);
-    }
-}
-
-void F_Retour::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item)
-{
-    QSqlQuery Requete;
-    QString Champs;
-    QString Valeur;
-    // Si on est sur la 2° colonne, on mets à jour la description sinon c'est le nombre
-    switch(item->column())
-    {
-        case 3:
-            Champs="NombrePiecesManquantes";
-            Valeur=item->text();
-            break;
-        case 4:
-            Champs="Abimee";
-            Valeur=QString::number(item->checkState()==Qt::Checked?1:0);
-            break;
-        case 5:
-            Champs="RemarquePiecesManquantes";
-            Valeur=item->text();
-            break;
-    }
-    Requete.prepare("UPDATE piecesmanquantes SET "+Champs+"=:Valeur WHERE IdPiecesManquantes=:IdPiecesManquantes");
-    Requete.bindValue(":Valeur",Valeur);
-    Requete.bindValue(":IdPiecesManquantes",ui->Tw_HistoriqueMaintenance->item(item->row(),0)->data(Qt::UserRole).toInt());
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    ActualiserContenu();
+    QMessageBox::information(this,"Déclarer une pièce manquante ou abimée",MSG_AIDE_MANQUANT,"OK");
 }
 
 void F_Retour::on_Lb_NomJeu_linkActivated(const QString &link)

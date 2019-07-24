@@ -5,7 +5,7 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport script multimediawidgets
+QT        = widgets sql network core printsupport script multimediawidgets designer
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -67,7 +67,9 @@ SOURCES += \
     crypt_blowfish/crypt_gensalt.c \
     crypt_blowfish/wrapper.c \
     d_lienjeux.cpp \
-    spinboxdelegate.cpp
+    spinboxdelegate.cpp \
+    w_contenujeu.cpp \
+    w_historiquemaintenance.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -122,7 +124,9 @@ HEADERS  += \
     crypt_blowfish/crypt_gensalt.h \
     crypt_blowfish/ow-crypt.h \
     d_lienjeux.h \
-    spinboxdelegate.h
+    spinboxdelegate.h \
+    w_contenujeu.h \
+    w_historiquemaintenance.h
 
 FORMS    += \
     f_statistiques.ui \
@@ -161,7 +165,9 @@ FORMS    += \
     d_ajoutelementpanier.ui \
     d_aide.ui \
     d_resamisdecote.ui \
-    d_lienjeux.ui
+    d_lienjeux.ui \
+    w_contenujeu.ui \
+    w_historiquemaintenance.ui
 
 VERSION = "2.04"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
