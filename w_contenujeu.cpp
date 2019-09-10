@@ -774,6 +774,9 @@ bool W_ContenuJeu::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *
     {
         QMessageBox::critical(this,"Aucun utilisateur choisir",
                               "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
+        ui->Tv_Contenu->setCurrentIndex(QModelIndex());
+        ui->Tv_Contenu->setEnabled(false);
+        ui->Tv_Contenu->setEnabled(true);
         return true;
     }
     return false;

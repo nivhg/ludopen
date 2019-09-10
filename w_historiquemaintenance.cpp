@@ -134,7 +134,7 @@ void W_HistoriqueMaintenance::on_Bt_SupprimerEvenement_clicked()
     emit(Signal_ActualiserContenu());
 }
 
-void W_HistoriqueMaintenance::on_Tv_Contenu_editorEvent()
+void W_HistoriqueMaintenance::on_Tv_Contenu_editorEvent(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &)
 {
     if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
     {

@@ -29,6 +29,7 @@ public:
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
     //void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+//    bool eventFilter(QObject *obj, QEvent *event);
 
 signals:
     bool editorSignal(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
@@ -39,6 +40,7 @@ private:
     QList<int> ColumnDefault;
     QList<int> ColumnSB;
     bool ManageCheckBox;
+    bool CancelEdition;
 };
 
 #endif // SPINBOXDELEGATE_H

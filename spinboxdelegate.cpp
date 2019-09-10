@@ -13,28 +13,35 @@ SpinBoxDelegate::SpinBoxDelegate(QList<int> ColumnSB,QList<int> ColumnDefault,in
     this->parent=parent;
     connect(this,SIGNAL(editorSignal(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &)),
             parent,SLOT(on_Tv_Contenu_editorEvent(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &)));
+//    this->installEventFilter(this);
 }
 
 QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     const QStyleOptionViewItem & option ,
     const QModelIndex & index ) const
 {
+    qDebug()<<CancelEdition;
+    if(CancelEdition)
+    {
+        return NULL;
+    }
+    qDebug()<<ColumnSB.indexOf(index.column());
     // Cherche la valeur dans la QList ColumnSB
     if ( ColumnSB.indexOf(index.column()) != -1)
-       {
-            QSpinBox *editor = new QSpinBox(parent);
-            int maxValue=99999999;
-            if(IndexOfColumnMaxValue!=-1&&index.column()==IndexOfColumnMaxValue&&ColumnOfMaxValue!=-1)
-            {
-                maxValue=index.sibling(index.row(),ColumnOfMaxValue).data(Qt::DisplayRole).toInt();
-            }
-            editor->setRange(0,maxValue);
+    {
+        QSpinBox *editor = new QSpinBox(parent);
+        int maxValue=99999999;
+        if(IndexOfColumnMaxValue!=-1&&index.column()==IndexOfColumnMaxValue&&ColumnOfMaxValue!=-1)
+        {
+            maxValue=index.sibling(index.row(),ColumnOfMaxValue).data(Qt::DisplayRole).toInt();
+        }
+        editor->setRange(0,maxValue);
 
-            return editor;
-       }
-       else
-        if( ColumnDefault.indexOf(index.column()) != -1)
-            QItemDelegate::createEditor(parent, option, index);
+        return editor;
+    }
+    else
+    if( ColumnDefault.indexOf(index.column()) != -1)
+        return QItemDelegate::createEditor(parent, option, index);
 }
 
 void SpinBoxDelegate::setEditorData(QWidget *editor,
@@ -75,6 +82,7 @@ void SpinBoxDelegate::updateEditorGeometry(QWidget *editor,
 bool SpinBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    CancelEdition=false;
     bool retour=emit(editorSignal(event,model,option,index));
     if(ManageCheckBox)
     {
@@ -82,9 +90,11 @@ bool SpinBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     }
     else
     {
-        return retour;
+        CancelEdition=retour;
+        return false;
     }
 }
+
 
 /*void SpinBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
