@@ -13,7 +13,8 @@ class SpinBoxDelegate : public QItemDelegate
     Q_OBJECT
 
 public:
-    SpinBoxDelegate(int ColumnSB=0,int ColumnMaxValue=-1,bool LectureSeule=true,QObject *parent = 0);
+    SpinBoxDelegate(QList<int> ColumnSB,QList<int> ColumnDefault,int IndexOfColumnMaxValue=-1, int ColumnOfMaxValue=-1,bool ManageCheckBox=false,
+                    QObject *parent = 0);
 
     QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                           const QModelIndex &index) const;
@@ -33,28 +34,11 @@ signals:
     bool editorSignal(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 private:
-    int ColumnSB;
-    int ColumnMaxValue;
+    int ColumnOfMaxValue,IndexOfColumnMaxValue;
     QObject *parent;
-    bool LectureSeule;
-};
-
-class DetectDelegate : public QItemDelegate
-{
-    Q_OBJECT
-
-public:
-    DetectDelegate(QObject *parent = 0);
-
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                          const QModelIndex &index) const;
-    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
-
-signals:
-    void editingStartedSignal() const;
-
-private:
-    QObject *parent;
+    QList<int> ColumnDefault;
+    QList<int> ColumnSB;
+    bool ManageCheckBox;
 };
 
 #endif // SPINBOXDELEGATE_H

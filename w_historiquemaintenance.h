@@ -30,14 +30,14 @@ public slots:
     void ActualiserHistoriqueMaintenance();
 
 private slots:
-    void editingStartedHistorique();
+    void on_Tv_Contenu_editorEvent();
     void on_Bt_SupprimerEvenement_clicked();
     void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
 
 private:
 
     Ui::W_HistoriqueMaintenance *ui;
-    DetectDelegate *DelegateDetect;
+    SpinBoxDelegate *Delegate;
     QString CodeJeu;
 };
 

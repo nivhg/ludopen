@@ -14,39 +14,25 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="Lb_Contenu">
-     <property name="minimumSize">
-      <size>
-       <width>30</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>Contenu du jeu :</string>
-     </property>
-    </widget>
-   </item>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="2" column="0">
-    <widget class="QTreeView" name="Tv_Contenu">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>300</height>
-      </size>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QTreeWidget::item { border-bottom: 1px solid black;}</string>
-     </property>
-     <property name="editTriggers">
-      <set>QAbstractItemView::AllEditTriggers</set>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
     <widget class="QTextEdit" name="Te_Contenu"/>
    </item>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <widget class="QWidget" name="W_Boutons" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
@@ -186,6 +172,22 @@
        </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTreeView" name="Tv_Contenu">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QTreeWidget::item { border-bottom: 1px solid black;}</string>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::AllEditTriggers</set>
+     </property>
     </widget>
    </item>
   </layout>

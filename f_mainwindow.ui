@@ -546,7 +546,6 @@ Membres</string>
      <string>&amp;Imprimer</string>
     </property>
     <addaction name="Menu_Jeux_Imprimer_Etiquette"/>
-    <addaction name="Menu_Jeux_Imprimer_Fiche_Complete"/>
     <addaction name="Menu_Imprimer_Malle_Empruntee"/>
     <addaction name="Menu_Imprimer_Malle_Reservee"/>
    </widget>

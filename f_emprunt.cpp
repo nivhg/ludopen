@@ -67,6 +67,11 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->DtE_Depart->setDateTime(DateActuelle);
     ui->DtE_Depart->blockSignals(false);
 
+    F_MainWindow *main=dynamic_cast <F_MainWindow *>(parent);
+    ui->W_Contenu->Initialisation(MODE_LECTURE_SEULE,main,"Au départ du jeu");
+    connect(ui->W_Historique,SIGNAL(Signal_ActualiserContenu()),ui->W_Contenu,SLOT(ActualiserContenu()));
+    connect(ui->W_Contenu,SIGNAL(Signal_ActualiserHistoriqueMaintenance()),ui->W_Historique,SLOT(ActualiserHistoriqueMaintenance()));
+
     MaJListeMembres();
 
     SearchMembre = new SearchBox(this);
@@ -177,12 +182,6 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     // Bloque la saisie de code jeu à emprunter et du bouton OK tant que pas d'adhérent sélectionné
     ui->DtE_Retour->setDisplayFormat("dd/MM/yyyy hh:mm");
     ui->DtE_Depart->setDisplayFormat("dd/MM/yyyy hh:mm");
-
-    F_MainWindow *main=dynamic_cast <F_MainWindow *>(parent);
-    ui->W_Contenu->Definir_Main(main);
-    ui->W_Contenu->Definir_Mode(MODE_CONTENU_ET_MANQUANT);
-    connect(ui->W_Historique,SIGNAL(Signal_ActualiserContenu()),ui->W_Contenu,SLOT(ActualiserContenu()));
-    connect(ui->W_Contenu,SIGNAL(Signal_ActualiserHistoriqueMaintenance()),ui->W_Historique,SLOT(ActualiserHistoriqueMaintenance()));
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,6 +313,10 @@ void F_Emprunt::ViderJeu()
 //! Actualise le combobox des types de malles
 void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
 {
+    if(!ui->CBx_TypeEmprunt->isEnabled())
+    {
+        return;
+    }
     //On prépare et exécute la requête qui permet de récupérer les infos sur le type d'emprunt
     QSqlQuery Requete;
     QString Srequete="SELECT * FROM typeemprunt WHERE MALLE="+QString::number(this->iMode==MODE_MALLES);
@@ -333,6 +336,7 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
         qDebug()<<getLastExecutedQuery(Requete);
         return;
     }
+    QString Sauve_TypeEmprunt=ui->CBx_TypeEmprunt->currentText();
     ui->CBx_TypeEmprunt->clear();
     QHash<QString, QVariant> HashRecord;
     QString TypeEmprunt,TypeEmpruntDefaut;
@@ -351,7 +355,14 @@ void F_Emprunt::ActualiserTypeEmprunt(int iTitreMembre=0)
             TypeEmpruntDefaut=TypeEmprunt;
         }
     }
-    ui->CBx_TypeEmprunt->setCurrentText(TypeEmpruntDefaut);
+    if(Sauve_TypeEmprunt!="")
+    {
+        ui->CBx_TypeEmprunt->setCurrentText(Sauve_TypeEmprunt);
+    }
+    else
+    {
+        ui->CBx_TypeEmprunt->setCurrentText(TypeEmpruntDefaut);
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -646,6 +657,8 @@ void F_Emprunt::AfficherJeuxReserve(QStandardItemModel *ModeleJeuxReserves,QStri
 
         NumeroLigne++;
     }
+    qDebug()<<ModeleJeuxReserves->data(ModeleJeuxReserves->index(0,0),Qt::UserRole+1).toInt();
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -732,6 +745,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
 
     //Récupère les remarques dans la base de données puis les affiches
     ui->TxE_Remarques->setText(ObtenirValeurParNom(Requete,"Remarque").toString());
+    ui->TxE_Remarques->adjustSize();
 
     //Grise les boutons de modification des remarques du membre
     ui->Bt_ValiderRemarques->setEnabled(false);
@@ -783,7 +797,7 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
 
     resizeColumnsToContents(this->ModeleJeuxEmpruntes,ui->Tv_JeuxMembres);
     //resizeColumnsToContents(this->ModeleJeuxReserves,ui->Tv_JeuxReserves);
-    ui->CBx_TypeEmprunt->setEnabled(true);
+    //ui->CBx_TypeEmprunt->setEnabled(true);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -881,13 +895,13 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
         if(MembreActif!=CodeMembre)
         {
             //On précise le code du membre qui possède la cotisation
-            Cotisation="<b>Cotisation à jours (membre "+ CodeMembre +")</b>";
+            Cotisation="<b>Cotisation à jour (membre "+ CodeMembre +")</b>";
         }
         //Sinon,
         else
         {
             //On affiche juste l'état de la cotisation
-            Cotisation="<b>Cotisation à jours</b>";
+            Cotisation="<b>Cotisation à jour</b>";
         }
         EtatDeLaCotisation=true;
         QString JourRestant ;
@@ -1232,7 +1246,15 @@ void F_Emprunt::on_CBx_TypeEmprunt_currentIndexChanged(int index)
     QDate DateRetour=ui->DtE_Depart->date();
     DateRetour=DateRetour.addDays(duree);
 
-    ui->DtE_Retour->setDate(DateRetour);
+    if(HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["IdTypeEmprunt"].toInt()==11||
+            HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["IdTypeEmprunt"].toInt()==12)
+    {
+        ui->DtE_Retour->setDate(QDate::currentDate());
+    }
+    else
+    {
+        ui->DtE_Retour->setDate(DateRetour);
+    }
 
     this->AfficherNbEmpruntsEnCours();
 }
@@ -1287,6 +1309,8 @@ void F_Emprunt::on_Tv_JeuxMembres_clicked(const QModelIndex &index)
  */
 void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
 {
+    qDebug()<<ModeleJeuxReserves->data(ModeleJeuxReserves->index(0,0),Qt::UserRole+1).toInt();
+
     // Si c'est un jeu d'une malle, on quitte la fonction
     if(index.parent().isValid())
     {
@@ -1466,6 +1490,14 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
             return;
         }
     }
+    //Si la cotisation n'est pas à jour
+    if(ui->DtE_Retour->date()==QDate::currentDate())
+    {
+        if(QMessageBox::critical(this,"Date de retour erroné","Attention ! \nLa date de retour est celle d'aujourd'hui.\nÊtes-vous sûr qu'il s'agit bien de la date du retour du jeu ?","Oui","Non"))
+        {
+            return;
+        }
+    }
     QSqlQuery RequeteIdJeu;
     unsigned int IdDuJeu (0);
 
@@ -1611,11 +1643,13 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
         ui->CBx_TypeEmprunt->setEnabled(false);
         ui->DtE_Depart->setEnabled(false);
         ui->DtE_Retour->setEnabled(false);
+        ui->Bt_Emprunter->setEnabled(true);
     }
     this->ViderJeu();
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
     ui->TbV_EmpruntAValider->resizeColumnsToContents();
+    ui->TbV_EmpruntAValider->adjustSize();
     //Met le bouton "Valider les emprunts" et "réserver" en cliquable
     ui->Bt_Emprunter->setEnabled(true);
     this->SearchMembre->setEnabled(false);
@@ -1923,7 +1957,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
         }
         TypeVentilation=VENTILATION_MALLES;
         NomTable="malles";
-        DansPanier=true;
+        DansPanier=!bRegle;
     }
     else
     {
@@ -1987,7 +2021,6 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
             }
         }
         IdMalle=RequeteMalle->lastInsertId().toString();
-        this->bRegle=false;
         this->AfficherEtatPaiement();
     }
     // Traiter chaque jeu en cours d'emprunt
@@ -2065,7 +2098,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
         }
     }
 
-    if(!this->bRegle&&DansPanier)
+    if(!this->bRegle)
     {
         emit(Signal_AjouterAuPanier(ui->CBx_TypeEmprunt->currentText(),this->IdDuMembre,(double) NbCredits,TypeVentilation,NomTable,ListeRequetes));
         if(this->iMode==MODE_MALLES)
@@ -2149,7 +2182,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     {
         //Grise le bouton de validation des nouveaux emprunts
         ui->Bt_Emprunter->setEnabled(false);
-        ui->Bt_Emprunter->setText("Reserver Malle");
+        on_rB_Mode_Emprunt_toggled(ui->rB_Mode_Emprunt->isChecked());
         ui->CBx_TypeEmprunt->setEnabled(true);
         this->SearchMembre->setEnabled(true);
         ui->Bt_SupprimerEmpruntAValider->setEnabled(false);
@@ -2433,10 +2466,13 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     // SI mode réservation, on active le bouton de réservation
     if(ui->rB_Mode_Resa->isChecked())
     {
-        ui->Bt_Emprunter->setEnabled(true);
         if(iMode==MODE_MALLES)
         {
             ui->Bt_AjouterJeu->setEnabled(true);
+        }
+        else
+        {
+            ui->Bt_Emprunter->setEnabled(true);
         }
     }
 
@@ -2470,7 +2506,7 @@ void F_Emprunt::on_DtE_Retour_editingFinished()
 //! Renvoie l'ID de la malle réservée sélectionnée
 int F_Emprunt::get_MalleReserveeSelectionnee()
 {
-    return this->ModeleJeuxReserves->data(ui->Tv_JeuxReserves->currentIndex(),Qt::UserRole+1).toInt();
+    return this->ModeleJeuxReserves->data(ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),0),Qt::UserRole+1).toInt();
 }
 
 //! Renvoie l'ID de la malle empruntée sélectionnée

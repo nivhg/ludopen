@@ -251,7 +251,7 @@ void F_MainWindow::on_Bt_Jeux_clicked()
     {
         ////Jeux////////
         qDebug()<<"Création ADMIN-F_AjoutSuppModifJeux";
-        this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this->ui->admin);
+        this->pAjoutSuppModifJeux=new F_AjoutSuppModifJeux (this);
         this->ui->Lay_Admin->addWidget(this->pAjoutSuppModifJeux);
         this->pAjoutSuppModifJeux->setVisible(false);
     }

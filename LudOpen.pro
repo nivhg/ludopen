@@ -169,7 +169,7 @@ FORMS    += \
     w_contenujeu.ui \
     w_historiquemaintenance.ui
 
-VERSION = "2.04"
+VERSION = "2.05"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 

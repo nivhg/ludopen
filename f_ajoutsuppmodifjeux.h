@@ -193,6 +193,10 @@ private slots:
 
     void on_Bt_SupprimerLienJeux_clicked();
 
+    void on_Bt_Aide_PiecesManquantes_clicked();
+
+    void on_Bt_ValeurOrigine_clicked();
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
 

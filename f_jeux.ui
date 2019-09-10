@@ -696,7 +696,7 @@
       <property name="spacing">
        <number>2</number>
       </property>
-      <item row="9" column="0" colspan="5">
+      <item row="10" column="0" colspan="5">
        <widget class="QTextEdit" name="TxE_description">
         <property name="minimumSize">
          <size>
@@ -709,7 +709,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="3">
+      <item row="9" column="3">
        <widget class="QCommandLinkButton" name="Bt_AnnulerDescription">
         <property name="enabled">
          <bool>false</bool>
@@ -735,7 +735,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="2">
+      <item row="9" column="2">
        <widget class="QCommandLinkButton" name="Bt_ValiderDescription">
         <property name="enabled">
          <bool>false</bool>
@@ -761,7 +761,7 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="9" column="0">
        <widget class="QLabel" name="label_4">
         <property name="minimumSize">
          <size>
@@ -773,6 +773,9 @@
          <string>Description de ce jeu :</string>
         </property>
        </widget>
+      </item>
+      <item row="4" column="0" colspan="5">
+       <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
       </item>
       <item row="0" column="0" rowspan="3" colspan="5">
        <widget class="QGroupBox" name="groupBox_10">
@@ -855,7 +858,7 @@
         </layout>
        </widget>
       </item>
-      <item row="6" column="1">
+      <item row="7" column="1">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -869,7 +872,11 @@
        </spacer>
       </item>
       <item row="3" column="0" colspan="5">
-       <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Contenu du jeu :</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

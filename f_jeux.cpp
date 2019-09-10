@@ -89,8 +89,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     ui->TbW_LiensJeux->setHorizontalHeaderItem(1,new QTableWidgetItem("Descriptif du jeu"));
 
     F_MainWindow *main=dynamic_cast <F_MainWindow *>(parent);
-    ui->W_Contenu->Definir_Main(main);
-    ui->W_Contenu->Definir_Mode(MODE_CONTENU_ET_MANQUANT);
+    ui->W_Contenu->Initialisation(MODE_LECTURE_SEULE,main,"Hors départ ou retour du jeu");
     connect(ui->W_Historique,SIGNAL(Signal_ActualiserContenu()),ui->W_Contenu,SLOT(ActualiserContenu()));
     connect(ui->W_Contenu,SIGNAL(Signal_ActualiserHistoriqueMaintenance()),ui->W_Historique,SLOT(ActualiserHistoriqueMaintenance()));
 }

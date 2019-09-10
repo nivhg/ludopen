@@ -6,9 +6,13 @@ W_HistoriqueMaintenance::W_HistoriqueMaintenance(QWidget *parent) :
     ui(new Ui::W_HistoriqueMaintenance)
 {
     ui->setupUi(this);
-    DelegateDetect=new DetectDelegate(this);
-    ui->Tw_HistoriqueMaintenance->setItemDelegate(DelegateDetect);
-    connect(DelegateDetect,SIGNAL(editingStartedSignal()),this,SLOT(editingStartedHistorique()));
+    QList<int> *Liste=new QList<int>();
+    //Liste->append(3);
+    QList<int> *Liste2=new QList<int>();
+    Liste2->append(4);
+    Liste2->append(5);
+    Delegate=new SpinBoxDelegate(*Liste,*Liste2,-1,-1,true,this);
+    ui->Tw_HistoriqueMaintenance->setItemDelegate(Delegate);
 }
 
 W_HistoriqueMaintenance::~W_HistoriqueMaintenance()
@@ -24,13 +28,14 @@ void W_HistoriqueMaintenance::Definir_CodeJeu(QString CodeJeu)
 void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
 {
     ui->Tw_HistoriqueMaintenance->clear();
+    ui->Tw_HistoriqueMaintenance->setRowCount(0);
     ui->Tw_HistoriqueMaintenance->setColumnCount(6);
     QStringList m_TableHeader;
     m_TableHeader<<"Date"<<"Membre"<<"Pièce";
     ui->Tw_HistoriqueMaintenance->setHorizontalHeaderLabels(m_TableHeader);
 
     QTableWidgetItem *Item=new QTableWidgetItem("Nb manquant");
-    Item->setBackground(QColor(0, 255, 0));
+    //Item->setBackground(QColor(0, 255, 0));
     ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(3,Item);
     Item=new QTableWidgetItem("Abimée?");
     Item->setBackground(QColor(0, 255, 0));
@@ -40,7 +45,7 @@ void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
     ui->Tw_HistoriqueMaintenance->setHorizontalHeaderItem(5,Item);
 
     QSqlQuery Requete;
-    Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
+    Requete.prepare("SELECT IdJeux,Remarque FROM jeux WHERE CodeJeu=:CodeJeu");
     Requete.bindValue(":CodeJeu",CodeJeu);
     if(!Requete.exec())
     {
@@ -48,6 +53,16 @@ void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
     }
     Requete.next();
     int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+    ui->Tw_HistoriqueMaintenance->blockSignals(true);
+    ui->Tw_HistoriqueMaintenance->setRowCount(1);
+    QString Remarque=ObtenirValeurParNom(Requete,"Remarque").toString().
+            replace(QRegularExpression("(\n\s*\n)+"),"\n");
+    Item=new QTableWidgetItem("Remarques générales : "+Remarque);
+    qDebug()<<Remarque;
+
+    Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+    ui->Tw_HistoriqueMaintenance->setItem(0, 0, Item);
+    ui->Tw_HistoriqueMaintenance->setSpan(0,0,1,6);
 
     Requete.prepare("SELECT * FROM piecesmanquantes as pm LEFT JOIN pieces as p ON p.IdPieces=IdPieces_Pieces "
                     "LEFT JOIN jeux as j ON p.IdJeuxOuIdPieces=IdJeux LEFT JOIN membres as m ON IdMembre_Membres=m.IdMembre "
@@ -58,23 +73,25 @@ void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
     {
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    int i=0;
+    int i=1;
     while(Requete.next())
     {
         ui->Tw_HistoriqueMaintenance->blockSignals(true);
         ui->Tw_HistoriqueMaintenance->setRowCount(i+1);
-        QTableWidgetItem *Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DatePiecesManquantes").toDate().toString("dd-MM-yy"));
+        QTableWidgetItem *Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DatePiecesManquantes").toDateTime().toString("dd-MM-yy hh:mm"));
         Item->setData(Qt::UserRole,ObtenirValeurParNom(Requete,"IdPiecesManquantes").toInt());
 
         Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
         ui->Tw_HistoriqueMaintenance->setItem(i, 0, Item);
-        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"Prenom").toString());
+        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"Nom").toString()+" "+ObtenirValeurParNom(Requete,"Prenom").toString());
         Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
         ui->Tw_HistoriqueMaintenance->setItem(i, 1, Item);
         Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"DescriptionPieces").toString());
         Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
         ui->Tw_HistoriqueMaintenance->setItem(i, 2, Item);
-        ui->Tw_HistoriqueMaintenance->setItem(i, 3, new QTableWidgetItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toString()));
+        Item=new QTableWidgetItem(ObtenirValeurParNom(Requete,"NombrePiecesManquantes").toString());
+        Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
+        ui->Tw_HistoriqueMaintenance->setItem(i, 3, Item);
         Item = new QTableWidgetItem();
         Item->setFlags(Item->flags() | Qt::ItemIsUserCheckable );
         Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
@@ -93,6 +110,7 @@ void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
         i++;
     }
     ui->Tw_HistoriqueMaintenance->resizeColumnsToContents();
+    ui->Tw_HistoriqueMaintenance->setColumnWidth(0,100);
     ui->Tw_HistoriqueMaintenance->setColumnWidth(5,300);
     ui->Bt_SupprimerEvenement->setEnabled(false);
 }
@@ -113,9 +131,10 @@ void W_HistoriqueMaintenance::on_Bt_SupprimerEvenement_clicked()
     }
     qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     ActualiserHistoriqueMaintenance();
+    emit(Signal_ActualiserContenu());
 }
 
-void W_HistoriqueMaintenance::editingStartedHistorique()
+void W_HistoriqueMaintenance::on_Tv_Contenu_editorEvent()
 {
     if(ui->Tw_HistoriqueMaintenance->selectedItems().count()>0)
     {

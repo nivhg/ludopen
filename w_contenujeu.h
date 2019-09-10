@@ -23,11 +23,11 @@ using namespace std;
 #define NBPIECESMANQUANTES Qt::UserRole+3
 
 #define MODE_CONTENU 0
-#define MODE_CONTENU_ET_MANQUANT 1
+#define MODE_LECTURE_SEULE 1
 
-const QString MSG_AIDE_MANQUANT="Il suffit de cliquer sur la ligne correspondante à la pièce manquante ou abimée dans la colonne \"Manquant (abimé)\" du contenu du jeu.\n"
-"Il est possible de rajouter une remarque dans l'historique de maintenance et de préciser qu'il s'agit d'une pièce abimée."
-"Les pièces abimées seront retirées de la colonne \"Manquant (abimé)\" (elles sont encore présente dans le jeu, mais sont abimées).";
+const QString MSG_AIDE_MANQUANT="Pour déclarer une pièce manquante ou abimée, changer la valeur de la colonne \"Manquant\" du contenu du jeu.\n"
+                                "Une fois la valeur changée, une ligne apparait dans l'historique de maintenance.\n"
+                                "Pour déclarer qu'elle est abimée, cocher la case appropriée.";
 
 namespace Ui {
 class W_ContenuJeu;
@@ -42,8 +42,7 @@ public:
     explicit W_ContenuJeu(QWidget *parent = 0);
     ~W_ContenuJeu();
     void Definir_CodeJeu(QString CodeJeu);
-    void Definir_Mode(int mode);
-    void Definir_Main(F_MainWindow *Main);
+    void Initialisation(int mode,F_MainWindow *Main,QString Remarque="");
     void ActiverBoutonsContenu(bool Etat);
     void Vider();
 
@@ -112,6 +111,8 @@ private:
     int Mode;
 
     F_MainWindow *main;
+
+    QString RemarquePiecesManquantes;
 };
 
 #endif // W_CONTENUJEU_H

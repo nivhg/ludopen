@@ -116,12 +116,10 @@ F_Retour::F_Retour(QWidget *parent) :
 
    ui->DtE_Prolonger->setDisplayFormat("dd-MM-yyyy");
 
-   ui->LE_Caution->setVisible(false);
-   ui->Lb_Caution->setVisible(false);
+   ui->widget->setVisible(false);
 
    F_MainWindow *main=dynamic_cast <F_MainWindow *>(parent);
-   ui->W_Contenu->Definir_Main(main);
-   ui->W_Contenu->Definir_Mode(MODE_CONTENU_ET_MANQUANT);
+   ui->W_Contenu->Initialisation(MODE_LECTURE_SEULE,main,"Au retour du jeu");
    connect(ui->W_Historique,SIGNAL(Signal_ActualiserContenu()),ui->W_Contenu,SLOT(ActualiserContenu()));
    connect(ui->W_Contenu,SIGNAL(Signal_ActualiserHistoriqueMaintenance()),ui->W_Historique,SLOT(ActualiserHistoriqueMaintenance()));
 }
@@ -277,7 +275,7 @@ void F_Retour::AfficherMembre()
         return;
     }
     SearchMembre->setCurrentText(this->MembreActif);
-    ui->LE_NbreJeuxRendre->setText("0");
+    ui->Lb_NbreJeuxRendre->setText("Jeux à rendre (0):");
 //    this->Amende = 0 ;
 
     QSqlQuery Requete;
@@ -327,9 +325,6 @@ void F_Retour::AfficherMembre()
     //Grise les boutons de modification des remarques du membre
     ui->Bt_ValiderRemarqueMembre->setEnabled(false);
     ui->Bt_AnnulerRemarqueMembre->setEnabled(false);
-
-    //Récupère le nombre de jeux empruntables dans la base de données puis l'afficher
-    ui->LE_JeuxMaxARemplir->setText(ObtenirValeurParNom(Requete,"NbrJeuxEmpruntables").toString());
 
     //Affiche l'état de la cotisation
     //Savoir si le membre a un membre associé
@@ -397,6 +392,22 @@ void F_Retour::AfficherDetailDuJeu()
       //Sinon, le rendre cliquable
       ui->Bt_Prolonger->setEnabled(true);
    }
+
+   QSqlQuery RequeteDetailJeu;
+   //Prépare la requête et entre ses valeurs
+   RequeteDetailJeu.prepare("SELECT NomJeu,ContenuJeu,Remarque FROM jeux WHERE CodeJeu=:JeuActif");
+   RequeteDetailJeu.bindValue(":JeuActif",this->JeuActif);
+
+   if (!RequeteDetailJeu.exec())
+   {
+      qDebug()<<"F_Retour::AfficherDetailDuJeu => RequeteDetailJeu "<<RequeteDetailJeu.lastQuery();
+   }
+
+   RequeteDetailJeu.next();
+
+   //Récupère le nom du jeu et l'affiche
+   QString TextTemporaire = (RequeteDetailJeu.value(0).toString());
+   ui->LE_NomJeuARemplir->setText( TextTemporaire ) ;
 
     ui->W_Contenu->ActualiserContenu();
 
@@ -507,7 +518,7 @@ void F_Retour::AfficherJeuxEnEmprunt()
    int NbreJeuxRendre;
    // Paramètre NbreJeuxARendre renvoie la mauvaise valeur, la fonction retourne la bonne valeur
    NbreJeuxRendre=F_Emprunt::AfficherJeuxEnEmprunt(this->ModelJeuEmpruntes,this->MembreActif,true,&NbreJeuxARendre,&AmendeAPayer);
-   ui->LE_NbreJeuxRendre->setText(QString::number(NbreJeuxRendre));
+   ui->Lb_NbreJeuxRendre->setText("Jeux à rendre ("+QString::number(NbreJeuxRendre)+") :");
    ui->Lb_AmendeAPayer->setText("Amende de "+AmendeAPayer+"€");
    resizeColumnsToContents(this->ModelJeuEmpruntes,ui->Tv_JeuxEmprunte);
 }

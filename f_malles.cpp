@@ -115,7 +115,7 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
     this->ModeleMalle->setRowCount(i) ;
     //Prépare le requête pour récupérer les grands jeux avec le type d'emprunt (malle), la date en cours
     Requete.prepare("SELECT t.TypeEmprunt,me.Nom as NomMembre,me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,r.DatePrevuEmprunt as DateEmprunt,"
-                    "DAY(r.DatePrevuEmprunt) as JourEmprunt,r.DatePrevuRetour as DateRetour,0 as emprunt FROM reservation as r "
+                    "DAY(r.DatePrevuEmprunt) as JourEmprunt,r.DatePrevuRetour as DateRetour,0 as emprunt,m.Remarque FROM reservation as r "
                     "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=m.TypeEmprunt_IdTypeEmprunt "
                     "LEFT JOIN membres as me ON r.Membres_IdMembre=me.IdMembre WHERE "+
@@ -123,8 +123,8 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
                     "((MONTH(r.DatePrevuEmprunt)=:Mois AND YEAR(r.DatePrevuEmprunt)=:Annee) OR "
                     "(MONTH(r.DatePrevuRetour)=:Mois AND YEAR(r.DatePrevuRetour)=:Annee)) "
                     " UNION ALL (SELECT t.TypeEmprunt,me.Nom as NomMembre, me.Prenom as PrenomMembre, m.IdMalle, Jeux_IdJeux,e.DateEmprunt,"
-                    "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt FROM emprunts as e "
-                    "LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
+                    "DAY(e.DateEmprunt) as JourEmprunt,IFNULL(e.DateRetour,e.DateRetourPrevu) as DateRetour,1 as emprunt,m.Remarque "
+                    "FROM emprunts as e LEFT JOIN jeux as j ON Jeux_IdJeux=j.IdJeux LEFT JOIN malles as m ON m.IdMalle=Malles_IdMalle "
                     "LEFT JOIN typeemprunt as t on t.IdTypeEmprunt=e.TypeEmprunt_IdTypeEmprunt "
                     "LEFT JOIN membres as me ON e.Membres_IdMembre=me.IdMembre WHERE "+
                     F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"=:JeuxSpeciauxValeur HAVING "
@@ -241,7 +241,8 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
         item->setData(QString(EmprunOuResa+list["NomMembre"].toString()+" "+
                       list["PrenomMembre"].toString()+"\nType d'emprunt: "+
                 list["TypeEmprunt"].toString()+"\nDate emprunt: "+list["DateEmprunt"].toDateTime().toString("dd/MM/yyyy hh:mm")+
-                "\nDate retour: "+list["DateRetour"].toDateTime().toString("dd/MM/yyyy hh:mm")),Qt::ToolTipRole);
+                "\nDate retour: "+list["DateRetour"].toDateTime().toString("dd/MM/yyyy hh:mm")+" "+"\nRemarque: "+
+                list["Remarque"].toString()),Qt::ToolTipRole);
         for(int j=0;j<iDerniereColonne;j++)
         {
             this->ModeleMalle->setItem(NumLigneJeu,iPremiereColonne+j,item);

@@ -79,6 +79,11 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     QString ContenuJeu;
     while(Requete.next())
     {
+        if(ObtenirValeurParNom(Requete,"DescriptionPieces").toString().trimmed()=="")
+        {
+            ContenuJeu+="\n";
+            continue;
+        }
         int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
         // S'il s'agit d'un groupe
         switch(PieceGroupe)

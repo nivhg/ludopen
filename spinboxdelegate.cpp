@@ -1,14 +1,16 @@
 #include "spinboxdelegate.h"
 #include <QtGui>
 
-SpinBoxDelegate::SpinBoxDelegate(int ColumnSB,int ColumnMaxValue, bool LectureSeule,QObject *parent)
+SpinBoxDelegate::SpinBoxDelegate(QList<int> ColumnSB,QList<int> ColumnDefault,int IndexOfColumnMaxValue, int ColumnOfMaxValue,bool ManageCheckBox,
+                                 QObject *parent)
     : QItemDelegate(parent)
 {
     this->ColumnSB=ColumnSB;
-    this->ColumnMaxValue=ColumnMaxValue;
-    this->LectureSeule=LectureSeule;
+    this->ColumnOfMaxValue=ColumnOfMaxValue;
+    this->IndexOfColumnMaxValue=IndexOfColumnMaxValue;
+    this->ColumnDefault=ColumnDefault;
+    this->ManageCheckBox=ManageCheckBox;
     this->parent=parent;
-//    this->editor=0;
     connect(this,SIGNAL(editorSignal(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &)),
             parent,SLOT(on_Tv_Contenu_editorEvent(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &)));
 }
@@ -17,28 +19,28 @@ QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     const QStyleOptionViewItem & option ,
     const QModelIndex & index ) const
 {
-    if (index.column() == ColumnSB)
+    // Cherche la valeur dans la QList ColumnSB
+    if ( ColumnSB.indexOf(index.column()) != -1)
        {
             QSpinBox *editor = new QSpinBox(parent);
             int maxValue=99999999;
-            if(index.column()==ColumnSB && ColumnMaxValue!=-1)
+            if(IndexOfColumnMaxValue!=-1&&index.column()==IndexOfColumnMaxValue&&ColumnOfMaxValue!=-1)
             {
-                maxValue=index.sibling(index.row(),ColumnMaxValue).data(Qt::DisplayRole).toInt();
-
+                maxValue=index.sibling(index.row(),ColumnOfMaxValue).data(Qt::DisplayRole).toInt();
             }
             editor->setRange(0,maxValue);
-//            this->editor=editor;
 
             return editor;
        }
-       else // it's just a common column. Live it in default way
-            if(!LectureSeule) QItemDelegate::createEditor(parent, option, index);
+       else
+        if( ColumnDefault.indexOf(index.column()) != -1)
+            QItemDelegate::createEditor(parent, option, index);
 }
 
 void SpinBoxDelegate::setEditorData(QWidget *editor,
                                     const QModelIndex &index) const
 {
-    if (index.column() == ColumnSB)
+    if (ColumnSB.indexOf(index.column()) != -1)
     {
         int value = index.model()->data(index, Qt::EditRole).toInt();
 
@@ -52,7 +54,7 @@ void SpinBoxDelegate::setEditorData(QWidget *editor,
 void SpinBoxDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                                    const QModelIndex &index) const
 {
-    if (index.column() == ColumnSB)
+    if (ColumnSB.indexOf(index.column()) != -1)
     {
         QSpinBox *spinBox = static_cast<QSpinBox*>(editor);
         spinBox->interpretText();
@@ -74,7 +76,14 @@ bool SpinBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     const QStyleOptionViewItem &option, const QModelIndex &index)
 {
     bool retour=emit(editorSignal(event,model,option,index));
-    return retour;
+    if(ManageCheckBox)
+    {
+        return QItemDelegate::editorEvent(event, model,option,index);
+    }
+    else
+    {
+        return retour;
+    }
 }
 
 /*void SpinBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
@@ -88,20 +97,3 @@ bool SpinBoxDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 }
 */
 
-DetectDelegate::DetectDelegate(QObject *parent)
-    : QItemDelegate(parent)
-{
-    this->parent=parent;
-}
-
-QWidget *DetectDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
-{
-    return QItemDelegate::createEditor(parent, option,index);
-}
-
-bool DetectDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
-    const QStyleOptionViewItem &option, const QModelIndex &index)
-{
-    emit(editingStartedSignal());
-    return QItemDelegate::editorEvent(event, model,option,index);
-}
