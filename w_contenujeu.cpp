@@ -424,6 +424,7 @@ void W_ContenuJeu::ActiverBoutonsContenu(bool Etat)
         ui->TB_SacItem->setEnabled(ElementChoisi.data(PIECEGROUPE).toInt()!=PIECE_DANS_GROUPE);
         ui->TB_Bas->setEnabled(ElementChoisi!=QModelIndex()&&(ElementChoisi.data(PIECEGROUPE).toInt()==PIECE_DANS_GROUPE||
                                                               ElementChoisi.row()<(ModeleContenu->rowCount()-1)));
+        ui->TB_Ciseaux->setEnabled(ElementChoisi!=QModelIndex());
     }
     else
     {
@@ -509,6 +510,36 @@ void W_ContenuJeu::on_TB_Bas_clicked()
         IdPieces=ElementChoisi.data(IDPIECES).toInt();
     }
     ActualiserContenu(IdPieces);
+}
+
+void W_ContenuJeu::on_TB_Ciseaux_clicked()
+{
+    QModelIndex ElementChoisi=ui->Tv_Contenu->currentIndex().sibling(ui->Tv_Contenu->currentIndex().row(),0);
+    QRegularExpression re("\\s*,*\\s*(\\d+)((\\s+[a-zA-Z]+)+)");
+    QRegularExpressionMatchIterator i = re.globalMatch(ElementChoisi.data(Qt::DisplayRole).toString());
+    QString Description=ElementChoisi.data(Qt::DisplayRole).toString();
+    while (i.hasNext())
+    {
+        QRegularExpressionMatch match = i.next();
+        if (match.hasMatch())
+        {
+             Description=Description.replace(match.captured(0),"",Qt::CaseInsensitive);
+             int IdNouvelleLigne=InsererPiece(match.captured(1),ElementChoisi.row()+1,match.captured(2).trimmed(),
+                        ElementChoisi.data(PIECEGROUPE).toInt(),ElementChoisi.data(IDJEUXOUIDPIECES).toInt());
+             QSqlQuery RequeteMiseAJour;
+             RequeteMiseAJour.prepare("UPDATE pieces SET OrdrePieces=OrdrePieces+1 WHERE IdJeuxOuIdPieces="
+                            "(SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu) AND OrdrePieces>=:OrdrePieces AND IdPieces!=:IdPieces");
+             RequeteMiseAJour.bindValue(":OrdrePieces",ui->Tv_Contenu->currentIndex().row()+1);
+             RequeteMiseAJour.bindValue(":CodeJeu",CodeJeu);
+             RequeteMiseAJour.bindValue(":IdPieces",IdNouvelleLigne);
+             if(!RequeteMiseAJour.exec())
+             {
+                 qDebug()<<getLastExecutedQuery(RequeteMiseAJour)<<RequeteMiseAJour.lastError();
+             }
+        }
+    }
+    ModeleContenu->itemFromIndex(ElementChoisi)->setText(Description.trimmed());
+    ActualiserContenu();
 }
 
 void W_ContenuJeu::SupprimerElement(QModelIndex ElementChoisi)

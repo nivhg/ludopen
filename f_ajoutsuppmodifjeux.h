@@ -75,7 +75,7 @@ public:
 
     /** @brief Affiche les informations sur un jeu
      */
-    void AfficherJeu();
+    void AfficherJeu(QString CodeJeu);
 
     /** @brief Vide les champs d'un jeu
      */

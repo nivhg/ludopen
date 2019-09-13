@@ -309,10 +309,7 @@ void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
     }
     // Reconnexion du défilement du tableau des jeux avec les flèches du clavier
     connect(ui->TbV_Recherche->selectionModel(),SIGNAL(currentRowChanged(QModelIndex,QModelIndex)),this,SLOT(on_TbV_Recherche_clicked(QModelIndex)));
-    this->nIdJeuSelectionne=this->ModelJeu->index(firstrow, 0).data().toString();
-    ui->W_Contenu->Definir_CodeJeu(nIdJeuSelectionne);
-    ui->W_Historique->Definir_CodeJeu(nIdJeuSelectionne);
-    AfficherJeu();
+    AfficherJeu(this->ModelJeu->index(firstrow, 0).data().toString());
 }
 
 void F_AjoutSuppModifJeux::AfficherJeux()
@@ -993,7 +990,6 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
         this->ActualiserCBx_Statut();
 
         // Rafraichir l'affichage du jeu
-        AfficherJeu();
     }
     // Mettre à jour la liste des jeux
     AfficherJeux();
@@ -1744,8 +1740,13 @@ void F_AjoutSuppModifJeux::on_Bt_Supprimer_clicked()
  * @brief Méthode qui recherche le jeu correspondant au code entrée, et affiche les informations
  *
  */
-void F_AjoutSuppModifJeux::AfficherJeu()
+void F_AjoutSuppModifJeux::AfficherJeu(QString CodeJeu)
 {
+    this->nIdJeuSelectionne=CodeJeu;
+    ui->Bt_AjouterLienJeux->setEnabled(true);
+    ui->W_Contenu->Definir_CodeJeu(nIdJeuSelectionne);
+    ui->W_Historique->Definir_CodeJeu(nIdJeuSelectionne);
+
     qDebug() << "F_AjoutSuppModifJeux::AfficherJeu() ++++++++++++++++++++++++++++++++++++" ;
     // Débloque tous les champs de saisie en vue d'une modification possible
     ActiveChamps(true);
@@ -2280,11 +2281,7 @@ void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
                  "Attention, avant d'effectuer une nouvelle recherche vous devez valider ou annuler vos modifications sur le jeu en cours !", "OK") ;
         return;
     }
-    this->nIdJeuSelectionne=this->ModelJeu->index(index.row(), 0).data().toString();
-    ui->W_Contenu->Definir_CodeJeu(nIdJeuSelectionne);
-    ui->W_Historique->Definir_CodeJeu(nIdJeuSelectionne);
-    ui->Bt_AjouterLienJeux->setEnabled(true);
-    AfficherJeu() ;
+    AfficherJeu(this->ModelJeu->index(index.row(), 0).data().toString());
     ActualiserLienJeux();
 }
 
@@ -2362,7 +2359,20 @@ QString F_AjoutSuppModifJeux::get_JeuEnConsultation()
 
 void F_AjoutSuppModifJeux::on_Bt_Aide_PiecesManquantes_clicked()
 {
-    QMessageBox::information(this,"Déclarer une pièce manquante ou abimée",MSG_AIDE_MANQUANT,"OK");
+    QMessageBox::information(this,"Description des boutons","- Bouton d'ajout (+) :\n"
+                            "Permet de rajouter des pièces simples, des groupes de pièces et des pièces dans un groupe.\n"
+                            "Pour ce dernier type de pièce, il est nécessaire d’avoir sélectionné préalablement le groupe où rajouter la pièce.\n"
+                            "- Bouton suppression (croix rouge) :\n"
+                            "Ce bouton permet de supprimer l’élément sélectionné. S’il s’agit d’un groupe, une confirmation est demandée avant la suppression\n"
+                            "- Bouton de déplacement (flèches bleues haut et base) :\n"
+                            "Ces boutons permettent de déplacer une ligne en bas ou en haut.\n"
+                            "Si l’élément qui se trouve à destination du déplacement est un groupe, la ligne est intégrée dans le groupe.\n"
+                            "- Bouton de conversion (sac avec double flèche suivi d'un pièce) :\n"
+                            "Ce bouton permet de convertir une pièce simple en groupe ou un groupe en pièce simple.\n"
+                            "- Bouton de découpage (ciseaux) :"
+                            "Ce bouton permet de découper une ligne qui contient plusieurs pièces.\n"
+                            "Par exemple, une ligne qui contiendrait \"sac, 3 chemises, 2 pantalons\"\n"
+                            "serait transformés en 3 lignes : sac, chemises, pantalons.","OK");
 }
 
 void F_AjoutSuppModifJeux::on_Bt_ValeurOrigine_clicked()

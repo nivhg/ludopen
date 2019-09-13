@@ -93,6 +93,8 @@ private slots:
 
        bool on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
+       void on_TB_Ciseaux_clicked();
+
 signals:
        void Signal_ActualiserHistoriqueMaintenance();
 

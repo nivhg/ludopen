@@ -135,6 +135,20 @@
          </widget>
         </item>
         <item>
+         <widget class="QToolButton" name="TB_Ciseaux">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+          <property name="icon">
+           <iconset resource="ImagesIcones.qrc">
+            <normaloff>:/scissors.svg</normaloff>:/scissors.svg</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QToolButton" name="TB_Valider">
           <property name="text">
            <string>...</string>

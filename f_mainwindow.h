@@ -135,6 +135,8 @@ private:
     QTimer *Relevetimer;
     QTimer *Reservationtimer;
     uint iIdBenevole;
+    QSystemTrayIcon *IconeBarreTache;
+    QDateTime FuturPerm;
 
     void TimerProchainePermanence();
     QDateTime TrouverProchainePerm(QDateTime LaDate,QList<QList <QVariant>> Permanences,int *iFuturPerm);

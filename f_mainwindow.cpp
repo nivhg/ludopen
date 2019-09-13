@@ -152,6 +152,8 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     slot_verifReservation();
     connect(Reservationtimer, SIGNAL(timeout()), SLOT(slot_verifReservation()));
     Reservationtimer->start();
+    IconeBarreTache=new QSystemTrayIcon(QIcon(":/IconeLO.png"));
+    IconeBarreTache->show();
 }
 
 void F_MainWindow::VerifierConnexionBDD()
@@ -229,14 +231,6 @@ void F_MainWindow::slot_Preferences()
         this->pMembres->MaJTitre() ;
         this->pMembres->MaJType() ;
         this->pMembres->AfficherMembre() ;
-    }
-    if(this->pJeux)
-    {
-
-    }
-    if(!this->pAjoutSuppModifJeux)
-    {
-
     }
 }
 
@@ -814,15 +808,27 @@ void F_MainWindow::verifReleve()
     QStringList Postes=F_Preferences::ObtenirValeur("PosteReleveCaisse").split(",");
     if(Postes.contains(QHostInfo::localHostName(),Qt::CaseInsensitive))
     {
-        ui->TbW_Main->blockSignals(true);
-        for(int i=0;i<ui->TbW_Main->count();i++)
+        QDateTime Maintenant=QDateTime::currentDateTime();
+        int Difference=Maintenant.secsTo(FuturPerm);
+
+        if(Difference>0)
         {
-            ui->TbW_Main->setTabEnabled(i,false);
+            IconeBarreTache->showMessage("Relevé de caisse imminent","Il reste "+QString::number(Difference/60)
+                                         +" minutes avant le relevé de caisse.");
+            Relevetimer->start(F_Preferences::ObtenirValeur("RelanceReleveCaisse").toInt()*60*1000);
         }
-        ui->TbW_Main->blockSignals(false);
-        int IndexReleve=trouveOnglet("releve");
-        ui->TbW_Main->setTabEnabled(IndexReleve,true);
-        ui->TbW_Main->setCurrentIndex(IndexReleve);
+        else
+        {
+            ui->TbW_Main->blockSignals(true);
+            for(int i=0;i<ui->TbW_Main->count();i++)
+            {
+                ui->TbW_Main->setTabEnabled(i,false);
+            }
+            ui->TbW_Main->blockSignals(false);
+            int IndexReleve=trouveOnglet("releve");
+            ui->TbW_Main->setTabEnabled(IndexReleve,true);
+            ui->TbW_Main->setCurrentIndex(IndexReleve);
+        }
     }
 }
 
@@ -886,14 +892,11 @@ void F_MainWindow::TimerProchainePermanence()
         qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
         return;
     }
-    qDebug() << getLastExecutedQuery(Requete);
     bool Retour=Requete.next();
     int Difference;
-    QDateTime FuturPerm;
     int iFuturPerm=0;
     // Recherche de la prochaine permanence
     FuturPerm=TrouverProchainePerm(Maintenant,Permanences,&iFuturPerm);
-    qDebug()<<FuturPerm;
     int HeurePerm;
     // Si il y a eu un relevé aujourd'hui, on active le timer pour s'enclencher 30 minutes avant la fin de la permanence, sinon au début
     if(Retour)
@@ -921,11 +924,9 @@ void F_MainWindow::TimerProchainePermanence()
     }
     // On mets l'heure de la future perm (début ou fin de permanence)
     FuturPerm.setTime(QTime::fromString(Permanences.at(iFuturPerm).at(HeurePerm).toString()));
-    qDebug()<<FuturPerm;
     // On calcule la différence de temps entre la futur perm et maintenant et on retire l'interval défini pour le relevé de caisse (30 min)
     Difference=Maintenant.secsTo(FuturPerm);
     Difference=Difference-F_Preferences::ObtenirValeur("IntervalReleveCaisse").toInt()*60;
-    qDebug()<<Difference;
     if(Difference<0) Difference=0;
 
     Relevetimer->start(Difference*1000);
@@ -1134,6 +1135,7 @@ uint F_MainWindow::RecupereIdBenevole()
 
 void F_MainWindow::slot_AfficherJeu(QString CodeJeu)
 {
-    ui->TbW_Main->setCurrentIndex(this->trouveOnglet("jeux"));
-    pJeux->AfficherJeu(CodeJeu);
+    ui->TbW_Main->setCurrentIndex(this->trouveOnglet("admin"));
+    on_Bt_Jeux_clicked();
+    pAjoutSuppModifJeux->AfficherJeu(CodeJeu);
 }

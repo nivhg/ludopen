@@ -62,5 +62,6 @@
         <file>SacFlechesItem.png</file>
         <file>GrilleVersTexte.png</file>
         <file>ImporterTexte.png</file>
+        <file>scissors.svg</file>
     </qresource>
 </RCC>
