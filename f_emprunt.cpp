@@ -2100,7 +2100,10 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
 
     if(!this->bRegle)
     {
-        emit(Signal_AjouterAuPanier(ui->CBx_TypeEmprunt->currentText(),this->IdDuMembre,(double) NbCredits,TypeVentilation,NomTable,ListeRequetes));
+        if(DansPanier)
+        {
+            emit(Signal_AjouterAuPanier(ui->CBx_TypeEmprunt->currentText(),this->IdDuMembre,(double) NbCredits,TypeVentilation,NomTable,ListeRequetes));
+        }
         if(this->iMode==MODE_MALLES)
         {
             QMessageBox::information(this,"Malle ajouté au panier","La malle a été ajoutée au panier.","Ok");

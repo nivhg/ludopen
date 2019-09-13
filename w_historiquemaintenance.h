@@ -30,7 +30,7 @@ public slots:
     void ActualiserHistoriqueMaintenance();
 
 private slots:
-    void on_Tv_Contenu_editorEvent();
+    void on_Tv_Contenu_editorEvent(QEvent *, QAbstractItemModel *,const QStyleOptionViewItem &, const QModelIndex &);
     void on_Bt_SupprimerEvenement_clicked();
     void on_Tw_HistoriqueMaintenance_itemChanged(QTableWidgetItem *item);
 

@@ -202,7 +202,7 @@ void W_ContenuJeu::ActualiserContenu(int IdPieces)
                     "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces)"
                     "as OrdreGroupePieces,(SELECT SUM(NombrePiecesManquantes) FROM piecesmanquantes WHERE "
                     "IdPieces=IdPieces_Pieces AND Abimee=0) as NombrePiecesManquantes FROM pieces as p WHERE "
-                    "IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN (SELECT IdPieces FROM pieces WHERE "
+                    "(IdJeuxOuIdPieces=:IdJeux AND PieceGroupe!=2) OR (PieceGroupe=2 AND IdJeuxOuIdPieces IN (SELECT IdPieces FROM pieces WHERE "
                     "IdJeuxOuIdPieces=:IdJeux)) ORDER By CONVERT(OrdreGroupePieces,DECIMAL(5,2))");
     Requete.bindValue(":IdJeux",IdJeux);
     if(!Requete.exec())
@@ -805,6 +805,9 @@ bool W_ContenuJeu::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *
     {
         QMessageBox::critical(this,"Aucun utilisateur choisir",
                               "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
+        ui->Tv_Contenu->setCurrentIndex(QModelIndex());
+        ui->Tv_Contenu->setEnabled(false);
+        ui->Tv_Contenu->setEnabled(true);
         return true;
     }
     return false;

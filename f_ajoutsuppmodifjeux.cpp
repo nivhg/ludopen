@@ -664,7 +664,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
            RequeteEditeur.next() ;
 
            RequeteAjouterJeu.prepare("INSERT INTO jeux(NomJeu,NomCreateurJeu,DateAchat,PrixAchat,PrixLoc,NbrJoueurMin,"
-                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,Caution,Remarque,"
+                                     "NbrJoueurMax,AgeMin,AgeMax,Remarque,Caution,"
                                      "DescriptionJeu,CodeJeu,EtatInitial,MotCle1,MotCle2,MotCle3,"
                                      "TypeJeux_Classification,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,"
                                      "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,"
