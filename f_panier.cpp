@@ -16,6 +16,7 @@ F_Panier::F_Panier(QWidget *parent) :
         mois[0]=mois[0].toUpper();
         ui->CBx_Mois->addItem(mois,i);
     }
+    ui->SB_NumFacture->setMaximum(9999999);
     ui->CBx_Mois->setCurrentIndex(QDate::currentDate().month()-1);
 
     ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()-1));
@@ -211,7 +212,7 @@ void F_Panier::on_Bt_OK_clicked()
     RequetePaiement.bindValue(":IdModePaiement",ui->CBx_ModePaiement->currentData());
     RequetePaiement.bindValue(":IdCheque",IdCheque);
     QString NumeroFacture="";
-    if(ui->SB_NumFacture->value()!=0 || ui->SB_AnneeFacture->value()!=0)
+    if(HInfosMembre["TitreMembre_IdTitreMembre"]==FILTRE_COLLECTIVITES&&(ui->SB_NumFacture->value()!=0 || ui->SB_AnneeFacture->value()!=0))
     {
         NumeroFacture=QString(QString::number(ui->SB_NumFacture->value())+"/"+QString::number(ui->SB_AnneeFacture->value()));
     }

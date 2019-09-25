@@ -187,7 +187,10 @@ void W_ContenuJeu::on_menuAjouterPiece_triggered()
 
 void W_ContenuJeu::ActualiserContenu(int IdPieces)
 {
+    ui->Tv_Contenu->blockSignals(true);
+    ModeleContenu->clear();
     on_TB_Annuler_clicked();
+    if(CodeJeu=="") return;
     QSqlQuery Requete;
     Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
     Requete.bindValue(":CodeJeu",CodeJeu);
@@ -209,8 +212,6 @@ void W_ContenuJeu::ActualiserContenu(int IdPieces)
     {
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    ui->Tv_Contenu->blockSignals(true);
-    ModeleContenu->clear();
     //Initialise les colones du TableView des nouveaux emprunts
     int ColNombre=1;
     this->ModeleContenu->setColumnCount(3);
