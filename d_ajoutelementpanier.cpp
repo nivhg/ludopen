@@ -50,7 +50,7 @@ D_AjoutElementPanier::D_AjoutElementPanier(QWidget *parent,int IdDuMembre) :
         SearchMembre->show();
 
         ui->horizontalLayout->addWidget(SearchMembre);
-        connect(SearchMembre,SIGNAL(SignalSuggestionFini()),this,SLOT(SearchMembre_MembreTrouve()));
+        connect(SearchMembre,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(SearchMembre_MembreTrouve()));
         ActiverControles(false);
     }
     // Si on connait le membre, on cache le contrôle

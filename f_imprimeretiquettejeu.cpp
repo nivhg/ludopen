@@ -66,9 +66,12 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     QString NomJeu=ObtenirValeurParNom(Requete,"NomJeu").toString();
 
     Requete.prepare("SELECT *,IF(PieceGroupe=2,"
-                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces) as OrdreGroupePieces"
-                    " FROM pieces as p WHERE IdJeuxOuIdPieces=:IdJeux Or (PieceGroupe=2 AND IdJeuxOuIdPieces IN "
-                    "(SELECT IdPieces FROM pieces WHERE IdJeuxOuIdPieces=:IdJeux)) ORDER By OrdreGroupePieces");
+                    "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces)"
+                    "as OrdreGroupePieces,(SELECT SUM(NombrePiecesManquantes) FROM piecesmanquantes WHERE "
+                    "IdPieces=IdPieces_Pieces AND Abimee=0) as NombrePiecesManquantes FROM pieces as p WHERE "
+                    "(IdJeuxOuIdPieces=:IdJeux AND PieceGroupe!=2) OR (PieceGroupe=2 AND IdJeuxOuIdPieces IN (SELECT IdPieces FROM pieces WHERE "
+                    "IdJeuxOuIdPieces=:IdJeux)) ORDER By CONVERT(OrdreGroupePieces,DECIMAL(5,2))");
+
     Requete.bindValue(":IdJeux",IdJeux);
     if(!Requete.exec())
     {
@@ -85,13 +88,18 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
             continue;
         }
         int PieceGroupe=ObtenirValeurParNom(Requete,"PieceGroupe").toInt();
+        QString NombrePieces="";
+        if(!Requete.isNull("NombrePieces"))
+        {
+            NombrePieces=ObtenirValeurParNom(Requete,"NombrePieces").toString()+" ";
+        }
         // S'il s'agit d'un groupe
         switch(PieceGroupe)
         {
             case PIECE_SEULE:
             case GROUPE:
-                ContenuJeu+="- "+ObtenirValeurParNom(Requete,"NombrePieces").toString()+" "+
-                        ObtenirValeurParNom(Requete,"DescriptionPieces").toString();
+            {
+                ContenuJeu+="- "+NombrePieces+ObtenirValeurParNom(Requete,"DescriptionPieces").toString();
                 if(PieceGroupe==PIECE_SEULE)
                 {
                     ContenuJeu+="\n";
@@ -101,10 +109,12 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
                     ContenuJeu+=" :\n";
                 }
                 break;
+            }
             case PIECE_DANS_GROUPE:
-                ContenuJeu+="\t* "+ObtenirValeurParNom(Requete,"NombrePieces").toString()+" "+
-                        ObtenirValeurParNom(Requete,"DescriptionPieces").toString()+"\n";
+            {
+                ContenuJeu+="\t* "+NombrePieces+ObtenirValeurParNom(Requete,"DescriptionPieces").toString()+"\n";
                 break;
+            }
         }
     }
     QString InfoLudo = F_Preferences::ObtenirValeur("Nom") + "\n" + F_Preferences::ObtenirValeur("Adresse")

@@ -10,6 +10,7 @@ F_Panier::F_Panier(QWidget *parent) :
 
     ui->Bt_Aide->setVisible(false);
 
+    ui->CBx_Mois->blockSignals(true);
     for(int i=1;i<13;i++)
     {
         QString mois=QDate::longMonthName(i);
@@ -18,11 +19,14 @@ F_Panier::F_Panier(QWidget *parent) :
     }
     ui->SB_NumFacture->setMaximum(9999999);
     ui->CBx_Mois->setCurrentIndex(QDate::currentDate().month()-1);
+    ui->CBx_Mois->blockSignals(false);
 
+    ui->CBx_Annee->blockSignals(true);
     ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()-1));
     ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()));
     ui->CBx_Annee->addItem(QString::number(QDate::currentDate().year()+1));
     ui->CBx_Annee->setCurrentIndex(1);
+    ui->CBx_Annee->blockSignals(false);
 
     ui->SBx_Total->setSuffix("€");
     ui->TbV_Panier->clearSpans() ;

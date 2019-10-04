@@ -46,14 +46,14 @@ F_Retour::F_Retour(QWidget *parent) :
     SearchMembre->show();
     ui->Hlay11->addWidget(SearchMembre);
 
-    connect(SearchMembre,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchMembre_returnPressed()));
+    connect(SearchMembre,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchMembre_returnPressed()));
 
     SearchJeux = new SearchBox(this);
     ActualiserListeJeux();
     SearchJeux->show();
     ui->HLay9->addWidget(SearchJeux);
 
-    connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_returnPressed()));
+    connect(SearchJeux,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchJeux_returnPressed()));
 
     //Met une date minimum pour le DateEdit de la prolongation (la date du jour)
     QDate DateDeRetourToleree;
@@ -77,42 +77,42 @@ F_Retour::F_Retour(QWidget *parent) :
    }
 
    //Création d'un modèle pour le TableView des jeux empruntés
-   this->ModelJeuEmpruntes = new QStandardItemModel() ;
+   this->ModeleJeuxEmpruntes = new QStandardItemModel() ;
    //Associe le modèl au TableView
-   ui->Tv_JeuxEmprunte->setModel(this->ModelJeuEmpruntes);
+   ui->Tv_JeuxEmpruntes->setModel(this->ModeleJeuxEmpruntes);
    //Met le TableView en lecture seule
-   ui->Tv_JeuxEmprunte->setEditTriggers(0);
+   ui->Tv_JeuxEmpruntes->setEditTriggers(0);
    // Autorise le tri pour ce tableau
-   ui->Tv_JeuxEmprunte->setSortingEnabled(true);
+   ui->Tv_JeuxEmpruntes->setSortingEnabled(true);
    //Initialise les colonnes du TableView des nouveaux emprunts
-   this->ModelJeuEmpruntes->setColumnCount(3);
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Code"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
-   this->ModelJeuEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
-   ui->Tv_JeuxEmprunte->setColumnWidth(0,140);
-   ui->Tv_JeuxEmprunte->setColumnWidth(1,40);
+   this->ModeleJeuxEmpruntes->setColumnCount(3);
+   this->ModeleJeuxEmpruntes->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
+   this->ModeleJeuxEmpruntes->setHorizontalHeaderItem(1, new QStandardItem("Code"));
+   this->ModeleJeuxEmpruntes->setHorizontalHeaderItem(2, new QStandardItem("Date emprunt"));
+   this->ModeleJeuxEmpruntes->setHorizontalHeaderItem(3, new QStandardItem("Date retour"));
+   ui->Tv_JeuxEmpruntes->setColumnWidth(0,140);
+   ui->Tv_JeuxEmpruntes->setColumnWidth(1,40);
 
    //Création d'un modèle pour le TableView des jeux réservés
-   this->ModelJeuReserves = new QStandardItemModel() ;
+   this->ModeleJeuxReserves = new QStandardItemModel() ;
     //Associe le modèl au TableView
-   ui->Tv_JeuxReserve->setModel(this->ModelJeuReserves);
+   ui->Tv_JeuxReserves->setModel(this->ModeleJeuxReserves);
    //Met le TableView en lecture seule
-   ui->Tv_JeuxReserve->setEditTriggers(0);
+   ui->Tv_JeuxReserves->setEditTriggers(0);
    // Autorise le tri pour ce tableau
-   ui->Tv_JeuxReserve->setSortingEnabled(true);
+   ui->Tv_JeuxReserves->setSortingEnabled(true);
 
    //Initialise les colonnes du TableView des jeux réservés
-   this->ModelJeuReserves->setColumnCount(5);
-   this->ModelJeuReserves->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
-   this->ModelJeuReserves->setHorizontalHeaderItem(1, new QStandardItem("Code"));
-   this->ModelJeuReserves->setHorizontalHeaderItem(2, new QStandardItem("Date réservation"));
-   this->ModelJeuReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
-   this->ModelJeuReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
-   this->ModelJeuReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
+   this->ModeleJeuxReserves->setColumnCount(5);
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu/malle"));
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(1, new QStandardItem("Code"));
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(2, new QStandardItem("Date réservation"));
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(3, new QStandardItem("Date emprunt"));
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(4, new QStandardItem("Date retour"));
+   this->ModeleJeuxReserves->setHorizontalHeaderItem(5, new QStandardItem("lieu"));
 
-   ui->Tv_JeuxReserve->setColumnWidth(0,140);
-   ui->Tv_JeuxReserve->setColumnWidth(1,40);
+   ui->Tv_JeuxReserves->setColumnWidth(0,140);
+   ui->Tv_JeuxReserves->setColumnWidth(1,40);
 
    ui->DtE_Prolonger->setDisplayFormat("dd-MM-yyyy");
 
@@ -517,10 +517,10 @@ void F_Retour::AfficherJeuxEnEmprunt()
    QString AmendeAPayer,NbreJeuxARendre;
    int NbreJeuxRendre;
    // Paramètre NbreJeuxARendre renvoie la mauvaise valeur, la fonction retourne la bonne valeur
-   NbreJeuxRendre=F_Emprunt::AfficherJeuxEnEmprunt(this->ModelJeuEmpruntes,this->MembreActif,true,&NbreJeuxARendre,&AmendeAPayer);
+   NbreJeuxRendre=F_Emprunt::AfficherJeuxEnEmprunt(this->ModeleJeuxEmpruntes,this->MembreActif,true,&NbreJeuxARendre,&AmendeAPayer);
    ui->Lb_NbreJeuxRendre->setText("Jeux à rendre ("+QString::number(NbreJeuxRendre)+") :");
    ui->Lb_AmendeAPayer->setText("Amende de "+AmendeAPayer+"€");
-   resizeColumnsToContents(this->ModelJeuEmpruntes,ui->Tv_JeuxEmprunte);
+   resizeColumnsToContents(this->ModeleJeuxEmpruntes,ui->Tv_JeuxEmpruntes);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -532,8 +532,8 @@ void F_Retour::AfficherJeuxEnEmprunt()
  */
 void F_Retour::AfficherJeuxEnReservation()
 {
-    F_Emprunt::AfficherJeuxReserve(this->ModelJeuReserves,this->MembreActif,true);
-    resizeColumnsToContents(this->ModelJeuReserves,ui->Tv_JeuxReserve);
+    F_Emprunt::AfficherJeuxReserve(this->ModeleJeuxReserves,this->MembreActif,true);
+    resizeColumnsToContents(this->ModeleJeuxReserves,ui->Tv_JeuxReserves);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -622,22 +622,22 @@ void F_Retour::on_TxE_RemarquesMalle_textChanged()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////Clic sur le tableau des jeux à rendre/////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
+void F_Retour::on_Tv_JeuxEmpruntes_clicked(const QModelIndex &index)
 {
     // Si c'est un jeu d'une malle, on désélectionne la sélection et on quitte la fonction
     if(index.parent().isValid())
     {
-        ui->Tv_JeuxEmprunte->selectionModel()->select(ModelJeuEmpruntes->index(index.row(),0,index.parent()),QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
+        ui->Tv_JeuxEmpruntes->selectionModel()->select(ModeleJeuxEmpruntes->index(index.row(),0,index.parent()),QItemSelectionModel::Deselect | QItemSelectionModel::Rows);
         return;
     }
     int NbJeux=0;
     int NbMalles=0;
     QString CodePremierJeuChoisi;
     // On parcours le selectionModel pour voir ce qui a été sélectionné
-    foreach(QModelIndex selectedIndex, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
+    foreach(QModelIndex selectedIndex, ui->Tv_JeuxEmpruntes->selectionModel()->selectedRows())
     {
         // Si une malle a été sélectionnée
-        if(this->ModelJeuEmpruntes->index(selectedIndex.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+        if(this->ModeleJeuxEmpruntes->index(selectedIndex.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
         {
             NbMalles++;
         }
@@ -645,20 +645,20 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
         {
             if(CodePremierJeuChoisi=="")
             {
-                CodePremierJeuChoisi=this->ModelJeuEmpruntes->index(selectedIndex.row(),1).data().toString();
+                CodePremierJeuChoisi=this->ModeleJeuxEmpruntes->index(selectedIndex.row(),1).data().toString();
             }
             NbJeux++;
         }
     }
     // Si on a cliqué sur une malle
-    if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+    if(this->ModeleJeuxEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
     {
-        QHash<QString, QVariant> hInfosMalle=this->ModelJeuEmpruntes->item(index.row(),0)->data().value<QHash<QString, QVariant> >();
+        QHash<QString, QVariant> hInfosMalle=this->ModeleJeuxEmpruntes->item(index.row(),0)->data().value<QHash<QString, QVariant> >();
         QString ListeJeux;
         QVariant DataEnCours;
         int i=0;
         ui->W_Contenu->Vider();
-        while((DataEnCours=this->ModelJeuEmpruntes->index(index.row(),0).child(i++,0).data())!=QVariant::Invalid)
+        while((DataEnCours=this->ModeleJeuxEmpruntes->index(index.row(),0).child(i++,0).data())!=QVariant::Invalid)
         {
             ui->W_Contenu->ModeleContenu->appendRow(new QStandardItem(DataEnCours.toString()));
         }
@@ -683,7 +683,7 @@ void F_Retour::on_Tv_JeuxEmprunte_clicked(const QModelIndex &index)
         }
         else
         {
-            SearchJeux->setCurrentText(this->ModelJeuEmpruntes->index(index.row(),1).data().toString());
+            SearchJeux->setCurrentText(this->ModeleJeuxEmpruntes->index(index.row(),1).data().toString());
         }
         SearchJeux->blockSignals(false);
         // Affiche les infos du jeu sélectionné
@@ -727,9 +727,9 @@ void F_Retour::AffichageProlongation(bool Activer)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////Clic sur le tableau des jeux réservés/////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-void F_Retour::on_Tv_JeuxReserve_clicked(const QModelIndex &index)
+void F_Retour::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
 {
-    //ui->Tv_JeuxReserve->selectRow(index.row());
+    //ui->Tv_JeuxReserves->selectRow(index.row());
     ui->bt_SuppReservation->setEnabled(true);
 }
 
@@ -792,12 +792,12 @@ void F_Retour::on_CBx_TypeProlongation_currentIndexChanged(int index)
 void F_Retour::on_Bt_Prolonger_clicked()
 {
     QStringList CodesJeux;
-    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
+    foreach(QModelIndex index, ui->Tv_JeuxEmpruntes->selectionModel()->selectedRows())
     {
         // S'il s'agit d'une malle
-        if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)==QVariant::Invalid)
+        if(this->ModeleJeuxEmpruntes->index(index.row(),0).data(Qt::UserRole+1)==QVariant::Invalid)
         {
-            CodesJeux << ModelJeuEmpruntes->item(index.row(),1)->text();
+            CodesJeux << ModeleJeuxEmpruntes->item(index.row(),1)->text();
         }
     }
     // Si aucun jeux n'est trouvé, on quitte la fonction
@@ -1063,13 +1063,13 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         return;
     }
 
-    foreach(QModelIndex index, ui->Tv_JeuxEmprunte->selectionModel()->selectedRows())
+    foreach(QModelIndex index, ui->Tv_JeuxEmpruntes->selectionModel()->selectedRows())
     {
         // S'il s'agit d'une malle
-        if(this->ModelJeuEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
+        if(this->ModeleJeuxEmpruntes->index(index.row(),0).data(Qt::UserRole+1)!=QVariant::Invalid)
         {
             // Récupère la QHash sur les infos de la malle
-            QHash<QString, QVariant> hInfosMalle=this->ModelJeuEmpruntes->
+            QHash<QString, QVariant> hInfosMalle=this->ModeleJeuxEmpruntes->
                     item(index.row(),0)->data().value<QHash<QString, QVariant> >();
             int iIdMalle=hInfosMalle["IdMalle"].toInt();
             // Mise à jour de la table malles
@@ -1087,10 +1087,10 @@ void F_Retour::on_Bt_RendreJeu_clicked()
             }
             QVariant CodeEnCours;
             int j=0;
-            while((CodeEnCours=this->ModelJeuEmpruntes->index(index.row(),0).child(j,1).data())
+            while((CodeEnCours=this->ModeleJeuxEmpruntes->index(index.row(),0).child(j,1).data())
                   !=QVariant::Invalid)
             {
-                RetournerJeu(CodeEnCours.toString(),this->ModelJeuEmpruntes->
+                RetournerJeu(CodeEnCours.toString(),this->ModeleJeuxEmpruntes->
                              index(index.row(),0).child(j,0).data().toString());
                 j++;
             }
@@ -1098,8 +1098,8 @@ void F_Retour::on_Bt_RendreJeu_clicked()
         // Si c'est un jeu
         else
         {
-            this->RetournerJeu(ModelJeuEmpruntes->item(index.row(),1)->text(),
-                               ModelJeuEmpruntes->item(index.row(),0)->text());
+            this->RetournerJeu(ModeleJeuxEmpruntes->item(index.row(),1)->text(),
+                               ModeleJeuxEmpruntes->item(index.row(),0)->text());
         }
     }
     ActualiserMembre();
@@ -1206,7 +1206,7 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 void F_Retour::on_bt_SuppReservation_clicked()
 {
-    if(F_Emprunt::SupprimerReservation(ui->Tv_JeuxReserve,this->ModelJeuReserves,this->MembreActif))
+    if(F_Emprunt::SupprimerReservation(ui->Tv_JeuxReserves,this->ModeleJeuxReserves,this->MembreActif,this->JeuActif))
     {
         //Grise le bouton de suppression du tableau des réservations
         ui->bt_SuppReservation->setEnabled(false);
@@ -1218,21 +1218,21 @@ void F_Retour::on_bt_SuppReservation_clicked()
 void F_Retour::on_Bt_ToutSelectionner_clicked()
 {
     // Sélection de toutes les lignes (les child des malles ne seront pas sélectionnées)
-    for(int i=0;i<this->ModelJeuEmpruntes->rowCount();i++)
+    for(int i=0;i<this->ModeleJeuxEmpruntes->rowCount();i++)
     {
-        ui->Tv_JeuxEmprunte->selectionModel()->select(
-                    this->ModelJeuEmpruntes->item(i,0)->index(),
+        ui->Tv_JeuxEmpruntes->selectionModel()->select(
+                    this->ModeleJeuxEmpruntes->item(i,0)->index(),
                     QItemSelectionModel::Select | QItemSelectionModel::Rows);
     }
     ui->Bt_RendreJeu->setEnabled(true);
     this->AffichageProlongation(true);
     //On appelle cette fonction pour quel calcul si il faut activer ou non le bouton prolonger (uniquement si pas de malle)
-    on_Tv_JeuxEmprunte_clicked(this->ModelJeuEmpruntes->item(0,0)->index());
+    on_Tv_JeuxEmpruntes_clicked(this->ModeleJeuxEmpruntes->item(0,0)->index());
 }
 
 void F_Retour::on_Bt_ToutDeselectionner_clicked()
 {
-    ui->Tv_JeuxEmprunte->selectionModel()->clear();
+    ui->Tv_JeuxEmpruntes->selectionModel()->clear();
     ui->Bt_RendreJeu->setEnabled(false);
     this->AffichageProlongation(false);
 }
@@ -1263,4 +1263,22 @@ void F_Retour::on_Bt_Aide_PiecesManquantes_clicked()
 void F_Retour::on_Lb_NomJeu_linkActivated(const QString &link)
 {
     emit(Signal_AfficherJeu(JeuActif));
+}
+
+//! Renvoie l'ID de la malle empruntée sélectionnée
+int F_Retour::get_MalleEmprunteeSelectionnee()
+{
+    QHash<QString, QVariant> hInfosMalle=ModeleJeuxEmpruntes->data(ui->Tv_JeuxEmpruntes->currentIndex(),Qt::UserRole+1).value<QHash<QString, QVariant> >();
+    return hInfosMalle["IdMalle"].toInt();
+}
+
+//! Renvoie l'ID de la malle empruntée sélectionnée
+int F_Retour::get_MalleReserveeSelectionnee()
+{
+    return this->ModeleJeuxReserves->data(ModeleJeuxReserves->index(ui->Tv_JeuxReserves->currentIndex().row(),0),Qt::UserRole+1).toInt();
+}
+
+QString F_Retour::get_JeuEnConsultation()
+{
+    return JeuActif;
 }

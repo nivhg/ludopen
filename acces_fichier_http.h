@@ -27,7 +27,7 @@ public:
     /**
      *  @brief Lance le processus de téléchargement
      */
-    void LancerTelechargements( QString sCheminImagePref,QString code_jeu,QStringList ListeExtension);
+    void LancerTelechargements( QString sCheminImagePref,QString code_jeu="",QStringList ListeExtensionOuURL=QStringList());
     /**
      *  @brief Annule le processus de téléchargement
      */
@@ -49,7 +49,7 @@ private:
      */
     void PasserFichierSuivant(bool FichierTrouver);
     QNetworkAccessManager *manager;
-    QStringList ListeExtension;
+    QStringList ListeExtensionOuURL;
     int IndexExtension;
     QString sCheminImagePref;
     QString NomFichier;

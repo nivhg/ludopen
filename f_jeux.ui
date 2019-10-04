@@ -559,7 +559,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_createur">
            <property name="text">
-            <string>Créateur :</string>
+            <string>Auteurs :</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -584,9 +584,12 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLineEdit" name="Le_createur">
-           <property name="readOnly">
-            <bool>true</bool>
+          <widget class="QListWidget" name="Lw_Auteurs">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>50</height>
+            </size>
            </property>
           </widget>
          </item>
@@ -775,7 +778,14 @@
        </widget>
       </item>
       <item row="4" column="0" colspan="5">
-       <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
+       <widget class="W_ContenuJeu" name="W_Contenu" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item row="0" column="0" rowspan="3" colspan="5">
        <widget class="QGroupBox" name="groupBox_10">

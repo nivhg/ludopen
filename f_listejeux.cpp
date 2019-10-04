@@ -134,7 +134,7 @@ void F_ListeJeux::ActualiserModele(QSqlQuery Requete)
         this->ModelJeu->setItem(NumeroLigne, 6, new QStandardItem(
                                 ObtenirValeurParNom(Requete,"AgeMax").toString() ));
         this->ModelJeu->setItem(NumeroLigne, 7, new QStandardItem(
-                                ObtenirValeurParNom(Requete,"Nom").toString() ));
+                                ObtenirValeurParNom(Requete,"NomEmplacement").toString() ));
         this->ModelJeu->setItem(NumeroLigne, 8, new QStandardItem(
                                 ObtenirValeurParNom(Requete,"DateAchat").toDate().toString( "dd-MM-yyyy" ) ));
         NumeroLigne++;
@@ -152,9 +152,10 @@ void F_ListeJeux::RecupererContenuIndex()
     QString ListeJeux ;
     bool PremierCritere (false) ;
     QSqlQuery RequeteFiltreJeux ;
-    FiltreJeux = "SELECT DateAchat, PrixLoc, MotCle1, MotCle2, MotCle3, NbrJoueurMin,"
+    FiltreJeux = "SELECT DateAchat, PrixLoc, NbrJoueurMin,"
             "NbrJoueurMax, AgeMin, AgeMax, EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux,"
-            "TypeJeux_Classification, NomJeu, CodeJeu, NomEmplacement FROM jeux,emplacement ";
+            "TypeJeux_Classification, NomJeu, CodeJeu, NomEmplacement FROM jeux LEFT JOIN emplacement ON Emplacement_IdEmplacement=IdEmplacement "
+                 "LEFT JOIN motsclesassoc as ma ON ma.Jeux_IdJeux=IdJeux LEFT JOIN auteursassoc as aa ON aa.Jeux_IdJeux=IdJeux ";
 
     if(ui->CBx_DateAcquisition->currentIndex() != 0)
     {
@@ -211,7 +212,6 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(ui->CBx_AgeMax->currentIndex() != 0)
     {
-        qDebug()<<"ui->CBx_AgeMax->currentIndex()"<< ui->CBx_AgeMax->currentIndex() ;
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;
@@ -231,40 +231,34 @@ void F_ListeJeux::RecupererContenuIndex()
         PremierCritere = true ;
     }
     
-    if(ui->CBx_MotCle1->currentIndex() != 0)
+    if(ui->Lw_MotsCles->count() > 0)
     {
         if(PremierCritere == true)
         {
             ListeJeux += " AND " ;
         }
-        ListeJeux += " MotCle1 = " ;
-        ListeJeux += ui->CBx_MotCle1->itemData(ui->CBx_MotCle1->currentIndex(),Qt::UserRole).toString();
-                
-        PremierCritere = true ;
-    }
-    if(ui->CBx_MotCle2->currentIndex() != 0)
-    {
-        if(PremierCritere == true)
+        for(int i=0;i<ui->Lw_MotsCles->count();i++)
         {
-            ListeJeux += " AND " ;
+            ListeJeux += " Motscles_IdMotCle = " ;
+            ListeJeux += ui->Lw_MotsCles->item(i)->data(Qt::UserRole).toString();
         }
-        ListeJeux += " MotCle2 = " ;
-        ListeJeux += ui->CBx_MotCle2->itemData(ui->CBx_MotCle2->currentIndex(),Qt::UserRole).toString();
-                
-        PremierCritere = true ;
-    }
-    if(ui->CBx_MotCle3->currentIndex() != 0)
-    {
-        if(PremierCritere == true)
-        {
-            ListeJeux += " AND " ;
-        }
-        ListeJeux += " MotCle3 = " ;
-        ListeJeux += ui->CBx_MotCle3->itemData(ui->CBx_MotCle3->currentIndex(),Qt::UserRole).toString();
-
         PremierCritere = true ;
     }
     
+    if(ui->Lw_Auteurs->count() > 0)
+    {
+        if(PremierCritere == true)
+        {
+            ListeJeux += " AND " ;
+        }
+        for(int i=0;i<ui->Lw_Auteurs->count();i++)
+        {
+            ListeJeux += " Auteurs_IdAuteur = " ;
+            ListeJeux += ui->Lw_Auteurs->item(i)->data(Qt::UserRole).toString();
+        }
+        PremierCritere = true ;
+    }
+
     if(ui->CBx_Statut->currentIndex() != 0)
     {
         if(PremierCritere == true)
@@ -307,7 +301,7 @@ void F_ListeJeux::RecupererContenuIndex()
     }
     if(PremierCritere == true)
     {
-        FiltreJeux += "WHERE Emplacement_IdEmplacement=IdEmplacement AND " ;
+        FiltreJeux += "WHERE " ;
     }
     
     ListeJeux += " GROUP BY NomJeu " ;
@@ -515,9 +509,6 @@ void F_ListeJeux::RAZCriteres()
     ui->CBX_Etat->clear();
     ui->CBx_JoueursMax->clear();
     ui->CBx_JoueursMin->clear();
-    ui->CBx_MotCle1->clear();
-    ui->CBx_MotCle2->clear();
-    ui->CBx_MotCle3->clear();
     ui->CBx_PrixLoc->clear();
     ui->CBx_Statut->clear();
     ui->CBx_Emplacement->clear();
@@ -530,9 +521,6 @@ void F_ListeJeux::RAZCriteres()
     ui->CBX_Etat->addItem("Etat");
     ui->CBx_JoueursMin->addItem("Nb joueur mini");
     ui->CBx_JoueursMax->addItem("Nb joueur maxi");
-    ui->CBx_MotCle1->addItem("Mot clé 1");
-    ui->CBx_MotCle2->addItem("Mot clé 2");
-    ui->CBx_MotCle3->addItem("Mot clé 3");
     ui->CBx_PrixLoc->addItem("Prix location");
     ui->CBx_Statut->addItem("Statut");
     ui->CBx_Emplacement->addItem("Emplacement");
@@ -674,20 +662,13 @@ void F_ListeJeux::RAZCriteres()
     ///////// Mots Clés ///////////////
     //////////////////////////////////
 
-    QSqlQuery RequeteMotsCle ;
+    ActualiserCBx_MotCle();
 
-    RequeteMotsCle.exec("SELECT Id_MotCle, MotCle FROM motscles GROUP BY MotCle") ;
+    ////////////////////////////////////
+    ///////// Mots Clés ///////////////
+    //////////////////////////////////
 
-    i=1;
-    while(RequeteMotsCle.next())
-    {
-        ui->CBx_MotCle1->addItem(RequeteMotsCle.value(1).toString());
-        ui->CBx_MotCle2->addItem(RequeteMotsCle.value(1).toString());
-        ui->CBx_MotCle3->addItem(RequeteMotsCle.value(1).toString());
-        ui->CBx_MotCle1->setItemData(i,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
-        ui->CBx_MotCle2->setItemData(i,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
-        ui->CBx_MotCle3->setItemData(i++,RequeteMotsCle.value(0).toInt(),Qt::UserRole);
-    }
+    ActualiserCBx_Auteur();
 
     ////////////////////////////////////
     ///////// Prix ////////////////////
@@ -725,4 +706,115 @@ void F_ListeJeux::RAZCriteres()
                              "Emplacement_IdEmplacement=IdEmplacement ORDER BY NomJeu");
 
     ActualiserModele(RequeteRechercheJeu);
+}
+
+//###################################################################
+/**
+ * @brief Méthode qui actualise le CBx_MotCle après un ajout
+ *
+ */
+void F_ListeJeux::ActualiserCBx_MotCle()
+{
+    ui->CBx_MotCle->clear();
+    ////////////////////////////////////////////
+    ///////// Remplissage CBx_MotCles /////////
+    //////////////////////////////////////////
+
+    QSqlQuery RequeteMotCle ;
+
+    RequeteMotCle.exec("SELECT DISTINCT MotCle,Id_MotCle FROM motscles ORDER BY MotCle") ;
+
+    ui->CBx_MotCle->addItem("Choisir le mot clé");
+
+    int i=1;
+    while(RequeteMotCle.next())
+    {
+
+        QString MotCle = ObtenirValeurParNom(RequeteMotCle,"MotCle").toString();
+        QString IdMotCle = ObtenirValeurParNom(RequeteMotCle,"Id_MotCle").toString();
+        ui->CBx_MotCle->addItem(MotCle);
+        // Ajoute son ID dans la partie DATA
+        ui->CBx_MotCle->setItemData(i++,IdMotCle,Qt::UserRole);
+    }
+}
+
+void F_ListeJeux::on_Bt_AjouterMotCle_clicked()
+{
+    QListWidgetItem *Item = new QListWidgetItem(ui->CBx_MotCle->currentText());
+    // Ajoute son ID dans la partie DATA
+    Item->setData(Qt::UserRole,ui->CBx_MotCle->currentData());
+    ui->Lw_MotsCles->insertItem(ui->Lw_MotsCles->count()-1,Item);
+    RecupererContenuIndex();
+}
+
+void F_ListeJeux::on_Bt_SupprimerMotCle_clicked()
+{
+    delete ui->Lw_MotsCles->takeItem(ui->Lw_MotsCles->currentRow());
+    ui->Bt_SupprimerMotCle->setEnabled(false);
+    RecupererContenuIndex();
+}
+
+void F_ListeJeux::on_Lw_MotsCles_clicked(const QModelIndex &index)
+{
+    ui->Bt_SupprimerMotCle->setEnabled(true);
+}
+
+void F_ListeJeux::on_CBx_MotCle_activated(int index)
+{
+    ui->Bt_AjouterMotCle->setEnabled(index != 0);
+}
+
+//###################################################################
+/**
+ * @brief Méthode qui actualise le CBx_Auteur après un ajout
+ *
+ */
+void F_ListeJeux::ActualiserCBx_Auteur()
+{
+    ui->CBx_Auteur->clear();
+    ////////////////////////////////////////////
+    ///////// Remplissage CBx_Auteur /////////
+    //////////////////////////////////////////
+
+    QSqlQuery Requete;
+
+    Requete.exec("SELECT DISTINCT NomAuteur,IdAuteur FROM auteurs ORDER BY NomAuteur") ;
+
+    ui->CBx_Auteur->addItem("Choisir l'auteur");
+
+    int i=1;
+    while(Requete.next())
+    {
+        QString Auteur = ObtenirValeurParNom(Requete,"NomAuteur").toString();
+        QString IdAuteur = ObtenirValeurParNom(Requete,"IdAuteur").toString();
+        ui->CBx_Auteur->addItem(Auteur);
+        // Ajoute son ID dans la partie DATA
+        ui->CBx_Auteur->setItemData(i++,IdAuteur,Qt::UserRole);
+    }
+}
+
+void F_ListeJeux::on_Bt_AjouterAuteur_clicked()
+{
+    QListWidgetItem *Item = new QListWidgetItem(ui->CBx_Auteur->currentText());
+    // Ajoute son ID dans la partie DATA
+    Item->setData(Qt::UserRole,ui->CBx_Auteur->currentData());
+    ui->Lw_Auteurs->insertItem(ui->Lw_Auteurs->count()-1,Item);
+    RecupererContenuIndex();
+}
+
+void F_ListeJeux::on_Bt_SupprimerAuteur_clicked()
+{
+    delete ui->Lw_Auteurs->takeItem(ui->Lw_Auteurs->currentRow());
+    ui->Bt_SupprimerAuteur->setEnabled(false);
+    RecupererContenuIndex();
+}
+
+void F_ListeJeux::on_Lw_Auteurs_clicked(const QModelIndex &index)
+{
+    ui->Bt_SupprimerAuteur->setEnabled(true);
+}
+
+void F_ListeJeux::on_CBx_Auteur_activated(int index)
+{
+    ui->Bt_AjouterAuteur->setEnabled(index != 0);
 }

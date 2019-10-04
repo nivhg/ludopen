@@ -379,7 +379,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     QSqlQuery RequeteRechercheCode ;
 
-    RequeteRechercheCode.prepare("SELECT IdJeux,NomJeu,CodeJeu,NomCreateurJeu,Remarque,StatutJeux_IdStatutJeux,"
+    RequeteRechercheCode.prepare("SELECT IdJeux,NomJeu,CodeJeu,Remarque,StatutJeux_IdStatutJeux,"
                                  "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
                                  "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
@@ -391,7 +391,6 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     QString Le_Nom =  ObtenirValeurParNom(RequeteRechercheCode,"NomJeu").toString() ;
     QString Le_Code =  ObtenirValeurParNom(RequeteRechercheCode,"CodeJeu").toString() ;
-    QString Le_Createur =  ObtenirValeurParNom(RequeteRechercheCode,"NomCreateurJeu").toString() ;
     QString TxE_Remarques = ObtenirValeurParNom(RequeteRechercheCode,"Remarque").toString() ;
     QString TxE_Description = ObtenirValeurParNom(RequeteRechercheCode,"DescriptionJeu").toString() ;
     QString Le_AgeMin = ObtenirValeurParNom(RequeteRechercheCode,"AgeMin").toString() ;
@@ -410,10 +409,8 @@ void F_Jeux::AfficherJeu(QString Jeu)
     // aligne le curseur à gauche
     ui->Le_nom->setCursorPosition(0) ;
     ui->Le_code->setText(Le_Code);
-    ui->Le_createur->setText(Le_Createur);
 
     // aligne le curseur à gauche
-    ui->Le_createur->setCursorPosition(0) ;
     ui->Le_agemin->setText(Le_AgeMin);
     ui->Le_agemax->setText(Le_AgeMax);
     ui->Le_nbrejoueursmin->setText(Le_NbrJoueurMin);
@@ -425,6 +422,8 @@ void F_Jeux::AfficherJeu(QString Jeu)
     ui->Bt_AnnulerDescription->setEnabled(false);
 
     ui->W_Contenu->ActualiserContenu();
+
+    ActualiserLw_Auteurs();
 
     //////////////////////////////////////////////////////////
     /////////// Remplissage label statut /////////////////////
@@ -666,4 +665,39 @@ void F_Jeux::ActualiserLienJeux()
 void F_Jeux::on_TbW_LiensJeux_clicked(const QModelIndex &index)
 {
     AfficherJeu(ui->TbW_LiensJeux->currentItem()->data(Qt::UserRole).toString());
+}
+
+//###################################################################
+/**
+ * @brief Méthode qui actualise le Lw_MotCle après un ajout
+ *
+ */
+void F_Jeux::ActualiserLw_Auteurs()
+{
+    ui->Lw_Auteurs->clear();
+
+    QSqlQuery Requete;
+
+    Requete.prepare("SELECT DISTINCT NomAuteur,IdAuteur FROM auteurs LEFT JOIN auteursassoc ON "
+                    "Auteurs_IdAuteur=IdAuteur LEFT JOIN jeux ON Jeux_IdJeux=IdJeux WHERE "
+                    "CodeJeu=:CodeJeu ORDER BY NomAuteur") ;
+    Requete.bindValue(":CodeJeu",JeuEnConsultation);
+    if(!Requete.exec())
+    {
+        qDebug()<< getLastExecutedQuery(Requete)<<Requete.lastError();
+        return;
+    }
+
+    int i=0;
+    while(Requete.next())
+    {
+
+        QString NomAuteur = ObtenirValeurParNom(Requete,"NomAuteur").toString();
+        QString IdAuteur = ObtenirValeurParNom(Requete,"IdAuteur").toString();
+        QListWidgetItem *Item = new QListWidgetItem(NomAuteur);
+        // Ajoute son ID dans la partie DATA
+        Item->setData(Qt::UserRole,IdAuteur);
+        ui->Lw_Auteurs->insertItem(ui->Lw_Auteurs->count()-1,Item);
+    }
+
 }

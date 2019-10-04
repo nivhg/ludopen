@@ -107,6 +107,7 @@ private slots:
     void on_Bt_ListeReservations_clicked();
     void on_menuUtilisateurEnCours_triggered(QAction *);
     void on_Bt_Retards_clicked();
+    void Quitter();
 
 private:
     Ui::F_MainWindow *ui;

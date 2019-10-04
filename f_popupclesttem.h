@@ -7,6 +7,21 @@
 #include <QtSql>
 #include <fonctions_globale.h>
 
+#define POPUP_ETAT_JEU 0
+#define POPUP_STATUT 1
+#define POPUP_EMPLACEMENT 2
+#define POPUP_CLASSIFICATION 3
+#define POPUP_MOT_CLE 4
+#define POPUP_TYPE_MEMBRE 5
+#define POPUP_TITRE_MEMBRE 6
+#define POPUP_TYPE_EMPRUNT 7
+#define POPUP_LIEU 8
+#define POPUP_PAIEMENT 9
+#define POPUP_ACTIVITE 10
+#define POPUP_AUTEUR 11
+#define POPUP_DOMAINE_EMAIL 12
+#define POPUP_BANQUE 13
+
 namespace Ui {
 class F_PopUpCLESTTEM;
 }
@@ -15,17 +30,8 @@ class F_PopUpCLESTTEM;
  *  @brief F_PopUpCLESTTEM permet d'avoir une pop-up en fonction de du int nCLESTTEM.
  *
  *  Le int nCLESSTEM prend pour valeur un nombre, le nombre fait modifier les labels de la fenêtre donc :
- *      -Si 0, il s'agit d'un Etat Jeu.
- *      -Si 1, il s'agit d'un Statut Jeu.
- *      -Si 2, il s'agit d'un Emplacement Jeu.
- *      -Si 3, il s'agit d'une Classification Jeu.
- *      -Si 4, il s'agit d'un Mot clé Jeu.
- *      -Si 5, il s'agit d'un Type Membre.
- *      -Si 6, il s'agit d'un Titre Membre.
- *      -Si 7, il s'agit d'un Type Emprunt.
- *      -Si 8, il s'agit d'un Lieux Ludothèque.
- *      -Si 9, il s'agit d'un Paiement Membre.
- *      -Si 10, il s'agit d'une activité d'un membre.
+
+
  *
  */
 class F_PopUpCLESTTEM : public QDialog

@@ -85,7 +85,7 @@ void Lb_Image::resizeEvent ( QResizeEvent * ev )
     {
         size=ev->size();
     }
-    AfficherImage(size);
+    AfficherImage(size,false);
 }
 
 void Lb_Image::EffacerFichiers()
@@ -128,7 +128,6 @@ void Lb_Image::ChargerImage(QSize size,QString code_jeu,QCursor curseur)
     acces->LancerTelechargements(sCheminImagePref,code_jeu,ListeExtension);
     ChargementEnCours=true;
     this->setCursor(Qt::WaitCursor);
-    return;
 }
 
 /**
@@ -136,7 +135,7 @@ void Lb_Image::ChargerImage(QSize size,QString code_jeu,QCursor curseur)
  *
  *  @param size : nouvelle taille à donner à l'image
  */
-void Lb_Image::AfficherImage(QSize size)
+void Lb_Image::AfficherImage(QSize size,bool MiseAJourTexte, QString Texte)
 {
     QPixmap Image;
     // Si il n'y pas d'image, on n'affiche rien
@@ -151,14 +150,25 @@ void Lb_Image::AfficherImage(QSize size)
          //Met l'image à l'échelle du cadre
         setPixmap( Image.scaled(size,Qt::KeepAspectRatio,Qt::SmoothTransformation) );
         QDir* filepath=new QDir(sCheminImage[iImage]);
-        if(Lb_NomImage)
+        if(Lb_NomImage&&MiseAJourTexte)
         {
-            Lb_NomImage->setText(filepath->dirName());
+            if(Texte!="")
+            {
+                Lb_NomImage->setText(Texte);
+            }
+            else
+            {
+                Lb_NomImage->setText(filepath->dirName());
+            }
         }
     }
     else   // pas de photo à afficher
     {
        setText("Aucune photo disponible pour ce jeu");
+       if(Texte!="")
+       {
+           Lb_NomImage->setText(Texte);
+       }
     }
 }
 

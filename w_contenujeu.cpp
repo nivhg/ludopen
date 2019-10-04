@@ -587,6 +587,8 @@ int W_ContenuJeu::MettreAjourElement(QModelIndex ElementChoisi,int LigneDestinat
 void W_ContenuJeu::Vider()
 {
     ModeleContenu->clear();
+    ModeleContenu->setRowCount(0);
+    ModeleContenu->setColumnCount(0);
 }
 
 void W_ContenuJeu::on_TB_Supprimer_clicked()

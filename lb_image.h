@@ -19,7 +19,7 @@ public:
 
     /** @brief Affiche et redimensionne l'image en fonction de size
      */
-    void AfficherImage(QSize size);
+    void AfficherImage(QSize size,bool MiseAJourTexte=true,QString Texte="");
     /** @brief Affiche l'image précédente
      */
     void AfficherImagePrecedente();

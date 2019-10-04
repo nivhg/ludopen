@@ -40,9 +40,11 @@
 
 #include "suggest.h"
 
-Suggest::Suggest(QComboBox *parent): QObject(parent), editor(parent)
+Suggest::Suggest(QComboBox *parent, int Mode): QObject(parent), editor(parent)
 {
+    this->Mode=Mode;
     this->NbOfRows2Display=NbOfRows2Display;
+    DernierRetour=QDateTime::currentMSecsSinceEpoch();
     popup = new QTreeWidget;
     popup->setWindowFlags(Qt::Popup);
     popup->setFocusPolicy(Qt::NoFocus);
@@ -64,11 +66,20 @@ Suggest::Suggest(QComboBox *parent): QObject(parent), editor(parent)
 
     timer = new QTimer(this);
     timer->setSingleShot(true);
-    timer->setInterval(700);
-    connect(timer, SIGNAL(timeout()), SLOT(autoSuggest()));
+    if(Mode==MODE_HTTP_API)
+    {
+        timer->setInterval(100);
+        connect(timer, SIGNAL(timeout()), SLOT(autoSuggestHTTP()));
+        connect(parent, SIGNAL(SignalMousePressEvent()), SLOT(autoSuggestHTTP()));
+    }
+    else
+    {
+        timer->setInterval(700);
+        connect(timer, SIGNAL(timeout()), SLOT(autoSuggest()));
+        connect(parent, SIGNAL(SignalMousePressEvent()), SLOT(autoSuggest()));
+    }
     editor->setEditable(true);
     connect(editor, SIGNAL(currentTextChanged(QString)), timer, SLOT(start()));
-    connect(parent, SIGNAL(SignalMousePressEvent()), SLOT(autoSuggest()));
 }
 
 Suggest::~Suggest()
@@ -121,18 +132,26 @@ bool Suggest::eventFilter(QObject *obj, QEvent *ev)
             popup->hide();
             break;
         }
-
         return consumed;
     }
 
     return false;
 }
 
-void Suggest::showCompletion(const QVector<QVector<QString> > &Vector)
+void Suggest::showCompletion(QVector<QVector<QString> > Vector,qint64 HeureAppel)
 {
+    // Si l'heure a laquelle a été faite la demande est inférieur au dernier recours, on n'affiche pas la popup
+    if(Mode==MODE_HTTP_API&&HeureAppel<DernierRetour) return;
+    if(HeureAppel!=0) DernierRetour=HeureAppel;
 
     if (Vector.isEmpty())
+    {
         return;
+    }
+    if(Mode==MODE_HTTP_API)
+    {
+        SearchResults=Vector;
+    }
 
     const QPalette &pal = editor->palette();
     QColor color = pal.color(QPalette::Disabled, QPalette::WindowText);
@@ -162,6 +181,7 @@ void Suggest::showCompletion(const QVector<QVector<QString> > &Vector)
 
 void Suggest::doneCompletion(QString value)
 {
+    QString ID_BGG="";
     timer->stop();
     popup->hide();
     editor->setFocus();
@@ -174,12 +194,20 @@ void Suggest::doneCompletion(QString value)
     {
         QTreeWidgetItem *item = popup->currentItem();
         if (item) {
-            editor->setCurrentText(item->text(SearchResults[0].length()-1));
+            if(Mode==MODE_HTTP_API)
+            {
+                editor->setCurrentText(item->text(0));
+                ID_BGG=item->text(1);
+            }
+            else
+            {
+                editor->setCurrentText(item->text(SearchResults[0].length()-1));
+            }
             popup->clear();
         }
     }
     this->preventSuggest();
-    QMetaObject::invokeMethod(editor, "SignalSuggestionFini");
+    QMetaObject::invokeMethod(editor, "SignalSuggestionFini",Q_ARG(QString,ID_BGG));
 }
 
 void Suggest::autoSuggest()
@@ -233,4 +261,11 @@ void Suggest::autoSuggest()
 void Suggest::preventSuggest()
 {
     timer->stop();
+}
+
+void Suggest::autoSuggestHTTP()
+{
+    Requete=new Http_xml_api();
+    Requete->LancerTelechargement("https://api.geekdo.com/xmlapi2/search?type=boardgame,boardgameexpansion&query="+editor->currentText());
+    connect(Requete,SIGNAL(SignalTelechargementFiniBGG(QVector<QVector<QString>>,qint64)),this,SLOT(showCompletion(QVector<QVector<QString>>,qint64)));
 }

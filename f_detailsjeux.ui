@@ -28,20 +28,53 @@
   <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="Lb_DateAchat">
+     <item row="3" column="0" colspan="4">
+      <widget class="QTableView" name="TbV_HistoriqueInterventions">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <attribute name="horizontalHeaderStretchLastSection">
+        <bool>true</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item row="4" column="0" colspan="2">
+      <widget class="QLabel" name="label_HistoriqueEmprunts">
        <property name="text">
-        <string>Date d'achat :</string>
+        <string>Historique des emprunts :</string>
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="LE_DateAchat">
-       <property name="enabled">
+     <item row="5" column="0" colspan="4">
+      <widget class="QTableView" name="TbV_HistoriqueEmprunts">
+       <property name="alternatingRowColors">
         <bool>true</bool>
        </property>
-       <property name="readOnly">
-        <bool>true</bool>
+       <property name="selectionMode">
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior">
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="3">
+      <widget class="QPushButton" name="Bt_Quitter">
+       <property name="text">
+        <string>Retourner à la fiche du jeu</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" colspan="2">
+      <widget class="QLabel" name="Lb_Historique">
+       <property name="text">
+        <string>Historique des interventions :</string>
        </property>
       </widget>
      </item>
@@ -105,73 +138,20 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="2">
-      <widget class="QLabel" name="Lb_Caution">
+     <item row="0" column="0">
+      <widget class="QLabel" name="Lb_DateAchat">
        <property name="text">
-        <string>Caution :</string>
+        <string>Date d'achat :</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QLineEdit" name="LE_Caution">
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="LE_DateAchat">
        <property name="enabled">
         <bool>true</bool>
        </property>
-       <property name="text">
-        <string>0€</string>
-       </property>
        <property name="readOnly">
         <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0" colspan="2">
-      <widget class="QLabel" name="Lb_Historique">
-       <property name="text">
-        <string>Historique des interventions :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_HistoriqueInterventions">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-       <attribute name="horizontalHeaderStretchLastSection">
-        <bool>true</bool>
-       </attribute>
-      </widget>
-     </item>
-     <item row="5" column="0" colspan="2">
-      <widget class="QLabel" name="label_HistoriqueEmprunts">
-       <property name="text">
-        <string>Historique des emprunts :</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0" colspan="4">
-      <widget class="QTableView" name="TbV_HistoriqueEmprunts">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
-       </property>
-       <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectRows</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="3">
-      <widget class="QPushButton" name="Bt_Quitter">
-       <property name="text">
-        <string>Retourner à la fiche du jeu</string>
        </property>
       </widget>
      </item>

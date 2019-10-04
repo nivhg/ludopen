@@ -6,15 +6,9 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1024</width>
-    <height>821</height>
+    <width>1017</width>
+    <height>600</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
@@ -23,9 +17,6 @@
    </size>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="sizeConstraint">
-    <enum>QLayout::SetMaximumSize</enum>
-   </property>
    <item row="0" column="0">
     <widget class="QDockWidget" name="dockWidget">
      <widget class="QWidget" name="dockWidgetContents">
@@ -39,71 +30,12 @@
           <enum>QFrame::Raised</enum>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="3" column="2">
-           <widget class="QLabel" name="Lb_NomFichier2">
-            <property name="text">
-             <string/>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="7">
-           <widget class="QPushButton" name="Bt_Droite">
-            <property name="maximumSize">
-             <size>
-              <width>28</width>
-              <height>24</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="Lb_Defaut_Web">
-            <property name="styleSheet">
-             <string notr="true">color: rgb(0, 0, 255);</string>
-            </property>
-            <property name="text">
-             <string>Image par défaut sur le site Web</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="Lb_Image">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>200</height>
-             </size>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Plain</enum>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
+          <item row="4" column="1">
            <widget class="QLabel" name="Lb_NomFichier">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
-              <height>24</height>
+              <height>16777215</height>
              </size>
             </property>
             <property name="text">
@@ -112,38 +44,8 @@
             <property name="alignment">
              <set>Qt::AlignCenter</set>
             </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="Lb_Image2">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>200</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="Bt_Gauche">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>28</width>
-              <height>24</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -166,26 +68,7 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
-           <widget class="QLabel" name="Lb_Image3">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>200</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
+          <item row="4" column="4">
            <widget class="QLabel" name="Lb_NomFichier3">
             <property name="maximumSize">
              <size>
@@ -198,6 +81,9 @@
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -217,11 +103,139 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="4">
+           <widget class="QComboBox" name="Cb_FiltreLangue"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QPushButton" name="Bt_Gauche">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>28</width>
+              <height>24</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QLabel" name="Lb_NomFichier2">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="Lb_Defaut_Web">
+            <property name="styleSheet">
+             <string notr="true">color: rgb(0, 0, 255);</string>
+            </property>
+            <property name="text">
+             <string>Image par défaut sur le site Web</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="4">
+           <layout class="QGridLayout" name="Gl_Images">
+            <item row="0" column="1">
+             <widget class="QLabel" name="Lb_Image2">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>200</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="Lb_Image">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>200</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="Lb_Image3">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>200</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item row="2" column="5">
+           <widget class="QPushButton" name="Bt_Droite">
+            <property name="maximumSize">
+             <size>
+              <width>28</width>
+              <height>24</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="Lb_Langue">
+            <property name="text">
+             <string>Langue :</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
        <item row="2" column="0" colspan="7">
-        <widget class="QFrame" name="frame_2">
+        <widget class="QStackedWidget" name="SW_Boutons">
          <property name="maximumSize">
           <size>
            <width>16500</width>
@@ -234,96 +248,144 @@
          <property name="frameShadow">
           <enum>QFrame::Raised</enum>
          </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <property name="verticalSpacing">
-           <number>0</number>
-          </property>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="Bt_Ajouter">
-            <property name="text">
-             <string>Ajouter des images</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QPushButton" name="Bt_DeplacerDroite">
-            <property name="text">
-             <string>Déplacer à droite</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QPushButton" name="Bt_DeplacerGauche">
-            <property name="text">
-             <string>Déplacer à gauche</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QPushButton" name="Bt_Supprimer">
-            <property name="text">
-             <string>Supprimer</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QPushButton" name="Bt_Sauvegarder">
-            <property name="text">
-             <string>Sauvegarder</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Download.png</normaloff>:/Download.png</iconset>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="Bt_Defaut_Ludopen">
-            <property name="text">
-             <string>Définir comme image
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="Frm_BoutonsPage1">
+          <layout class="QGridLayout" name="gridLayout_4">
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="verticalSpacing">
+            <number>0</number>
+           </property>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="Bt_Ajouter">
+             <property name="text">
+              <string>Ajouter des images</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="Bt_DeplacerDroite">
+             <property name="text">
+              <string>Déplacer à droite</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="Bt_DeplacerGauche">
+             <property name="text">
+              <string>Déplacer à gauche</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="Bt_Supprimer">
+             <property name="text">
+              <string>Supprimer</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="Bt_Sauvegarder">
+             <property name="text">
+              <string>Sauvegarder</string>
+             </property>
+             <property name="icon">
+              <iconset resource="ImagesIcones.qrc">
+               <normaloff>:/Download.png</normaloff>:/Download.png</iconset>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QPushButton" name="Bt_Defaut_Ludopen">
+             <property name="text">
+              <string>Définir comme image
 par défaut dans LudOpen</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QPushButton" name="Bt_Defaut_Web">
-            <property name="text">
-             <string>Définir comme image
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="Bt_Defaut_Web">
+             <property name="text">
+              <string>Définir comme image
 par défaut sur le site Web</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QPushButton" name="Bt_Defaut_Deux">
-            <property name="text">
-             <string>Définir comme image
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QPushButton" name="Bt_Defaut_Deux">
+             <property name="text">
+              <string>Définir comme image
 par défaut sur Ludopen et le site Web</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="Frm_BoutonsPage2">
+          <layout class="QGridLayout" name="gridLayout_5">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="Bt_Valider">
+             <property name="text">
+              <string>&amp;Valider</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="Bt_Annuler">
+             <property name="text">
+              <string>&amp;Annuler</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
         </widget>
        </item>
       </layout>

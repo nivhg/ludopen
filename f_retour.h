@@ -87,10 +87,17 @@ public:
     //! Affiche ou masque les contrôles liés à la prolongation
     void AffichageProlongation(bool Activer);
 
-    //! modèle du TableView des jeux empruntés
-    QStandardItemModel * ModelJeuEmpruntes;
-
     void ActualiserHistoriqueMaintenance();
+
+    int get_MalleEmprunteeSelectionnee();
+
+    int get_MalleReserveeSelectionnee();
+
+    QString get_JeuEnConsultation();
+
+    //! modèle du TableView des jeux empruntés
+    QStandardItemModel * ModeleJeuxEmpruntes;
+
 
 private slots:
     void on_LE_SearchMembre_returnPressed();
@@ -111,9 +118,9 @@ private slots:
 
     void on_Bt_RendreJeu_clicked();
 
-    void on_Tv_JeuxEmprunte_clicked(const QModelIndex &index);
+    void on_Tv_JeuxEmpruntes_clicked(const QModelIndex &index);
 
-    void on_Tv_JeuxReserve_clicked(const QModelIndex &index);
+    void on_Tv_JeuxReserves_clicked(const QModelIndex &index);
 
     void on_bt_SuppReservation_clicked();
 
@@ -149,7 +156,7 @@ private:
     //! Code du jeu actif sur la fenêtre
     int iMalleActive;
     //! modèle du TableView des jeux réservés
-    QStandardItemModel * ModelJeuReserves;
+    QStandardItemModel * ModeleJeuxReserves;
     //! Amende calculée pour jours de retard
     //float Amende ;
     //! LineEdit SearchBox pour la recherche de membre

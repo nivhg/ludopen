@@ -39,992 +39,9 @@
     <number>2</number>
    </property>
    <property name="spacing">
-    <number>3</number>
+    <number>0</number>
    </property>
-   <item row="0" column="1" rowspan="8">
-    <widget class="QFrame" name="FramePetitTexte">
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_8">
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
-      <property name="spacing">
-       <number>2</number>
-      </property>
-      <item row="0" column="0">
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="16" column="1">
-           <widget class="QComboBox" name="CBx_MotCle3"/>
-          </item>
-          <item row="18" column="3">
-           <widget class="QLabel" name="Lb_Prix">
-            <property name="text">
-             <string>Prix d'achat</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="0">
-           <widget class="QLabel" name="Lb_EtatInitial">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Etat initial</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="LE_Code">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="readOnly">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="1" colspan="3">
-           <widget class="QComboBox" name="CBx_Classification">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="Lb_MotCle1">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Mot clé 1</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="29" column="0">
-           <widget class="QLabel" name="Lb_Fournisseur">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Fournisseur</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="16" column="3">
-           <widget class="QLabel" name="Lb_AgeMin">
-            <property name="text">
-             <string>Age mini</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="5">
-           <widget class="QLineEdit" name="LE_Nom">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="inputMask">
-             <string/>
-            </property>
-           </widget>
-          </item>
-          <item row="50" column="3">
-           <widget class="QCommandLinkButton" name="Bt_Annuler">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>30</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Annuler</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="1">
-           <widget class="QDateEdit" name="DtE_Achat">
-            <property name="calendarPopup">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="19" column="5">
-           <widget class="QSpinBox" name="SBx_PrixLocation">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="16" column="0">
-           <widget class="QLabel" name="Lb_MotCle3">
-            <property name="text">
-             <string>Mot clé 3</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="3">
-           <widget class="QLabel" name="Lb_JoueursMax">
-            <property name="text">
-             <string>Nb joueurs maxi</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="31" column="1" colspan="3">
-           <widget class="QLineEdit" name="LE_Createur">
-            <property name="maxLength">
-             <number>100</number>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="1">
-           <widget class="QRadioButton" name="RBt_Occasion">
-            <property name="text">
-             <string>Occa&amp;sion</string>
-            </property>
-           </widget>
-          </item>
-          <item row="32" column="0">
-           <widget class="QLabel" name="Lb_SiteWeb1">
-            <property name="text">
-             <string>Site Web</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="50" column="1">
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QCommandLinkButton" name="Bt_Valider">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>100</width>
-                <height>30</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Valider</string>
-              </property>
-              <property name="icon">
-               <iconset resource="ImagesIcones.qrc">
-                <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>20</width>
-                <height>20</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>false</bool>
-              </property>
-              <property name="checked">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Code</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="19" column="3">
-           <widget class="QLabel" name="Lb_Location">
-            <property name="text">
-             <string>Prix de location</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="0">
-           <widget class="QLabel" name="Lb_MotCle2">
-            <property name="text">
-             <string>Mot clé 2</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1">
-           <widget class="QComboBox" name="CBx_MotCle1"/>
-          </item>
-          <item row="18" column="1">
-           <widget class="QComboBox" name="CBx_Statut">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="3">
-           <widget class="QLabel" name="Lb_AgeMax">
-            <property name="text">
-             <string>Age max</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="30" column="0">
-           <widget class="QLabel" name="Lb_Editeur">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Editeur</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="Lb_Nom">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Nom</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="30" column="1" colspan="3">
-           <widget class="QComboBox" name="CBx_Editeur">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="16" column="5">
-           <widget class="QSpinBox" name="SBx_AgeMin">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="0">
-           <widget class="QLabel" name="Lb_Achat">
-            <property name="text">
-             <string>Date achat</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="1">
-           <widget class="QComboBox" name="CBx_MotCle2"/>
-          </item>
-          <item row="7" column="5">
-           <widget class="QSpinBox" name="SBx_JoueursMin">
-            <property name="minimumSize">
-             <size>
-              <width>50</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="18" column="0">
-           <widget class="QLabel" name="Lb_Statut">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Statut</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="19" column="0">
-           <widget class="QLabel" name="Lb_Etat">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>100</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Etat actuel</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="5">
-           <widget class="QLineEdit" name="LE_CodeClassification">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="readOnly">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="Lb_Classification">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Classification</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="31" column="0">
-           <widget class="QLabel" name="Lb_Createur">
-            <property name="text">
-             <string>Créateur</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="3">
-           <widget class="QLabel" name="Lb_JoueursMin">
-            <property name="text">
-             <string>Nb joueurs mini</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="32" column="1" colspan="5">
-           <widget class="QLineEdit" name="LE_SiteWeb1">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="19" column="1">
-           <widget class="QComboBox" name="CBx_Etat">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="29" column="1" colspan="3">
-           <widget class="QComboBox" name="CBx_Fournisseur">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="18" column="5">
-           <widget class="QDoubleSpinBox" name="SBx_PrixAchat">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.010000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="17" column="5">
-           <widget class="QSpinBox" name="SBx_AgeMax">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-            <property name="minimum">
-             <number>1</number>
-            </property>
-           </widget>
-          </item>
-          <item row="8" column="5">
-           <widget class="QSpinBox" name="SBx_JoueursMax">
-            <property name="minimumSize">
-             <size>
-              <width>20</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="22" column="0">
-           <widget class="QLabel" name="Lb_Emplacement">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Emplacement</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="22" column="1" colspan="3">
-           <widget class="QComboBox" name="CBx_Emplacement">
-            <property name="minimumSize">
-             <size>
-              <width>0</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="2">
-           <widget class="QRadioButton" name="RBt_Neuf">
-            <property name="text">
-             <string>Neuf</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="21" column="0">
-           <widget class="QLabel" name="Lb_SiteWeb2">
-            <property name="text">
-             <string>Durée min</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="21" column="2">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>Durée max</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="5">
-           <widget class="QSpinBox" name="SBx_Caution">
-            <property name="maximumSize">
-             <size>
-              <width>50</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="3">
-           <widget class="QLabel" name="Lb_Caution">
-            <property name="maximumSize">
-             <size>
-              <width>16777215</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Caution</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="3">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Note</string>
-            </property>
-           </widget>
-          </item>
-          <item row="20" column="5">
-           <widget class="QSpinBox" name="SBx_Note"/>
-          </item>
-          <item row="21" column="1">
-           <widget class="QSpinBox" name="SBx_DureeMin"/>
-          </item>
-          <item row="21" column="3">
-           <widget class="QSpinBox" name="SBx_DureeMax">
-            <property name="maximum">
-             <number>999999</number>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="4">
-    <widget class="QPushButton" name="Bt_Aide_PiecesManquantes">
-     <property name="maximumSize">
-      <size>
-       <width>20</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset resource="ImagesIcones.qrc">
-       <normaloff>:/Aide2.png</normaloff>:/Aide2.png</iconset>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="2" colspan="3">
-    <widget class="QFrame" name="FrameGrosTexte">
-     <property name="minimumSize">
-      <size>
-       <width>300</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_4">
-      <property name="leftMargin">
-       <number>2</number>
-      </property>
-      <property name="topMargin">
-       <number>2</number>
-      </property>
-      <property name="rightMargin">
-       <number>2</number>
-      </property>
-      <property name="bottomMargin">
-       <number>2</number>
-      </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="Lb_Description">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>20</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Description du principe du jeu :</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QTextEdit" name="TxE_Description">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>100</height>
-         </size>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="2" colspan="3">
-    <widget class="QGroupBox" name="groupBox_10">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>220</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Image(s) pour ce jeu :</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_11">
-      <property name="topMargin">
-       <number>4</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="Bt_Droite">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="Bt_Gauche">
-        <property name="maximumSize">
-         <size>
-          <width>20</width>
-          <height>16777215</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="ImagesIcones.qrc">
-          <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="Lb_Image">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize">
-         <size>
-          <width>300</width>
-          <height>140</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>200</width>
-          <height>140</height>
-         </size>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="cursor">
-         <cursorShape>CrossCursor</cursorShape>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="Lb_ImageName">
-        <property name="minimumSize">
-         <size>
-          <width>200</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>300</width>
-          <height>18</height>
-         </size>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="5" column="2" colspan="3">
-    <widget class="W_ContenuJeu" name="W_Contenu" native="true"/>
-   </item>
-   <item row="10" column="1" colspan="4">
-    <widget class="W_HistoriqueMaintenance" name="W_Historique" native="true">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>100</height>
-      </size>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1" colspan="4">
-    <widget class="QLabel" name="Lb_Remarques">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>Historique de maintenance :</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="label_6">
-     <property name="text">
-      <string>Remarques :</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" rowspan="11">
+   <item row="0" column="0" rowspan="5">
     <widget class="QFrame" name="FrameRechercheJeux">
      <property name="minimumSize">
       <size>
@@ -1225,27 +242,1100 @@
      </layout>
     </widget>
    </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Contenu du jeu :</string>
+   <item row="0" column="1" rowspan="4" colspan="3">
+    <widget class="QTabWidget" name="TabW_Jeu">
+     <property name="currentIndex">
+      <number>2</number>
      </property>
+     <widget class="QWidget" name="basic">
+      <attribute name="title">
+       <string>Infos du jeu</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_5">
+       <item row="0" column="0">
+        <widget class="QFrame" name="FramePetitTexte">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_8">
+          <property name="leftMargin">
+           <number>2</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>2</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <property name="spacing">
+           <number>2</number>
+          </property>
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <layout class="QGridLayout" name="gridLayout_9">
+              <item row="3" column="0">
+               <widget class="QLabel" name="label">
+                <property name="text">
+                 <string>Code</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="0">
+               <widget class="QLabel" name="Lb_MotCle1">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Mots-clés</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="0">
+               <widget class="QLabel" name="Lb_SiteWeb2">
+                <property name="text">
+                 <string>Durée min</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="28" column="0">
+               <widget class="QLabel" name="Lb_SiteWeb1">
+                <property name="text">
+                 <string>Site Web</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="46" column="1">
+               <layout class="QHBoxLayout" name="horizontalLayout_3"/>
+              </item>
+              <item row="25" column="0">
+               <widget class="QLabel" name="Lb_Editeur">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Editeur</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="Lb_Nom">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>20</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Nom</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="17" column="0">
+               <widget class="QLabel" name="Lb_Statut">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Statut</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="0">
+               <widget class="QLabel" name="Lb_Createur">
+                <property name="text">
+                 <string>Auteurs</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <widget class="QLabel" name="Lb_JoueursMin">
+                <property name="text">
+                 <string>Nb joueurs mini</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="0">
+               <widget class="QLabel" name="Lb_AgeMin">
+                <property name="text">
+                 <string>Age mini</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="8" column="1" rowspan="8" colspan="4">
+               <widget class="QListWidget" name="Lw_MotsCles"/>
+              </item>
+              <item row="27" column="1" colspan="4">
+               <widget class="QListWidget" name="Lw_Auteurs"/>
+              </item>
+              <item row="25" column="1" colspan="4">
+               <widget class="QComboBox" name="CBx_Editeur">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="1">
+               <widget class="QSpinBox" name="SBx_JoueursMin">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="1">
+               <widget class="QSpinBox" name="SBx_AgeMin">
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="1">
+               <widget class="QSpinBox" name="SBx_DureeMin">
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="2">
+               <widget class="QLabel" name="Lb_JoueursMax">
+                <property name="text">
+                 <string>Nb joueurs maxi</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="6" column="3">
+               <widget class="QSpinBox" name="SBx_JoueursMax">
+                <property name="minimumSize">
+                 <size>
+                  <width>20</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="2">
+               <widget class="QLabel" name="Lb_AgeMax">
+                <property name="text">
+                 <string>Age max</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="16" column="3">
+               <widget class="QSpinBox" name="SBx_AgeMax">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="value">
+                 <number>99</number>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="2">
+               <widget class="QLabel" name="label_3">
+                <property name="text">
+                 <string>Durée max</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
+               </widget>
+              </item>
+              <item row="19" column="3">
+               <widget class="QSpinBox" name="SBx_DureeMax">
+                <property name="maximumSize">
+                 <size>
+                  <width>50</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="maximum">
+                 <number>999999</number>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1" colspan="4">
+               <widget class="QLineEdit" name="LE_Code">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="readOnly">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="27" column="0">
+               <widget class="QPushButton" name="Bt_SupprimerAuteur">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Supprimer</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ImagesIcones.qrc">
+                  <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="26" column="1" colspan="3">
+               <widget class="QComboBox" name="CBx_Auteur"/>
+              </item>
+              <item row="26" column="4">
+               <widget class="QPushButton" name="Bt_AjouterAuteur">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ImagesIcones.qrc">
+                  <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="11" column="0">
+               <widget class="QPushButton" name="Bt_SupprimerMotCle">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Supprimer</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ImagesIcones.qrc">
+                  <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="7" column="1" colspan="3">
+               <widget class="QComboBox" name="CBx_MotCle"/>
+              </item>
+              <item row="7" column="4">
+               <widget class="QPushButton" name="Bt_AjouterMotCle">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Ajouter</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="ImagesIcones.qrc">
+                  <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item row="17" column="1" colspan="4">
+               <widget class="QComboBox" name="CBx_Statut">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1" colspan="4">
+               <layout class="QHBoxLayout" name="horizontalLayout"/>
+              </item>
+              <item row="28" column="1" colspan="4">
+               <widget class="QLineEdit" name="LE_SiteWeb1">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
+       <string>Infos exemplaire ludo</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_10">
+       <item row="0" column="0">
+        <widget class="QLabel" name="Lb_Achat">
+         <property name="text">
+          <string>Date achat</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QDateEdit" name="DtE_Achat">
+         <property name="calendarPopup">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="Lb_Prix">
+         <property name="text">
+          <string>Prix d'achat</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="SBx_PrixAchat">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+         <property name="maximum">
+          <double>10000.000000000000000</double>
+         </property>
+         <property name="singleStep">
+          <double>0.010000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="Lb_Fournisseur">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Fournisseur</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="CBx_Fournisseur">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="Lb_EtatInitial">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Etat initial</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QRadioButton" name="RBt_Occasion">
+         <property name="text">
+          <string>Occa&amp;sion</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QRadioButton" name="RBt_Neuf">
+         <property name="text">
+          <string>Neuf</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="Lb_Etat">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Etat actuel</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QComboBox" name="CBx_Etat">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="Lb_Location">
+         <property name="text">
+          <string>Prix de location</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QSpinBox" name="SBx_PrixLocation">
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="Lb_Classification">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Classification</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="2">
+        <widget class="QComboBox" name="CBx_Classification">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QLineEdit" name="LE_CodeClassification">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>50</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="Lb_Emplacement">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Emplacement</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QComboBox" name="CBx_Emplacement">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="contenu">
+      <attribute name="title">
+       <string>Remarques,contenu,maintenance</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Contenu du jeu :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>Remarques :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1" colspan="2">
+        <widget class="QPushButton" name="Bt_ValeurOrigine">
+         <property name="text">
+          <string>Valeur d'origine</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0" colspan="4">
+        <widget class="W_ContenuJeu" name="W_Contenu" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="Lb_Remarques">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Historique de maintenance :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0" colspan="4">
+        <widget class="W_HistoriqueMaintenance" name="W_Historique" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QPushButton" name="Bt_Aide_PiecesManquantes">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string> Aide</string>
+         </property>
+         <property name="icon">
+          <iconset resource="ImagesIcones.qrc">
+           <normaloff>:/Aide2.png</normaloff>:/Aide2.png</iconset>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0" colspan="4">
+        <widget class="QTextEdit" name="TxE_Remarque">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Images et description</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_10">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>220</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Image(s) pour ce jeu :</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_11">
+          <property name="topMargin">
+           <number>4</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item row="0" column="2">
+           <widget class="QPushButton" name="Bt_Droite">
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Fleche_droite.png</normaloff>:/Fleche_droite.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="Bt_Gauche">
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset resource="ImagesIcones.qrc">
+              <normaloff>:/Fleche_gauche.png</normaloff>:/Fleche_gauche.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="Lb_Image">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>300</width>
+              <height>140</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>50</weight>
+              <bold>false</bold>
+             </font>
+            </property>
+            <property name="cursor">
+             <cursorShape>CrossCursor</cursorShape>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="Lb_ImageName">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>300</width>
+              <height>18</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="Lb_Description">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Description du principe du jeu :</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QTextEdit" name="TxE_Description">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="avance">
+      <attribute name="title">
+       <string>Avancé</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Id Version BGG</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="LE_Id_BGG"/>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="LE_Slug_TricTrac"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Id BGG</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Slug TricTrac</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="LE_Version_BGG"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QDoubleSpinBox" name="SBx_Note"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Note BGG</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
-   <item row="3" column="2" colspan="3">
-    <widget class="QTextEdit" name="TxE_Remarque">
+   <item row="4" column="3">
+    <widget class="QCommandLinkButton" name="Bt_Annuler">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>30</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>16777215</width>
-       <height>100</height>
+       <width>100</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Annuler</string>
+     </property>
+     <property name="icon">
+      <iconset resource="ImagesIcones.qrc">
+       <normaloff>:/Annuler.png</normaloff>:/Annuler.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
       </size>
      </property>
     </widget>
    </item>
-   <item row="4" column="3">
-    <widget class="QPushButton" name="Bt_ValeurOrigine">
+   <item row="4" column="2">
+    <widget class="QCommandLinkButton" name="Bt_Valider">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>100</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>100</width>
+       <height>30</height>
+      </size>
+     </property>
      <property name="text">
-      <string>Valeur d'origine</string>
+      <string>Valider</string>
+     </property>
+     <property name="icon">
+      <iconset resource="ImagesIcones.qrc">
+       <normaloff>:/Valider.png</normaloff>:/Valider.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

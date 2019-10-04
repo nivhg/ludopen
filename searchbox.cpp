@@ -45,9 +45,9 @@
 #include "suggest.h"
 
 
-SearchBox::SearchBox(QWidget *parent): QComboBox(parent)
+SearchBox::SearchBox(QWidget *parent,int Mode): QComboBox(parent)
 {
-    completer = new Suggest(this);
+    completer = new Suggest(this,Mode);
     setFocus();
 }
 

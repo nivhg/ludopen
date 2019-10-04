@@ -81,7 +81,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
 
     switch(this->nCLESTTEM)
     {
-        case 0: // Etat Jeu.
+        case POPUP_ETAT_JEU: // Etat Jeu.
             ui->Lb_TitreFenetre->setText("Création d'un Etat");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -176,8 +176,8 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 11: // Mot-clé d'un jeu.
-            ui->Lb_TitreFenetre->setText("Création d'un mot-clé");
+        case POPUP_AUTEUR: // Auteur
+            ui->Lb_TitreFenetre->setText("Création d'un auteur");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
             ui->LE_Autres->hide();
@@ -366,7 +366,7 @@ int F_PopUpCLESTTEM::Modifier(QString sCLESTTEM, int nCLESTTEM, QTableView * TbV
             this->sCLESTTEM = sCLESTTEM;
         break;
 
-        case 11: // Mot-clé.
+        case POPUP_AUTEUR: // Auteur
             ui->Lb_TitreFenetre->setText("Modification d'un mot-clé");
             ui->LE_CLESTTEM->setText(sCLESTTEM);
             ui->Lb_Autres->hide();
@@ -516,7 +516,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 4: // Mot clé Jeu.
+        case POPUP_MOT_CLE: // Mot clé Jeu.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO motscles (MotCle) VALUES (:MotCle)");
@@ -656,23 +656,23 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 11: // Mot-clé d'un jeu.
+        case POPUP_AUTEUR: // Auteur
             if(this->bCLESTTEM)
             {
-                RequeteValider.prepare("INSERT INTO motscles (MotCle) VALUES (:MotCle)");
-                RequeteValider.bindValue(":MotCle", ui->LE_CLESTTEM->text());
+                RequeteValider.prepare("INSERT INTO auteurs (NomAuteur) VALUES (:NomAuteur)");
+                RequeteValider.bindValue(":NomAuteur", ui->LE_CLESTTEM->text());
                 RequeteValider.exec();
             }
             else
             {
-                RequeteValider.prepare("UPDATE motscles SET MotCle=:MotCle WHERE MotCle=:MotClePrecedent");
-                RequeteValider.bindValue(":MotCle", ui->LE_CLESTTEM->text());
-                RequeteValider.bindValue(":MotClePrecedent", this->sCLESTTEM);
+                RequeteValider.prepare("UPDATE auteurs SET NomAuteur=:NomAuteur WHERE NomAuteur=:NomAuteurPrecedent");
+                RequeteValider.bindValue(":NomAuteur", ui->LE_CLESTTEM->text());
+                RequeteValider.bindValue(":NomAuteurPrecedent", this->sCLESTTEM);
                 RequeteValider.exec();
                 requete=RequeteValider.lastQuery();
             }
         break;
-        case 12: // Domaine d'email.
+        case POPUP_DOMAINE_EMAIL: // Domaine d'email.
             if(this->bCLESTTEM)
             {
                 RequeteValider.prepare("INSERT INTO domaineemail (NomDomaine) VALUES (:NomDomaine)");

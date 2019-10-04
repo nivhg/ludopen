@@ -44,6 +44,7 @@
 #include <QtWidgets>
 #include <QObject>
 #include "searchbox.h"
+#include "http_xml_api.h"
 
 using namespace std;
 
@@ -56,11 +57,10 @@ class Suggest : public QObject
     Q_OBJECT
 
 public:
-    Suggest(QComboBox *parent = 0);
+    Suggest(QComboBox *parent = 0, int Mode=MODE_VECTOR);
     ~Suggest();
     void MAJResults(QVector<QVector<QString> > *Results, int NbOfRows2Display=1);
     bool eventFilter(QObject *obj, QEvent *ev) Q_DECL_OVERRIDE;
-    void showCompletion(const QVector<QVector<QString> > &Vector);
     QComboBox *editor;
 
 public slots:
@@ -68,6 +68,8 @@ public slots:
     void doneCompletion(QString value="");
     void preventSuggest();
     void autoSuggest();
+    void autoSuggestHTTP();
+    void showCompletion(QVector<QVector<QString> > Vector,qint64 HeureAppel=0);
 
 private:
     QTreeWidget *popup;
@@ -75,5 +77,8 @@ private:
     QVector<QVector<QString> > Results;
     QVector<QVector<QString> > SearchResults;
     int NbOfRows2Display;
+    Http_xml_api *Requete;
+    int Mode;
+    qint64 DernierRetour;
 };
 #endif // SUGGEST_H

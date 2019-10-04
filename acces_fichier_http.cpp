@@ -27,29 +27,31 @@ AccesFichierParHTTP::~AccesFichierParHTTP()
     delete manager;
 }
 
-
 /**
  *  @brief Lance le processus de téléchargement
  *
  *  @param sCheminImagePref : Chemin ou URL des fichiers à télécharger
  *  @param code_jeu : Code du jeu correspondant aux fichiers à télécharger
- *  @param ListeExtension : Liste des extentions des fichiers à traiter
+ *  @param ListeExtensionOuURL : Liste des extentions des fichiers à traiter ou URL à traite (dans ce cas, code_jeu=0)
  */
 void AccesFichierParHTTP::LancerTelechargements( QString sCheminImagePref,QString code_jeu,
-                                                 QStringList ListeExtension)
+                                                 QStringList ListeExtensionOuURL)
 {
     this->sCheminImagePref=sCheminImagePref;
     this->NomFichier=code_jeu;
     this->CodeJeu=code_jeu;
     this->NumeroFichier=1;
     TelechargementAnnuler=false;
-    foreach (QString ext, ListeExtension)
+    if(code_jeu!="")
     {
-        ListeExtension.removeAt(ListeExtension.indexOf(ext));
-        ListeExtension.append(ext.toLower());
-        ListeExtension.append(ext.toUpper());
+        foreach (QString ext, ListeExtensionOuURL)
+        {
+            ListeExtensionOuURL.removeAt(ListeExtensionOuURL.indexOf(ext));
+            ListeExtensionOuURL.append(ext.toLower());
+            ListeExtensionOuURL.append(ext.toUpper());
+        }
     }
-    this->ListeExtension=ListeExtension;
+    this->ListeExtensionOuURL=ListeExtensionOuURL;
     IndexExtension=0;
     SlotTelechargementFini();
 }
@@ -59,7 +61,7 @@ void AccesFichierParHTTP::LancerTelechargements( QString sCheminImagePref,QStrin
  */
 void AccesFichierParHTTP::AnnulerTelechargements()
 {
-    IndexExtension=ListeExtension.count();
+    IndexExtension=ListeExtensionOuURL.count();
     TelechargementAnnuler=true;
     emit SignalAnnulerTelechargement();
 }
@@ -94,8 +96,11 @@ void AccesFichierParHTTP::SlotTelechargementFini()
                 delete reply;
                 emit SignalFichierTelecharger(NomFichier);
                 // On a trouvé l'extension du fichier, on passe au fichier suivant
-                PasserFichierSuivant(true);
-                return;
+                if(CodeJeu!="")
+                {
+                    PasserFichierSuivant(true);
+                    return;
+                }
                 break;
             case QNetworkReply::ContentNotFoundError:
                 // 404 Not found
@@ -104,18 +109,31 @@ void AccesFichierParHTTP::SlotTelechargementFini()
                 break;
         }
         // Si on a fait toutes les extensions, on passe au fichier suivant si il y en a
-        if(IndexExtension==ListeExtension.count())
+        if(CodeJeu!=""&&IndexExtension==ListeExtensionOuURL.count())
         {
             PasserFichierSuivant(false);
             return;
         }
     }
+    QString URL;
     // URL du prochain téléchargement
-    QString URL=sCheminImagePref+NomFichier+"."+ListeExtension.at(IndexExtension++);
+    if(this->CodeJeu=="")
+    {
+        // Dans le cas du téléchargements de images BGG, si on est à la fin du vecteur des URL, on emets le signal de fin et on quitte la fonction
+        if(IndexExtension==ListeExtensionOuURL.count())
+        {
+            emit SignalTelechargementsFini();
+            return;
+        }
+        URL=ListeExtensionOuURL.at(IndexExtension++);
+    }
+    else
+    {
+        URL=sCheminImagePref+NomFichier+"."+ListeExtensionOuURL.at(IndexExtension++);
+    }
     QNetworkReply *newreply= manager->get(QNetworkRequest(QUrl(URL)));
     QObject::connect(newreply, SIGNAL(finished()),this, SLOT(SlotTelechargementFini()));
     QObject::connect(this, SIGNAL(SignalAnnulerTelechargement()),newreply, SLOT(abort()));
-    return;
 }
 
 /**
@@ -132,7 +150,7 @@ void AccesFichierParHTTP::PasserFichierSuivant(bool FichierTrouver)
     }
     // Si il ne s'agit pas du premier fichier et qu'aucun fichier n'a été trouvé,
     // on sort de la fonction
-    if(NomFichier.indexOf("-")!=-1 && !FichierTrouver)
+    if((NomFichier.indexOf("-")!=-1) && !FichierTrouver)
     {
         emit SignalTelechargementsFini();
         return;

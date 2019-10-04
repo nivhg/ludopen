@@ -5,7 +5,7 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport script multimediawidgets designer
+QT        = widgets sql network core printsupport script multimediawidgets designer xml
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -69,7 +69,8 @@ SOURCES += \
     d_lienjeux.cpp \
     spinboxdelegate.cpp \
     w_contenujeu.cpp \
-    w_historiquemaintenance.cpp
+    w_historiquemaintenance.cpp \
+    http_xml_api.cpp
 
 HEADERS  += \
     f_statistiques.h \
@@ -126,7 +127,8 @@ HEADERS  += \
     d_lienjeux.h \
     spinboxdelegate.h \
     w_contenujeu.h \
-    w_historiquemaintenance.h
+    w_historiquemaintenance.h \
+    http_xml_api.h
 
 FORMS    += \
     f_statistiques.ui \

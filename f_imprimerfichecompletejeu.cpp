@@ -62,7 +62,7 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
 
     QSqlQuery RequeteFicheJeuComplete ;
     RequeteFicheJeuComplete.prepare("SELECT NomJeu, CodeJeu, NomCreateurJeu, DateAchat, PrixAchat,"
-          "PrixLoc, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, Remarque, ContenuJeu, Caution, "
+          "PrixLoc, NbrJoueurMin, NbrJoueurMax, AgeMin, AgeMax, Remarque, ContenuJeu, "
           "DescriptionJeu, EtatInitial, TypeJeux_Classification, Emplacement_IdEmplacement, "
           "EtatsJeu_IdEtatsJeu, StatutJeux_IdStatutJeux, Fournisseurs_IdFournisseur,"
           "Editeur_IdEditeur FROM jeux WHERE CodeJeu =:CodeDuJeu") ;
@@ -127,10 +127,6 @@ void F_ImprimerFicheCompleteJeu::ImprimerFicheJeuComplete(QString CodeJeu)
     QString Contenu = RequeteFicheJeuComplete.value(11).toString() ;
     ui->TxE_Contenu->setText(Contenu);
     ui->TxE_Contenu->setReadOnly(true);
-    
-    QString Caution = RequeteFicheJeuComplete.value(12).toString() ;
-    ui->LE_Caution->setText(Caution);
-    ui->LE_Caution->setReadOnly(true);
     
     QString Description = RequeteFicheJeuComplete.value(13).toString() ;
     ui->TxE_Description->setText(Description);
@@ -368,8 +364,6 @@ void F_ImprimerFicheCompleteJeu::on_Bt_Imprimer_clicked()
         FeuilleAImprimer.append(this->ui->Lb_PrixAchat->text() + ": " + "<b>" + this->ui->LE_PrixAchat->text() + "</b>" + "\n");
 
         FeuilleAImprimer.append(this->ui->Lb_PrixLoc->text() + ": " + "<b>" + this->ui->LE_PrixLoc->text() + "</b>" + "\n");
-
-        FeuilleAImprimer.append(this->ui->Lb_Caution->text() + ": " + "<b>" + this->ui->LE_Caution->text() + "</b>" + "\n");
 
         FeuilleAImprimer.append(this->ui->Lb_Emplacement->text() + ": " + "<b>" + this->ui->LE_Emplacement->text() + "</b>" + "\n");
 

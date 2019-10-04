@@ -8,6 +8,7 @@
 // En-têtes propres à l'application necessaires dans ce fichier en-tete --------
 #include "lb_image.h"
 #include "securefileuploader.h"
+#include "http_xml_api.h"
 
 #define OP_DEPLACEMENT_GAUCHE 0
 #define OP_DEPLACEMENT_DROITE 1
@@ -85,6 +86,13 @@ public:
      */
     void MontrerLudopenWebDeux(bool Montrer);
 
+    /**
+     *  @brief Affiche les images du site BGG passé en paramètre
+     */
+    void AfficherImageBGG(QString sCodeJeu,QVector<QVector<QVector<QString>>> Matrice);
+public slots:
+    void SlotTelechargementsFini();
+    void SlotTelechargementImageFinale();
 private slots:
     /**
      *  @brief Gestion du click de Lb_Image
@@ -142,8 +150,15 @@ private slots:
      */
     void onCloseDialog();
 
+    void on_Cb_FiltreLangue_currentIndexChanged(int index);
+
+    void on_Bt_Annuler_clicked();
+
+    void on_Bt_Valider_clicked();
+
 signals:
     void dialogIsClosing();
+    void SignalVersionBGGChoisi(QString IdVersionBGG);
 
 protected:
     /**
@@ -153,7 +168,7 @@ protected:
 
 private:
     Ui::D_Image *ui;
-    QStringList sCheminImage;
+    QStringList sCheminImage,sURLImage,sNomVersion,sIdVersion;
     Lb_Image * lb_image;
     Lb_Image * lb_image2;
     Lb_Image * lb_image3;
@@ -167,6 +182,14 @@ private:
     // Paramètre de décalage par rapport à une autre image dans le cas d'un changement d'état (site web par défaut, ludopen par défaut...)
     int iInversionDecalage;
     int iOperationServeur;
+    QVector<QVector<QVector<QString>>> MatriceBGG;
+    AccesFichierParHTTP * acces;
+    bool ImagesBGG;
+
+    void RecupererImagesBGG();
+    void AjoutImageLocalOuServeur();
+    void EffacerItemsLayout(QGridLayout *layout, int row, int column, bool deleteWidgets);
+    void EffacerWidgetsEnfants(QLayoutItem *item);
 };
 
 #endif // D_IMAGE_H

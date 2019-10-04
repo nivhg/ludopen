@@ -261,10 +261,11 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Ajouter_clicked()
  */
 void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
 {
-    if(QMessageBox::warning(this, "Confirmation suppression", "Êtes-vous sur de vouloir le supprimer ?", "Oui", "Non") == 0)
+    if(QMessageBox::warning(this, "Confirmation suppression", "Êtes-vous sur de vouloir le supprimer ?\n"
+                            "(si des jeux utilisent ce fournisseur/éditeur, il vous sera demandé de choisir le fournisseur/éditeur de remplacement.", "Oui", "Non") == 0)
     {
         QSqlQuery RequeteSupprimer;
-        RequeteSupprimer.prepare("SELECT * FROM  jeux WHERE Fournisseurs_IdFournisseur=:IdFournisseur");
+        RequeteSupprimer.prepare("SELECT * FROM  jeux WHERE Fournisseurs_IdFournisseur=:IdFournisseur OR Editeur_IdEditeur=:IdFournisseur");
         RequeteSupprimer.bindValue(":IdFournisseur", IdSelection);
         RequeteSupprimer.exec();
         if(RequeteSupprimer.size()!=0)
@@ -291,11 +292,18 @@ void F_AjoutSuppModifFournisseursEditeurs::on_Bt_Supprimer_clicked()
             {
                 return;
             }
-            RequeteSupprimer.prepare("UPDATE jeux SET Fournisseurs_IdFournisseur=:IdFournisseur"
-                                   " WHERE Fournisseurs_IdFournisseur=:IdFournisseurPrecedent");
             QString IdSel=this->TbV_CLESTTEM->selectionModel()->selectedRows(1).first().data().toString();
+
+            RequeteSupprimer.prepare("UPDATE jeux SET Fournisseurs_IdFournisseur=:IdFournisseur"
+                                   " WHERE Fournisseurs_IdFournisseur=:IdFournisseurPrecedent ");
             RequeteSupprimer.bindValue(":IdFournisseur",IdSel);
             RequeteSupprimer.bindValue(":IdFournisseurPrecedent", IdSelection);
+            RequeteSupprimer.exec();
+
+            RequeteSupprimer.prepare("UPDATE jeux SET Editeur_IdEditeur=:IdEditeur"
+                                   " WHERE Editeur_IdEditeur=:IdEditeurPrecedent ");
+            RequeteSupprimer.bindValue(":IdEditeur",IdSel);
+            RequeteSupprimer.bindValue(":IdEditeurPrecedent", IdSelection);
             RequeteSupprimer.exec();
         }
         QSqlQuery RequeteSuppFournOuEdit ;

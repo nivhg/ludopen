@@ -138,7 +138,6 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
     {
         qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    qDebug()<<"F_Malles::AfficherCalendrier => RequeteJeux : "<< getLastExecutedQuery(Requete)<<Requete.lastError();
     int iCouleur=Qt::red;
     int iCptMalle=0;
     Requete.next();

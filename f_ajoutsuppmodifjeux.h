@@ -18,6 +18,7 @@ class F_AjoutSuppModifJeux;
 #include "fonctions_globale.h"
 #include "w_contenujeu.h"
 #include "ui_w_contenujeu.h"
+#include "http_xml_api.h"
 
 using namespace std;
 
@@ -64,6 +65,9 @@ public:
     /** @brief Permet d'actualiser le Cbx_MotCle lorsquuon ajout a été fait
      */
     void ActualiserCBx_MotCle() ;
+    /** @brief Permet d'actualiser le Cbx_Auteur lorsquuon ajout a été fait
+     */
+    void ActualiserCBx_Auteur();
 
     /** @brief Permet d'ajouter un image pour un jeu
      */
@@ -101,13 +105,26 @@ public:
      */
     QString get_JeuEnConsultation() ;
 
+    /** @brief Actualise la liste des mots-clés du jeu en cours
+     */
+    void ActualiserLw_MotCles();
+    void ActualiserLw_Auteurs();
+
 public slots:
     void slot_ValiderClassification();
     void slot_ValiderEtat();
     void slot_ValiderEmplacement();
     void slot_ValiderMotCle();
+    void slot_ValiderAuteur();
     void slot_ValiderStatut();
     void slot_ActiverClicImage();
+    void slot_HTTP_API_JeuChoisi(QString IdBGG);
+    /** @brief Affiche la fenêtre de choix de la version BGG
+     */
+    void slot_AfficherChoixVersion(QVector<QVector<QVector<QString>>> Matrice);
+    void slot_VersionBGGChoisi(QString IdVersionBGG);
+    void slot_Traduction_finie(QString TexteTraduit);
+
 
 private slots:
     // METHODEs -----------------------------------------------------------------
@@ -157,18 +174,10 @@ private slots:
      */
     void on_Bt_Annuler_clicked();
 
-    /** @brief Appelé lorsque le contenu du CBx_MotCle1 change
+    /** @brief Appelé lorsque le contenu du CBx_MotCle change
      */
-    void on_CBx_MotCle1_activated(int index);
+    void on_CBx_MotCle_activated(int index);
     
-    /** @brief Appelé lorsque le contenu du CBx_MotCle2 change
-     */
-    void on_CBx_MotCle2_activated(int index);
-    
-    /** @brief Appelé lorsque le contenu du CBx_MotCle3 change
-     */
-    void on_CBx_MotCle3_activated(int index);
-
     /** @brief Appelé lorsque le contenu du Cbx_Emplacement change
      */
     void on_CBx_Emplacement_activated(int index);
@@ -197,6 +206,20 @@ private slots:
 
     void on_Bt_ValeurOrigine_clicked();
 
+    void on_Bt_AjouterMotCle_clicked();
+
+    void on_Bt_SupprimerMotCle_clicked();
+
+    void on_Lw_MotsCles_clicked(const QModelIndex &index);
+
+    void on_Bt_AjouterAuteur_clicked();
+
+    void on_Bt_SupprimerAuteur_clicked();
+
+    void on_Lw_Auteurs_clicked(const QModelIndex &index);
+
+    void on_CBx_Auteur_activated(int index);
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
 
@@ -206,7 +229,7 @@ private:
      *
      */
     //Code du jeu actif sur la fenêtre
-    QString nIdJeuSelectionne ;
+    QString sCodeJeuSelectionne ;
     
     //! Model du TableView des jeux
     QStandardItemModel * ModelJeu;
@@ -230,6 +253,10 @@ private:
     /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
      */
     F_PopUpCLESTTEM * pMotCleAjMod;
+
+    /** @brief Pointeur qui fait le lien entre la classe F_PopUpCLESTTEM et celle-ci
+     */
+    F_PopUpCLESTTEM * pAuteurAjMod;
 
     /** @brief Pointeur qui fait le lien entre la classe D_AjoutSuppModifFournisseursEditeurs coté fournisseur et celle-ci
      */
@@ -266,6 +293,13 @@ private:
 
     //! Booléen indiquant si le chargement des images est fini
     bool ChargementImageFini;
+
+    SearchBox *SearchJeu;
+    Http_xml_api *Requete;
+    QVector<QVector<QVector<QString>>> Matrice;
+    QString IdBGG;
+
+    void RemplirChampsMatrice(int i);
 };
 
 //------------------------------------------------------------------------------

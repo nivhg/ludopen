@@ -158,6 +158,8 @@ private:
     QAction *actionPieceDsGroupe;
 
     SpinBoxDelegate *DelegateContenu;
+
+    void ActualiserLw_Auteurs();
 };
 
 //-----------------------------------------------------------------

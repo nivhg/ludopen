@@ -43,18 +43,55 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
 {
     ui->setupUi(this);
 
+    lb_image=0;
+    lb_image2=0;
+    lb_image3=0;
     /*// Mets la fenêtre au centre de l'écran
     QDesktopWidget *desktop = QApplication::desktop();
     QRect geo_d_i = this->geometry();
     int x = (desktop->width() - geo_d_i.width()) / 2;
     int y = (desktop->height() - geo_d_i.height()) / 2;
     this->setGeometry(x, y, geo_d_i.width(), geo_d_i.height());*/
-    if(this->parent()->objectName()=="F_AjoutSuppModifJeux")
+    ImagesBGG=(lb_img==0);
+    if(this->parent()->objectName()=="F_AjoutSuppModifJeux" && !ImagesBGG)
     {
         this->lb_img=lb_img;
         iDecalage=0;
         iInversionDecalage=0;
+        ui->SW_Boutons->setCurrentIndex(0);
+        ui->Cb_FiltreLangue->setVisible(false);
+        ui->Lb_Langue->setVisible(false);
+    }
+    else
+    {
+        this->lb_img=0;
+        iDecalage=0;
+        iInversionDecalage=0;
+        ui->SW_Boutons->setCurrentIndex(1);
+        ui->Lb_Defaut_Ludopen->setVisible(false);
+        ui->Lb_Defaut_Web->setVisible(false);
+        ui->Lb_Defaut_Deux->setVisible(false);
+        if(ImagesBGG)
+        {
+            this->setGeometry(this->x(),this->y(),this->width(),500);
+            ui->Cb_FiltreLangue->blockSignals(true);
+            ui->Cb_FiltreLangue->addItem("Français",2187);
+            ui->Cb_FiltreLangue->addItem("Anglais",2184);
+            ui->Cb_FiltreLangue->addItem("Allemand",2188);
+            ui->Cb_FiltreLangue->addItem("Toutes les langues",0);
+            ui->Cb_FiltreLangue->blockSignals(false);
+        }
+        else
+        {
+            // Ajoute le label Lb_Image dans le dialog
+            ui->gridLayout->addWidget(lb_img);
+            // Connexion de l'évenement clic du Lb_Image
+            connect( lb_img, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
+        }
+    }
 
+    if(this->parent()->objectName()=="F_AjoutSuppModifJeux")
+    {
         // Récupère le chemin de la clé privée de la machine
         uploader = new SecureFileUploader(this);
         // Connexion de l'évenement de fin d'opération sur le serveur
@@ -64,15 +101,6 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
         connect(this, SIGNAL(rejected()), this, SLOT(onCloseDialog()));
         connect(this, SIGNAL(dialogIsClosing()), this, SLOT(onCloseDialog()));
     }
-    else
-    {
-        ui->dockWidget->setVisible(false);
-        // Ajoute le label Lb_Image dans le dialog
-        ui->gridLayout->addWidget(lb_img);
-        // Connexion de l'évenement clic du Lb_Image
-        connect( lb_img, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
-    }
-
 }
 
 /**
@@ -160,9 +188,13 @@ void D_Image::ChangerSelection(QLabel * pLabel)
  */
 void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
 {
-    // On cache les boutons de fermeture du dockwidget
+    EffacerItemsLayout(ui->Gl_Images, 0, -1, true);
+    if(!ImagesBGG)
+    {
+        // On affiche les boutons de fermeture du dockwidget
+        ui->dockWidget->setVisible(true);
+    }
     ui->dockWidget->setTitleBarWidget(new QWidget());
-    ui->dockWidget->setVisible(true);
     this->sCodeJeu=sCodeJeu;
     this->sCheminImage=sCheminImage;
     // Si il n'y a aucune image à afficher, on désactive tous les boutons sauf le bouton Ajouter
@@ -178,10 +210,7 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
 
     }
     // Il y a 3 images ou moins, on désactive le bouton Droite
-    else if(sCheminImage.count()<=3)
-    {
-        ui->Bt_Droite->setEnabled(false);
-    }
+    ui->Bt_Droite->setEnabled(sCheminImage.count()>3);
     // Liste des Lb_Image
     QList< Lb_Image **> ListLb_Image;
     ListLb_Image<<&lb_image<<&lb_image2<<&lb_image3;
@@ -190,10 +219,11 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
     // On initialise les 3 Lb_Image, on leur donne un nom et on les ajoute dans le layout
     for(int i=0;i<3;i++)
     {
+        //ui->gridLayout_2->removeWidget(qobject_cast <QWidget *>(*ListLb_Image[i]));
         Lb_Image * lbi =new Lb_Image(this,ListLabel[i]);
         lbi->setObjectName("lb_image"+QString::number(i+1));
         lbi->setText("");
-        ui->gridLayout_2->addWidget(lbi,2,i+1);
+        ui->Gl_Images->addWidget(lbi,0,i);
         *ListLb_Image[i]=lbi;
         connect( lbi, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     }
@@ -201,8 +231,41 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
     MontrerLudopenWebDeux(true);
     // Affiche les images du jeux
     RechargerImages();
-    // Sélectionne la 1° image
+    // Sélectionne la 1° image et force l'actualisation de la sélection
+    iLbImageSelectionnee=1;
     ChangerSelection(lb_image);
+}
+
+// Removes all layout items which span the given row and column.
+void D_Image::EffacerItemsLayout(QGridLayout *layout, int row, int column, bool deleteWidgets) {
+  // We avoid usage of QGridLayout::itemAtPosition() here to improve performance.
+  for (int i = layout->count() - 1; i >= 0; i--) {
+    int r, c, rs, cs;
+    layout->getItemPosition(i, &r, &c, &rs, &cs);
+    if (
+        (row == -1 || (r <= row && r + rs > row)) &&
+        (column == -1 || (c <= column && c + cs > column))) {
+      // This layout item is subject to deletion.
+      QLayoutItem *item = layout->takeAt(i);
+      if (deleteWidgets) {
+        EffacerWidgetsEnfants(item);
+      }
+      delete item;
+    }
+  }
+}
+
+// Deletes all child widgets of the given layout item.
+void D_Image::EffacerWidgetsEnfants(QLayoutItem *item) {
+  QLayout *layout = item->layout();
+  if (layout) {
+    // Process all child items recursively.
+    int itemCount = layout->count();
+    for (int i = 0; i < itemCount; i++) {
+      EffacerWidgetsEnfants(layout->itemAt(i));
+    }
+  }
+  delete item->widget();
 }
 
 /**
@@ -210,6 +273,7 @@ void D_Image::AfficherImage(QString sCodeJeu,QStringList sCheminImage)
  */
 void D_Image::RechargerImages()
 {
+    //EffacerItemsLayout(ui->gridLayout_2, 2, -1, true);
     QPixmap Image;
     // Liste des Lb_Image
     QList< Lb_Image *> ListLb_Image;
@@ -228,9 +292,18 @@ void D_Image::RechargerImages()
         {
             if ( QFile::exists(sCheminImage[i]) )
             {
-                lbi->AfficherImage(QSize(800,800));
-                QDir* filepath=new QDir(sCheminImage[i]);                
-                //lbl->setText(filepath->dirName());
+                if(!ImagesBGG)
+                {
+                    lbi->AfficherImage(QSize(800,800));
+                }
+                else
+                {
+                    lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
+                }
+            }
+            else if(ImagesBGG)
+            {
+                lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
             }
         }
         else
@@ -272,6 +345,7 @@ void D_Image::on_Bt_Gauche_clicked()
  */
 void D_Image::MontrerLudopenWebDeux(bool Montrer)
 {
+    if(ImagesBGG) return;
     if(Montrer && sCheminImage.count()!=0 && iDecalage == 0)
     {
         if(EstCeNomFichierContient(sCheminImage[0],"-"))
@@ -476,6 +550,11 @@ void D_Image::on_Bt_Ajouter_clicked()
     {
         return;
     }
+    AjoutImageLocalOuServeur();
+}
+
+void D_Image::AjoutImageLocalOuServeur()
+{
     if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
         Ajouter(EMPLACEMENT_LOCAL);
@@ -492,7 +571,6 @@ void D_Image::on_Bt_Ajouter_clicked()
         uploader->FaireCommandes();
     }
 }
-
 /**
  *  @brief Ajouter une image de jeu
  *
@@ -502,11 +580,19 @@ void D_Image::Ajouter(int emplacement)
 {
     QFileInfo fileInfo;
     QString DestNomFichier;
-    int i=this->sCheminImage.count()+1;
-    // Si il y a dejà des images et que la 1° image est une image "-2", on incrémente i de 1
-    if(i>1 && EstCeNomFichierContient(sCheminImage[0],"-"))
+    int i;
+    if(ImagesBGG)
     {
-        i++;
+        i=1;
+    }
+    else
+    {
+        i=this->sCheminImage.count()+1;
+        // Si il y a dejà des images et que la 1° image est une image "-2", on incrémente i de 1
+        if(i>1 && EstCeNomFichierContient(sCheminImage[0],"-"))
+        {
+            i++;
+        }
     }
     // Parcours les images choisies pour être ajoutées
     foreach(QString sNomImageAjoutee,sNomImagesAjoutees)
@@ -541,7 +627,11 @@ void D_Image::Ajouter(int emplacement)
                 // Copie le fichier dans le dossier temporaire pour affichage de l'image
                 DestCheminFichier=F_Preferences::ObtenirValeur("CheminPhotosJeux")+"/"+DestNomFichier;
             }
-            QFile FichierSource(sNomImageAjoutee);
+            QFile FichierSource;
+            FichierSource.setFileName(sNomImageAjoutee);
+            QFile FichierDestination;
+            FichierDestination.setFileName(DestCheminFichier);
+            FichierDestination.remove();
             FichierSource.copy(DestCheminFichier);
             // On ajoute l'image dans sCheminImage
             sCheminImage << DestCheminFichier;
@@ -1005,6 +1095,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
  */
 void D_Image::onCloseDialog()
 {
+    if(ImagesBGG) return;
     // Mets à jour le Lb_Image de la fenêtre d'admin Jeux et affiche la 1° image
     lb_img->DefiniriImage(0);
     lb_img->DefinirsCheminImage(sCheminImage);
@@ -1020,4 +1111,96 @@ void D_Image::closeEvent(QCloseEvent *event)
 {
     emit dialogIsClosing();
     event->accept();
+}
+
+void D_Image::AfficherImageBGG(QString sCodeJeu,QVector<QVector<QVector<QString>>> Matrice)
+{
+    this->sCodeJeu=sCodeJeu;
+    MatriceBGG=Matrice;
+    RecupererImagesBGG();
+
+}
+
+void D_Image::SlotTelechargementsFini()
+{
+    this->setCursor(Qt::ArrowCursor);
+    iDecalage=0;
+    ui->Bt_Gauche->setEnabled(false);
+    AfficherImage(sCodeJeu,sCheminImage);
+}
+
+void D_Image::on_Cb_FiltreLangue_currentIndexChanged(int index)
+{
+    RecupererImagesBGG();
+}
+
+void D_Image::RecupererImagesBGG()
+{
+    sCheminImage.clear();
+    sNomVersion.clear();
+    sURLImage.clear();
+    QStringList URLs_Apercus;
+    for (int i = 0; i < MatriceBGG.count(); ++i) {
+        if(ui->Cb_FiltreLangue->currentData().toInt()==0||MatriceBGG[i][BGG_LANGUE][0]==ui->Cb_FiltreLangue->currentData().toString())
+        {
+            if(MatriceBGG[i][BGG_APERCU][0]=="")
+            {
+                URLs_Apercus.append("");
+                sCheminImage.append("");
+            }
+            else
+            {
+                URLs_Apercus.append(MatriceBGG[i][BGG_APERCU][0]);
+                sCheminImage.append(QDir::tempPath()+"/"+MatriceBGG[i][BGG_APERCU][0].split("/").last());
+            }
+            sNomVersion.append(MatriceBGG[i][BGG_NOM][0]);
+            sIdVersion.append(MatriceBGG[i][BGG_VERSION][0]);
+            sURLImage.append(MatriceBGG[i][BGG_IMAGE][0]);
+        }
+    }
+
+    // Si il n'y a pas d'images, on mets toutes les langues, sinon on sort de la fonction
+    if(URLs_Apercus.count()==0)
+    {
+        if(ui->Cb_FiltreLangue->currentData().toInt()==0) return;
+        ui->Cb_FiltreLangue->setCurrentIndex(ui->Cb_FiltreLangue->count()-1);
+    }
+
+    acces=new AccesFichierParHTTP(this);
+    //connect( acces, SIGNAL( SlotTelechargementFini(QString) ), this, SLOT( SlotFichierTelecharger(QString) ) );
+    connect( acces, SIGNAL( SignalTelechargementsFini() ), this, SLOT( SlotTelechargementsFini() ) );
+    this->setCursor(Qt::WaitCursor);
+    acces->LancerTelechargements(QDir::tempPath(),"",URLs_Apercus);
+}
+
+void D_Image::on_Bt_Annuler_clicked()
+{
+    this->close();
+}
+
+void D_Image::on_Bt_Valider_clicked()
+{
+    bool SauvegarderImage=false;
+    if(sURLImage[iLbImageSelectionnee+iDecalage]!="")
+    {
+        SauvegarderImage=QMessageBox::question(this,"Sauvegarder l'image du jeu","Êtes-vous sûr de vouloir enregistrer l'image du jeu sélectionné,\n"
+                             "l'ancien image sera écrasée ?","Oui","Non")!=1;
+    }
+    acces=new AccesFichierParHTTP(this);
+    //connect( acces, SIGNAL( SlotTelechargementFini(QString) ), this, SLOT( SlotFichierTelecharger(QString) ) );
+    connect( acces, SIGNAL( SignalTelechargementsFini() ), this, SLOT( SlotTelechargementImageFinale() ) );
+    this->setCursor(Qt::WaitCursor);
+    sNomImagesAjoutees.clear();
+    if(SauvegarderImage) sNomImagesAjoutees.append(sURLImage[iLbImageSelectionnee+iDecalage]);
+    acces->LancerTelechargements(QDir::tempPath(),"",sNomImagesAjoutees);
+    sNomImagesAjoutees.clear();
+    sNomImagesAjoutees.append(QDir::tempPath()+"/"+sURLImage[iLbImageSelectionnee+iDecalage].split("/").last());
+}
+
+void D_Image::SlotTelechargementImageFinale()
+{
+    AjoutImageLocalOuServeur();
+    this->setCursor(Qt::ArrowCursor);
+    emit(SignalVersionBGGChoisi(sIdVersion[iLbImageSelectionnee+iDecalage]));
+    close();    
 }

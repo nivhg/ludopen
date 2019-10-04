@@ -79,7 +79,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     SearchMembre->show();
     ui->horizontalLayout->addWidget(SearchMembre);
 
-    connect(SearchMembre,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchMembre_MembreTrouve()));
+    connect(SearchMembre,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchMembre_MembreTrouve()));
 
     SearchJeux = new SearchBox(this);
     this->iMode=iMode;
@@ -108,7 +108,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->Hlay16->addWidget(SearchJeux);
 
     connect(SearchJeux->lineEdit(), SIGNAL( returnPressed() ), this, SLOT( on_LE_SearchJeux_returnPressed() ) );
-    connect(SearchJeux,SIGNAL(SignalSuggestionFini()),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
+    connect(SearchJeux,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
 
     QSqlQuery Requete;
     // Tous les lieux sauf Internet
@@ -1292,7 +1292,15 @@ void F_Emprunt::on_TxE_Remarques_textChanged()
  */
 void F_Emprunt::on_Tv_JeuxMembres_clicked(const QModelIndex &index)
 {
-    //ui->Tv_JeuxMembres->selectRow(index.row());
+    // Si on n'a pas cliqué sur une malle
+    if(this->ModeleJeuxEmpruntes->index(index.row(),0).data(Qt::UserRole+1)==QVariant::Invalid)
+    {
+        //Met le code du jeu sellectionné dans le line édit du code du membre
+        SearchJeux->blockSignals(true);
+        SearchJeux->setCurrentText(this->ModeleJeuxEmpruntes->index(index.row(),1).data().toString());
+        SearchJeux->blockSignals(false);
+        this->on_LE_SearchJeux_jeuTrouve();
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1309,8 +1317,6 @@ void F_Emprunt::on_Tv_JeuxMembres_clicked(const QModelIndex &index)
  */
 void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
 {
-    qDebug()<<ModeleJeuxReserves->data(ModeleJeuxReserves->index(0,0),Qt::UserRole+1).toInt();
-
     // Si c'est un jeu d'une malle, on quitte la fonction
     if(index.parent().isValid())
     {
@@ -1376,7 +1382,7 @@ void F_Emprunt::on_TbV_EmpruntAValider_clicked(const QModelIndex &index)
  */
 void F_Emprunt::on_Bt_SupprimerReservation_clicked()
 {
-    if(this->SupprimerReservation(ui->Tv_JeuxReserves,this->ModeleJeuxReserves,this->MembreActif))
+    if(this->SupprimerReservation(ui->Tv_JeuxReserves,this->ModeleJeuxReserves,this->MembreActif,this->JeuActif))
     {
         //Grise le bouton de suppression du tableau des réservations
         ui->Bt_SupprimerReservation->setEnabled(false);
@@ -1385,7 +1391,7 @@ void F_Emprunt::on_Bt_SupprimerReservation_clicked()
     }
 }
 
-bool F_Emprunt::SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif)
+bool F_Emprunt::SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif,QString CodeJeu)
 {
     bool IsMalle=true;
     QString Message;
@@ -1428,12 +1434,13 @@ bool F_Emprunt::SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemMod
             i=0;
             while((DataEnCours=ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),0).child(i++,1).data(Qt::UserRole+1))!=QVariant::Invalid)
             {
-                F_Emprunt::SuppressionReservation(DataEnCours.toInt());
+                F_Emprunt::SuppressionReservation(DataEnCours.toInt(),CodeJeu);
             }
         }
         else
         {
-            F_Emprunt::SuppressionReservation(ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),1).data(Qt::UserRole+1).toInt());
+            F_Emprunt::SuppressionReservation(ModeleJeuxReserves->index(Tv_JeuxReserves->currentIndex().row(),1).data(Qt::UserRole+1).toInt(),
+                                              CodeJeu);
         }
         AfficherJeuxReserve(ModeleJeuxReserves,MembreActif,false);
         return true;
@@ -1447,7 +1454,7 @@ void F_Emprunt::slot_ActualiserMembres()
     SearchMembre->MAJResults(this->VecteurMembres,3);
 }
 
-void F_Emprunt::SuppressionReservation(int iIdReservation)
+void F_Emprunt::SuppressionReservation(int iIdReservation,QString CodeJeu)
 {
     //suppression de la réservation
     QSqlQuery RequeteSupp;
@@ -1459,7 +1466,15 @@ void F_Emprunt::SuppressionReservation(int iIdReservation)
         qDebug()<< getLastExecutedQuery(RequeteSupp) <<RequeteSupp.lastError();
     }
 
-    RequeteSupp.next();
+    QSqlQuery RequeteStatut;
+    RequeteStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=:StatutJeux_IdStatutJeux WHERE CodeJeu=:CodeJeu");
+    RequeteStatut.bindValue(":CodeJeu",CodeJeu);
+    RequeteStatut.bindValue(":StatutJeux_IdStatutJeux",STATUTJEUX_DISPONIBLE);
+
+    if ( ! RequeteStatut.exec())
+    {
+        qDebug()<<"RequeteStatut "<< RequeteStatut.lastQuery() ;
+    }
 }
 
 //#######################################################################################################
@@ -1540,7 +1555,7 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
     // Nombre de crédit à demander
     int NbCredits (0);
 
-    //Si le jeu est marqué vert (Disponible, réservé ou autre) ou si on est en mode réservation
+    //Si le jeu est marqué vert (Disponible ou autre) ou si on est en mode réservation
     if (ui->Le_StatutJeuARemplir->styleSheet()=="QLineEdit {color:green;}"||ui->rB_Mode_Resa->isChecked())
     {
         bool Verification=false;
@@ -2442,8 +2457,6 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
         }
         case STATUTJEUX_DISPONIBLE:
         {
-        case STATUTJEUX_ENRESERVATION:
-        {
             //Le mettre en vert
             ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:green;}");
             ui->Lb_StatutJeu->setStyleSheet("QLabel {color:green;}");
@@ -2451,6 +2464,8 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
             ui->Bt_AjouterJeu->setEnabled(true);
             break;
         }
+        case STATUTJEUX_ENRESERVATION:
+        {
         }
     // pour tous les autres statuts autre que disponible
         default:
@@ -2639,4 +2654,9 @@ void F_Emprunt::on_Bt_Aide_PiecesManquantes_clicked()
 void F_Emprunt::on_Lb_NomJeu_linkActivated(const QString &link)
 {
     emit(Signal_AfficherJeu(JeuActif));
+}
+
+QString F_Emprunt::get_JeuEnConsultation()
+{
+    return JeuActif;
 }

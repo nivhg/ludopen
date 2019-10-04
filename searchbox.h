@@ -43,6 +43,9 @@
 
 #include <QComboBox>
 
+#define MODE_VECTOR 0
+#define MODE_HTTP_API 1
+
 class Suggest;
 
 class SearchBox: public QComboBox
@@ -50,13 +53,13 @@ class SearchBox: public QComboBox
     Q_OBJECT
 
 public:
-    SearchBox(QWidget *parent = 0);
+    SearchBox(QWidget *parent = 0,int Mode=MODE_VECTOR);
     void MAJResults(QVector<QVector<QString> > Results,int NbOfRows2Display);
 
 signals:
     /** @brief Signal emit à la fin d'une suggestion
     */
-    void SignalSuggestionFini();
+    void SignalSuggestionFini(QString);
     void SignalMousePressEvent();
     void SignalKeyPressEvent();
 

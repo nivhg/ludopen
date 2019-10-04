@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1042</width>
-    <height>499</height>
+    <height>610</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -44,226 +44,10 @@
       <enum>QFrame::Sunken</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="0">
-       <widget class="QLabel" name="Lb_Titre">
-        <property name="font">
-         <font>
-          <pointsize>10</pointsize>
-          <weight>75</weight>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Recherche par critères</string>
-        </property>
-       </widget>
+      <item row="4" column="6">
+       <widget class="QComboBox" name="CBx_Auteur"/>
       </item>
-      <item row="1" column="0" colspan="3">
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="4" column="2">
-         <widget class="QComboBox" name="CBx_AgeMax">
-          <item>
-           <property name="text">
-            <string>Âge maximum</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="4" column="0">
-         <widget class="QComboBox" name="CBx_PrixLoc">
-          <item>
-           <property name="text">
-            <string>Prix loc</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QComboBox" name="CBx_AgeMin">
-          <item>
-           <property name="text">
-            <string>Âge minimum</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QComboBox" name="CBX_Etat">
-          <item>
-           <property name="text">
-            <string>État</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QComboBox" name="CBx_DateAcquisition">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <item>
-           <property name="text">
-            <string>Date acquisition</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="LE_Nom">
-          <property name="maximumSize">
-           <size>
-            <width>200</width>
-            <height>16777215</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QComboBox" name="CBx_Emplacement">
-          <property name="currentText">
-           <string>Emplacement</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Emplacement</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QComboBox" name="CBx_Classification">
-          <item>
-           <property name="text">
-            <string>Classification</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="Lb_Nom">
-          <property name="text">
-           <string>Nom :</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QComboBox" name="CBx_JoueursMin">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string>Nb joueur mini</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QComboBox" name="CBx_JoueursMax">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string>Nb joueur maxi</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="4" column="3">
-         <widget class="QComboBox" name="CBx_Statut">
-          <item>
-           <property name="text">
-            <string>Statut</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QLabel" name="Lb_MotCle">
-          <property name="maximumSize">
-           <size>
-            <width>70</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Mots-clés :</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QComboBox" name="CBx_MotCle1">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>0</height>
-             </size>
-            </property>
-            <item>
-             <property name="text">
-              <string>1er</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="CBx_MotCle2">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>0</height>
-             </size>
-            </property>
-            <item>
-             <property name="text">
-              <string>2ème</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="CBx_MotCle3">
-            <property name="minimumSize">
-             <size>
-              <width>200</width>
-              <height>0</height>
-             </size>
-            </property>
-            <item>
-             <property name="text">
-              <string>3ème</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
-      </item>
-      <item row="2" column="1">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>485</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="2" column="2">
+      <item row="4" column="8" rowspan="2">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <widget class="QCommandLinkButton" name="bt_RAZ">
@@ -295,6 +79,304 @@
          </widget>
         </item>
        </layout>
+      </item>
+      <item row="4" column="0" colspan="2">
+       <widget class="QLabel" name="Lb_MotCle">
+        <property name="maximumSize">
+         <size>
+          <width>900</width>
+          <height>20</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Mots-clés :</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="Lb_Titre">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Recherche par critères</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QPushButton" name="Bt_AjouterMotCle">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Ajouter</string>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="4">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="4" column="4" colspan="2">
+       <widget class="QLabel" name="Lb_Createur">
+        <property name="text">
+         <string>Auteurs :</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QComboBox" name="CBx_MotCle"/>
+      </item>
+      <item row="5" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="5" column="2" colspan="2">
+       <widget class="QListWidget" name="Lw_MotsCles">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QPushButton" name="Bt_SupprimerMotCle">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="9">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="4" column="3">
+         <widget class="QComboBox" name="CBx_Statut">
+          <item>
+           <property name="text">
+            <string>Statut</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QComboBox" name="CBX_Etat">
+          <item>
+           <property name="text">
+            <string>État</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QComboBox" name="CBx_JoueursMax">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>Nb joueur maxi</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QComboBox" name="CBx_DateAcquisition">
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <item>
+           <property name="text">
+            <string>Date acquisition</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QComboBox" name="CBx_PrixLoc">
+          <property name="currentText">
+           <string>Prix location</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Prix location</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="LE_Nom">
+          <property name="maximumSize">
+           <size>
+            <width>200</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="CBx_JoueursMin">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <item>
+           <property name="text">
+            <string>Nb joueur mini</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QComboBox" name="CBx_Classification">
+          <item>
+           <property name="text">
+            <string>Classification</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QComboBox" name="CBx_Emplacement">
+          <property name="currentText">
+           <string>Emplacement</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Emplacement</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QComboBox" name="CBx_AgeMin">
+          <item>
+           <property name="text">
+            <string>Âge minimum</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="Lb_Nom">
+          <property name="text">
+           <string>Nom :</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QComboBox" name="CBx_AgeMax">
+          <item>
+           <property name="text">
+            <string>Âge maximum</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="5">
+       <widget class="QPushButton" name="Bt_SupprimerAuteur">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="7">
+       <widget class="QPushButton" name="Bt_AjouterAuteur">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Ajouter</string>
+        </property>
+        <property name="icon">
+         <iconset resource="ImagesIcones.qrc">
+          <normaloff>:/Ajouter.png</normaloff>:/Ajouter.png</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="6" colspan="2">
+       <widget class="QListWidget" name="Lw_Auteurs">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>

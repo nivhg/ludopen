@@ -85,7 +85,7 @@ void F_DetailsJeux::AfficherDetailJeu()
     QString Code = this->JeuEnConsultation ;
     JeuEnConsultation = Code ;
 
-    RequeteDetailJeu.prepare("SELECT DateAchat,EtatInitial,PrixAchat,PrixLoc,Caution FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
+    RequeteDetailJeu.prepare("SELECT DateAchat,EtatInitial,PrixAchat,PrixLoc FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteDetailJeu.bindValue(":CodeDuJeu", Code) ;
 
     RequeteDetailJeu.exec() ;
@@ -95,13 +95,11 @@ void F_DetailsJeux::AfficherDetailJeu()
     QString LE_EtatInitial = RequeteDetailJeu.value(1).toString() ;
     QString LE_PrixAchat = RequeteDetailJeu.value(2).toString() ;
     QString LE_PrixLoc = RequeteDetailJeu.value(3).toString() ;
-    QString LE_Caution = RequeteDetailJeu.value(4).toString() ;
         
     ui->LE_DateAchat->setText(LE_DateAchat);
     ui->LE_EtatInitial->setText(LE_EtatInitial);
     ui->LE_PrixAchat->setText(LE_PrixAchat);
     ui->LE_PrixLocation->setText(LE_PrixLoc);
-    ui->LE_Caution->setText(LE_Caution);
     
     //////////////////////////////////////////////////////
     ///////Affichage correspondant dans le table view////

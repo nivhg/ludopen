@@ -145,7 +145,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     Relevetimer->setSingleShot(true);
     TimerProchainePermanence();
     connect(Relevetimer, SIGNAL(timeout()), SLOT(verifReleve()));
-    qDebug()<<"Constructeur F_MainWindow = OK";
 
     Reservationtimer = new QTimer(this);
     Reservationtimer->setInterval(F_Preferences::ObtenirValeur("IntervalVerifResa").toInt()*60*1000);
@@ -153,9 +152,18 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     connect(Reservationtimer, SIGNAL(timeout()), SLOT(slot_verifReservation()));
     Reservationtimer->start();
     IconeBarreTache=new QSystemTrayIcon(QIcon(":/IconeLO.png"));
+    QMenu *menu = new QMenu;
+    QAction *actionTray=menu->addAction("Quitter");
+    connect(actionTray,SIGNAL(triggered()),this,SLOT(Quitter()));
+    IconeBarreTache->setContextMenu(menu);
     IconeBarreTache->show();
+    qDebug()<<"Constructeur F_MainWindow = OK";
 }
 
+void F_MainWindow::Quitter()
+{
+    close();
+}
 void F_MainWindow::VerifierConnexionBDD()
 {
 
@@ -388,7 +396,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     else if(tab=="emprunt") //Emprunt
     {
         CreerEmprunt();
-        ui->menuImprimer->setEnabled(false);
+        ui->menuImprimer->setEnabled(true);
         this->pEmprunt->ActualiserJeu();
         this->pEmprunt->ActualiserMembre();
     }
@@ -396,7 +404,7 @@ void F_MainWindow::on_TbW_Main_currentChanged(int index)
     {
         CreerRetour();
         // Désactive le menu Jeux
-        ui->menuImprimer->setEnabled(false);
+        ui->menuImprimer->setEnabled(true);
         // actualise les infos affichée sur le membre sélectionné actuellement
         this->pRetour->ActualiserMembre();
         // actualise les jeux à retourner pour le membre sélectionné actuellement
@@ -582,9 +590,8 @@ void F_MainWindow::CreerEmprunt()
         connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;
         connect( this->pEmprunt, SIGNAL( Signal_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *) ), this->pPanier,
                  SLOT( slot_AjouterAuPanier(QString,uint,double,int,QString,QList<QSqlQuery *> *)) );
-        connect( this->pEmprunt, SIGNAL( Signal_VerifMembrePanier(uint IdDuMembre)), this->pPanier,
-                 SLOT( slot_VerifMembrePanier(uint IdDuMembre)) );
-        if(!pCalendrierMalles)
+        connect( this->pEmprunt, SIGNAL( Signal_VerifMembrePanier(uint)), this->pPanier,SLOT( slot_VerifMembrePanier(uint)) );
+        if(pCalendrierMalles)
             connect(this->pEmprunt,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
         connect( this->pEmprunt, SIGNAL( Signal_AfficherJeu(QString)), this,
                  SLOT( slot_AfficherJeu(QString)) );
@@ -721,18 +728,23 @@ void F_MainWindow::slot_DoubleClic_ListeMembresAdmin(uint IdMembre)
 
 void F_MainWindow::on_Menu_Jeux_Imprimer_Etiquette_triggered()
 {
-   // ne rendre possible l'impression que quand un jeu a été choisi sur l'onglet JEUX
-   if ( (ui->TbW_Main->currentIndex()==this->trouveOnglet("jeux") && !this->pJeux->get_JeuEnConsultation().isEmpty()) ||
-        (ui->TbW_Main->currentIndex()==this->trouveOnglet("administration") && !this->pAjoutSuppModifJeux->get_JeuEnConsultation().isEmpty()))
-   {
-       F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu ;
-       f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(this->pJeux->get_JeuEnConsultation() ) ;
-       f_ImprimerEtiquetteJeu.exec() ;
-   }
-   else
-   {
-      QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner un avant de lancer l'impression de son étiquette.", "OK") ;
-   }
+    QString CodeJeu;
+    int index=ui->TbW_Main->currentIndex();
+    if(index==trouveOnglet("jeux")) CodeJeu=this->pJeux->get_JeuEnConsultation();
+    else if(index==trouveOnglet("admin")) CodeJeu=this->pAjoutSuppModifJeux->get_JeuEnConsultation();
+    else if(index==trouveOnglet("retour")) CodeJeu=this->pRetour->get_JeuEnConsultation();
+    else if(index==trouveOnglet("emprunt")) CodeJeu=this->pEmprunt->get_JeuEnConsultation();
+
+    if(!CodeJeu.isEmpty())
+    {
+        F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu;
+        f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(CodeJeu);
+        f_ImprimerEtiquetteJeu.exec();
+    }
+    else
+    {
+        QMessageBox::information(this, "Pas de jeu sélectionné !", "Vous n'avez choisi aucun jeu dans la liste des jeux.\nVeuillez en sélectionner un avant de lancer l'impression de son étiquette.", "OK") ;
+    }
 }
 
 void F_MainWindow::on_Menu_Jeux_Imprimer_Fiche_Complete_triggered()
@@ -765,7 +777,21 @@ void F_MainWindow::on_Menu_Aide_Propos_LudOpen_triggered()
 
 void F_MainWindow::on_Menu_Imprimer_Malle_Reservee_triggered()
 {
-    int iIdMalle=this->pMalles->get_MalleReserveeSelectionnee();
+    int iIdMalle;
+    int index=ui->TbW_Main->currentIndex();
+    if(index==trouveOnglet("malles"))
+    {
+        iIdMalle=this->pMalles->get_MalleReserveeSelectionnee();
+    }
+    else if(index==trouveOnglet("emprunt"))
+    {
+        iIdMalle=this->pEmprunt->get_MalleReserveeSelectionnee();
+    }
+    else if(index==trouveOnglet("retour"))
+    {
+        iIdMalle=this->pRetour->get_MalleReserveeSelectionnee();
+    }
+
     if ( iIdMalle!=0 )
     {
        F_ImprimerMalle F_ImprimerMalle;
@@ -781,7 +807,21 @@ void F_MainWindow::on_Menu_Imprimer_Malle_Reservee_triggered()
 
 void F_MainWindow::on_Menu_Imprimer_Malle_Empruntee_triggered()
 {
-    int iIdMalle=this->pMalles->get_MalleEmprunteeSelectionnee();
+    int iIdMalle;
+    int index=ui->TbW_Main->currentIndex();
+    if(index==trouveOnglet("malles"))
+    {
+        iIdMalle=this->pMalles->get_MalleEmprunteeSelectionnee();
+    }
+    else if(index==trouveOnglet("emprunt"))
+    {
+        iIdMalle=this->pEmprunt->get_MalleEmprunteeSelectionnee();
+    }
+    else if(index==trouveOnglet("retour"))
+    {
+        iIdMalle=this->pRetour->get_MalleEmprunteeSelectionnee();
+    }
+
     if ( iIdMalle!=0 )
     {
        F_ImprimerMalle F_ImprimerMalle;
@@ -993,7 +1033,7 @@ void F_MainWindow::closeEvent(QCloseEvent *event)
         }
     }
 
-    if(this->pRetour && this->pRetour->ModelJeuEmpruntes->rowCount()>0)
+    if(this->pRetour && this->pRetour->ModeleJeuxEmpruntes->rowCount()>0)
     {
         if(QMessageBox::question(this, "Confirmation", "Il reste des retours de jeux à valider. Êtes-vous sûr que vouloir fermer LudOpen ?", "Oui", "Non") != 0)
         {
@@ -1046,17 +1086,17 @@ void F_MainWindow::slot_verifReservation()
     // les réservations de jeux à venir retirer dans le lieu où se trouve les jeux (hors ludobus)
     QString RequeteStr="SELECT IdMembre,Email,NomJeu,CodeJeu,IdJeux FROM reservation as r LEFT JOIN membres as m ON m.IdMembre=r.Membres_IdMembre "
                        "LEFT JOIN jeux as j ON IdJeux=Jeux_IdJeux WHERE StatutJeux_IdStatutJeux = "+QString::number(STATUTJEUX_DISPONIBLE)+
-                       " AND ASupprimer=0 AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
+                       " AND ASupprimer=0 AND Lieux_IdLieuxRetrait="+F_Preferences::ObtenirValeur("IdLieux")+" AND "+
                         F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur")+
                         " AND Malles_IdMalle IS NULL GROUP BY IdJeux ORDER BY DateReservation";
     Requete.prepare(RequeteStr);
-    Requete.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
     //Exectution de la requête
     if( !Requete.exec() )
     {
         qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
         return;
     }
+    qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
     // Si on obtient un résultat, c'est qu'il y a eu un relevé, on attends
     while(Requete.next())
     {
@@ -1085,7 +1125,6 @@ void F_MainWindow::slot_verifReservation()
         qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
         return;
     }
-    // Si on obtient un résultat, c'est qu'il y a eu un relevé, on attends
     while(Requete.next())
     {
         QString NomJeu=ObtenirValeurParNom(Requete,"NomJeu").toString();

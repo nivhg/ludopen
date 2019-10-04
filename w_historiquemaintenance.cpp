@@ -176,5 +176,6 @@ void W_HistoriqueMaintenance::on_Tw_HistoriqueMaintenance_itemChanged(QTableWidg
 void W_HistoriqueMaintenance::Vider()
 {
     ui->Tw_HistoriqueMaintenance->clear();
+    ui->Tw_HistoriqueMaintenance->setRowCount(0);
     ui->Tw_HistoriqueMaintenance->setColumnCount(0);
 }

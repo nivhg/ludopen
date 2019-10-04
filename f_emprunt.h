@@ -119,11 +119,13 @@ public:
     //! Renvoie l'ID de la malle empruntée sélectionnée
     int get_MalleEmprunteeSelectionnee();
 
+    QString get_JeuEnConsultation();
+
     //! Suppression d'une réservation
-    static void SuppressionReservation(int iIdReservation);
+    static void SuppressionReservation(int iIdReservation,QString CodeJeu);
 
     //! Suppression de la réservation sélectionnée
-    static bool SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif);
+    static bool SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif,QString CodeJeu);
 
     //! Vérifier si ce jeu est réservé
     bool VerifJeuReserve();
