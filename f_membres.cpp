@@ -1122,10 +1122,10 @@ bool F_Membres::AjouterMembre()
     //Si le membre a bien été enregistré, this->nIdMembreSelectionne prend pour valeur l'id du membre créé
     if( !RequeteMembre.exec() )
     {
-        qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
+        qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << getLastExecutedQuery(RequeteMembre) << RequeteMembre.lastError() ;
         return false ;
     }
-    qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << RequeteMembre.lastQuery()<< endl ;
+    qDebug()<< "F_Membres::AjouterMembre : RequeteMembre " << getLastExecutedQuery(RequeteMembre) << RequeteMembre.lastError() ;
 
     this->nIdMembreSelectionne = RequeteMembre.lastInsertId().toInt();
 

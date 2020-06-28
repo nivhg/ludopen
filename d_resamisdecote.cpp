@@ -107,7 +107,6 @@ void D_ResaMisDeCote::on_Bt_MisDeCote_clicked()
     ListeEMailAEnvoyer[0].sCorps.replace("%JEU",NomJeu+" ("+CodeJeu+")").replace("%NB_SEMAINE",F_Preferences::ObtenirValeur("DelaiJeuMisDeCote"));
     ListeEMailAEnvoyer[0].sFrom = F_Preferences::ObtenirValeur("Email");
     ListeEMailAEnvoyer[0].sTo = Email;
-    //ListeEMailAEnvoyer[0].sTo = "vincent.victorin@envelo.fr";
     ListeEMailAEnvoyer[0].IDMembre =  IdMembre;
 
     //On crée l'objet Courriel qui permettra l'envoi des emails

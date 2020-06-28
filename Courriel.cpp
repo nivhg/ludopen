@@ -104,7 +104,7 @@ void Courriel::run()
     this->sTo = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sTo;
     // Si mode debug
     #ifndef QT_NO_DEBUG
-        this->sTo="vincent.victorin@envelo.fr";
+        this->sTo="ludopen@envelo.fr";
     #endif
     this->sCc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sCc ;
     //this->sBcc = this->ListeEMailAEnvoyer.at(this->NumeroEmailATraiter).sBcc ;

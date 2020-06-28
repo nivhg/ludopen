@@ -999,6 +999,7 @@ void F_AjoutSuppModifJeux::ActiveBoutons(bool etat)
 {
     ui->Bt_Valider->setEnabled(etat);
     ui->Bt_Annuler->setEnabled(etat);
+    ui->TbV_Recherche->setEnabled(~etat);
 }
 
 /**
@@ -2174,6 +2175,7 @@ void F_AjoutSuppModifJeux::CacherBoutons()
     ActiveBoutons(true);
     ui->Bt_Supprimer->setEnabled(false);
     ui->Bt_Ajouter->setEnabled(false);
+    ui->TbV_Recherche->setEnabled(false);
 }
 
 void F_AjoutSuppModifJeux::on_Bt_Gauche_clicked()
@@ -2233,6 +2235,9 @@ void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
                  "Attention, avant d'effectuer une nouvelle recherche vous devez valider ou annuler vos modifications sur le jeu en cours !", "OK") ;
         return;
     }
+//    ModelJeu->item(index.row(),0)->setFlags(QAbstractItemModel::flags() | Qt::ItemIsSelectable);
+//    ui->TbV_Recherche->selectionModel()->setCurrentIndex(this->ModelJeu->index(index.row(), 0),QItemSelectionModel::Current);
+//    ModelJeu->item(index.row(),0)->setSelectable(true);
     AfficherJeu(this->ModelJeu->index(index.row(), 0).data().toString());
     ActualiserLienJeux();
 }
@@ -2454,6 +2459,11 @@ void F_AjoutSuppModifJeux::RemplirChampsMatrice(int i)
     ui->SBx_Note->setValue(Matrice[i][BGG_NOTE][0].toDouble());
     QTextDocument text;
     text.setHtml(Matrice[i][BGG_DESCRIPTION][0]);
+    // Si le texte est déjà rempli, on ne l'écrase pas
+    if(ui->TxE_Description->toPlainText().trimmed()!="")
+    {
+        return;
+    }
     this->Requete=new Http_xml_api();
     this->Requete->LancerTelechargement("http://translate.google.fr/translate_a/single?client=gtx&sl=en&tl=fr&dt=t&q="+text.toPlainText(),
                                         MODE_GT_JSON);
