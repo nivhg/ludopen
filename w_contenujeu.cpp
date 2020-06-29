@@ -26,6 +26,16 @@ W_ContenuJeu::W_ContenuJeu(QWidget *parent) :
     ui->TB_Valider->setVisible(false);
     ui->TB_Annuler->setVisible(false);
     ui->Te_Contenu->setVisible(false);
+
+    ui->TB_Supprimer->setToolTip("Ajoute un ou plusieurs objet(s)");
+    ui->TB_Supprimer->setToolTip("Supprime un objet");
+    ui->TB_Bas->setToolTip("Déplace un objet en bas");
+    ui->TB_Haut->setToolTip("Déplace un objet en haut");
+    ui->TB_SacItem->setToolTip("Permet de transformer un groupe en pièce et réciproquement");
+    ui->TB_Ciseaux->setToolTip("Coupe une ligne contenant plusieurs objets en plusieurs lignes (Ex : Cartes, 3 pions, 10 cartes)");
+
+    this->pPopUpCLESTTEM = new F_PopUpCLESTTEM(this);
+    this->pPopUpCLESTTEM->setWindowModality(Qt::ApplicationModal);
 }
 
 W_ContenuJeu::~W_ContenuJeu()
@@ -77,15 +87,7 @@ void W_ContenuJeu::on_menuAjouterPiece_triggered()
     QAction *menu = qobject_cast<QAction *>(sender());
     if(menu->data().toString()=="saisie")
     {
-        ui->TB_Valider->setVisible(true);
-        ui->TB_Annuler->setVisible(true);
-        ui->Tv_Contenu->setVisible(false);
-        ui->Te_Contenu->setVisible(true);
-        ui->Te_Contenu->setEnabled(true);
-        QMessageBox::information(this,"Recommandations","Merci de suivre les recommandations suivantes afin que LudOpen reconnaisse correctement la saisie :"
-               "\n- Ne pas mettre plusieurs éléments de jeux sur la même ligne"
-               "\n- Mettre le nombre de pièces avant leur description"
-               "\n- Les éléments d'un groupe doivent commencer par une tabulation (touche avec la double flèche à gauche du A)");
+        int ret=this->pPopUpCLESTTEM->Ajouter(POPUP_CONTENUJEU);
         return;
     }
     QSqlQuery Requete;
@@ -676,7 +678,76 @@ void W_ContenuJeu::on_TB_SacItem_clicked()
 
 void W_ContenuJeu::on_TB_Valider_clicked()
 {
-    QStringList lignes = ui->Te_Contenu->toPlainText().split("\n");
+
+}
+
+int W_ContenuJeu::InsererPiece(QString NombrePieces,int OrdrePieces,QString DescriptionPieces,int PieceGroupe,int IdJeuxOuIdPieces)
+{
+    QSqlQuery Requete;
+    Requete.prepare("INSERT INTO pieces(OrdrePieces,NombrePieces,DescriptionPieces,PieceGroupe,IdJeuxOuIdPieces) VALUES "
+                    "(:OrdrePieces,:NombrePieces,"
+                    ":DescriptionPieces,:PieceGroupe,:IdJeuxOuIdPieces)");
+    if(NombrePieces=="")
+    {
+        Requete.bindValue(":NombrePieces", QVariant(QVariant::Int));
+    }
+    else
+    {
+        Requete.bindValue(":NombrePieces", NombrePieces);
+    }
+    Requete.bindValue(":OrdrePieces", OrdrePieces);
+    Requete.bindValue(":DescriptionPieces", DescriptionPieces);
+    Requete.bindValue(":PieceGroupe", PieceGroupe);
+    Requete.bindValue(":IdJeuxOuIdPieces", IdJeuxOuIdPieces);
+    if(!Requete.exec())
+    {
+        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+    }
+    return Requete.lastInsertId().toInt();
+}
+QStringList W_ContenuJeu::NettoyerEtCouperLigne(QString Ligne)
+{
+
+    QRegularExpression re("^( |\\t|-|\\()*(\\d*)\\s*(.*)$");
+    QRegularExpressionMatch match = re.match(Ligne);
+    QStringList Liste;
+    if (match.hasMatch()) {
+        Liste<<match.captured(2).trimmed();
+        Liste<<match.captured(3).trimmed();
+    }
+    return Liste;
+}
+
+void W_ContenuJeu::on_TB_Annuler_clicked()
+{
+    ui->TB_Valider->setVisible(false);
+    ui->TB_Annuler->setVisible(false);
+    ui->Tv_Contenu->setVisible(true);
+    ui->Te_Contenu->setVisible(false);
+    ui->Te_Contenu->blockSignals(true);
+    ui->Te_Contenu->clear();
+    ui->Te_Contenu->blockSignals(false);
+}
+
+bool W_ContenuJeu::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    if(main!=0 && index.column() > 1 && main->RecupereIdBenevole()==0)
+    {
+        QMessageBox::critical(this,"Aucun utilisateur choisir",
+                              "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
+        ui->Tv_Contenu->setCurrentIndex(QModelIndex());
+        ui->Tv_Contenu->setEnabled(false);
+        ui->Tv_Contenu->setEnabled(true);
+        return true;
+    }
+    return false;
+}
+
+void W_ContenuJeu::slot_contenujeu_clicked()
+{
+    QPushButton *button = qobject_cast<QPushButton *>(sender());
+    QStringList lignes = button->text().split("\n");
+    button->setText("Valider");
     bool GroupeTrouve=false;
     int IdGroupeTrouve=0;
     QSqlQuery Requete;
@@ -751,67 +822,5 @@ void W_ContenuJeu::on_TB_Valider_clicked()
     {
         InsererPiece(Piece[0],MaxOrdre+i,Piece[1],0,IdJeux);
     }
-    ActualiserContenu();
-}
-
-int W_ContenuJeu::InsererPiece(QString NombrePieces,int OrdrePieces,QString DescriptionPieces,int PieceGroupe,int IdJeuxOuIdPieces)
-{
-    QSqlQuery Requete;
-    Requete.prepare("INSERT INTO pieces(OrdrePieces,NombrePieces,DescriptionPieces,PieceGroupe,IdJeuxOuIdPieces) VALUES "
-                    "(:OrdrePieces,:NombrePieces,"
-                    ":DescriptionPieces,:PieceGroupe,:IdJeuxOuIdPieces)");
-    if(NombrePieces=="")
-    {
-        Requete.bindValue(":NombrePieces", QVariant(QVariant::Int));
-    }
-    else
-    {
-        Requete.bindValue(":NombrePieces", NombrePieces);
-    }
-    Requete.bindValue(":OrdrePieces", OrdrePieces);
-    Requete.bindValue(":DescriptionPieces", DescriptionPieces);
-    Requete.bindValue(":PieceGroupe", PieceGroupe);
-    Requete.bindValue(":IdJeuxOuIdPieces", IdJeuxOuIdPieces);
-    if(!Requete.exec())
-    {
-        qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
-    }
-    return Requete.lastInsertId().toInt();
-}
-QStringList W_ContenuJeu::NettoyerEtCouperLigne(QString Ligne)
-{
-
-    QRegularExpression re("^( |\\t|-|\\()*(\\d*)\\s*(.*)$");
-    QRegularExpressionMatch match = re.match(Ligne);
-    QStringList Liste;
-    if (match.hasMatch()) {
-        Liste<<match.captured(2).trimmed();
-        Liste<<match.captured(3).trimmed();
-    }
-    return Liste;
-}
-
-void W_ContenuJeu::on_TB_Annuler_clicked()
-{
-    ui->TB_Valider->setVisible(false);
-    ui->TB_Annuler->setVisible(false);
-    ui->Tv_Contenu->setVisible(true);
-    ui->Te_Contenu->setVisible(false);
-    ui->Te_Contenu->blockSignals(true);
-    ui->Te_Contenu->clear();
-    ui->Te_Contenu->blockSignals(false);
-}
-
-bool W_ContenuJeu::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
-{
-    if(main!=0 && index.column() > 1 && main->RecupereIdBenevole()==0)
-    {
-        QMessageBox::critical(this,"Aucun utilisateur choisir",
-                              "Aucun utilisateur n'a été choisi. Merci d'utiliser le menu \"Utilisateur en cours\" pour sélectionner votre nom.");
-        ui->Tv_Contenu->setCurrentIndex(QModelIndex());
-        ui->Tv_Contenu->setEnabled(false);
-        ui->Tv_Contenu->setEnabled(true);
-        return true;
-    }
-    return false;
+    //ActualiserContenu();
 }

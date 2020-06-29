@@ -8,8 +8,11 @@
 #include <QSqlError>
 
 #include "spinboxdelegate.h"
+#include "f_popupclesttem.h"
 #include "fonctions_globale.h"
 #include "f_mainwindow.h"
+
+//class F_PopUpCLESTTEM;
 
 using namespace std;
 
@@ -65,6 +68,7 @@ public:
 public slots:
        void ActualiserContenu(int IdPieces=0);
        void on_TB_Valider_clicked();
+       void slot_contenujeu_clicked();
 
 private slots:
        void on_menuAjouterPiece_triggered();
@@ -115,6 +119,8 @@ private:
     F_MainWindow *main;
 
     QString RemarquePiecesManquantes;
+
+    F_PopUpCLESTTEM *pPopUpCLESTTEM;
 };
 
 #endif // W_CONTENUJEU_H

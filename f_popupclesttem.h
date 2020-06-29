@@ -6,6 +6,8 @@
 #include <QtWidgets>
 #include <QtSql>
 #include <fonctions_globale.h>
+class W_ContenuJeu;
+//#include "w_contenujeu.h"
 
 #define POPUP_ETAT_JEU 0
 #define POPUP_STATUT 1
@@ -21,6 +23,7 @@
 #define POPUP_AUTEUR 11
 #define POPUP_DOMAINE_EMAIL 12
 #define POPUP_BANQUE 13
+#define POPUP_CONTENUJEU 14
 
 namespace Ui {
 class F_PopUpCLESTTEM;
@@ -106,6 +109,8 @@ private slots:
 
     void toUpper(const QString &text);
 
+    void on_TE_CLESTTEM_textChanged();
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
@@ -122,6 +127,8 @@ private:
 
     ///< QTableView
     QTableView * TbV_CLESTTEM;
+
+    W_ContenuJeu * pContenuJeu;
 };
 
 //------------------------------------------------------------------------------

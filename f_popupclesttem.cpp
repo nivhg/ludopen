@@ -35,6 +35,8 @@
 // En-têtes standards (ATTENTION : garder toujours le meme ordre) --------------
 #include "f_popupclesttem.h"
 #include "ui_f_popupclesttem.h"
+
+#include "w_contenujeu.h"
 //------------------------------------------------------------------------------
 
 // En-tête propre à l'objet ----------------------------------------------------
@@ -52,8 +54,10 @@ F_PopUpCLESTTEM::F_PopUpCLESTTEM(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::F_PopUpCLESTTEM)
 {
+    pContenuJeu=dynamic_cast <W_ContenuJeu *>(parent);
     ui->setupUi(this);
     this->TbV_CLESTTEM=0;
+    ui->TE_CLESTTEM->setVisible(false);
 }
 
 /**
@@ -89,7 +93,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 1: // Statut Jeu.
+        case POPUP_STATUT: // Statut Jeu.
             ui->Lb_TitreFenetre->setText("Création d'un Statut");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -97,7 +101,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 2: // Emplacement Jeu.
+        case POPUP_EMPLACEMENT: // Emplacement Jeu.
             ui->Lb_TitreFenetre->setText("Création d'un Emplacement");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -105,7 +109,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 3: // Classification Jeu.
+        case POPUP_CLASSIFICATION: // Classification Jeu.
             ui->Lb_TitreFenetre->setText("Création d'une Classification");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->show();
@@ -116,7 +120,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             connect(ui->LE_CLESTTEM, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
         break;
 
-        case 4: // Mot clé Jeu.
+        case POPUP_MOT_CLE: // Mot clé Jeu.
             ui->Lb_TitreFenetre->setText("Création d'un Mot-Clé");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -126,7 +130,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             connect(ui->LE_CLESTTEM, SIGNAL(textEdited(const QString &)), SLOT(toUpper(const QString &)));
         break;
 
-        case 5: // Type Membre.
+        case POPUP_TYPE_MEMBRE: // Type Membre.
             ui->Lb_TitreFenetre->setText("Création d'un Type Membre");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -134,7 +138,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 6: // Titre Membre.
+        case POPUP_TITRE_MEMBRE: // Titre Membre.
             ui->Lb_TitreFenetre->setText("Création d'un Titre Membre");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->show();
@@ -143,7 +147,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 7: // Type Emprunt.
+        case POPUP_TYPE_EMPRUNT: // Type Emprunt.
             ui->Lb_TitreFenetre->setText("Création d'un Type Emprunt");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->show();
@@ -152,7 +156,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 8: // Lieux Ludothèque.
+        case POPUP_LIEU: // Lieux Ludothèque.
             ui->Lb_TitreFenetre->setText("Création d'un Lieu");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -160,7 +164,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 9: // Paiement Membre.
+        case POPUP_PAIEMENT: // Paiement Membre.
             ui->Lb_TitreFenetre->setText("Création d'un Paiement");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -168,7 +172,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 10: // Activité d'un membre.
+        case POPUP_ACTIVITE: // Activité d'un membre.
             ui->Lb_TitreFenetre->setText("Création d'une activité");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -184,7 +188,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 12: // Domaine d'email.
+        case POPUP_DOMAINE_EMAIL: // Domaine d'email.
             ui->Lb_TitreFenetre->setText("Création d'un domaine d'email");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->hide();
@@ -192,7 +196,7 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->clear();
         break;
 
-        case 13: // Banque
+        case POPUP_BANQUE: // Banque
             ui->Lb_TitreFenetre->setText("Création d'une banque");
             ui->LE_CLESTTEM->clear();
             ui->Lb_Autres->show();
@@ -200,6 +204,25 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->LE_Autres->show();
             ui->LE_Autres->clear();
         break;
+
+        case POPUP_CONTENUJEU:
+            ui->Lb_TitreFenetre->setText("Ajouter un ensemble de pièces");
+            ui->Lb_Autres->show();
+            ui->Lb_Autres->setText("Merci de suivre les recommandations suivantes afin que LudOpen reconnaisse correctement la saisie :"
+                                   "\n- Ne pas mettre plusieurs éléments de jeux sur la même ligne"
+                                   "\n- Mettre le nombre de pièces avant leur description"
+                                   "\n- Les éléments d'un groupe doivent commencer par une tabulation (touche avec la double flèche à gauche du A)");
+            ui->TE_CLESTTEM->show();
+            ui->TE_CLESTTEM->setEnabled(true);
+            ui->LE_CLESTTEM->hide();
+            ui->Lb_CLESTTEM->hide();
+            ui->LE_Autres->hide();
+            this->setFixedSize(QSize(900,300));
+            // Connecte l'évenement textEdited à la fonction toUpper
+            connect(ui->Bt_Valider, SIGNAL(clicked(bool)), pContenuJeu, SLOT(slot_contenujeu_clicked()));
+
+        break;
+
 
     default: // Erreur création fenêtre.
             qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
@@ -435,7 +458,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
     QVariant test;
     switch(this->nCLESTTEM)
     {
-        case 0: // Etat Jeu.
+        case POPUP_ETAT_JEU: // Etat Jeu.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO etatsjeu (Etat) VALUES (:Etat)");
@@ -454,7 +477,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 1: // Statut Jeu.
+        case POPUP_STATUT: // Statut Jeu.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO statutjeux (StatutJeu) VALUES (:StatutJeu)");
@@ -473,7 +496,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 2: // Emplacement Jeu.
+        case POPUP_EMPLACEMENT: // Emplacement Jeu.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO emplacement (NomEmplacement) VALUES (:Nom)");
@@ -492,7 +515,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 3: // Classification Jeu.
+        case POPUP_CLASSIFICATION: // Classification Jeu.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO typejeux(TypeJeux, Classification) VALUES(:TypeJeux, :Classification)") ;
@@ -537,7 +560,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 5: // Type Membre.
+        case POPUP_TYPE_MEMBRE: // Type Membre.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO typemembres (TypeMembre) VALUES (:TypeMembre)");
@@ -558,7 +581,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 6: // Titre Membre.
+        case POPUP_TITRE_MEMBRE: // Titre Membre.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO titremembre (NomTitre, NbrJeuxEmpruntables) VALUES (:NomTitre, :NbrJeuxEmpruntables)");
@@ -581,7 +604,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 7: // Type Emprunt.
+        case POPUP_TYPE_EMPRUNT: // Type Emprunt.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO typeemprunt(TypeEmprunt, DureeEmprunt) VALUES(:TypeEmprunt, :DureeEmprunt)") ;
@@ -604,7 +627,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 8: // Lieux Ludothèque.
+        case POPUP_LIEU: // Lieux Ludothèque.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO lieux (NomLieux) VALUES (:NomLieux)");
@@ -623,7 +646,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 9: // Paiement Membre.
+        case POPUP_PAIEMENT: // Paiement Membre.
             if(this->bCLESTTEM == true)
             {
                 RequeteValider.prepare("INSERT INTO modepaiement (NomPaiement) VALUES (:NomPaiement)");
@@ -639,7 +662,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 10: // Activité Membre.
+        case POPUP_ACTIVITE: // Activité Membre.
             if(this->bCLESTTEM)
             {
                 RequeteValider.prepare("INSERT INTO activite (Activite) VALUES (:Activite)");
@@ -689,7 +712,7 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
             }
         break;
 
-        case 13: // Banque
+        case POPUP_BANQUE: // Banque
             if(this->bCLESTTEM)
             {
                 RequeteValider.prepare("INSERT INTO banques (NomBanque,Acronyme) VALUES (:NomBanque,:Acronyme)");
@@ -707,6 +730,11 @@ void F_PopUpCLESTTEM::on_Bt_Valider_clicked()
                 RequeteValider.exec();
                 requete=RequeteValider.lastQuery();
             }
+        break;
+
+        case POPUP_CONTENUJEU:
+            ui->Bt_Valider->setText(ui->TE_CLESTTEM->toPlainText());
+            ui->TE_CLESTTEM->clear();
         break;
 
         case 255: // Suppression
@@ -779,4 +807,9 @@ void F_PopUpCLESTTEM::toUpper(const QString &text)
     int curPos=le->cursorPosition();
     le->setText(text.toUpper());
     le->setCursorPosition(curPos);
+}
+
+void F_PopUpCLESTTEM::on_TE_CLESTTEM_textChanged()
+{
+    ui->Bt_Valider->setEnabled(true);
 }
