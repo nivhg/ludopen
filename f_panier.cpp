@@ -114,7 +114,9 @@ bool F_Panier::slot_AjouterAuPanier(QString Titre,uint nIDMembre,double Prix,int
 
 bool F_Panier::slot_VerifMembrePanier(uint IdDuMembre)
 {
-    return HInfosMembre["IdMembre"]!=IdDuMembre;
+    // Si il y a des jeux dans le panier et
+    // que le membre associé à ces jeux est différent de celui passé en paramètre, on renvoie true
+    return (HInfosMembre["IdMembre"]!=0&&HInfosMembre["IdMembre"]!=IdDuMembre);
 }
 
 void F_Panier::ControlePanierVide(bool etat)
