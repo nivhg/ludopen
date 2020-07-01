@@ -23,8 +23,6 @@ W_ContenuJeu::W_ContenuJeu(QWidget *parent) :
     connect(actionPieceDsGroupe,SIGNAL(triggered()),this,SLOT(on_menuAjouterPiece_triggered()));
     connect(actionSaisie,SIGNAL(triggered()),this,SLOT(on_menuAjouterPiece_triggered()));
 
-    ui->TB_Valider->setVisible(false);
-    ui->TB_Annuler->setVisible(false);
     ui->Te_Contenu->setVisible(false);
 
     ui->TB_Supprimer->setToolTip("Ajoute un ou plusieurs objet(s)");
@@ -33,6 +31,7 @@ W_ContenuJeu::W_ContenuJeu(QWidget *parent) :
     ui->TB_Haut->setToolTip("Déplace un objet en haut");
     ui->TB_SacItem->setToolTip("Permet de transformer un groupe en pièce et réciproquement");
     ui->TB_Ciseaux->setToolTip("Coupe une ligne contenant plusieurs objets en plusieurs lignes (Ex : Cartes, 3 pions, 10 cartes)");
+    ui->TB_Texte->setToolTip("Ouvre une fenetre avec le contenu du jeu sous forme d'une seul texte");
 
     this->pPopUpCLESTTEM = new F_PopUpCLESTTEM(this);
     this->pPopUpCLESTTEM->setWindowModality(Qt::ApplicationModal);
@@ -191,7 +190,6 @@ void W_ContenuJeu::ActualiserContenu(int IdPieces)
 {
     ui->Tv_Contenu->blockSignals(true);
     ModeleContenu->clear();
-    on_TB_Annuler_clicked();
     if(CodeJeu=="") return;
     QSqlQuery Requete;
     Requete.prepare("SELECT IdJeux FROM jeux WHERE CodeJeu=:CodeJeu");
@@ -419,6 +417,7 @@ void W_ContenuJeu::InverserElement(QModelIndex ElementChoisi,int LigneDestinatio
 void W_ContenuJeu::ActiverBoutonsContenu(bool Etat)
 {
     ui->TB_Ajouter->setEnabled(Etat);
+    ui->TB_Texte->setEnabled(Etat);
     if(Etat)
     {
         ui->TB_Supprimer->setEnabled(ui->Tv_Contenu->currentIndex()!=QModelIndex());
@@ -676,11 +675,6 @@ void W_ContenuJeu::on_TB_SacItem_clicked()
     ActualiserContenu(ElementChoisi.data(IDPIECES).toInt());
 }
 
-void W_ContenuJeu::on_TB_Valider_clicked()
-{
-
-}
-
 int W_ContenuJeu::InsererPiece(QString NombrePieces,int OrdrePieces,QString DescriptionPieces,int PieceGroupe,int IdJeuxOuIdPieces)
 {
     QSqlQuery Requete;
@@ -708,7 +702,7 @@ int W_ContenuJeu::InsererPiece(QString NombrePieces,int OrdrePieces,QString Desc
 QStringList W_ContenuJeu::NettoyerEtCouperLigne(QString Ligne)
 {
 
-    QRegularExpression re("^( |\\t|-|\\()*(\\d*)\\s*(.*)$");
+    QRegularExpression re("^( |\\t|-|\\*|\\()*(\\d*)\\s*(.*)$");
     QRegularExpressionMatch match = re.match(Ligne);
     QStringList Liste;
     if (match.hasMatch()) {
@@ -716,17 +710,6 @@ QStringList W_ContenuJeu::NettoyerEtCouperLigne(QString Ligne)
         Liste<<match.captured(3).trimmed();
     }
     return Liste;
-}
-
-void W_ContenuJeu::on_TB_Annuler_clicked()
-{
-    ui->TB_Valider->setVisible(false);
-    ui->TB_Annuler->setVisible(false);
-    ui->Tv_Contenu->setVisible(true);
-    ui->Te_Contenu->setVisible(false);
-    ui->Te_Contenu->blockSignals(true);
-    ui->Te_Contenu->clear();
-    ui->Te_Contenu->blockSignals(false);
 }
 
 bool W_ContenuJeu::on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
@@ -809,7 +792,6 @@ void W_ContenuJeu::slot_contenujeu_clicked()
     }
     // On crée la dernière pièce
     QString LignePrecedente=lignes.at(i-1);
-    on_TB_Annuler_clicked();
     if(LignePrecedente=="") return;
     QStringList Piece=NettoyerEtCouperLigne(LignePrecedente);
     // Si le premier caractère de la ligne est une tabulation, et qu'aucun groupe n'a été trouvé, on crée le groupe à partir de la ligne précédente
@@ -822,5 +804,12 @@ void W_ContenuJeu::slot_contenujeu_clicked()
     {
         InsererPiece(Piece[0],MaxOrdre+i,Piece[1],0,IdJeux);
     }
-    //ActualiserContenu();
+    ActualiserContenu();
+}
+
+void W_ContenuJeu::on_TB_Texte_clicked()
+{
+    F_ImprimerEtiquetteJeu f_ImprimerEtiquetteJeu;
+    QString ContenuJeu=f_ImprimerEtiquetteJeu.ImprimerEtiquetteJeu(CodeJeu);
+    int ret=this->pPopUpCLESTTEM->Voir(POPUP_CONTENUJEU,ContenuJeu);
 }

@@ -168,11 +168,11 @@ private slots:
     
     /** @brief Appelé lorsque l'on clic sur le bouton Valider
      */
-    void on_Bt_Valider_clicked();
+    void on_Bt_Valider2_clicked();
 
     /** @brief Appelé lorsque l'on clic sur le bouton Annuler
      */
-    void on_Bt_Annuler_clicked();
+    void on_Bt_Annuler2_clicked();
 
     /** @brief Appelé lorsque le contenu du CBx_MotCle change
      */

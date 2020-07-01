@@ -71,6 +71,8 @@ public:
      */
     int Modifier(QString sCLESTTEM,int nCLESTTEM, QTableView * TbV_CLESTTEM=0);
 
+    int Voir(int nCLESTTEM, QString Texte);
+
 signals:
     // METHODEs ----------------------------------------------------------------
     /**

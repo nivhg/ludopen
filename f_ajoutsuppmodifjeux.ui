@@ -1264,7 +1264,7 @@
     </widget>
    </item>
    <item row="4" column="3">
-    <widget class="QCommandLinkButton" name="Bt_Annuler">
+    <widget class="QCommandLinkButton" name="Bt_Annuler2">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -1296,7 +1296,7 @@
     </widget>
    </item>
    <item row="4" column="2">
-    <widget class="QCommandLinkButton" name="Bt_Valider">
+    <widget class="QCommandLinkButton" name="Bt_Valider2">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -1330,9 +1330,6 @@
        <width>20</width>
        <height>20</height>
       </size>
-     </property>
-     <property name="checkable">
-      <bool>false</bool>
      </property>
      <property name="checked">
       <bool>false</bool>

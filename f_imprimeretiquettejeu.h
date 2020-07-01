@@ -32,7 +32,7 @@ public:
     /** @brief Permet d'imprimer l'étiquette du jeu, récupère en argument le code du jeu en consultation
      *
      */
-    void ImprimerEtiquetteJeu(QString CodeJeu) ;
+    QString ImprimerEtiquetteJeu(QString CodeJeu) ;
 
 private slots:
     // METHODEs -----------------------------------------------------------------

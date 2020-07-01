@@ -67,7 +67,6 @@ public:
        void initialize(QDesignerFormEditorInterface *core);*/
 public slots:
        void ActualiserContenu(int IdPieces=0);
-       void on_TB_Valider_clicked();
        void slot_contenujeu_clicked();
 
 private slots:
@@ -93,11 +92,11 @@ private slots:
        QStringList NettoyerEtCouperLigne(QString Ligne);
        int InsererPiece(QString NombrePieces,int OrdrePieces,QString DescriptionPieces,int PieceGroupe,int IdJeuxOuIdPieces);
 
-       void on_TB_Annuler_clicked();
-
        bool on_Tv_Contenu_editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index);
 
        void on_TB_Ciseaux_clicked();
+
+       void on_TB_Texte_clicked();
 
 signals:
        void Signal_ActualiserHistoriqueMaintenance();

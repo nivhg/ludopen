@@ -82,6 +82,8 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
     ui->Lb_Autres->show();
     ui->LE_Autres->show();
     ui->TbV_CLESTTEM->hide();
+    ui->Bt_Valider->show();
+     ui->TE_CLESTTEM->setText("");
 
     switch(this->nCLESTTEM)
     {
@@ -216,8 +218,9 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
             ui->TE_CLESTTEM->setEnabled(true);
             ui->LE_CLESTTEM->hide();
             ui->Lb_CLESTTEM->hide();
+            ui->Lb_TitreFenetre->hide();
             ui->LE_Autres->hide();
-            this->setFixedSize(QSize(900,300));
+            this->setFixedSize(QSize(900,500));
             // Connecte l'évenement textEdited à la fonction toUpper
             connect(ui->Bt_Valider, SIGNAL(clicked(bool)), pContenuJeu, SLOT(slot_contenujeu_clicked()));
 
@@ -234,6 +237,35 @@ int F_PopUpCLESTTEM::Ajouter(int nCLESTTEM)
     return this->exec();
 }
 
+int F_PopUpCLESTTEM::Voir(int nCLESTTEM, QString Texte)
+{
+    this->nCLESTTEM = nCLESTTEM;
+    ui->TE_CLESTTEM->show();
+    ui->TE_CLESTTEM->setEnabled(true);
+    ui->TbV_CLESTTEM->hide();
+    ui->Lb_CLESTTEM->hide();
+    ui->LE_CLESTTEM->hide();
+    ui->LE_Autres->hide();
+    ui->Lb_Autres->hide();
+    ui->Bt_Valider->hide();
+
+    switch(this->nCLESTTEM)
+    {
+        case POPUP_CONTENUJEU:
+            this->setFixedSize(QSize(900,300));
+            ui->TE_CLESTTEM->setText(Texte);
+        break;
+
+
+    default: // Erreur création fenêtre.
+            qDebug()<< "Erreur lors de la création du F_PopUpSTELTECM." << endl;
+        break;
+    }
+
+    ui->LE_CLESTTEM->setEnabled(true);
+    ui->LE_Autres->setEnabled(true);
+    return this->exec();
+}
 /**
  *  @brief Ouvrir la fenêtre en mode "modifier".
  *

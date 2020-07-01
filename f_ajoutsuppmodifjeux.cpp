@@ -278,7 +278,7 @@ void F_AjoutSuppModifJeux::slot_ValiderStatut()
 void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
 {
     qDebug() << "F_Jeux::on_LE_RechercheNom_textChanged" << "Texte : " << arg1;
-    if(ui->Bt_Valider->isEnabled() && ui->Bt_Annuler->isEnabled())
+    if(ui->Bt_Valider2->isEnabled() && ui->Bt_Annuler2->isEnabled())
     {
         QMessageBox::information(this, "Pré-requis pour passer à un autre jeu !",
                  "Attention, avant d'effectuer une nouvelle recherche vous devez valider ou annuler vos modifications sur le jeu en cours !", "OK") ;
@@ -356,15 +356,24 @@ void F_AjoutSuppModifJeux::AfficherJeux()
     ui->TbV_Recherche->setColumnWidth(1,300);
     ui->TbV_Recherche->setColumnWidth(2, 50);
 
+    int ElementSelectionne=0;
+    QString CodeJeu;
     //Tant qu'il y a des jeux dans la table jeux,
     while(RequeteRechercheJeu.next())
     {
+        CodeJeu=ObtenirValeurParNom(RequeteRechercheJeu,"CodeJeu").toString();
         //on ajoute une nouvelle ligne du table view
-        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(RequeteRechercheJeu.value(0).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(RequeteRechercheJeu.value(1).toString() ));
-        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(RequeteRechercheJeu.value(2).toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 0, new QStandardItem(CodeJeu));
+        this->ModelJeu->setItem(NumeroLigne, 1, new QStandardItem(ObtenirValeurParNom(RequeteRechercheJeu,"NomJeu").toString() ));
+        this->ModelJeu->setItem(NumeroLigne, 2, new QStandardItem(ObtenirValeurParNom(RequeteRechercheJeu,"TypeJeux_Classification").toString() ));
+        if(CodeJeu==sCodeJeuSelectionne)
+        {
+            ElementSelectionne=NumeroLigne;
+        }
         NumeroLigne++;
     }
+    ui->TbV_Recherche->selectRow(ElementSelectionne);
+    ui->TbV_Recherche->scrollTo(ui->TbV_Recherche->selectionModel()->selectedIndexes()[0]);
 }
 //###################################################################
 /**
@@ -376,8 +385,8 @@ void F_AjoutSuppModifJeux::on_TbV_Recherche_selectionChanged(const QModelIndex &
 {
   /*  AfficherJeu();
     // Griser Valider et Annuler/ Autoriser Ajout et suppression
-    ui->Bt_Valider->setEnabled(false);
-    ui->Bt_Annuler->setEnabled(false);
+    ui->Bt_Valider2->setEnabled(false);
+    ui->Bt_Annuler2->setEnabled(false);
     ui->Bt_Supprimer->setEnabled(true);
     ui->Bt_Ajouter->setEnabled(true);*/
 }
@@ -508,7 +517,7 @@ void F_AjoutSuppModifJeux::on_CBx_MotCle_activated(int index)
  * @brief Méthode qui ajoute ou modifie un jeux selon le mode dans lequel on se trouve
  *
  */
-void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
+void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
 {
    // Si pas de nom de jeu ou pas de code de jeu
    if (SearchJeu->currentText() == "" || ui->LE_Code->text() == "" )
@@ -717,6 +726,8 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
 
         // Autoriser la création d'un nouveau jeux
         ui->Bt_Ajouter->setEnabled(true);
+
+        ActiveChamps(false);
     }
     else  // MISE A JOUR D'UN JEU EXISTANT
     {
@@ -966,7 +977,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
         //ui->LE_RechercheNom->setText("");
 
         // Raffraichir la liste des jeux
-        this->on_LE_RechercheNom_textChanged(ui->LE_RechercheNom->text()) ;
+        //this->on_LE_RechercheNom_textChanged(ui->LE_RechercheNom->text()) ;
 
         // Réactualiser les combobox qui ont peu avoir de nouvelles entrées
         this->ActualiserCBx_Classification();
@@ -981,13 +992,11 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
     }
     // Mettre à jour la liste des jeux
     AfficherJeux();
-    ui->LE_RechercheNom->clear();
+    //ui->LE_RechercheNom->clear();
     // Tout griser
-    ActiveChamps(false);
     // Plus de modif en cours donc :
     // griser les boutons Annuler et Valider
     ActiveBoutons(false);
-    ui->W_Contenu->on_TB_Valider_clicked();
 }
 
 /**
@@ -997,8 +1006,8 @@ void F_AjoutSuppModifJeux::on_Bt_Valider_clicked()
  */
 void F_AjoutSuppModifJeux::ActiveBoutons(bool etat)
 {
-    ui->Bt_Valider->setEnabled(etat);
-    ui->Bt_Annuler->setEnabled(etat);
+    ui->Bt_Valider2->setEnabled(etat);
+    ui->Bt_Annuler2->setEnabled(etat);
     ui->TbV_Recherche->setEnabled(~etat);
 }
 
@@ -1129,7 +1138,7 @@ void F_AjoutSuppModifJeux::BloquerSignalsChamps(bool etat)
  * @brief Méthode qui annuler ce que l'on est en train de faire
  *
  */
-void F_AjoutSuppModifJeux::on_Bt_Annuler_clicked()
+void F_AjoutSuppModifJeux::on_Bt_Annuler2_clicked()
 {
     // Si on est en mode édition
     if(!AjoutOuModif)
@@ -1683,7 +1692,7 @@ void F_AjoutSuppModifJeux::AfficherJeu(QString CodeJeu)
 
     // Vérifie si un jeu n'est pas en cours de modification
     // Evite de perdre des modif avant de passer à un autre jeu
-    if(ui->Bt_Valider->isEnabled() && ui->Bt_Annuler->isEnabled())
+    if(ui->Bt_Valider2->isEnabled() && ui->Bt_Annuler2->isEnabled())
     {
         QMessageBox::information(this, "Pré-requis pour passer à un autre jeu !", "Attention, avant d'effectuer une nouvelle recherche vous devez valider ou annuler vos modifications sur le jeu en cours !", "OK") ;
     }
@@ -2229,7 +2238,7 @@ void F_AjoutSuppModifJeux::toUpper(const QString &text)
  */
 void F_AjoutSuppModifJeux::on_TbV_Recherche_clicked(const QModelIndex &index)
 {
-    if(ui->Bt_Valider->isEnabled() && ui->Bt_Annuler->isEnabled())
+    if(ui->Bt_Valider2->isEnabled() && ui->Bt_Annuler2->isEnabled())
     {
         QMessageBox::information(this, "Pré-requis pour passer à un autre jeu !",
                  "Attention, avant d'effectuer une nouvelle recherche vous devez valider ou annuler vos modifications sur le jeu en cours !", "OK") ;

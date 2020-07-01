@@ -49,7 +49,7 @@ F_ImprimerEtiquetteJeu::~F_ImprimerEtiquetteJeu()
  *
  * @param CodeJeu
  */
-void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
+QString F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
 {
     
     this->show();
@@ -125,6 +125,7 @@ void F_ImprimerEtiquetteJeu::ImprimerEtiquetteJeu(QString CodeJeu)
     ui->Lb_InfoLudo->setText(InfoLudo);
     ui->Le_CodeJeu->setText(CodeJeu);
     ui->TxE_Contenu->setText(ContenuJeu);
+    return ContenuJeu;
 }
 
 /**
