@@ -454,14 +454,14 @@ void F_Membres::RechercherParNomEtNumero()
             {
                 // Retrait des accents pour pouvoir faire des recherches de membres avec accents
                 QString sNom=this->VecteurMembres[i].sNom.toLower().replace(QRegExp("[éèë]"), "e");
-                sNom.replace(QRegExp("[à]"), "a");
+                sNom=removeAccents(sNom);
                 QString sPrenom=this->VecteurMembres[i].sPrenom.toLower().replace(QRegExp("[éèë]"), "e");
-                sPrenom.replace(QRegExp("[à]"), "a");
-                if( sNom.indexOf( ui->LE_Nom->text().toLower() ) != string::npos )
+                sPrenom=removeAccents(sPrenom);
+                if( sNom.indexOf( removeAccents(ui->LE_Nom->text()).toLower() ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }
-                else if( sPrenom.indexOf( ui->LE_Nom->text().toLower() ) != string::npos )
+                else if( sPrenom.indexOf( removeAccents(ui->LE_Nom->text()).toLower() ) != string::npos )
                 {
                     this->VecteurRechercheMembres.push_back(VecteurMembres[i]);
                 }

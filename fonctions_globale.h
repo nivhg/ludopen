@@ -20,6 +20,7 @@ int ExecuterScriptSql(const QString & nomFichier);
 QString getLastExecutedQuery(const QSqlQuery& query);
 void resizeColumnsToContents( QStandardItemModel *Modele,QTreeView *TreeView );
 QString GetRandomString();
+QString removeAccents(QString s);
 
 #define COMPUTE_BUILD_YEAR \
     ( \

@@ -234,7 +234,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
     const int CodeColonne=0;
     const int CodeNomJeu=1;
     int ColonneRecherche;
-    QString NomJeu=arg1;
+    QString NomJeu=removeAccents(arg1);
     QString TexteCellule;
     bool numeric;
     NomJeu.toInt(&numeric);
@@ -252,7 +252,7 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
         }
         else
         {
-            TexteCellule = this->ModelJeu->item(i,CodeNomJeu)->text();
+            TexteCellule = removeAccents(this->ModelJeu->item(i,CodeNomJeu)->text());
             test=(TexteCellule.indexOf(NomJeu,0,Qt::CaseInsensitive ) != string::npos);
         }
 

@@ -27,7 +27,6 @@
 #include "ui_f_ajoutsuppmodifjeux.h"
 #include "f_ajoutsuppmodiffournisseursediteurs.h"
 #include "f_preferences.h"
-#include "fonctions_globale.h"
 
 //###################################################################
 /**
@@ -288,7 +287,7 @@ void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
     const int CodeColonne=0;
     const int CodeNomJeu=1;
     int ColonneRecherche;
-    QString NomJeu=arg1;
+    QString NomJeu=removeAccents(arg1);
     QString TexteCellule;
     bool numeric;
     NomJeu.toInt(&numeric);
@@ -308,7 +307,7 @@ void F_AjoutSuppModifJeux::on_LE_RechercheNom_textChanged(const QString &arg1)
             ColonneRecherche=CodeNomJeu;
         }
 
-        TexteCellule = this->ModelJeu->item(i,ColonneRecherche)->text();
+        TexteCellule = removeAccents(this->ModelJeu->item(i,ColonneRecherche)->text());
         if(TexteCellule.indexOf(
                     NomJeu,0,Qt::CaseInsensitive ) != string::npos )
         {
