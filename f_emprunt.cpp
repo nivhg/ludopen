@@ -822,7 +822,7 @@ void F_Emprunt::EffacerJeuAValider()
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu"));
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(1, new QStandardItem("Code"));
     this->ModeleEmpruntsAValider->setHorizontalHeaderItem(2, new QStandardItem("Date Retour"));
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(3, new QStandardItem("Prix Emprunt"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(3, new QStandardItem("Crédits nécessaire"));
     //Initialise les colones du TableView des nouveaux emprunts
     ui->TbV_EmpruntAValider->setColumnWidth(0,200);
     ui->TbV_EmpruntAValider->setColumnWidth(1,40);

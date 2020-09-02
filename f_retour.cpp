@@ -1166,9 +1166,10 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
 
     // Mise à jour de la table emprunt
     RequeteRetour.prepare("UPDATE emprunts,jeux "
-                          "SET DateRetour=:DateRetour,StatutJeux_IdStatutJeux=1 "
+                          "SET DateRetour=:DateRetour,StatutJeux_IdStatutJeux=:IdStatutJeux "
                           "WHERE DateRetour IS NULL AND Jeux_IdJeux=IdJeux AND CodeJeu=:CodeDuJeu");
 
+    RequeteRetour.bindValue(":IdStatutJeux",F_Preferences::ObtenirValeur("StatutJeuxAuRetour"));
     RequeteRetour.bindValue(":DateRetour",DateDeRetourToleree);
     RequeteRetour.bindValue(":CodeDuJeu",CodeJeu);
     if(!RequeteRetour.exec())
@@ -1176,29 +1177,33 @@ void F_Retour::RetournerJeu(QString CodeJeu,QString NomJeu)
         qDebug()<<"F_Retour::on_Bt_RendreJeu_clicked => RequeteRetour "<< RequeteRetour.lastQuery();
     }
 
-    //Savoir si le jeu est réservé uniquement pour les jeux hors jeux spéciaux (grands jeux) et pour ceux réserver là où se trouve les jeux (hors ludobus)
-    QSqlQuery RequeteJeu;
-    RequeteJeu.prepare("SELECT idReservation,IdMembre,Email FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux LEFT JOIN membres ON "
-                       "Membres_IdMembre=IdMembre WHERE CodeJeu=:CodeDuJeu AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
-                       F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
-    RequeteJeu.bindValue(":CodeDuJeu",CodeJeu);
-    RequeteJeu.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
-
-
-    if(!RequeteJeu.exec())
+    // Si les jeux retournés ont bien été marqués comme disponible
+    if(F_Preferences::ObtenirValeur("StatutJeuxAuRetour")==STATUTJEUX_DISPONIBLE)
     {
+        //Savoir si le jeu est réservé uniquement pour les jeux hors jeux spéciaux (grands jeux) et pour ceux réserver là où se trouve les jeux (hors ludobus)
+        QSqlQuery RequeteJeu;
+        RequeteJeu.prepare("SELECT idReservation,IdMembre,Email FROM reservation LEFT JOIN jeux ON Jeux_IdJeux=IdJeux LEFT JOIN membres ON "
+                           "Membres_IdMembre=IdMembre WHERE CodeJeu=:CodeDuJeu AND Lieux_IdLieuxReservation=:Lieux_IdLieuxReservation AND "+
+                           F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur"));
+        RequeteJeu.bindValue(":CodeDuJeu",CodeJeu);
+        RequeteJeu.bindValue(":Lieux_IdLieuxReservation",F_Preferences::ObtenirValeur("LieuDesJeux"));
+
+
+        if(!RequeteJeu.exec())
+        {
+            qDebug()<<getLastExecutedQuery(RequeteJeu)<<RequeteJeu.lastError();
+        }
         qDebug()<<getLastExecutedQuery(RequeteJeu)<<RequeteJeu.lastError();
-    }
-    qDebug()<<getLastExecutedQuery(RequeteJeu)<<RequeteJeu.lastError();
 
-    RequeteJeu.next();
+        RequeteJeu.next();
 
-    if(RequeteJeu.size()>0)
-    {
-        // On affiche le dialog demandant si le jeu a été mis de coté ou non
-        D_ResaMisDeCote D_ResaMisDeCote(this,CodeJeu,NomJeu,ObtenirValeurParNom(RequeteJeu,"IdMembre").toInt(),IdJeu,
-                                        ObtenirValeurParNom(RequeteJeu,"Email").toString());
-        D_ResaMisDeCote.exec() ;
+        if(RequeteJeu.size()>0)
+        {
+            // On affiche le dialog demandant si le jeu a été mis de coté ou non
+            D_ResaMisDeCote D_ResaMisDeCote(this,CodeJeu,NomJeu,ObtenirValeurParNom(RequeteJeu,"IdMembre").toInt(),IdJeu,
+                                            ObtenirValeurParNom(RequeteJeu,"Email").toString());
+            D_ResaMisDeCote.exec() ;
+        }
     }
 }
 

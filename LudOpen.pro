@@ -13,7 +13,7 @@ RESOURCES = ImagesIcones.qrc
 # pour avoir les messages d'erreur
 #CONFIG   += CONSOLE
 
-INCLUDEPATH = $$PWD/libs/ssh/
+INCLUDEPATH = $$PWD/libs/ssh/ usr/lib/gcc/x86_64-linux-gnu/9/include/
 
 SOURCES += \
     main.cpp \
@@ -176,4 +176,4 @@ VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 
 include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
-LIBS += -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)
+LIBS += -L"/lib/qtcreator" -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)
