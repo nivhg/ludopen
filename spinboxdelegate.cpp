@@ -20,12 +20,10 @@ QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     const QStyleOptionViewItem & option ,
     const QModelIndex & index ) const
 {
-    qDebug()<<CancelEdition;
     if(CancelEdition)
     {
         return NULL;
     }
-    qDebug()<<ColumnSB.indexOf(index.column());
     // Cherche la valeur dans la QList ColumnSB
     if ( ColumnSB.indexOf(index.column()) != -1)
     {
@@ -41,7 +39,13 @@ QWidget *SpinBoxDelegate::createEditor(QWidget *parent,
     }
     else
     if( ColumnDefault.indexOf(index.column()) != -1)
+    {
         return QItemDelegate::createEditor(parent, option, index);
+    }
+    else
+    {
+        return NULL;
+    }
 }
 
 void SpinBoxDelegate::setEditorData(QWidget *editor,

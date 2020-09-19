@@ -200,6 +200,7 @@ void W_ContenuJeu::ActualiserContenu(int IdPieces)
     }
     Requete.next();
     int IdJeux=ObtenirValeurParNom(Requete,"IdJeux").toInt();
+    if(IdJeux==0) return;
 
     Requete.prepare("SELECT *,IF(PieceGroupe=2,"
                     "(SELECT CONCAT(OrdrePieces,'.',p.OrdrePieces+1) FROM pieces WHERE p.IdJeuxOuIdPieces=IdPieces),OrdrePieces)"

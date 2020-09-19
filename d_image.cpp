@@ -1025,7 +1025,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
         {
             case OP_AJOUT:
                 // Si c'est la 1° image qu'on ajoute, on réactive les boutons
-                if(sCheminImage.count()==0)
+                if(sCheminImage.count()==1)
                 {
                     ui->Bt_DeplacerDroite->setEnabled(true);
                     ui->Bt_DeplacerGauche->setEnabled(true);
@@ -1047,7 +1047,7 @@ void D_Image::slot_OperationFini(bool DerniereCommande)
                     ui->Bt_DeplacerDroite->setEnabled(true);
                 }
                 RechargerImages();
-                iLbImageSelectionnee=2;
+                iLbImageSelectionnee=1;
                 ChangerSelection(lb_image);
                 MontrerLudopenWebDeux(true);
                 break;

@@ -863,11 +863,20 @@ bool F_Emprunt::AfficherEtatCotisation(QString CodeMembre)
     DateActuelle= DateActuelle.currentDate();
 
     int NombreJoursRestant ;
+    qDebug()<<RequeteCotisation.size();
     //Nombre de jours qu'il reste  à la cotisation
     NombreJoursRestant=DateActuelle.daysTo(RequeteCotisation.value(0).toDate());
 
+    if(RequeteCotisation.size()==0)
+    {
+        ui->Lb_Cotisation->setText("Membre sans cotisation");
+        ui->Lb_Cotisation->setStyleSheet("QLabel {color:red;}");
+        ui->Lb_CotisationARemplir->setText("");
+        ui->Lb_CotisationARemplir->setStyleSheet(" QLabel{color:red;}" );
+        EtatDeLaCotisation=false;
+    }
     //si le nombres de jours restant est négatif la cotisation est expirée
-    if(NombreJoursRestant<0)
+    else if(NombreJoursRestant<0)
     {
         QString Cotisation;
         //Si le code membre est différent du membre actif, alors
@@ -1342,6 +1351,7 @@ void F_Emprunt::on_Tv_JeuxReserves_clicked(const QModelIndex &index)
         // On remets le type d'emprunt à la valeur par défaut
         ui->CBx_TypeEmprunt->setCurrentIndex(0);
         ui->Bt_SupprimerReservation->setEnabled(true);
+        ui->Bt_AjouterJeu->setEnabled(true);
         //Met le code du jeu sellectionné dans le line édit du code du membre
         SearchJeux->blockSignals(true);
         SearchJeux->setCurrentText(this->ModeleJeuxReserves->index(index.row(),1).data().toString());

@@ -402,36 +402,32 @@ bool F_ListeMembres::AffichageListe()
         {
         case 0 : // cotisation expirée
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND "
-                                          + "abonnements.Supprimer=0 AND" ;
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND ";
             break ;
 
         case 1 : // cotisation expirant dans 2 semaines (14 jours)
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addDays( 14 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND";
             break ;
 
         case 2 : // cotisation expirant dans 1 mois
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + " abonnements.DateExpiration<='" + Date.addMonths( 1 ).toString( "yyyy-MM-dd" )
                                           + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND";
             break ;
         case 3 :  // cotisation à jour
             Date = Date.currentDate() ;
             sRequeteWHERE = sRequeteWHERE + "' AND abonnements.DateExpiration>'" + QDate::currentDate().toString( "yyyy-MM-dd" )
-                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND"
-                                          + "abonnements.Supprimer=0 AND";
+                                          + "' AND IdMembre=abonnements.Membres_IdMembre AND";
             break ;
         }
     }
 
-    sRequeteWHERE += " IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
-    sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre ORDER BY Nom" ;
+    sRequeteWHERE += " abonnements.Supprimer=0 AND IdTypeMembres=TypeMembres_IdTypeMembres AND IdTitreMembre=TitreMembre_IdTitreMembre AND IdMembre=abonnements.Membres_IdMembre " ;  //IdMembre=abonnements.Membres_IdMembre
+    sRequete = sRequeteSELECTFROM + sRequeteWHERE + " GROUP BY IdMembre,DateExpiration ORDER BY Nom" ;
 
     qDebug() << "F_listemembre::AffichageListe() :" << sRequete ;
     ui->LE_sql->setText(sRequete);

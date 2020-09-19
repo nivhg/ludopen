@@ -113,6 +113,7 @@ void Lb_Image::ChargerImage(QSize size,QString code_jeu,QCursor curseur)
     EffacerFichiers();
     iImage=0;
     sCheminImage.clear();
+    sNomImage.clear();
 
     setText("Aucune photo disponible pour ce jeu");
     Lb_NomImage->setText("");
