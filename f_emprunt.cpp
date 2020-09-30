@@ -2476,6 +2476,12 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
         }
         case STATUTJEUX_ENRESERVATION:
         {
+            //Le mettre en vert
+            ui->Le_StatutJeuARemplir->setStyleSheet("QLineEdit {color:green;}");
+            ui->Lb_StatutJeu->setStyleSheet("QLabel {color:green;}");
+            //Met le bouton "Ajouté" en cliquable
+            ui->Bt_AjouterJeu->setEnabled(true);
+            break;
         }
     // pour tous les autres statuts autre que disponible
         default:
