@@ -8,6 +8,7 @@ class F_AjoutSuppModifFournisseursEditeurs;
 #include <QDebug>
 #include <QMainWindow>
 #include <QHostInfo>
+#include <libssh/libssh.h>
 
 #include "f_emprunt.h"
 #include "f_jeux.h"

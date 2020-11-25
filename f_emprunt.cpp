@@ -2015,6 +2015,8 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
         {
             return;
         }
+        QLocale English(QLocale::English);
+        NbCredits=NbCredits*(English.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
     }
 
     QList<QSqlQuery *> *ListeRequetes=new QList<QSqlQuery *>();

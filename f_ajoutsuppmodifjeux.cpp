@@ -600,11 +600,11 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
            ///////////////////////////////////////////////////////////////////////////////////////////
            // Requete pour faire le lien avec emplacement et récupérer l'id de l'emplacement
            QSqlQuery RequeteEmplacement ;
-           RequeteEmplacement.prepare("SELECT IdEmplacement FROM emplacement WHERE Nom=:DeEmplacement") ;
+           RequeteEmplacement.prepare("SELECT IdEmplacement FROM emplacement WHERE NomEmplacement=:DeEmplacement") ;
            RequeteEmplacement.bindValue(":DeEmplacement", ui->CBx_Emplacement->currentText());
            if(!RequeteEmplacement.exec())
            {
-              qDebug()<<"F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()RequeteEmplacement " << RequeteEmplacement.lastQuery() ;
+              qDebug()<<"F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()RequeteEmplacement " << getLastExecutedQuery(RequeteEmplacement) ;
            }
            RequeteEmplacement.next() ;
            ///////////////////////////////////////////////////////////////////////////////////////////
@@ -679,7 +679,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
 
            if(!RequeteAjouterJeu.exec())
            {
-              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked()-"<<RequeteAjouterJeu.lastQuery()
+              qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked()-" << getLastExecutedQuery(RequeteAjouterJeu)
                        <<"Erreur : "<<RequeteAjouterJeu.lastError();
            }
            QSqlQuery Requete;
@@ -754,10 +754,16 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
          RequeteModifAge.bindValue(":LAgeMin", ui->SBx_AgeMin->value());
          RequeteModifAge.bindValue(":LAgeMax", ui->SBx_AgeMax->value());
          //Exécute la requête
+//         RequeteModifAge.prepare("SHOW SESSION VARIABLES LIKE 'c%'");
+         qDebug() << getLastExecutedQuery(RequeteModifAge);
          if (!RequeteModifAge.exec())
          {
-             qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked() : MajAge" << RequeteModifAge.lastQuery() ;
+             qDebug() << "F_AjoutSuppModifJeux::on_Bt_Valider_clicked() : MajAge" << RequeteModifAge.lastQuery() << RequeteModifAge.lastError();
          }
+  /*       while(RequeteModifAge.next())
+         {
+             qDebug()<<RequeteModifAge.value(0).toString()<<RequeteModifAge.value(1).toString();
+         }*/
          //////////////// MAJ des prix ////////////////// ---------------------------------------------------------------
          QSqlQuery RequeteModifPrix ;
          //prépare le requête de mise à jour
