@@ -1124,7 +1124,8 @@ int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QSt
                    {
                        NbDeSemainesDeRetard = NbJours / JoursToleres ;
                    }
-                   Amende=Amende+F_Preferences::ObtenirValeur("PrixAmende").toFloat() * NbDeSemainesDeRetard ;
+                   QLocale French(QLocale::French);
+                   Amende=Amende+French.toDouble(F_Preferences::ObtenirValeur("PrixAmende")) * NbDeSemainesDeRetard ;
                    //qDebug()<<"F_Retour::AfficherJeuxEnEmprunt() => Amende=" << this->Amende << " NbDeSemainesDeRetard=" << NbDeSemainesDeRetard ;
                 }
                 NumeroLigne++;
@@ -2015,8 +2016,8 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
         {
             return;
         }
-        QLocale English(QLocale::English);
-        NbCredits=NbCredits*(English.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
+        QLocale French(QLocale::French);
+        NbCredits=NbCredits*(French.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
     }
 
     QList<QSqlQuery *> *ListeRequetes=new QList<QSqlQuery *>();

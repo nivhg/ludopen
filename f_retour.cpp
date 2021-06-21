@@ -826,8 +826,8 @@ void F_Retour::on_Bt_Prolonger_clicked()
 
     if (FenetrePaiement.exec()==1)
     {
-        QLocale English(QLocale::English);
-        MontantPanier=MontantPanier*(English.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
+        QLocale French(QLocale::French);
+        MontantPanier=MontantPanier*(French.toDouble(F_Preferences::ObtenirValeur("UniteLocation")));
         QSqlQuery *RequeteProlongation=new QSqlQuery();
         RequeteProlongation->prepare("UPDATE emprunts as e LEFT JOIN jeux as j ON e.Jeux_IdJeux=j.IdJeux SET e.NbrPrologation=NbrPrologation+1,e.DateRetourPrevu=:DateRetour"
                                     " WHERE j.CodeJeu IN ("+CodesJeux.join(",")+") AND e.DateRetour IS NULL");

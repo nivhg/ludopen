@@ -107,7 +107,6 @@ private:
     QStandardItemModel ModeleReservations ;
     QVector<Type> VectorLieux ;                 //! Vecteur contenant la liste des Lieux (id, nom)
     QVector<StatutDuJeu> VectorStatutDuJeu ;    //! Vecteur contenant la liste des titres (id, nom)
-    QVector<int> VecteurListeReservations ;     //! Vecteur conteant la liste des id des réservation
 };
 
 #endif // F_LISTERESERVATIONS_H

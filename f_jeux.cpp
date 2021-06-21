@@ -381,7 +381,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     RequeteRechercheCode.prepare("SELECT IdJeux,NomJeu,CodeJeu,Remarque,StatutJeux_IdStatutJeux,"
                                  "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
-                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
+                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur,Inventorier FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
     if (!RequeteRechercheCode.exec())
     {
@@ -417,6 +417,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
     ui->Le_nbrejoueursmax->setText(Le_NbrJoueurMax);
     ui->TxE_description->setText(TxE_Description);
 
+    ui->Cbx_Inventorier->setCheckState((ObtenirValeurParNom(RequeteRechercheCode,"Inventorier")==1)?Qt::Checked:Qt::Unchecked);
     // Bloquer certains boutons
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
@@ -691,7 +692,6 @@ void F_Jeux::ActualiserLw_Auteurs()
     int i=0;
     while(Requete.next())
     {
-
         QString NomAuteur = ObtenirValeurParNom(Requete,"NomAuteur").toString();
         QString IdAuteur = ObtenirValeurParNom(Requete,"IdAuteur").toString();
         QListWidgetItem *Item = new QListWidgetItem(NomAuteur);
@@ -700,4 +700,22 @@ void F_Jeux::ActualiserLw_Auteurs()
         ui->Lw_Auteurs->insertItem(ui->Lw_Auteurs->count()-1,Item);
     }
 
+}
+
+void F_Jeux::on_Cbx_Inventorier_clicked()
+{
+    QSqlQuery RequeteValiderDescription;
+
+    //prépare le requête de mise à jour
+    RequeteValiderDescription.prepare("UPDATE jeux SET Inventorier=:Inventorier WHERE CodeJeu=:CodeDuJeu");
+
+    //Entre les valeurs de la requête
+    RequeteValiderDescription.bindValue(":CodeDuJeu",JeuEnConsultation);
+    RequeteValiderDescription.bindValue(":Inventorier",(ui->Cbx_Inventorier->checkState())?1:0);
+
+    //Exécute la requête
+    if (!RequeteValiderDescription.exec())
+    {
+        qDebug() << "F_Jeux::on_Bt_ValiderDescription_clicked() : RequeteValiderDescription :" << getLastExecutedQuery(RequeteValiderDescription) ;
+    }
 }

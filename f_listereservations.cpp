@@ -363,20 +363,18 @@ bool F_ListeReservations::AffichageListe()
     //Exécution de la requête
     if( RequeteDesReservations.exec(sRequete) )
     {        
-        // Vider le vecteur qui contient les ID de toutes les réservations (sert pour la suppression des réservations)
-        this->VecteurListeReservations.clear() ;
         // Vidage de la liste à l'écran
         this->ModeleReservations.removeRows(0,this->ModeleReservations.rowCount());
         //Remplissage du tableau avec les informations issues des tables jeux et membres
         while( RequeteDesReservations.next() )
         {
-            // Ajouter au vecteur l'ID de cette réservation (sert pour la suppression des réservations)
-            this->VecteurListeReservations.append( ObtenirValeurParNom(RequeteDesReservations,"idReservation").toInt() ) ;
 
             // On place des case à cocher dans la première colonne.
             item = new QStandardItem() ;
             item->setCheckable( true ) ;
-            item->setData(ObtenirValeurParNom(RequeteDesReservations,"IdMalle").toInt());
+            item->setData(ObtenirValeurParNom(RequeteDesReservations,"IdMalle").toInt(),Qt::UserRole+1);
+            // Ajouter à la data UserRole l'ID de cette réservation (sert pour la suppression des réservations)
+            item->setData(ObtenirValeurParNom(RequeteDesReservations,"idReservation").toInt(),Qt::UserRole);
             ModeleReservations.setItem( i, 0, item ) ;
 
             // Code du jeu réservé
@@ -465,15 +463,16 @@ void F_ListeReservations::on_Bt_SupprimerListe_clicked()
                 int IdMalle=ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole+1).toInt();
                 if( IdMalle==0 )
                 {
+                    qDebug()<<ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole+1).toInt();
                     QSqlQuery RequeteChangerStatus;
                     // Si le jeu est en réservation, pPassage du statut du jeu en disponible
                     RequeteChangerStatus.prepare( "UPDATE jeux,reservation SET StatutJeux_IdStatutJeux=1 WHERE Jeux_IdJeux=IdJeux AND "
                                               "StatutJeux_IdStatutJeux=7 AND idReservation=:IdReservation" ) ;
-                    RequeteChangerStatus.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                    RequeteChangerStatus.bindValue( ":IdReservation", ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole+1).toInt() ) ;
                     RequeteChangerStatus.exec();
                     //Préparation de la requête permettant la suppression dans la table reservation
                     RequeteSupprimer.prepare( "DELETE FROM reservation WHERE idReservation=:IdReservation " ) ;
-                    RequeteSupprimer.bindValue( ":IdReservation", this->VecteurListeReservations.at( i ) ) ;
+                    RequeteSupprimer.bindValue( ":IdReservation", ui->Tv_ListeReservations->model()->data( ui->Tv_ListeReservations->model()->index(i ,0),Qt::UserRole).toInt() ) ;
                 }
                 else
                 {
@@ -612,12 +611,13 @@ void F_ListeReservations::on_CBx_Cotisation_currentIndexChanged(int index)
 
 void F_ListeReservations::on_Tv_ListeReservations_doubleClicked(const QModelIndex &index)
 {
-    emit( this->Signal_DoubleClic_ListeMembres( this->VecteurListeReservations.at( index.row() ) ) ) ;
+    emit( this->Signal_DoubleClic_ListeMembres( ui->Tv_ListeReservations->model()->data( index,Qt::UserRole).toInt() ) ) ;
 }
 
 void F_ListeReservations::SelectionnerReservation(int IdReservation)
 {
-    int index=this->VecteurListeReservations.indexOf(IdReservation);
+    // TODO : adapter le code pour fonctionner avec les data des lignes
+    //int index=this->VecteurListeReservations.indexOf(IdReservation);
     //ui->Tv_ListeReservations->selectRow(index);
 }
 

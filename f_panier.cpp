@@ -533,8 +533,8 @@ void F_Panier::CalculerPrix()
     double Total=0;
     for (register unsigned int i=0; i < ModelePanier.rowCount() ; i++)
     {
-        QLocale English(QLocale::English);
-        Total+=English.toDouble(ModelePanier.item(i,COLITEM_PRIX)->text());
+        QLocale French(QLocale::French);
+        Total+=French.toDouble(ModelePanier.item(i,COLITEM_PRIX)->text());
     }
 
     ui->SBx_Total->setValue(Total);

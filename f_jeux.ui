@@ -391,6 +391,20 @@
          <property name="spacing">
           <number>2</number>
          </property>
+         <item row="1" column="1" colspan="2">
+          <widget class="QLineEdit" name="Le_etat">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_statut">
+           <property name="text">
+            <string>Statut du jeu :</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="QLineEdit" name="Le_statut">
            <property name="font">
@@ -404,13 +418,6 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label_statut">
-           <property name="text">
-            <string>Statut du jeu :</string>
-           </property>
-          </widget>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_etat">
            <property name="text">
@@ -421,10 +428,20 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="Le_etat">
-           <property name="readOnly">
-            <bool>true</bool>
+         <item row="2" column="0" colspan="2">
+          <widget class="QCheckBox" name="Cbx_Inventorier">
+           <property name="font">
+            <font>
+             <family>Noto Sans</family>
+             <weight>50</weight>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::RightToLeft</enum>
+           </property>
+           <property name="text">
+            <string>Jeu inventorié</string>
            </property>
           </widget>
          </item>

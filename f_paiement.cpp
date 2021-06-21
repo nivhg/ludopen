@@ -48,8 +48,8 @@ F_Paiement::F_Paiement(QWidget *parent) :
    ui->setupUi(this);
 
    bool ok;
-   QLocale English(QLocale::English);
-   this->PrixCredit=(round(English.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
+   QLocale French(QLocale::French);
+   this->PrixCredit=(round(French.toDouble(F_Preferences::ObtenirValeur("UniteLocation"))*100.0));
 
    //Initialise le tableau des Cartes prépayées
    this->NombreLignePaiement=0;

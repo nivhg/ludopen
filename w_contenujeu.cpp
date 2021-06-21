@@ -31,7 +31,6 @@ W_ContenuJeu::W_ContenuJeu(QWidget *parent) :
     ui->TB_Haut->setToolTip("Déplace un objet en haut");
     ui->TB_SacItem->setToolTip("Permet de transformer un groupe en pièce et réciproquement");
     ui->TB_Ciseaux->setToolTip("Coupe une ligne contenant plusieurs objets en plusieurs lignes (Ex : Cartes, 3 pions, 10 cartes)");
-    ui->TB_Texte->setToolTip("Ouvre une fenetre avec le contenu du jeu sous forme d'une seul texte");
 
     this->pPopUpCLESTTEM = new F_PopUpCLESTTEM(this);
     this->pPopUpCLESTTEM->setWindowModality(Qt::ApplicationModal);
@@ -418,7 +417,6 @@ void W_ContenuJeu::InverserElement(QModelIndex ElementChoisi,int LigneDestinatio
 void W_ContenuJeu::ActiverBoutonsContenu(bool Etat)
 {
     ui->TB_Ajouter->setEnabled(Etat);
-    ui->TB_Texte->setEnabled(Etat);
     if(Etat)
     {
         ui->TB_Supprimer->setEnabled(ui->Tv_Contenu->currentIndex()!=QModelIndex());
