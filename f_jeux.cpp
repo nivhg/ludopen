@@ -72,6 +72,7 @@ F_Jeux::F_Jeux(QWidget *parent) :
     //Création de l'objet QLabel pour l'affichage des images
     lb_image = new Lb_Image(this,ui->Lb_ImageName);
     //Gestion de l'évenement MousePress
+    connect( lb_image, SIGNAL( SignalChargementFini() ), this, SLOT( slot_ActiverCbxinventorier() ) ) ;
     connect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
     lb_image->setAlignment(Qt::AlignCenter);
     //Crée un curseur loupe et l'assigne à l'image
@@ -248,15 +249,16 @@ void F_Jeux::on_Le_recherchenom_textChanged(const QString &arg1)
         // Si le texte saisie est un nombre
         if( numeric )
         {
-            test=(this->ModelJeu->item(i,CodeColonne)->text()==NomJeu);
+            ColonneRecherche=CodeColonne;
         }
         else
         {
-            TexteCellule = removeAccents(this->ModelJeu->item(i,CodeNomJeu)->text());
-            test=(TexteCellule.indexOf(NomJeu,0,Qt::CaseInsensitive ) != string::npos);
+            ColonneRecherche=CodeNomJeu;
         }
 
-        if(test)
+        TexteCellule = removeAccents(this->ModelJeu->item(i,ColonneRecherche)->text());
+        if(TexteCellule.indexOf(
+                    NomJeu,0,Qt::CaseInsensitive ) != string::npos )
         {
             ui->TbV_NomJeux->showRow(i);
             if(firstrow==-1)
@@ -381,7 +383,7 @@ void F_Jeux::AfficherJeu(QString Jeu)
 
     RequeteRechercheCode.prepare("SELECT IdJeux,NomJeu,CodeJeu,Remarque,StatutJeux_IdStatutJeux,"
                                  "EtatsJeu_IdEtatsJeu,Emplacement_IdEmplacement,AgeMin,AgeMax,NbrJoueurMin,NbrJoueurMax,"
-                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur,Inventorier FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
+                                 "TypeJeux_Classification,DescriptionJeu,Editeur_IdEditeur FROM jeux WHERE CodeJeu=:CodeDuJeu") ;
     RequeteRechercheCode.bindValue(":CodeDuJeu", this->JeuEnConsultation);
     if (!RequeteRechercheCode.exec())
     {
@@ -417,7 +419,6 @@ void F_Jeux::AfficherJeu(QString Jeu)
     ui->Le_nbrejoueursmax->setText(Le_NbrJoueurMax);
     ui->TxE_description->setText(TxE_Description);
 
-    ui->Cbx_Inventorier->setCheckState((ObtenirValeurParNom(RequeteRechercheCode,"Inventorier")==1)?Qt::Checked:Qt::Unchecked);
     // Bloquer certains boutons
     ui->Bt_ValiderDescription->setEnabled(false);
     ui->Bt_AnnulerDescription->setEnabled(false);
@@ -461,6 +462,9 @@ void F_Jeux::AfficherJeu(QString Jeu)
         ui->Le_statut->setStyleSheet("color: black");
     }
 
+    int Index=IdStatut-9+(IdStatut==4)*8;
+    if(Index<0 || Index >3) Index=0;
+    ui->Cbx_inventorier->setCurrentIndex(Index);
     ///////////////////////////////////////////////////////////
     /////////// Affichage du bouton réservé ///////////////////
     ///////////////////////////////////////////////////////////
@@ -702,20 +706,39 @@ void F_Jeux::ActualiserLw_Auteurs()
 
 }
 
-void F_Jeux::on_Cbx_Inventorier_clicked()
+void F_Jeux::slot_ActiverCbxinventorier()
 {
-    QSqlQuery RequeteValiderDescription;
+    ui->Cbx_inventorier->setEnabled(true);
+}
 
-    //prépare le requête de mise à jour
-    RequeteValiderDescription.prepare("UPDATE jeux SET Inventorier=:Inventorier WHERE CodeJeu=:CodeDuJeu");
+void F_Jeux::on_Cbx_inventorier_activated(int index)
+{
+    if(index==0) return;
+    if(ui->W_Historique->Obtenir_Nb_Maintenance()>0)
+    {
+        QMessageBox::critical(this,"Pièces manquantes ou abimées",
+                              "Ce jeu possède des pièces manquantes ou abimées, mettez à jour sa fiche contenu et supprimer les pièces manquantes ou abimées de Ludopen.");
+    }
+    if(lb_image->ObtenirsCheminImage().count()==0)
+    {
+        QMessageBox::critical(this,"Aucune image pour ce jeu",
+                              "Ce jeu ne possède pas d'images, pensez à en rajouter.");
+    }
+    QSqlQuery Requete;
+
+    //Calcul le bon IdStatut suivant l'index
+    int IdStatut=index+9-(index==3)*8;
+
+    Requete.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=" + QString::number(IdStatut) + " WHERE CodeJeu=:CodeDuJeu");
 
     //Entre les valeurs de la requête
-    RequeteValiderDescription.bindValue(":CodeDuJeu",JeuEnConsultation);
-    RequeteValiderDescription.bindValue(":Inventorier",(ui->Cbx_Inventorier->checkState())?1:0);
+    Requete.bindValue(":CodeDuJeu",JeuEnConsultation);
 
     //Exécute la requête
-    if (!RequeteValiderDescription.exec())
+    if (!Requete.exec())
     {
-        qDebug() << "F_Jeux::on_Bt_ValiderDescription_clicked() : RequeteValiderDescription :" << getLastExecutedQuery(RequeteValiderDescription) ;
+        qDebug() << "F_Jeux::on_Cbx_Inventorier_clicked() :" << getLastExecutedQuery(Requete) ;
+        return;
     }
+    AfficherJeu(JeuEnConsultation);
 }

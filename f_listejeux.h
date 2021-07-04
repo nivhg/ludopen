@@ -132,6 +132,10 @@ private slots:
 
     void on_CBx_Auteur_activated(int index);
 
+    void on_Bt_ChangerStatut_clicked();
+
+    void on_CBx_Statut2_activated(int index);
+
 signals:
     //! Signal indiquand qu'un double clic a eu lieu dans la liste des jeux
     void Signal_DoubleClic_ListeJeux( QString CodeJeu) ;

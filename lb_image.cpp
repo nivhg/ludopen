@@ -109,7 +109,7 @@ void Lb_Image::EffacerFichiers()
  */
 void Lb_Image::ChargerImage(QSize size,QString code_jeu,QCursor curseur)
 {
-    qDebug()<<"Lb_Image::ChargerImage ; code_jeu="<<code_jeu;
+//    qDebug()<<"Lb_Image::ChargerImage ; code_jeu="<<code_jeu;
     EffacerFichiers();
     iImage=0;
     sCheminImage.clear();

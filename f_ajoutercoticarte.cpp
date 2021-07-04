@@ -27,6 +27,10 @@ F_AjouterCotiCarte::F_AjouterCotiCarte(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->LE_DureeValidite->hide();
+    ui->Lb_DureeValidite->hide();
+    ui->Lb_DateExpirationJours->hide();
+
     this->MaJListeAbonnements() ;
     // VV : Le displayformat n'est pas correct pourtant OK au niveau de Qt Designer
     ui->DtE_DateSouscription->setDisplayFormat("dd/MM/yyyy");
@@ -54,7 +58,6 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
     this->bNouvelAbo = false;
 
     ui->LE_Nom->setReadOnly( true ) ;
-    ui->LE_DureeValidite->setReadOnly( true ) ;
     ui->LE_Prix->setReadOnly( true ) ;
 
     ui->DtE_DateSouscription->setEnabled( false ) ;
@@ -182,7 +185,6 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
     ui->Lb_NomPrestation->hide();
 
     // Prix et durée modifiable si on veut
-    ui->LE_DureeValidite->setReadOnly( false ) ;
     ui->LE_Prix->setReadOnly( false ) ;
 
     ui->LE_CreditsDisponibles->setReadOnly( false ) ;
@@ -196,8 +198,8 @@ void F_AjouterCotiCarte::AjouterAbonnement(int nIDMembre)
     ui->DtE_DateSouscription->setEnabled( true ) ;
 
     // Cacher la date d'expiration
-    ui->Lb_DateExpiration->hide();
-    ui->DtE_Expiration->hide();
+    /*ui->Lb_DateExpiration->hide();
+    ui->DtE_Expiration->hide();*/
 
     // Pas de crédit restant puisque nouvelle carte
     ui->Lb_CreditsRestants->hide();
@@ -277,6 +279,8 @@ void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(const QStrin
 
     ui->LE_Nom->setText(NomCarte);
     ui->LE_DureeValidite->setText(Duree);
+    QDate DateActuelle = ui->DtE_DateSouscription->date() ;
+    ui->DtE_Expiration->setDate(DateActuelle.addDays( ui->LE_DureeValidite->text().toInt()));
     ui->LE_Prix->setText(Prix);
     ui->LE_CreditsDisponibles->setText(Credit);
 }

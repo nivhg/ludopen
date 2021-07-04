@@ -673,35 +673,23 @@ QGroupBox::indicator:checked {
          <bool>true</bool>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
-         <item row="5" column="0">
-          <widget class="QCommandLinkButton" name="Bt_Emprunter">
+         <item row="5" column="1" colspan="2">
+          <widget class="QCommandLinkButton" name="Bt_Regle">
            <property name="enabled">
             <bool>false</bool>
            </property>
-           <property name="cursor">
-            <cursorShape>PointingHandCursor</cursorShape>
-           </property>
-           <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">
-    border: 0px solid gray;
-    border-radius: 0px;
-</string>
+           <property name="maximumSize">
+            <size>
+             <width>180</width>
+             <height>16777215</height>
+            </size>
            </property>
            <property name="text">
-            <string>Emprunter</string>
+            <string>En attente de paiement</string>
            </property>
            <property name="icon">
             <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Panier.png</normaloff>:/Panier.png</iconset>
-           </property>
-           <property name="iconSize">
-            <size>
-             <width>20</width>
-             <height>20</height>
-            </size>
+             <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
            </property>
           </widget>
          </item>
@@ -777,6 +765,38 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
+         <item row="5" column="0">
+          <widget class="QCommandLinkButton" name="Bt_Emprunter">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="cursor">
+            <cursorShape>PointingHandCursor</cursorShape>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">
+    border: 0px solid gray;
+    border-radius: 0px;
+</string>
+           </property>
+           <property name="text">
+            <string>Emprunter</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/Panier.png</normaloff>:/Panier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
+          </widget>
+         </item>
          <item row="1" column="0" colspan="3">
           <widget class="QTableView" name="TbV_EmpruntAValider">
            <property name="sizePolicy">
@@ -802,26 +822,6 @@ QGroupBox::indicator:checked {
            </property>
           </widget>
          </item>
-         <item row="5" column="1" colspan="2">
-          <widget class="QCommandLinkButton" name="Bt_Regle">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>180</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>En attente de paiement</string>
-           </property>
-           <property name="icon">
-            <iconset resource="ImagesIcones.qrc">
-             <normaloff>:/Supprimer.png</normaloff>:/Supprimer.png</iconset>
-           </property>
-          </widget>
-         </item>
          <item row="4" column="0" colspan="3">
           <layout class="QHBoxLayout" name="Hl_Retrait">
            <item>
@@ -842,7 +842,7 @@ QGroupBox::indicator:checked {
            </item>
           </layout>
          </item>
-         <item row="6" column="0" colspan="3">
+         <item row="7" column="1" colspan="2">
           <widget class="QPushButton" name="Bt_CalendrierMalles">
            <property name="text">
             <string>Calendrier des grands jeux</string>
@@ -850,6 +850,23 @@ QGroupBox::indicator:checked {
            <property name="icon">
             <iconset resource="ImagesIcones.qrc">
              <normaloff>:/Calendrier.png</normaloff>:/Calendrier.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>32</width>
+             <height>32</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="0">
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Infos Malles</string>
+           </property>
+           <property name="icon">
+            <iconset resource="ImagesIcones.qrc">
+             <normaloff>:/Aide2.png</normaloff>:/Aide2.png</iconset>
            </property>
            <property name="iconSize">
             <size>

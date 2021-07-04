@@ -143,7 +143,7 @@ void AccesFichierParHTTP::SlotTelechargementFini()
  */
 void AccesFichierParHTTP::PasserFichierSuivant(bool FichierTrouver)
 {
-    qDebug()<<"AccesFichierParHTTP::PasserFichierSuivant FichierTrouver : "<<FichierTrouver;
+//    qDebug()<<"AccesFichierParHTTP::PasserFichierSuivant FichierTrouver : "<<FichierTrouver;
     if(TelechargementAnnuler)
     {
         return;

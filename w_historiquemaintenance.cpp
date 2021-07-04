@@ -58,7 +58,7 @@ void W_HistoriqueMaintenance::ActualiserHistoriqueMaintenance()
     QString Remarque=ObtenirValeurParNom(Requete,"Remarque").toString().
             replace(QRegularExpression("(\n\s*\n)+"),"\n");
     Item=new QTableWidgetItem("Remarques générales : "+Remarque);
-    qDebug()<<Remarque;
+    //qDebug()<<Remarque;
 
     Item->setFlags(Item->flags() & ~Qt::ItemIsEditable);
     ui->Tw_HistoriqueMaintenance->setItem(0, 0, Item);
@@ -129,7 +129,7 @@ void W_HistoriqueMaintenance::on_Bt_SupprimerEvenement_clicked()
     {
         qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     }
-    qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
+//    qDebug()<<getLastExecutedQuery(Requete)<<Requete.lastError();
     ActualiserHistoriqueMaintenance();
     emit(Signal_ActualiserContenu());
 }
@@ -178,4 +178,9 @@ void W_HistoriqueMaintenance::Vider()
     ui->Tw_HistoriqueMaintenance->clear();
     ui->Tw_HistoriqueMaintenance->setRowCount(0);
     ui->Tw_HistoriqueMaintenance->setColumnCount(0);
+}
+
+int W_HistoriqueMaintenance::Obtenir_Nb_Maintenance()
+{
+    return (ui->Tw_HistoriqueMaintenance->rowCount()-1);
 }

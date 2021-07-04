@@ -23,6 +23,7 @@ public:
     ~W_HistoriqueMaintenance();
     void Vider();
     void Definir_CodeJeu(QString CodeJeu);
+    int Obtenir_Nb_Maintenance();
 
 signals:
     void Signal_ActualiserContenu();

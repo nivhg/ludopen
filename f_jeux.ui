@@ -391,17 +391,27 @@
          <property name="spacing">
           <number>2</number>
          </property>
-         <item row="1" column="1" colspan="2">
-          <widget class="QLineEdit" name="Le_etat">
-           <property name="readOnly">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_statut">
            <property name="text">
             <string>Statut du jeu :</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_etat">
+           <property name="text">
+            <string>État du jeu :</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1" colspan="2">
+          <widget class="QLineEdit" name="Le_etat">
+           <property name="readOnly">
+            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -418,31 +428,41 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_etat">
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>État du jeu :</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            <string>Inventaire :</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0" colspan="2">
-          <widget class="QCheckBox" name="Cbx_Inventorier">
-           <property name="font">
-            <font>
-             <family>Noto Sans</family>
-             <weight>50</weight>
-             <bold>false</bold>
-            </font>
+         <item row="2" column="1">
+          <widget class="QComboBox" name="Cbx_inventorier">
+           <property name="enabled">
+            <bool>false</bool>
            </property>
            <property name="layoutDirection">
-            <enum>Qt::RightToLeft</enum>
+            <enum>Qt::LeftToRight</enum>
            </property>
-           <property name="text">
-            <string>Jeu inventorié</string>
-           </property>
+           <item>
+            <property name="text">
+             <string>Cliquer pour choisir l'état d'inventaire</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Le jeu est complet</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Le jeu n'est pas sorti cette année et il est présent dans la Ludothèque</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Le jeu est en réparation</string>
+            </property>
+           </item>
           </widget>
          </item>
         </layout>

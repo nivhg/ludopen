@@ -6,6 +6,7 @@ class F_Emprunt;
 class F_MainWindow;
 
 #include "f_mainwindow.h"
+#include "d_aide.h"
 
 
 #include <QStandardItem>
@@ -180,6 +181,8 @@ private slots:
     void on_Bt_Aide_PiecesManquantes_clicked();
 
     void on_Lb_NomJeu_linkActivated(const QString &link);
+
+    void on_pushButton_clicked();
 
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);

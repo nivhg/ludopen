@@ -117,7 +117,9 @@ private slots:
 
     void on_TbW_LiensJeux_clicked(const QModelIndex &index);
 
-    void on_Cbx_Inventorier_clicked();
+    void slot_ActiverCbxinventorier();
+
+    void on_Cbx_inventorier_activated(int index);
 
 signals:
     //! Signal indiquant qu'un clic a eu lieu sur le bouton réservé

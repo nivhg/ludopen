@@ -60,23 +60,6 @@
         <item row="2" column="0">
          <layout class="QHBoxLayout" name="HLay">
           <item>
-           <widget class="QCommandLinkButton" name="Bt_ValiderIntervention">
-            <property name="text">
-             <string>Valider Intervention</string>
-            </property>
-            <property name="icon">
-             <iconset resource="ImagesIcones.qrc">
-              <normaloff>:/Reparation.png</normaloff>:/Reparation.png</iconset>
-            </property>
-            <property name="iconSize">
-             <size>
-              <width>30</width>
-              <height>30</height>
-             </size>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCommandLinkButton" name="Bt_AnnulerIntervention">
             <property name="text">
              <string>Annuler Intervention</string>

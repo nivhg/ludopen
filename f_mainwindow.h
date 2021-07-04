@@ -36,6 +36,14 @@ class F_AjoutSuppModifFournisseursEditeurs;
 #include "fonctions_globale.h"
 #include "majeur.h"
 
+#include "xlsxdocument.h"
+#include "xlsxchartsheet.h"
+#include "xlsxcellrange.h"
+#include "xlsxchart.h"
+#include "xlsxrichstring.h"
+#include "xlsxworkbook.h"
+using namespace QXlsx;
+
 #define PERM_JOUR 0
 #define PERM_DEBUT 1
 #define PERM_FIN 2
@@ -109,6 +117,7 @@ private slots:
     void on_menuUtilisateurEnCours_triggered(QAction *);
     void on_Bt_Retards_clicked();
     void Quitter();
+    void on_Menu_Exporter_inventaire_triggered();
 
 private:
     Ui::F_MainWindow *ui;
@@ -144,6 +153,7 @@ private:
     QDateTime TrouverProchainePerm(QDateTime LaDate,QList<QList <QVariant>> Permanences,int *iFuturPerm);
     int trouveOnglet(QString NomOnglet);
     void closeEvent(QCloseEvent *event);
+    Format formatCell(Format format,int StatutJeu, bool Sorti);
 };
 
 #endif // F_MAINWINDOW_H

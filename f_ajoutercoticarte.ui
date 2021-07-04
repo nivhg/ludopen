@@ -36,16 +36,6 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
-      <widget class="QLabel" name="Lb_DateSoucription">
-       <property name="text">
-        <string>Date de souscription :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="10" column="2">
       <widget class="QLineEdit" name="LE_CreditsRestants"/>
      </item>
@@ -59,14 +49,8 @@
       </widget>
      </item>
      <item row="7" column="2">
-      <widget class="QLineEdit" name="LE_DureeValidite"/>
-     </item>
-     <item row="6" column="2">
-      <widget class="QDateEdit" name="DtE_DateSouscription">
-       <property name="displayFormat">
-        <string>dd/MM/yyyy</string>
-       </property>
-       <property name="calendarPopup">
+      <widget class="QLineEdit" name="LE_DureeValidite">
+       <property name="readOnly">
         <bool>true</bool>
        </property>
       </widget>
@@ -80,16 +64,6 @@
      </item>
      <item row="8" column="2">
       <widget class="QLineEdit" name="LE_Prix"/>
-     </item>
-     <item row="5" column="2">
-      <widget class="QDateEdit" name="DtE_Expiration">
-       <property name="displayFormat">
-        <string>dd/MM/yyyy</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
      </item>
      <item row="8" column="3">
       <widget class="QLabel" name="label_5">
@@ -123,16 +97,6 @@
      <item row="9" column="2">
       <widget class="QLineEdit" name="LE_CreditsDisponibles"/>
      </item>
-     <item row="5" column="1">
-      <widget class="QLabel" name="Lb_DateExpiration">
-       <property name="text">
-        <string>Date d'expiration :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="1">
       <widget class="QLabel" name="Lb_DureeValidite">
        <property name="text">
@@ -154,7 +118,7 @@
       </widget>
      </item>
      <item row="7" column="3">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="Lb_DateExpirationJours">
        <property name="text">
         <string>jours</string>
        </property>
@@ -180,6 +144,46 @@
        </property>
        <property name="default">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QDateEdit" name="DtE_DateSouscription">
+       <property name="displayFormat">
+        <string>dd/MM/yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="2">
+      <widget class="QDateEdit" name="DtE_Expiration">
+       <property name="displayFormat">
+        <string>dd/MM/yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLabel" name="Lb_DateExpiration">
+       <property name="text">
+        <string>Date d'expiration :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QLabel" name="Lb_DateSoucription">
+       <property name="text">
+        <string>Date de souscription :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
        </property>
       </widget>
      </item>

@@ -63,5 +63,6 @@
         <file>GrilleVersTexte.png</file>
         <file>ImporterTexte.png</file>
         <file>scissors.svg</file>
+        <file>Modele_Inventaire.xlsx</file>
     </qresource>
 </RCC>

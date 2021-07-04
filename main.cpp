@@ -9,6 +9,19 @@ using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
 
+/*#include <ods/ods>
+#include <ods/err.hpp>
+#include <ods/inst/SvgDesc.hpp>
+#include <ods/inst/SvgTitle.hpp>
+#include <ods/inst/NumberBooleanStyle.hpp>
+#include <ods/inst/NumberDay.hpp>
+#include <ods/inst/NumberHours.hpp>
+#include <ods/inst/NumberMinutes.hpp>
+#include <ods/inst/NumberMonth.hpp>
+#include <ods/inst/NumberSeconds.hpp>
+#include <ods/inst/NumberText.hpp>
+#include <ods/inst/NumberYear.hpp>*/
+
 // Fonction de redirection des messages de déboggage dans un fichier
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {

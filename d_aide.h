@@ -16,6 +16,9 @@ class D_aide : public QDialog
 public:
     explicit D_aide(QWidget *parent = 0);
     ~D_aide();
+    void ModifierContenu(QString contenu);
+
+private slots:
 
 private:
     Ui::D_aide *ui;

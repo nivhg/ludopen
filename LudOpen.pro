@@ -5,7 +5,7 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport script multimediawidgets designer xml
+QT        = widgets sql network core printsupport script multimediawidgets designer xml #ods
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -170,6 +170,12 @@ FORMS    += \
     d_lienjeux.ui \
     w_contenujeu.ui \
     w_historiquemaintenance.ui
+
+# QXlsx code for Application Qt project
+QXLSX_PARENTPATH=./         # current QXlsx path is . (. means curret directory)
+QXLSX_HEADERPATH=./header/  # current QXlsx header path is ./header/
+QXLSX_SOURCEPATH=./source/  # current QXlsx source path is ./source/
+include(./QXlsx.pri)
 
 VERSION = "2.05"
 VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string

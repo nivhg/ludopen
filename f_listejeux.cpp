@@ -267,7 +267,7 @@ void F_ListeJeux::RecupererContenuIndex()
         }
         ListeJeux += " StatutJeux_IdStatutJeux = " ;
         ListeJeux += ui->CBx_Statut->itemData(ui->CBx_Statut->currentIndex(),Qt::UserRole).toString();
-        PremierCritere = true ;
+        PremierCritere = true;
     }
     if(ui->CBx_Classification->currentIndex() != 0)
     {
@@ -511,6 +511,7 @@ void F_ListeJeux::RAZCriteres()
     ui->CBx_JoueursMin->clear();
     ui->CBx_PrixLoc->clear();
     ui->CBx_Statut->clear();
+    ui->CBx_Statut2->clear();
     ui->CBx_Emplacement->clear();
 
     // Mettre le titre pour chaque liste déroulante
@@ -523,6 +524,7 @@ void F_ListeJeux::RAZCriteres()
     ui->CBx_JoueursMax->addItem("Nb joueur maxi");
     ui->CBx_PrixLoc->addItem("Prix location");
     ui->CBx_Statut->addItem("Statut");
+    ui->CBx_Statut2->addItem("Statut");
     ui->CBx_Emplacement->addItem("Emplacement");
 
     ////////////////////////////////////
@@ -555,7 +557,9 @@ void F_ListeJeux::RAZCriteres()
   {
       //on entre un nouveau Item au ComboBox avec le nom du statut
       ui->CBx_Statut->addItem(RequeteStatutJeu.value(1).toString());
-      ui->CBx_Statut->setItemData(i++,RequeteStatutJeu.value(0).toInt(),Qt::UserRole);
+      ui->CBx_Statut->setItemData(i,RequeteStatutJeu.value(0).toInt(),Qt::UserRole);
+      ui->CBx_Statut2->addItem(RequeteStatutJeu.value(1).toString());
+      ui->CBx_Statut2->setItemData(i++,RequeteStatutJeu.value(0).toInt(),Qt::UserRole);
   }
 
   ////////////////////////////////////////
@@ -706,6 +710,8 @@ void F_ListeJeux::RAZCriteres()
                              "Emplacement_IdEmplacement=IdEmplacement ORDER BY NomJeu");
 
     ActualiserModele(RequeteRechercheJeu);
+
+    ui->Bt_ChangerStatut->setEnabled(ui->CBx_Statut2->currentIndex()!=0);
 }
 
 //###################################################################
@@ -817,4 +823,28 @@ void F_ListeJeux::on_Lw_Auteurs_clicked(const QModelIndex &index)
 void F_ListeJeux::on_CBx_Auteur_activated(int index)
 {
     ui->Bt_AjouterAuteur->setEnabled(index != 0);
+}
+
+void F_ListeJeux::on_Bt_ChangerStatut_clicked()
+{
+    QString CodeJeu;
+    for(int nNombreLigne = 0; nNombreLigne<ui->TbV_Recherche->model()->rowCount(); nNombreLigne++)
+    {
+        CodeJeu=ui->TbV_Recherche->model()->data( ui->TbV_Recherche->model()->index( nNombreLigne, 0 ) ).toString() ;
+        QSqlQuery RequeteRechercheJeu;
+
+        RequeteRechercheJeu.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=:StatutJeux_IdStatutJeux WHERE CodeJeu=:CodeJeu");
+        RequeteRechercheJeu.bindValue(":CodeJeu",CodeJeu);
+        RequeteRechercheJeu.bindValue(":StatutJeux_IdStatutJeux",ui->CBx_Statut2->itemData(ui->CBx_Statut2->currentIndex(),Qt::UserRole).toString());
+        if(!RequeteRechercheJeu.exec())
+        {
+            qDebug() << "F_ListeJeux::on_Bt_ChangerStatut_clicked()" << getLastExecutedQuery(RequeteRechercheJeu) ;
+        }
+    }
+    this->RAZCriteres();
+}
+
+void F_ListeJeux::on_CBx_Statut2_activated(int index)
+{
+    ui->Bt_ChangerStatut->setEnabled(index!=0);
 }

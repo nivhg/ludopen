@@ -2679,3 +2679,30 @@ QString F_Emprunt::get_JeuEnConsultation()
 {
     return JeuActif;
 }
+
+void F_Emprunt::on_pushButton_clicked()
+{
+    QSqlQuery RequeteEtatJeu ;
+
+    RequeteEtatJeu.exec("SELECT * FROM typeemprunt WHERE Malle=1");
+
+    D_aide *d_aide=new D_aide();
+    QString Msg;
+    while(RequeteEtatJeu.next())
+    {
+        Msg+=ObtenirValeurParNom(RequeteEtatJeu,"TypeEmprunt").toString()+" :";
+        Msg+="\n\t- Durée : " + ObtenirValeurParNom(RequeteEtatJeu,"DureeEmprunt").toString()+" jours";
+        Msg+="\n\t- Caution : " + ObtenirValeurParNom(RequeteEtatJeu,"Caution").toString()+" €";
+        Msg+="\n\t- Prix pour les adherents : " + ObtenirValeurParNom(RequeteEtatJeu,"PrixAdherent").toString()+" €";
+        if(ObtenirValeurParNom(RequeteEtatJeu,"PrixNonAdherent").toInt()!=0)
+        {
+            Msg+="\n\t- Prix pour les non adherents : " + ObtenirValeurParNom(RequeteEtatJeu,"PrixNonAdherent").toString()+" €";
+        }
+        Msg+="\n\t- Nb de grands jeux empruntable : " + ObtenirValeurParNom(RequeteEtatJeu,"NbJeuxSpeciauxEmpruntable").toString();
+        Msg+="\n\t- Nb de jeux normaux empruntable : " + ObtenirValeurParNom(RequeteEtatJeu,"NbAutresJeuxEmpruntable").toString();
+        Msg+="\n";
+    }
+    d_aide->ModifierContenu(Msg);
+    d_aide->setWindowModality(Qt::ApplicationModal);
+    d_aide->exec();
+}

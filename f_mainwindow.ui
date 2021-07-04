@@ -55,7 +55,7 @@
        <enum>Qt::LeftToRight</enum>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>5</number>
       </property>
       <property name="iconSize">
        <size>
@@ -531,6 +531,7 @@ Membres</string>
     <property name="title">
      <string>Fic&amp;hier</string>
     </property>
+    <addaction name="Menu_Exporter_inventaire"/>
     <addaction name="Menu_Fichier_Quitter"/>
    </widget>
    <widget class="QMenu" name="menuAide">
@@ -618,6 +619,16 @@ Membres</string>
   <action name="Menu_Imprimer_Malle_Empruntee">
    <property name="text">
     <string>Imprimer &amp;malle empruntée</string>
+   </property>
+  </action>
+  <action name="Menu_Imprimer_inventaire">
+   <property name="text">
+    <string>Imprimer &amp;inventaire</string>
+   </property>
+  </action>
+  <action name="Menu_Exporter_inventaire">
+   <property name="text">
+    <string>&amp;Exporter inventaire</string>
    </property>
   </action>
  </widget>

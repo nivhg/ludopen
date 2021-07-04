@@ -1178,3 +1178,126 @@ void F_MainWindow::slot_AfficherJeu(QString CodeJeu)
     on_Bt_Jeux_clicked();
     pAjoutSuppModifJeux->AfficherJeu(CodeJeu);
 }
+
+void F_MainWindow::on_Menu_Exporter_inventaire_triggered()
+{
+    /*QXlsx::Document xModele("ModeleInventaire.xlsx");
+    QXlsx::Document xInventaire;
+    QString CellAdr;
+    QString CellAdr2;
+
+    for(int i =1;i<23;i++)
+    {
+        CellAdr="A"+QString::number(i);
+        Cell* cell=xModele.cellAt(CellAdr);
+        QXlsx::Format fmt;
+        fmt=cell->format();
+        QXlsx::Format fmt2;
+        fmt2.setFontBold(fmt.fontBold());
+        xInventaire.write(CellAdr, xModele.read(CellAdr),fmt2);
+        if(i<12)
+        {
+            CellAdr2="A"+QString::number(i)+":J"+QString::number(i);
+            xInventaire.mergeCells(CellAdr2, fmt2);
+        }
+        else
+        {
+            CellAdr="B"+QString::number(i);
+            xInventaire.write(CellAdr, xModele.read(CellAdr),fmt2);
+        }
+    }
+    xInventaire.saveAs("Inventaire.xlsx");*/
+    QSqlQuery Requete;
+    QXlsx::Document xInventaire("Inventaire.xlsx");
+    QDate DernierSeptembre=QDate::currentDate();
+    int annee=DernierSeptembre.year();
+    if(DernierSeptembre.month()<9)
+    {
+        annee--;
+    }
+    DernierSeptembre.setDate(annee,9,1);
+    Requete.prepare("select CodeJeu,StatutJeux_IdStatutJeux,(Jeux_IdJeux IS NOT NULL) as Sortie from jeux LEFT JOIN emprunts ON IdJeux=Jeux_IdJeux AND DateEmprunt > '"+
+                    DernierSeptembre.toString("yyyy-MM-dd")+"' order by CAST(CodeJeu as UNSIGNED)");
+    qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+    //Exectution de la requête
+    if( !Requete.exec() )
+    {
+        qDebug() << getLastExecutedQuery(Requete) << Requete.lastError();
+        return;
+    }
+    int i=0;
+    QString CellAdr;
+    QStringList Extensions;
+    QList<int> ExtStatut;
+    QList<bool> ExtSorti;
+    while(Requete.next())
+    {
+        QString CodeJeu=ObtenirValeurParNom(Requete,"CodeJeu").toString();
+        QXlsx::Format format;
+        format.setBorderStyle(Format::BorderThin);
+        bool ok;
+        CodeJeu.toInt(&ok, 10);
+        if(!ok)
+        {
+            Extensions << CodeJeu;
+            ExtStatut << ObtenirValeurParNom(Requete,"StatutJeux_IdStatutJeux").toInt();
+            ExtSorti << ObtenirValeurParNom(Requete,"Sortie").toBool();
+            continue;
+        }
+        // Si il y a des extensions de sauvegarder et qu'on est au début ou à la fin de la ligne
+        if(Extensions.size()>0 && i%10==9)
+        {
+            for(int j = 1; j <= Extensions.size();j++)
+            {
+                CellAdr=char(('A'+((i % 10)+j)))+QString::number(24+int(i/10));
+                format=formatCell(format, ExtStatut.at(j-1),ExtSorti.at(j-1));
+                xInventaire.write(CellAdr, Extensions.at(j-1),format);
+            }
+            Extensions.clear();
+            ExtStatut .clear();
+            ExtSorti .clear();
+        }
+        CellAdr=char('A'+((i++) % 10))+QString::number(24+int(i/10));
+        qDebug()<<CodeJeu<<ObtenirValeurParNom(Requete,"StatutJeux_IdStatutJeux").toInt()<<ObtenirValeurParNom(Requete,"Sortie").toBool();
+        format=formatCell(format,ObtenirValeurParNom(Requete,"StatutJeux_IdStatutJeux").toInt(),ObtenirValeurParNom(Requete,"Sortie").toBool());
+        xInventaire.write(CellAdr, CodeJeu, format);
+    }
+    xInventaire.saveAs("Inventaire.xlsx");
+}
+
+Format F_MainWindow::formatCell(Format format,int StatutJeu, bool Sorti)
+{
+    switch(StatutJeu)
+    {
+        // En réparation
+        case 4 :
+        {
+            format.setPatternBackgroundColor(QColor(Qt::black));
+            break;
+        }
+        // Inventorié
+        case 10 :
+        {
+            format.setPatternBackgroundColor(QColor(Qt::green));
+            break;
+        }
+        // Emprunté
+        case 3 :
+        {
+            format.setPatternBackgroundColor(QColor(Qt::magenta));
+            break;
+        }
+        default :
+        {
+            if(Sorti)
+            {
+                format.setPatternBackgroundColor(QColor(Qt::white));
+            }
+            else
+            {
+                format.setPatternBackgroundColor(QColor(Qt::gray));
+            }
+        }
+    }
+    return format;
+}

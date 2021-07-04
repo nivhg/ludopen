@@ -645,7 +645,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
                                      ":LeEtatInitial,:LeTypeJeux_Classification,"
                                      ":StatutDuJeux_IdStatutJeux,:EtatsDuJeu_IdEtatsJeu,:Emplacement_IdDeEmplacement,"
                                      ":LeFournisseurs_IdFournisseur,:LeEditeur_IdEditeur,:LeSiteWeb1,:DureeMin,"
-                                     ":DureeMax,:Note)" ) ;
+                                     ":DureeMax,:Note,:BggBoardgame,:BggBoardgameversion,:TrictracSlug)" ) ;
            RequeteAjouterJeu.bindValue(":NomDuJeu", this->SearchJeu->currentText());
            RequeteAjouterJeu.bindValue(":DateDeAchat", this->ui->DtE_Achat->date());
            RequeteAjouterJeu.bindValue(":PrixDeAchat", this->ui->SBx_PrixAchat->value() );
@@ -667,6 +667,9 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
            RequeteAjouterJeu.bindValue(":DureeMin", this->ui->SBx_DureeMin->value() );
            RequeteAjouterJeu.bindValue(":DureeMax", this->ui->SBx_DureeMax->value() );
            RequeteAjouterJeu.bindValue(":Note", this->ui->SBx_Note->value() );
+           RequeteAjouterJeu.bindValue(":BggBoardgame", ui->LE_Id_BGG->text());
+           RequeteAjouterJeu.bindValue(":BggBoardgameversion", ui->LE_Version_BGG->text());
+           RequeteAjouterJeu.bindValue(":TrictracSlug", ui->LE_Slug_TricTrac->text());
 
            if(ui->RBt_Neuf->isChecked())
            {
@@ -794,7 +797,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
          QSqlQuery RequeteModifTxE ;
          //prépare le requête de mise à jour
          RequeteModifTxE.prepare("UPDATE jeux SET DescriptionJeu=:DescriptionDuJeu,Remarque=:Remarque,SiteWeb1=:LeSiteWeb1, "
-                                 "DureeMin=:DureeMin, DureeMax=:DureeMax, Note=:Note WHERE CodeJeu=:CodeDuJeu");
+            "DureeMin=:DureeMin, DureeMax=:DureeMax, Note=:Note,BggBoardgame=:BggBoardgame,BggBoardgameversion=:BggBoardgameversion,TrictracSlug=:TrictracSlug WHERE CodeJeu=:CodeDuJeu");
          //Entre les valeurs de la requête
          RequeteModifTxE.bindValue(":CodeDuJeu",ui->LE_Code->text());
          RequeteModifTxE.bindValue(":DescriptionDuJeu", ui->TxE_Description->toPlainText());
@@ -803,6 +806,10 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
          RequeteModifTxE.bindValue(":DureeMin", ui->SBx_DureeMin->value());
          RequeteModifTxE.bindValue(":DureeMax", ui->SBx_DureeMax->value());
          RequeteModifTxE.bindValue(":Note", ui->SBx_Note->value());
+         RequeteModifTxE.bindValue(":BggBoardgame", ui->LE_Id_BGG->text());
+         RequeteModifTxE.bindValue(":BggBoardgameversion", ui->LE_Version_BGG->text());
+         RequeteModifTxE.bindValue(":TrictracSlug", ui->LE_Slug_TricTrac->text());
+
          //Exécute la requête
          if (!RequeteModifTxE.exec())
          {
@@ -1097,6 +1104,9 @@ void F_AjoutSuppModifJeux::VideChamps()
     ui->TxE_Remarque->clear();
     ui->W_Historique->Vider();
     ui->RBt_Neuf->setChecked(true);
+    ui->LE_Id_BGG->setText("");
+    ui->LE_Version_BGG->setText("");
+    ui->LE_Slug_TricTrac->setText("");
 }
 
 /**
@@ -1882,6 +1892,11 @@ void F_AjoutSuppModifJeux::AfficherJeu(QString CodeJeu)
                 ui->RBt_Occasion->setChecked(false);
             }
         }
+        //-- Onglet Avancé
+        ui->LE_Id_BGG->setText(ObtenirValeurParNom(RequeteRechercheJeu,"BggBoardgame").toString());
+        ui->LE_Version_BGG->setText(ObtenirValeurParNom(RequeteRechercheJeu,"BggBoardgameversion").toString());
+        ui->SBx_Note->setValue(ObtenirValeurParNom(RequeteRechercheJeu,"Note").toDouble());
+        ui->LE_Slug_TricTrac->setText(ObtenirValeurParNom(RequeteRechercheJeu,"TrictracSlug").toString());
         //----------Affichage photo----------------------------------------------------------------------------
         lb_image->setCursor(Qt::WaitCursor);
         disconnect( lb_image, SIGNAL( SignalClic() ), this, SLOT( on_Lb_Image_clicked() ) );
