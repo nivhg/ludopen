@@ -835,7 +835,7 @@ void F_Membres::AfficherJeuxEmpruntes( unsigned int nIdMembre )
     modele->setHorizontalHeaderItem( 1, new QStandardItem( "Nom du jeu" ) ) ;
     modele->setHorizontalHeaderItem( 2, new QStandardItem( "Emprunté le" ) ) ;
     modele->setHorizontalHeaderItem( 3, new QStandardItem( "Retour prévu le" ) ) ;
-    ui->LW_JeuxEmpruntes->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+    ui->LW_JeuxEmpruntes->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     /*ui->LW_JeuxEmpruntes->setColumnWidth( 0, 20 ) ;  // Code
     ui->LW_JeuxEmpruntes->setColumnWidth( 1, 200 ) ;  // Jeu
     ui->LW_JeuxEmpruntes->setColumnWidth( 2, 100 ) ;  // Date d'Emprunt

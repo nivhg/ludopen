@@ -60,6 +60,10 @@ void F_AjouterCotiCarte::ModifierAbonnement( int nIDAbonnement )
     ui->LE_Nom->setReadOnly( true ) ;
     ui->LE_Prix->setReadOnly( true ) ;
 
+    ui->LE_DureeValidite->show();
+    ui->Lb_DureeValidite->show();
+    ui->Lb_DateExpirationJours->show();
+
     ui->DtE_DateSouscription->setEnabled( false ) ;
 
     ui->Lb_DateExpiration->show() ;
@@ -246,11 +250,12 @@ void F_AjouterCotiCarte::MaJListeAbonnements()
  *  @param  const QString &arg1
   *
  */
-void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(const QString &arg1)
+
+void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(int index)
 {
     QSqlQuery Requete;
 
-    this->sCombo = arg1;
+    this->sCombo = ui->CBx_ChoixAbonnement->itemText(index);
 
     Requete.prepare("SELECT NomCarte,DureeValidite,Prix,CreditDisponible FROM cartesprepayees WHERE NomCarte=:NomCarte");
     Requete.bindValue(":NomCarte", this->sCombo);
@@ -279,7 +284,7 @@ void F_AjouterCotiCarte::on_CBx_ChoixAbonnement_currentIndexChanged(const QStrin
 
     ui->LE_Nom->setText(NomCarte);
     ui->LE_DureeValidite->setText(Duree);
-    QDate DateActuelle = ui->DtE_DateSouscription->date() ;
+    QDate DateActuelle = QDate::currentDate() ;
     ui->DtE_Expiration->setDate(DateActuelle.addDays( ui->LE_DureeValidite->text().toInt()));
     ui->LE_Prix->setText(Prix);
     ui->LE_CreditsDisponibles->setText(Credit);
@@ -359,7 +364,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query->bindValue(":Membres_IdMembre", this->nIDMembre);
             query->bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
             DateActuelle = ui->DtE_DateSouscription->date() ;
-            query->bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
+            query->bindValue(":DateExpiration", ui->DtE_Expiration->date() ) ;
             query->bindValue(":CreditRestant", ui->LE_CreditsDisponibles->text().toInt() ) ;
             QList<QSqlQuery *> *Liste=new QList<QSqlQuery *>();
             Liste->append(query);
@@ -387,7 +392,7 @@ void F_AjouterCotiCarte::on_Bt_Valider_clicked()
             query->bindValue(":Membres_IdMembre", this->nIDMembre);
             query->bindValue(":DateSouscription", ui->DtE_DateSouscription->date() ) ;
             DateActuelle = ui->DtE_DateSouscription->date() ;
-            query->bindValue(":DateExpiration", DateActuelle.addDays( ui->LE_DureeValidite->text().toInt() ) ) ;
+            query->bindValue(":DateExpiration", ui->DtE_Expiration->date() ) ;
             QList<QSqlQuery *> *Liste=new QList<QSqlQuery *>();
             Liste->append(query);
             if(!emit(Signal_AjouterAuPanier(ui->CBx_ChoixAbonnement->currentText(),this->nIDMembre,ui->LE_Prix->text().toInt(),IdVentilation,

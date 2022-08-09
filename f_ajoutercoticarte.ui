@@ -16,28 +16,15 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="GLay">
-     <item row="9" column="1">
-      <widget class="QLabel" name="Lb_CreditsDisponibles">
-       <property name="text">
-        <string>Crédits disponibles :</string>
+     <item row="6" column="2">
+      <widget class="QDateEdit" name="DtE_Expiration">
+       <property name="displayFormat">
+        <string>dd/MM/yyyy</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QLabel" name="Lb_Prix">
-       <property name="text">
-        <string>Prix :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <property name="calendarPopup">
+        <bool>true</bool>
        </property>
       </widget>
-     </item>
-     <item row="10" column="2">
-      <widget class="QLineEdit" name="LE_CreditsRestants"/>
      </item>
      <item row="2" column="1" colspan="4">
       <widget class="QComboBox" name="CBx_ChoixAbonnement">
@@ -48,79 +35,13 @@
        </item>
       </widget>
      </item>
-     <item row="7" column="2">
-      <widget class="QLineEdit" name="LE_DureeValidite">
-       <property name="readOnly">
-        <bool>true</bool>
-       </property>
-      </widget>
+     <item row="9" column="2">
+      <widget class="QLineEdit" name="LE_CreditsDisponibles"/>
      </item>
      <item row="3" column="2" colspan="3">
       <widget class="QLineEdit" name="LE_Nom">
        <property name="layoutDirection">
         <enum>Qt::LeftToRight</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QLineEdit" name="LE_Prix"/>
-     </item>
-     <item row="8" column="3">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>€</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="1">
-      <widget class="QLabel" name="Lb_CreditsRestants">
-       <property name="text">
-        <string>Crédits Restants :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="12" column="3">
-      <widget class="QPushButton" name="Bt_Annuler">
-       <property name="text">
-        <string>Annuler</string>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normalon>:/Annuler.png</normalon>
-        </iconset>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="2">
-      <widget class="QLineEdit" name="LE_CreditsDisponibles"/>
-     </item>
-     <item row="7" column="1">
-      <widget class="QLabel" name="Lb_DureeValidite">
-       <property name="text">
-        <string>Durée de validité :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="Lb_NomPrestation">
-       <property name="text">
-        <string>Abonnement :</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="3">
-      <widget class="QLabel" name="Lb_DateExpirationJours">
-       <property name="text">
-        <string>jours</string>
        </property>
       </widget>
      </item>
@@ -147,26 +68,6 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="2">
-      <widget class="QDateEdit" name="DtE_DateSouscription">
-       <property name="displayFormat">
-        <string>dd/MM/yyyy</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QDateEdit" name="DtE_Expiration">
-       <property name="displayFormat">
-        <string>dd/MM/yyyy</string>
-       </property>
-       <property name="calendarPopup">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
      <item row="6" column="1">
       <widget class="QLabel" name="Lb_DateExpiration">
        <property name="text">
@@ -177,6 +78,71 @@
        </property>
       </widget>
      </item>
+     <item row="12" column="3">
+      <widget class="QPushButton" name="Bt_Annuler">
+       <property name="text">
+        <string>Annuler</string>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/Annuler.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLabel" name="Lb_NomPrestation">
+       <property name="text">
+        <string>Abonnement :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="3">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>€</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="2">
+      <widget class="QDateEdit" name="DtE_DateSouscription">
+       <property name="displayFormat">
+        <string>dd/MM/yyyy</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="2">
+      <widget class="QLineEdit" name="LE_Prix"/>
+     </item>
+     <item row="10" column="1">
+      <widget class="QLabel" name="Lb_CreditsRestants">
+       <property name="text">
+        <string>Crédits Restants :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="9" column="1">
+      <widget class="QLabel" name="Lb_CreditsDisponibles">
+       <property name="text">
+        <string>Crédits disponibles :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="2">
+      <widget class="QLineEdit" name="LE_CreditsRestants"/>
+     </item>
      <item row="5" column="1">
       <widget class="QLabel" name="Lb_DateSoucription">
        <property name="text">
@@ -184,6 +150,40 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="1">
+      <widget class="QLabel" name="Lb_Prix">
+       <property name="text">
+        <string>Prix :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLabel" name="Lb_DureeValidite">
+       <property name="text">
+        <string>Durée de validité :</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="3">
+      <widget class="QLabel" name="Lb_DateExpirationJours">
+       <property name="text">
+        <string>jours</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="2">
+      <widget class="QLineEdit" name="LE_DureeValidite">
+       <property name="readOnly">
+        <bool>true</bool>
        </property>
       </widget>
      </item>

@@ -764,7 +764,7 @@ void W_ContenuJeu::slot_contenujeu_clicked()
         QString LignePrecedente=lignes.at(i-1);
         QStringList Piece=NettoyerEtCouperLigne(LignePrecedente);
         // Si le premier caractère de la ligne est une tabulation, et qu'aucun groupe n'a été trouvé, on crée le groupe à partir de la ligne précédente
-        if(!GroupeTrouve&&ligne.at(0).toAscii()==9)
+        if(!GroupeTrouve&&ligne.at(0).toLatin1()==9)
         {
             GroupeTrouve=true;
             IdGroupeTrouve=InsererPiece(Piece[0],MaxOrdre+i,Piece[1],1,IdJeux);
@@ -776,7 +776,7 @@ void W_ContenuJeu::slot_contenujeu_clicked()
                 InsererPiece(Piece[0],MaxOrdre+i,Piece[1],2,IdGroupeTrouve);
 
                 // Si il n'y a plus de tabulation, c'est que le groupe est fini
-                if(ligne.at(0).toAscii()!=9)
+                if(ligne.at(0).toLatin1()!=9)
                 {
                     GroupeTrouve=false;
                     IdGroupeTrouve=0;

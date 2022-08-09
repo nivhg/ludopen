@@ -638,7 +638,7 @@ void F_AjoutSuppModifJeux::on_Bt_Valider2_clicked()
                                      "DescriptionJeu,CodeJeu,EtatInitial,"
                                      "TypeJeux_Classification,StatutJeux_IdStatutJeux,EtatsJeu_IdEtatsJeu,"
                                      "Emplacement_IdEmplacement,Fournisseurs_IdFournisseur,Editeur_IdEditeur,SiteWeb1,"
-                                     "DureeMin,DureeMax,Note) "
+                                     "DureeMin,DureeMax,Note,BggBoardgame,BggBoardgameversion,TrictracSlug) "
                                      "VALUES (:NomDuJeu,:NomDuCreateurJeu,:DateDeAchat,:PrixDeAchat,:PrixDeLoc,"
                                      ":NbrDeJoueurMin,:NbrDeJoueurMax,:LeAgeMin,:LeAgeMax,:LaRemarque,"
                                      ":DescriptionDuJeu,:CodeDuJeu,"
@@ -1517,8 +1517,8 @@ void F_AjoutSuppModifJeux::on_Bt_Ajouter_clicked()
     ui->CBx_Fournisseur->setItemText(0, "Sélectionner un fournisseur");
     ui->CBx_Fournisseur->setCurrentIndex(0);
 
-    // Par défaut, le jeu est empruntable
-    ui->CBx_Statut->setCurrentIndex(1);
+    // Par défaut, le jeu est A conditionner
+    ui->CBx_Statut->setCurrentIndex(6);
 
     ui->LE_RechercheNom->clear();
 

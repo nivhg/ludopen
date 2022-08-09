@@ -5,7 +5,12 @@
 #-------------------------------------------------
 #DEFINES   = QT_NO_DEBUG_OUTPUT\
 #            QT_NO_WARNING_OUTPUT
-QT        = widgets sql network core printsupport script multimediawidgets designer xml #ods
+QT       += core gui printsupport sql network script multimediawidgets xml #ods
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+CONFIG += c++11
+
 TARGET    = LudOpen
 TEMPLATE  = app
 RESOURCES = ImagesIcones.qrc
@@ -13,7 +18,7 @@ RESOURCES = ImagesIcones.qrc
 # pour avoir les messages d'erreur
 #CONFIG   += CONSOLE
 
-INCLUDEPATH = $$PWD/libs/ssh/ usr/lib/gcc/x86_64-linux-gnu/9/include/
+INCLUDEPATH = $$PWD/libs/ssh/ /usr/lib/gcc/x86_64-linux-gnu/9/include/
 
 SOURCES += \
     main.cpp \
@@ -47,10 +52,10 @@ SOURCES += \
     lb_image.cpp \
     d_ajoutsuppmodiffournisseursediteurs.cpp \
     acces_fichier_http.cpp \
-    securefileuploader.cpp \
     fonctions_globale.cpp \
     majeur.cpp \
     f_malles.cpp \
+    securefileuploader.cpp \
     suggest.cpp \
     searchbox.cpp \
     tableviewtooltipmodifier.cpp \
@@ -104,10 +109,10 @@ HEADERS  += \
     lb_image.h \
     d_ajoutsuppmodiffournisseursediteurs.h \
     acces_fichier_http.h \
-    securefileuploader.h \
     fonctions_globale.h \
     majeur.h \
     f_malles.h \
+    securefileuploader.h \
     suggest.h \
     searchbox.h \
     tableviewtooltipmodifier.h \
@@ -182,4 +187,10 @@ VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
 DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
 
 include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
-LIBS += -L"/lib/qtcreator" -L$$IDE_LIBRARY_PATH -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)
+#LIBS += -L"/lib/qtcreator" -L$$IDE_LIBRARY_PATH
+LIBS += -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)
+
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target

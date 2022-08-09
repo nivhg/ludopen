@@ -155,6 +155,7 @@ F_Preferences::F_Preferences(QWidget *parent) :
         TbPreferences["TaillePolice"]="11";
     }
 
+    qDebug()<<TbPreferences;
     connect(this->pPopUpCLESTTEM, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
 
     ui->label->hide();
@@ -183,8 +184,8 @@ QString F_Preferences::TrouverFichierConfig()
     int CheminIndex=QApplication::arguments().indexOf(CheminRegExp);
     if(CheminIndex==-1)
     {
-        return QDesktopServices::storageLocation(QDesktopServices::DataLocation) +
-                "ludopen" +QDir::separator()+"config.ini";
+        return QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) +
+                QDir::separator()+"config.ini";
     }
     else
     {

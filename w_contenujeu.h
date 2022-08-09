@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QtWidgets>
-#include <QDesignerFormEditorInterface>
+//#include <QDesignerFormEditorInterface>
 #include <QSqlQuery>
 #include <QSqlError>
 

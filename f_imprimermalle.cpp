@@ -60,7 +60,7 @@ void F_ImprimerMalle::ImprimerMalle(int iIdMalle,bool EstCeEmprunt)
 
     QString InfosLudo = "Ludothèque "+F_Preferences::ObtenirValeur("Nom") + "\n" + F_Preferences::ObtenirValeur("Adresse")
             + "\n" + F_Preferences::ObtenirValeur("CodePostal") + "  " + F_Preferences::ObtenirValeur("Ville")+
-            "\nContact: Christine Bachelart au 06 34 07 57 29";
+            "\n" + F_Preferences::ObtenirValeur("ContactMalle");
 
     ui->TxE_Contenu->setText(InfosLudo+"\n\n"+InfosMembre+"\n\n"+InfosMalle+"\n\n"+InfosJeux);
 }
