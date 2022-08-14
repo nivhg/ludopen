@@ -25,6 +25,11 @@ class F_MainWindow;
 #define MODE_EMPRUNT 0
 #define MODE_MALLES 1
 
+#define JEUX_NOM 0
+#define JEUX_CODE 1
+#define JEUX_DATE_RETOUR 2
+#define JEUX_PRIXLOC 3
+
 /** @struct Emprunt
  *  @brief Structure d'un emprunt
  *

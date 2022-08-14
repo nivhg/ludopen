@@ -232,7 +232,7 @@ void F_Paiement::CalculerPrix ()
 {
     int nReste (0);         //reste de crédit à payer
     nReste= this->Prix;     //Prix est le nombre de crédits à payer
-    QString sReste;         //Chaîne de caractères permétant l'affichage
+    QString sReste;         //Chaîne de caractères permettant l'affichage
 
     //Parcours du tableau des cartes prépayées
     QSpinBox* SpinBox;

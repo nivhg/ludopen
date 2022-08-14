@@ -337,6 +337,14 @@ private slots:
 
     void on_Bt_ParcourirClePrivee_clicked();
 
+    void on_CBx_Categorie_currentIndexChanged(int index);
+
+    void on_TbV_ListePreferences_clicked(const QModelIndex &index);
+
+    void on_Te_Valeur_textChanged();
+
+    void on_Bt_ValiderPreferences_clicked();
+
 private:
     // ATTRIBUTs ----------------------------------------------------------------
     ///< Pointeur de la classe graphique.
@@ -350,6 +358,9 @@ private:
 
     ///< Creer un modele du tableau pour les titres des membres.
     QStandardItemModel * TbMembresTitre;
+
+    ///< Creer un modele du tableau pour les préférences avancées.
+    QStandardItemModel * TbListePreferences;
 
     ///< Creer un modele du tableau pour les paiements des membres.
     QStandardItemModel * TbMembresPaiement;
@@ -410,6 +421,19 @@ private:
      *
      */
     void AfficherTousLesTableaux();
+
+    /**
+     *  @brief Fonction qui permet l'affichage des catégories de préférences dans la combobox associée
+     *
+     */
+    void AfficherCategories();
+
+    /**
+     *  @brief Fonction qui permet l'affichage des préférences en fonction de la catégorie choisie
+     *
+     */
+    void AfficherPreferences();
+
     /**
      *  @brief  Permet de sauvegarder une préférence
      *

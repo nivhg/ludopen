@@ -42,9 +42,15 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->setupUi(this);
 
     this->pPaiement=new F_Paiement;
-    this->pMalles=new F_Malles(this,pCalendrierMalles);
-    // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné
-    connect( this->pMalles, SIGNAL( Signal_Clic_Emprunter( int ) ), this, SLOT( slot_Clic_Emprunter(int) )) ;
+    qDebug()<<pCalendrierMalles;
+    if(pCalendrierMalles!=0)
+    {
+        qDebug()<<"Création F_Malles";
+        this->pMalles=new F_Malles(this,pCalendrierMalles);
+        // Si clic dans le bouton réservé, affiche la liste des réservation avec le jeu sélectionné
+        connect( this->pMalles, SIGNAL( Signal_Clic_Emprunter( int ) ), this, SLOT( slot_Clic_Emprunter(int) )) ;
+    }
+
 
     MembreActif="";
     JeuActif="";
@@ -55,6 +61,8 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->Lb_Cotisation->setText("");
     ui->Lb_CotisationARemplir->setText("");
     ui->Lb_MembreEcarte->setText("");
+
+    qDebug()<<"toto3";
 
     //Met une date minimum pour le DateEdit du retour (la date du jour)
     QDateTime DateActuelle;
@@ -110,6 +118,7 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     connect(SearchJeux->lineEdit(), SIGNAL( returnPressed() ), this, SLOT( on_LE_SearchJeux_returnPressed() ) );
     connect(SearchJeux,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
 
+    qDebug()<<"toto10";
     QSqlQuery Requete;
     // Tous les lieux sauf Internet
     Requete.exec("SELECT IdLieux,NomLieux FROM lieux WHERE IdLieux!=1");
@@ -657,8 +666,6 @@ void F_Emprunt::AfficherJeuxReserve(QStandardItemModel *ModeleJeuxReserves,QStri
 
         NumeroLigne++;
     }
-    qDebug()<<ModeleJeuxReserves->data(ModeleJeuxReserves->index(0,0),Qt::UserRole+1).toInt();
-
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -819,10 +826,11 @@ void F_Emprunt::EffacerJeuAValider()
     ModeleEmpruntsAValider->clear();
     //Initialise les colones du TableView des nouveaux emprunts
     this->ModeleEmpruntsAValider->setColumnCount(4);
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(0, new QStandardItem("Nom du jeu"));
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(1, new QStandardItem("Code"));
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(2, new QStandardItem("Date Retour"));
-    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(3, new QStandardItem("Crédits nécessaire"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(JEUX_NOM, new QStandardItem("Nom du jeu"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(JEUX_CODE, new QStandardItem("Code"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(JEUX_DATE_RETOUR, new QStandardItem("Date Retour"));
+    this->ModeleEmpruntsAValider->setHorizontalHeaderItem(JEUX_PRIXLOC, new QStandardItem("Crédits nécessaire"));
+
     //Initialise les colones du TableView des nouveaux emprunts
     ui->TbV_EmpruntAValider->setColumnWidth(0,200);
     ui->TbV_EmpruntAValider->setColumnWidth(1,40);
@@ -1085,7 +1093,7 @@ int F_Emprunt::AfficherJeuxEnEmprunt(QStandardItemModel *ModeleJeuxEmpruntes,QSt
         }
         else
         {
-            iNbEmpruntEnCours+=ObtenirValeurParNom(RequeteJeuEmprunte,"PrixLoc").toInt();
+            iNbEmpruntEnCours+=1; //ObtenirValeurParNom(RequeteJeuEmprunte,"PrixLoc").toInt();
             //on ajoute une nouvelle ligne du table view
             for(int i=0;i<List.count();i++)
             {
@@ -1192,7 +1200,7 @@ void F_Emprunt::AfficherNbEmpruntsEnCours()
     // Calcul le nombre de jeux spéciaux et normaux ainsi que le nombre de crédit totaux
     for(int i=0;i<ModeleEmpruntsAValider->rowCount();i++)
     {
-        iNbNouveauxEmprunts+=this->ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,3)).toInt();
+        iNbNouveauxEmprunts+=1; //this->ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,JEUX_PRIXLOC)).toInt();
     }
     ui->Lb_NbNouveauEmprunt->setText( QString::number(iNbNouveauxEmprunts ));
 }
@@ -1576,7 +1584,7 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
             // Calcul le nombre de jeux spéciaux et normaux ainsi que le nombre de crédit totaux
             for(int i=0;i<ModeleEmpruntsAValider->rowCount();i++)
             {
-                if(ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,0),Qt::UserRole).toBool())
+                if(ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,JEUX_NOM),Qt::UserRole).toBool())
                 {
                     NbJeuxSpeciauxAValider++;
                 }
@@ -1584,7 +1592,7 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
                 {
                     NbAutresJeuxAValider++;
                 }
-                NbCredits+=this->ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,3)).toInt();
+                NbCredits+=1; //this->ModeleEmpruntsAValider->data(ModeleEmpruntsAValider->index(i,JEUX_PRIXLOC)).toInt();
                 qDebug()<<NbCredits;
             }
             // Si le nombre de jeux spéciaux est égal ou supérieur au nombre de jeux spéciaux max de la malle, on affiche un message d'avertissement
@@ -1616,11 +1624,11 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
         //Si le nombre de jeux que possède ce membre dépasse le nombre de jeux autorisé,
         else
         {
-            int NbrTotalDeJeuxDejaSurCeCompteAdherent=this->iNbEmpruntEnCours+this->iNbNouveauxEmprunts+ui->Le_PrixEmpruntARemplir->text().toInt();
-            if(iNbJeuxEmpruntables < NbrTotalDeJeuxDejaSurCeCompteAdherent)
+            int NbrTotalDeJeuxDejaSurCeCompteAdherent=this->iNbEmpruntEnCours+ui->Lb_NbNouveauEmprunt->text().toInt(); //+ui->Le_PrixEmpruntARemplir->text().toInt();
+            if(iNbJeuxEmpruntables <= NbrTotalDeJeuxDejaSurCeCompteAdherent)
             {
                 Verification=true;
-                Message ="Déjà "+Message.setNum( NbrTotalDeJeuxDejaSurCeCompteAdherent )+" jeux empruntés !\n"
+                Message ="Avec ce jeu, l'adhérent dépassera le nombre maximal de jeux ("+Message.setNum( iNbJeuxEmpruntables )+" jeux)\n"
                         "Voulez-vous quand même autoriser l'emprunt de ce jeu ?";
             }
         }
@@ -1645,8 +1653,8 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
     //Calcule du nombre de crédits à demander
     for(register int i=0 ; i <= this->NbLignesEmpruntsAValider ; i++)
     {
-        // certains jeux coutent plus de crédit que d'autres pour être empruntés
-        NbCredits=NbCredits+ this->ModeleEmpruntsAValider->index(i,2).data().toInt();
+        // certains jeux coutent plus de crédits que d'autres pour être empruntés
+        NbCredits=NbCredits+1; //this->ModeleEmpruntsAValider->index(i,JEUX_PRIXLOC).data().toInt();
     }
 
     //Si le le prix des nouveaux emprunts est plus cher que les crédits restants, alors
@@ -1710,10 +1718,10 @@ void F_Emprunt::AjouterJeuAValider(int iIdMembre, int iIdJeu, int iIdReservation
     Emprunt.PrixEmprunt= iPrixEmprunt;
     Emprunt.PrixCaution= this->PrixCaution;
     this->NouveauEmprunts.push_back(Emprunt);
-    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,0, new QStandardItem(sNomJeu));
-    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,1, new QStandardItem(QString::number(iCodeJeu)));
-    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,2, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("dd-MM-yyyy") ));
-    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,3, new QStandardItem(QString::number(iPrixEmprunt)));
+    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,JEUX_NOM, new QStandardItem(sNomJeu));
+    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,JEUX_CODE, new QStandardItem(QString::number(iCodeJeu)));
+    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,JEUX_DATE_RETOUR, new QStandardItem( this->NouveauEmprunts[this->NbLignesEmpruntsAValider].DateRetourPrevu.toString("dd-MM-yyyy") ));
+    ModeleEmpruntsAValider->setItem(this->NbLignesEmpruntsAValider,JEUX_PRIXLOC, new QStandardItem(QString::number(iPrixEmprunt)));
     // Stocke l'info de savoir si le jeu est un jeu spécial ou pas
     ModeleEmpruntsAValider->setData(ModeleEmpruntsAValider->index(this->NbLignesEmpruntsAValider,0),QVariant(bJeuSpecial),Qt::UserRole);
     this->NbLignesEmpruntsAValider++;
@@ -1989,7 +1997,7 @@ void F_Emprunt::on_Bt_Emprunter_clicked()
     {
         for(register int i=0 ; i < this->NbLignesEmpruntsAValider ; i++)
         {
-            NbCredits = NbCredits + this->ModeleEmpruntsAValider->index(i,3).data().toInt();
+            NbCredits = NbCredits + this->ModeleEmpruntsAValider->index(i,JEUX_PRIXLOC).data().toInt();
         }
         TypeVentilation=VENTILATION_PRET;
         NomTable="emprunts";
@@ -2188,7 +2196,7 @@ void F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked()
     //Mettre le statut du jeu à "Disponible"
     QSqlQuery RequeteStatut;
     RequeteStatut.prepare("UPDATE jeux SET StatutJeux_IdStatutJeux=1 WHERE CodeJeu=:CodeDuJeu");
-    RequeteStatut.bindValue( ":CodeDuJeu" , this->ModeleEmpruntsAValider->index(ui->TbV_EmpruntAValider->currentIndex().row(),1).data().toString() );
+    RequeteStatut.bindValue( ":CodeDuJeu" , this->ModeleEmpruntsAValider->index(ui->TbV_EmpruntAValider->currentIndex().row(),JEUX_CODE).data().toString() );
     if ( ! RequeteStatut.exec())
     {
         qDebug()<<"F_Emprunt::on_Bt_SupprimerEmpruntAValider_clicked => RequeteStatut : "<< RequeteStatut.lastQuery() ;

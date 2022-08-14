@@ -191,6 +191,6 @@ include(qssh.pri) ## Required for IDE_LIBRARY_PATH and qtLibraryName
 LIBS += -l$$qtLibraryName(botan-2) -l$$qtLibraryName(QSsh)
 
 # Default rules for deployment.
-qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
-!isEmpty(target.path): INSTALLS += target
+#qnx: target.path = /tmp/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+#!isEmpty(target.path): INSTALLS += target

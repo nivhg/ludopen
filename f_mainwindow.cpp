@@ -120,10 +120,15 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     // Afficher les post-it au démarrage de l'application
     ui->TbW_Main->setCurrentIndex(ui->TbW_Main->count()-1);
 
+    if(this->pPreferences->ObtenirValeur("DesactiverOngletMalle").compare("true",Qt::CaseInsensitive)==0)
+    {
+        ui->TbW_Main->setTabEnabled(trouveOnglet("Malles"),false);
+    }
+
     this->showMaximized();
 
     // Si il y a plus d'un écran, on affiche le calendrier des malles aux adhérents
-    if(QApplication::desktop()->screenCount() > 1)
+    if(QApplication::desktop()->screenCount() > 1 && ui->TbW_Main->isTabEnabled(trouveOnglet("Malles")))
     {
         this->pCalendrierMalles=new F_Malles(this);
         QRect screenres = QApplication::desktop()->screenGeometry(1);

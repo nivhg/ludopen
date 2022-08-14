@@ -85,6 +85,11 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->TbV_MembresTitre->setEditTriggers(0);
     ui->TbV_MembresTitre->verticalHeader()->setVisible(false);
 
+    this->TbListePreferences = new QStandardItemModel();
+    ui->TbV_ListePreferences->setModel(this->TbListePreferences);
+    ui->TbV_ListePreferences->setEditTriggers(0);
+    ui->TbV_ListePreferences->verticalHeader()->setVisible(false);
+
     this->TbMembresType = new QStandardItemModel();
     ui->TbV_MembresType->setModel(this->TbMembresType);
     ui->TbV_MembresType->setEditTriggers(0);
@@ -142,7 +147,6 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->LE_MotdePasse->setEchoMode(QLineEdit::Password);
 
     sCheminConfig=TrouverFichierConfig();
-    qDebug()<<sCheminConfig;
     QSettings FichierDeConfig(sCheminConfig, QSettings::IniFormat);
     FichierDeConfig.beginGroup("Ludopen");
     QStringList keys = FichierDeConfig.childKeys();
@@ -155,7 +159,6 @@ F_Preferences::F_Preferences(QWidget *parent) :
         TbPreferences["TaillePolice"]="11";
     }
 
-    qDebug()<<TbPreferences;
     connect(this->pPopUpCLESTTEM, SIGNAL(SignalValider()), this, SLOT(slot_Valider()));
 
     ui->label->hide();
@@ -269,6 +272,7 @@ void F_Preferences::ChargerPreferencesBDD()
     }
     this->AfficherTousLesTableaux();
     this->AfficherAutresInformations();
+    this->AfficherCategories();
 }
 
 /**
@@ -338,6 +342,23 @@ void F_Preferences::AfficherAutresInformations()
     ui->LE_Login->setText(TbPreferences["LoginServeur"]);
     ui->LE_MAJ->setText(TbPreferences["URLMAJeur"]);
     ui->LE_MAJLocal->setText(TbPreferences["URLMAJeurLocale"]);
+}
+
+/**
+ *  @brief Fonction qui permet l'affichage des catégories de préférences dans la combobox associée
+ *
+ */
+void F_Preferences::AfficherCategories()
+{
+    QSqlQuery RechercheTableau;
+    int nNombreLigne(0);
+    //Affichage de la BDD dans le combo box qui est dans l'onglet Info Ludo de F_Preferences.
+    ui->CBx_Categorie->clear();
+    RechercheTableau.exec("SELECT * FROM prefcategories ORDER BY Nom");
+    while(RechercheTableau.next())
+    {
+        ui->CBx_Categorie->addItem(ObtenirValeurParNom(RechercheTableau,"Nom").toString(),ObtenirValeurParNom(RechercheTableau,"IdPrefCategories").toInt());
+    }
 }
 
 /**
@@ -1728,3 +1749,69 @@ QString F_Preferences::ObtenirValeur( QString NomChamps )
 {
     return TbPreferences[NomChamps];
 }
+
+void F_Preferences::on_CBx_Categorie_currentIndexChanged(int index)
+{
+    AfficherPreferences();
+}
+
+/**
+ *  @brief Fonction qui permet l'affichage des catégories de préférences dans la combobox associée
+ *
+ */
+void F_Preferences::AfficherPreferences()
+{
+    QSqlQuery RechercheTableau;
+    int nNombreLigne(0);
+
+    //################################ onglet Membres/Emprunts #################################################
+
+    //Affichage de la BDD dans le tableau titre qui est dans l'onglet Membres/Emprunts de F_Preferences.
+    this->TbListePreferences->setColumnCount(2);
+    this->TbListePreferences->setRowCount(0);
+    this->TbListePreferences->setHorizontalHeaderItem(0, new QStandardItem("Nom de la préférence"));
+    this->TbListePreferences->setHorizontalHeaderItem(1, new QStandardItem("Valeur"));
+    ui->TbV_ListePreferences->setColumnWidth(0, 100);
+    ui->TbV_ListePreferences->setColumnWidth(1, 65);
+
+    RechercheTableau.prepare("SELECT * FROM preferences WHERE Prefcategories_IdPrefcategories=:Prefcategories_IdPrefcategories");
+    RechercheTableau.bindValue(":Prefcategories_IdPrefcategories", ui->CBx_Categorie->currentData().toInt());
+    RechercheTableau.exec();
+
+    while (RechercheTableau.next())
+    {
+        this->TbListePreferences->setItem(nNombreLigne, 0, new QStandardItem(ObtenirValeurParNom(RechercheTableau,"NomChamps").toString()));
+        this->TbListePreferences->setItem(nNombreLigne, 1, new QStandardItem(ObtenirValeurParNom(RechercheTableau,"Valeur").toString()));
+        this->TbListePreferences->setItem(nNombreLigne++, 2, new QStandardItem(ObtenirValeurParNom(RechercheTableau,"Description").toString()));
+
+    }
+    ui->TbV_ListePreferences->resizeColumnsToContents();
+    //qDebug()<< getLastExecutedQuery(RechercheTableau) <<RechercheTableau.lastError();
+}
+
+void F_Preferences::on_TbV_ListePreferences_clicked(const QModelIndex &index)
+{
+    ui->Te_Valeur->setPlainText(TbListePreferences->item(index.row(),1)->text());
+    ui->Te_Description->setPlainText(TbListePreferences->item(index.row(),2)->text());
+    ui->Bt_ValiderPreferences->setEnabled(false);
+}
+
+
+void F_Preferences::on_Te_Valeur_textChanged()
+{
+    ui->Bt_ValiderPreferences->setEnabled(true);
+}
+
+
+void F_Preferences::on_Bt_ValiderPreferences_clicked()
+{
+    QSqlQuery RequetePrefs;
+    RequetePrefs.prepare("UPDATE preferences SET Valeur=:Valeur WHERE "
+                           "NomChamps=:NomChamps");
+    RequetePrefs.bindValue(":NomChamps", TbListePreferences->item(ui->TbV_ListePreferences->currentIndex().row(),0)->text());
+    RequetePrefs.bindValue(":Valeur", ui->Te_Valeur->toPlainText());
+    RequetePrefs.exec();
+    AfficherPreferences();
+    ui->Bt_ValiderPreferences->setEnabled(false);
+}
+

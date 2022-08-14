@@ -53,21 +53,6 @@
     <widget class="QComboBox" name="CBx_Annee">
      <item>
       <property name="text">
-       <string>2018</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2019</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2020</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
        <string>2021</string>
       </property>
      </item>
@@ -120,6 +105,9 @@
    </item>
    <item row="0" column="0">
     <widget class="QComboBox" name="CBx_Mois">
+     <property name="currentIndex">
+      <number>7</number>
+     </property>
      <item>
       <property name="text">
        <string>Janvier</string>
