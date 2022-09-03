@@ -2329,7 +2329,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
 {
     //Vérification qu'il y a un membre sélectionné.
     QSqlQuery RequeteMembre;
-    RequeteMembre.prepare("SELECT CodeMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
+    RequeteMembre.prepare("SELECT CodeMembre,TitreMembre_IdTitreMembre FROM membres WHERE CodeMembre=:CodeDuMembre");
     RequeteMembre.bindValue(":CodeDuMembre",this->MembreActif);
     if (!RequeteMembre.exec())
     {
@@ -2360,7 +2360,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
 
     QSqlQuery Requete;
     //Prépare la requête et entre ses valeurs
-    Requete.prepare("SELECT NomJeu,ContenuJeu,PrixLoc,Caution,Remarque,StatutJeux_IdStatutJeux,"
+    Requete.prepare("SELECT NomJeu,ContenuJeu,PrixLoc,PrixLocCollectivite,Caution,Remarque,StatutJeux_IdStatutJeux,"
                     "EtatsJeu_idEtatsJeu,IdJeux,StatutJeu FROM jeux as j "
                     "LEFT JOIN statutjeux as s ON s.IdStatutJeux=j.StatutJeux_IdStatutJeux WHERE CodeJeu=:CodeDuJeu");
     Requete.bindValue(":CodeDuJeu",this->JeuActif);
@@ -2378,7 +2378,14 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
     PrixCaution=Requete.value(1).toInt();
 
     //Récupère le prix de l'emprunt et l'affiche
-    ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
+    if(ObtenirValeurParNom(RequeteMembre,"TitreMembre_IdTitreMembre").toInt()==2)
+    {
+        ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLocCollectivite").toString());
+    }
+    else
+    {
+        ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
+    }
 
     ui->W_Contenu->ActualiserContenu();
 
