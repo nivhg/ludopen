@@ -86,7 +86,8 @@ void F_Malles::AfficherCalendrier(int mois,int annee)
     for(i=1;i<=iDernierJour;i++)
     {
         DateEnCours=new QDate(ui->CBx_Annee->currentText().toInt(),ui->CBx_Mois->currentIndex()+1,i);
-        item=new QStandardItem( french.dayName(DateEnCours->dayOfWeek()).at(0).toLatin1()+" "+QString::number(i) );
+        qDebug()<<french.dayName(DateEnCours->dayOfWeek())[0]+" "+QString::number(i);
+        item=new QStandardItem( french.dayName(DateEnCours->dayOfWeek())[0]+" "+QString::number(i) );
         // Si il s'agit du samedi ou dimanche, on les mets en rouge
         if(DateEnCours->dayOfWeek()>5)
         {

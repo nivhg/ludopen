@@ -127,10 +127,11 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
 
     this->showMaximized();
 
+    this->pCalendrierMalles=new F_Malles(this);
+    connect(this->pPanier,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
     // Si il y a plus d'un écran, on affiche le calendrier des malles aux adhérents
     if(QApplication::desktop()->screenCount() > 1 && ui->TbW_Main->isTabEnabled(trouveOnglet("Malles")))
     {
-        this->pCalendrierMalles=new F_Malles(this);
         QRect screenres = QApplication::desktop()->screenGeometry(1);
         pCalendrierMalles->move(QPoint(screenres.x(), screenres.y()));
         pCalendrierMalles->resize(screenres.width(), screenres.height());
@@ -138,11 +139,6 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
         pCalendrierMalles->AfficherCalendrier();
         pCalendrierMalles->showFullScreen();
         pCalendrierMalles->show();
-        connect(this->pPanier,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
-    }
-    else
-    {
-        this->pCalendrierMalles=0;
     }
 
     CreerReleve();
@@ -589,7 +585,7 @@ void F_MainWindow::CreerEmprunt()
     {
         CreerJeux();
         qDebug()<<"Création F_Emprunt";
-        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this);
+        this->pEmprunt=new F_Emprunt (MODE_EMPRUNT,this,pCalendrierMalles);
         //Emprunt
         this->ui->Lay_Emprunt->addWidget(this->pEmprunt);
         connect( this->pEmprunt, SIGNAL( Signal_Reservation_Malle(int) ), this, SLOT( slot_Reservation_Malle(int) )) ;

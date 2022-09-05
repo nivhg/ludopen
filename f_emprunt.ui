@@ -860,7 +860,7 @@ QGroupBox::indicator:checked {
           </widget>
          </item>
          <item row="7" column="0">
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="Bt_InfosMalles">
            <property name="text">
             <string>Infos Malles</string>
            </property>

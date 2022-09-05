@@ -51,7 +51,6 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
         connect( this->pMalles, SIGNAL( Signal_Clic_Emprunter( int ) ), this, SLOT( slot_Clic_Emprunter(int) )) ;
     }
 
-
     MembreActif="";
     JeuActif="";
     iMalleActive=0;
@@ -61,8 +60,6 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     ui->Lb_Cotisation->setText("");
     ui->Lb_CotisationARemplir->setText("");
     ui->Lb_MembreEcarte->setText("");
-
-    qDebug()<<"toto3";
 
     //Met une date minimum pour le DateEdit du retour (la date du jour)
     QDateTime DateActuelle;
@@ -103,11 +100,11 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
         ui->Bt_Regle->setVisible(false);
         ui->Bt_AjoutNonAdherent->setVisible(false);
         ui->Bt_Emprunter->setText("Réserver");
-        ui->Bt_CalendrierMalles->setVisible(false);
-        ui->Lb_Depart->setVisible(false);
+        ui->Bt_CalendrierMalles->setVisible(true);
+        /*ui->Lb_Depart->setVisible(false);
         ui->DtE_Depart->setVisible(false);
         ui->Lb_Retour_2->setVisible(false);
-        ui->DtE_Retour->setVisible(false);
+        ui->DtE_Retour->setVisible(false);*/
     }
     on_rB_Mode_Emprunt_toggled(true);
     SearchJeux->show();
@@ -118,7 +115,6 @@ F_Emprunt::F_Emprunt(int iMode, QWidget *parent,F_Malles *pCalendrierMalles) :
     connect(SearchJeux->lineEdit(), SIGNAL( returnPressed() ), this, SLOT( on_LE_SearchJeux_returnPressed() ) );
     connect(SearchJeux,SIGNAL(SignalSuggestionFini(QString)),this,SLOT(on_LE_SearchJeux_jeuTrouve()));
 
-    qDebug()<<"toto10";
     QSqlQuery Requete;
     // Tous les lieux sauf Internet
     Requete.exec("SELECT IdLieux,NomLieux FROM lieux WHERE IdLieux!=1");
@@ -410,7 +406,7 @@ void F_Emprunt::ActualiserJeu()
 void F_Emprunt::ActualiserListeJeux()
 {
     QString ArgMAJListeJeux;
-    // Si il n'y a pas de jeux spéciaux empruntable, on les exclue de la requête
+/*    // Si il n'y a pas de jeux spéciaux empruntable, on les exclue de la requête
     if(HashTypeEmprunt[ui->CBx_TypeEmprunt->currentData().toInt()]["NbJeuxSpeciauxEmpruntable"]==0)
     {
         ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"!="+
@@ -421,7 +417,8 @@ void F_Emprunt::ActualiserListeJeux()
     {
         ArgMAJListeJeux=F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxNomChamps")+"="+
                 F_Preferences::ObtenirValeur("FiltreJeuxSpeciauxValeur");
-    }
+    }*/
+
     // Pour les malles, on exclue les jeux qui sont empruntés et réservés aux dates définies
     /*if(this->iMode==MODE_MALLES)
     {
@@ -1639,7 +1636,7 @@ void F_Emprunt::on_Bt_AjouterJeu_clicked()
             return;  // Mettre fin à cette fonction pour empêcher l'emprunt
         }
 
-        if(!VerifJeuReserve())
+        if(!VerifJeuReserve(true))
         {
             return;
         }
@@ -1913,6 +1910,10 @@ void F_Emprunt::Reserver()
     }
     else
     {
+        if(!VerifJeuReserve(false))
+        {
+            return;
+        }
         //Création de la réservation dans la table des réservations
         QSqlQuery RequeteReservation;
         RequeteReservation.prepare("INSERT INTO reservation (Lieux_IdLieuxReservation,Membres_IdMembre,"
@@ -2387,6 +2388,12 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
         ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
     }
 
+    //TODO : Utiliser les préférences FilteJeuxSpeciaux plutôt que la valeur 1
+    bool Visible=ObtenirValeurParNom(Requete,"PrixLoc").toInt()>1;
+
+    ui->DtE_Depart->setVisible(Visible);
+    ui->Lb_Depart->setVisible(Visible);
+
     ui->W_Contenu->ActualiserContenu();
 
     QDateTime DateActuelle;
@@ -2535,6 +2542,7 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
 
 void F_Emprunt::on_Bt_CalendrierMalles_clicked()
 {
+    qDebug()<<pMalles;
     pMalles->setGeometry(this->geometry());
     pMalles->setWindowModality(Qt::NonModal);
     pMalles->AfficherCalendrier();
@@ -2642,15 +2650,15 @@ void F_Emprunt::on_DtE_Depart_dateChanged(const QDate &date)
     DatesResaChangees=true;
 }
 
-bool F_Emprunt::VerifJeuReserve()
+bool F_Emprunt::VerifJeuReserve(bool AvantEmprunt=true)
 {
     //Vérifier si ce jeu est réservé
     //Recherche de l'id du membre qui a réservé le jeu
     QSqlQuery RequeteJeuReserve;
     RequeteJeuReserve.prepare("SELECT Membres_IdMembre,DatePrevuEmprunt,DatePrevuRetour FROM reservation as r "
                               "LEFT JOIN jeux as j ON j.IdJeux=Jeux_IdJeux "
-                              "WHERE DATE(DatePrevuEmprunt)<'"+
-                              ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' AND DATE(DatePrevuRetour)>'"+
+                              "WHERE DATE(DatePrevuEmprunt)<='"+
+                              ui->DtE_Retour->date().toString("yyyy-MM-dd")+"' AND DATE(DatePrevuRetour)>='"+
                               ui->DtE_Depart->date().toString("yyyy-MM-dd")+"' AND CodeJeu=:CodeJeu");
     RequeteJeuReserve.bindValue(":CodeJeu",this->JeuActif);
     if (!RequeteJeuReserve.exec())
@@ -2664,8 +2672,17 @@ bool F_Emprunt::VerifJeuReserve()
         //si l'id du membre actuellement sélectionné n'est le même que celui du réserveur,
         if ( ObtenirValeurParNom(RequeteJeuReserve,"Membres_IdMembre").toInt() != this->IdDuMembre )
         {
-            QString sMessage;
-            sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()+" est réservé, êtes-vous sûr de vouloir l'emprunter?";
+            QString sMessage,sTxt;
+            if(AvantEmprunt)
+            {
+                sTxt="l'emprunter";
+            }
+            else
+            {
+                sTxt="le réserver";
+            }
+            sMessage="Le jeu "+ui->Le_NomJeuARemplir->text()+" est réservé, êtes-vous sûr de vouloir "+sTxt+
+                    "?\nLes réservations ne peuvent se chevaucher, un jeu ne peut être réserver le même jour que son retour d'une autre réservation. Il ne pourra partir qu'à la prochaine permanence.";
             if(QMessageBox::question(this, "Jeu réservé", sMessage, "Oui", "Non") != 0)
             {
                 return false;
@@ -2695,7 +2712,7 @@ QString F_Emprunt::get_JeuEnConsultation()
     return JeuActif;
 }
 
-void F_Emprunt::on_pushButton_clicked()
+void F_Emprunt::on_Bt_InfosMalles_clicked()
 {
     QSqlQuery RequeteEtatJeu ;
 

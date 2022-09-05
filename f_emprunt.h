@@ -134,7 +134,7 @@ public:
     static bool SupprimerReservation(QTreeView *Tv_JeuxReserves,QStandardItemModel *ModeleJeuxReserves,QString MembreActif,QString CodeJeu);
 
     //! Vérifier si ce jeu est réservé
-    bool VerifJeuReserve();
+    bool VerifJeuReserve(bool AvantEmprunt);
 
     void ActualiserHistoriqueMaintenance();
 
@@ -187,7 +187,7 @@ private slots:
 
     void on_Lb_NomJeu_linkActivated(const QString &link);
 
-    void on_pushButton_clicked();
+    void on_Bt_InfosMalles_clicked();
 
 public slots:
     void slot_Clic_Emprunter(int iIdMalle);
