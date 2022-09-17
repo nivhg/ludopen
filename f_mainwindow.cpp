@@ -130,7 +130,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     this->pCalendrierMalles=new F_Malles(this);
     connect(this->pPanier,SIGNAL(Signal_Nouvelle_Malle()),pCalendrierMalles,SLOT(slot_actualiserCalendrier()));
     // Si il y a plus d'un écran, on affiche le calendrier des malles aux adhérents
-    if(QApplication::desktop()->screenCount() > 1 && ui->TbW_Main->isTabEnabled(trouveOnglet("Malles")))
+    if(QApplication::desktop()->screenCount() > 1)
     {
         QRect screenres = QApplication::desktop()->screenGeometry(1);
         pCalendrierMalles->move(QPoint(screenres.x(), screenres.y()));

@@ -1243,6 +1243,9 @@ void F_Emprunt::on_LE_SearchMembre_MembreTrouve()
  */
 void F_Emprunt::on_CBx_TypeEmprunt_currentIndexChanged(int index)
 {
+    ui->DtE_Depart->setVisible(false);
+    ui->Lb_Depart->setVisible(false);
+
     if(this->iMode==MODE_MALLES)
     {
         ui->Bt_CalendrierMalles->setEnabled(true);
@@ -1250,6 +1253,12 @@ void F_Emprunt::on_CBx_TypeEmprunt_currentIndexChanged(int index)
         QString TotalJeuxEmpruntable=HashTypeEmprunt[ui->CBx_TypeEmprunt->itemData(index).toInt()]["TotalJeuxEmpruntable"].toString();
         ui->Lb_NbEmpruntPossibleAujourdhui->setText(TotalJeuxEmpruntable );
         iNbJeuxEmpruntables=TotalJeuxEmpruntable.toInt();
+    }
+    else if(ui->CBx_TypeEmprunt->currentData()==F_Preferences::ObtenirValeur("TypeEmpruntGrandsJeux") ||
+            ui->CBx_TypeEmprunt->currentData()==F_Preferences::ObtenirValeur("TypeEmpruntGrandsJeuxColl"))
+    {
+        ui->DtE_Depart->setVisible(true);
+        ui->Lb_Depart->setVisible(true);
     }
     // Si la sélection ne concerne pas la première ligne vide, on active la recherche des jeux
     //SearchJeux->setEnabled(index!=0);

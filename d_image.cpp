@@ -52,6 +52,19 @@ D_Image::D_Image(QWidget *parent,Lb_Image* lb_img) :
     int x = (desktop->width() - geo_d_i.width()) / 2;
     int y = (desktop->height() - geo_d_i.height()) / 2;
     this->setGeometry(x, y, geo_d_i.width(), geo_d_i.height());*/
+    QWidget *host = this->parentWidget();
+
+    if (host) {
+        auto hostRect = host->geometry();
+        this->move(hostRect.center() - this->rect().center());
+    }
+    else {
+        QRect screenGeometry = QGuiApplication::screens()[0]->geometry();
+        int x = (screenGeometry.width() - this->width()) / 2;
+        int y = (screenGeometry.height() - this->height()) / 2;
+        this->move(x, y);
+    }
+
     ImagesBGG=(lb_img==0);
     if(this->parent()->objectName()=="F_AjoutSuppModifJeux" && !ImagesBGG)
     {
@@ -298,12 +311,19 @@ void D_Image::RechargerImages()
                 }
                 else
                 {
-                    lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
+                    if(i<sNomVersion.count())
+                    {
+                        lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
+
+                    }
                 }
             }
             else if(ImagesBGG)
             {
-                lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
+                if(i<sNomVersion.count())
+                {
+                    lbi->AfficherImage(QSize(200,200),true,sNomVersion[i]);
+                }
             }
         }
         else
@@ -846,6 +866,7 @@ void D_Image::DefinirLudopen(int emplacement)
 void D_Image::on_Bt_Defaut_Web_clicked()
 {
     qDebug()<<"on_Bt_Defaut_Web_clicked():sCheminImage:"<<sCheminImage;
+    if(sCheminImage.length()<2) return;
     iOperationServeur=OP_DEFINIR_WEB;
     if(!EstCeURL(F_Preferences::ObtenirValeur("CheminPhotosJeux")))
     {
