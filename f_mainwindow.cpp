@@ -7,6 +7,7 @@ F_MainWindow::F_MainWindow(QWidget *parent) :
     ui(new Ui::F_MainWindow)
 {
     ui->setupUi(this);
+
     qDebug()<<"Constructeur F_MainWindow = Début";
 
     // Création de la fenêtre de choix des préférences du logiciel

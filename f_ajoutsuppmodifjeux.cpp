@@ -2400,6 +2400,7 @@ void F_AjoutSuppModifJeux::slot_AfficherChoixVersion(QVector<QVector<QVector<QSt
     //on_Bt_Ajouter_clicked();
     d_image->AfficherImageBGG(ui->LE_Code->text(),Matrice);
     d_image->exec();
+
     delete d_image;
 }
 
