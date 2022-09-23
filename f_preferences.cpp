@@ -147,6 +147,7 @@ F_Preferences::F_Preferences(QWidget *parent) :
     ui->LE_MotdePasse->setEchoMode(QLineEdit::Password);
 
     sCheminConfig=TrouverFichierConfig();
+    qDebug()<<"Chemin fichier config.ini : "<<sCheminConfig;
     QSettings FichierDeConfig(sCheminConfig, QSettings::IniFormat);
     FichierDeConfig.beginGroup("Ludopen");
     QStringList keys = FichierDeConfig.childKeys();
