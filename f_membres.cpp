@@ -469,6 +469,10 @@ void F_Membres::RechercherParNomEtNumero()
         }
     }
     this->AfficherListe(this->VecteurRechercheMembres);
+    if(this->VecteurRechercheMembres.count()==1)
+    {
+        this->AfficherMembre(this->VecteurRechercheMembres[0].id);
+    }
 }
 
 /** Renvoie le premier code non utilisé

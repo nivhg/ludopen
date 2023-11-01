@@ -796,7 +796,8 @@ void F_Emprunt::AfficherMembre(QString CodeMembre)
     // Affiche en bas à droite le nombre d'emprunt
     AfficherNbEmpruntsEnCours();
 
-    ActualiserTypeEmprunt(ObtenirValeurParNom(Requete,"TitreMembre_IdTitreMembre").toInt());
+    TitreMembre=ObtenirValeurParNom(Requete,"TitreMembre_IdTitreMembre").toInt();
+    ActualiserTypeEmprunt(TitreMembre);
     ActualiserListeJeux();
 
     resizeColumnsToContents(this->ModeleJeuxEmpruntes,ui->Tv_JeuxMembres);
@@ -2397,8 +2398,24 @@ void F_Emprunt::on_LE_SearchJeux_jeuTrouve()
         ui->Le_PrixEmpruntARemplir->setText(ObtenirValeurParNom(Requete,"PrixLoc").toString());
     }
 
+    bool Visible=false;
+
     //TODO : Utiliser les préférences FilteJeuxSpeciaux plutôt que la valeur 1
-    bool Visible=ObtenirValeurParNom(Requete,"PrixLoc").toInt()>1;
+    //TODO : Trouver une façon plus générique de faire ça (moins spécifique à la ludo)
+    if(ObtenirValeurParNom(Requete,"PrixLoc").toInt()>1)
+    {
+        Visible=true;
+        // Pour les familles
+        if(TitreMembre==1)
+        {
+            ui->CBx_TypeEmprunt->setCurrentIndex(ui->CBx_TypeEmprunt->findData(18));
+        }
+        // Pour les collectivités
+        else
+        {
+            ui->CBx_TypeEmprunt->setCurrentIndex(ui->CBx_TypeEmprunt->findData(19));
+        }
+    }
 
     ui->DtE_Depart->setVisible(Visible);
     ui->Lb_Depart->setVisible(Visible);

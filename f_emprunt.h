@@ -212,6 +212,7 @@ private:
 //! Code et ID du membre actif sur la fenêtre
     QString MembreActif;
     uint IdDuMembre;
+    uint TitreMembre;
 //! Code du jeu actif sur la fenêtre
     QString JeuActif;
 //! Id de réservation du jeu actif
